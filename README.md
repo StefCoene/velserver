@@ -22,6 +22,7 @@ What works / features:
 - control heater mode or desired temperature
 - webservice for integration with OpenHAB or an other software
 - generate velbus file for OpenHAB
+- auto process the velbus protocol file and extract the needed information
 
 TODO:
 - upload protocol file + pdf2txt.pl
@@ -34,3 +35,4 @@ TODO:
 - OpenHAB sitemap examples
 - process counter values
 - merge information from http://www.docum.org/drupal/content/velbus-software
+- can https://github.com/openhab/openhab/wiki/MQTT-Binding be used so the logger can push changes?
