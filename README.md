@@ -20,8 +20,8 @@ What works / features:
 - get status of relays, temperature sensors, dimmers, shutters
 - control relays, dimmers shutters
 - control heater mode or desired temperature
-- webservice for integration with OpenHAB or an other software
-- generate velbus file for OpenHAB
+- webservice for integration with openHAB or an other software
+- generate velbus file for openHAB
 - auto process the velbus protocol file and extract the needed information
 
 TODO:
@@ -32,7 +32,7 @@ TODO:
 - list needed perl modules
 - mysql database export
 - installation script (needed for library include path)
-- OpenHAB sitemap examples
+- openHAB sitemap examples
 - process counter values
 - merge information from http://www.docum.org/drupal/content/velbus-software
 - can https://github.com/openhab/openhab/wiki/MQTT-Binding be used so the logger can push changes?

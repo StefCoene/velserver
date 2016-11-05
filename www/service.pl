@@ -23,16 +23,15 @@ my $session  = CGI::Session->load() ;
 use JSON ;
 
 %{$global{cgi}{params}} = $global{cgi}{CGI}->Vars; # Get all supplied parameters in a hash
-$global{cgi}{url} = $global{cgi}{CGI}->url(-path_info=>1,-query=>1);
  
 &init ;
 
-my $address ; # Address of the module
-my $Moduletype ;    # Type of the module
-my $channel ; # Channel of the module
-my $action ;  # What to do
-my $type ;  # What to do
-my $value ;
+my $address ;    # Address of the module
+my $Moduletype ; # Type of the module, based on $address
+my $channel ;    # Channel of the module
+my $type ;       # What type of command
+my $action ;     # What to do
+my $value ;      # Extra info for the command
 
 # Parse options
 if ( defined $global{cgi}{params}{address} ) {
@@ -58,12 +57,25 @@ my $json ;
 
 # Put the time on the bus
 if ( defined $action and $action eq "TimeSync" ) {
-   print "action: $action\n" ;
    &broadcast_datetime($sock) ;
    $json = "" ;
 }
 
-if ( $type eq "Temperature" and ( $action eq "Get" or $action eq "Set" ) ) {
+if ( $type eq "Temperature" and $action eq "Get" ) {
+   if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
+      my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
+      if ( %data ) {
+         $json->{Name}        = $data{TempSensor}{value} ;
+         $json->{Temperature} = $data{Temperature}{value} ;
+      }
+      #my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
+      #if ( %data ) {
+      #   $json->{Temperature} = $data{'Current temperature'}{value} ;
+      #}
+   }
+}
+
+if ( $type eq "HeaterTemperature" and ( $action eq "Get" or $action eq "Set" ) ) {
    if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
       if ( $action eq "Set" ) {
          if ( defined $value ) {
@@ -75,17 +87,21 @@ if ( $type eq "Temperature" and ( $action eq "Get" or $action eq "Set" ) ) {
          $json->{Name}        = $data{TempSensor}{value} ;
          $json->{Temperature} = $data{Temperature}{value} ;
       }
+      my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
+      if ( %data ) {
+         $json->{Temperature} = $data{'Current temperature set'}{value} ;
+      }
    }
 }
 
-if ( $type eq "TemperatureMode" and ( $action eq "Get" or $action eq "Set" ) ) {
+if ( $type eq "HeaterMode" and ( $action eq "Get" or $action eq "Set" ) ) {
    if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
       if ( $action eq "Set" ) {
          if ( defined $value ) {
             &set_temperature_mode ($sock, $address, $value) ;
          }
       }
-      my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address'","data") ;
+      my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
       if ( %data ) {
          $json->{Name}   = $data{name}{value} ;
          if ( $data{'Temperature mode'}{value} =~ /comfort/i ) {
@@ -127,7 +143,7 @@ if ( $type eq "Blind" and ( $action eq "Get" or $action eq "Set" ) ) {
          &blind_down ($sock, $address, $channel) ;
       }
       if ( $value eq "STOP" ) {
-         &blind_up ($sock, $address, $channel) ;
+         &blind_stop ($sock, $address, $channel) ;
       }
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;
       if ( %data ) {
@@ -164,7 +180,7 @@ if ( defined $json ) {
    # Starting debug: dumping internal hash
    print $session->header() ;
    print $global{cgi}{CGI}->start_html (
-      -title=>"Velbus debug info",
+      -title=>"Velbus info",
    ) ;
    #print "<pre>\n" ;
    #print Dumper {%global} ;
