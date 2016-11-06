@@ -13,14 +13,14 @@ This code helped me a lot and gave me a big jump start: http://leachy.homeip.net
 This code is not finished. It does the basic stuff, but I'm constantly updating it.
 
 # Features and other stuff
-Features:
+## Features:
 - written in perl
 - daemon to monitor the bus that wil:
    - store all raw messages in mysql
    - store all processed information in perl
 - web based service for getting the data in json format and controlling the modules
 
-What works / features:
+## What works / features:
 - trigger a scan on the bus
 - discover the modules on the bus caused by a scan
 - get a status of the modules and channels, get name of the channels
@@ -33,7 +33,7 @@ What works / features:
 - generate velbus file for openHAB
 - auto process the velbus protocol file and extract the needed information
 
-TODO:
+## TODO:
 - upload protocol files + pdf2txt.pl
 - document config files
 - list modules + what's working
@@ -44,8 +44,11 @@ TODO:
 - openHAB sitemap examples
 - process counter values
 - merge information from http://www.docum.org/drupal/content/velbus-software
-- can https://github.com/openhab/openhab/wiki/MQTT-Binding be used so the logger can push changes?
 - install instructions
+
+## DONE
+- can https://github.com/openhab/openhab/wiki/MQTT-Binding be used so the logger can push changes?
+   - not needed: solved by using the openHAB REST API
 
 # Bugs
 I found some bugs in the code of velbus.
