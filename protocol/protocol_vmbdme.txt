@@ -1,0 +1,605 @@
+     VMBDME
+Dimmer module for VELBUS system
+
+
+
+
+           VMBDME PROTOCOL – edition 1   1
+Binairy format:
+<SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-ACK-ACKDEL-
+EOF7...EOF1-IFS3...IFS1>
+   bits                         Description
+   SOF                          Start Of Frame (always 0)
+   SID10 & SID9                 Priority (00: highest … 11: lowest priority)
+   SID8…SID1                    Address
+   SID0                         Always 0
+   RTR                          Remote Transmit Request
+   IDE                          Identifier Extension (always 0)
+   r0                           reserved (always 0)
+   DLC3…DLC0                    Data Length Code (0…8)
+   Databyte1                    Command
+   Databyte2                    Parameter
+   Databyte3                    Parameter
+   Databyte4                    Parameter
+   Databyte5                    Parameter
+   Databyte6                    Parameter
+   Databyte7                    Parameter
+   Databyte8                    Parameter
+   CRC15…CRC1                   Cyclic Redundancy Checksum
+   CRCDEL                       CRC Delimiter (always 1)
+   ACK                          Acknowledge slot (transmit 1 readback 0 if received correctly)
+   ACKDEL                       Acknowledge Delimiter (always 1)
+   EOF7...EOF1                  End Of Frame (always 1111111)
+   IFS3...IFS1                  InterFrame Space (always 111)
+
+The dimmer module can transmit the following commands:
+  Updates LEDs on a push button module
+  Clears LEDs on a push button module
+  Sets LEDs on a push button module
+  Blinks LEDs slowly on a push button module
+  Blinks LEDs fast on a push button module
+  Blinks LEDs very fast on a push button module
+
+The dimmer module can transmit the following messages:
+  Dimmer status
+  Module type
+  Local dim push button & dimmer switch status
+  Dimmer slider status
+  Bus error counter status
+  First, second and third part of the dimmer name
+  First, second and third part of the local dim push button name
+  Memory data
+  Memory data block (4 bytes)
+
+The dimmer module can receive the following messages:
+  Push button status
+  Slider status
+
+The dimmer module can receive the following commands:
+  Set dimmer value
+  Set dimmer at last used dimvalue
+  Start dimmer timer
+  Stop dimming
+  Dimmer status request
+  Clear Push button Led
+  Module type request
+  Bus error counter status request
+  Dimmer and/or local dim push button name request
+  Read memory data
+  Read memory data block (4 bytes)
+  Memory dump request
+
+
+
+                                             VMBDME PROTOCOL – edition 1                         2
+   Write memory data
+   Write memory data block (4 bytes)
+
+Transmits the local dim push button & dimmer switch status:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_PUSH_BUTTON_STATUS (H’00’)
+    DATABYTE2 = Local dim push buttons just pressed / dimmer just switched on (1 = just pressed / switched on)
+    DATABYTE3 = Local dim push buttons just released / dimmer just switched off (1 = just released / switched off)
+    DATABYTE4 = Local dim push buttons long pressed (1 = longer than 0.85s pressed)
+                                                                      Databyte2            Databyte3        Databyte4
+                                Dimmer just switched on               B’000x0001’         B’000x0000’       B’000x0000’
+                                Dimmer just switched off              B’000x0000’         B’000x0001’       B’000x0000’
+                           Local Dim Push button just pressed         B’0001000x’         B’0000000x’       B’00000000’
+                         Local Dim Push button just long pressed      B’0000000x’         B’0000000x’       B’00010000’
+                           Local Dim Push button just released        B’0000000x’         B’0001000x’       B’00000000’
+
+Transmits dimmer slider status:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_SLIDER_STATUS (H’0F’)
+    DATABYTE2 = Dimmer slider channel (H’01’)
+    DATABYTE3 = Dimmer value 0...100% (slider status)
+    DATABYTE4 = H’00’ (Slider channel not long pressed)
+
+Transmit: Updates LEDs on a push button module:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Address of the push button module for updating the LEDs
+   RTR = 0
+   DLC3...DLC0 = 4 databytes to send
+   DATABYTE1 = COMMAND_UPDATE_LED (H’F4’)
+   DATABYTE2 = LED continuous on status (1 = LED on)
+   DATABYTE3 = LED slow blinking status (1 = LED slow blinking)
+   DATABYTE4 = LED fast blinking status (1 = LED fast blinking)
+
+    Remarks:
+    The continuous on bit overrides the blinking modes.
+    If the slow and fast blinking bits for a LED are both on, the LED blinks very fast.
+
+Transmit: Clears LEDs on a push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the push button module for clearing LEDs
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_CLEAR_LED (H’F5’)
+    DATABYTE2 = LED bit numbers (1 = clear LED)
+
+Transmit: Sets LEDs on a push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the push button module for setting LEDs on
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_SET_LED (H’F6’)
+    DATABYTE2 = LED bit numbers (1 = set LED)
+
+
+
+
+                                              VMBDME PROTOCOL – edition 1                                            3
+Transmit: Blinks LEDs slowly on a push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the push button module for slowly blinking LEDs
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_SLOW_BLINKING_LED (H’F7’)
+    DATABYTE2 = LED bit numbers (1 = slow blink LED)
+
+Transmit: Blinks LEDs fast on a push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the push button module for fast blinking LEDs
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_FAST_BLINKING_LED (H’F8’)
+    DATABYTE2 = LED bit numbers (1 = fast blink LED)
+
+Transmit: Blinks LEDs very fast on a push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the push button module for very fast blinking LEDs
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_VERYFAST_BLINKING_LED (H’F9’)
+    DATABYTE2 = LED bit numbers (1 = very fast blink LED)
+
+Transmits the dimmer status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_DIMMER_STATUS (H’EE’)
+    DATABYTE2 = Mode setting
+                     Contents          Mode
+                     0                 Start/stop timer
+                     1                 Staircase timer
+                     2                 Dimmer
+                     3                 Dimmer with memory
+                     4                 Multi step dimmer
+                     5                 Slow on dimmer
+                     6                 Slow off dimmer
+                     7                 Slow on/off dimmer
+
+    DATABYTE3 = Dimvalue (0 to 100%)
+    DATABYTE4 = Led status
+             Contents             Mode
+             B’00000000’          LED off
+             B’10000000’          LED on
+             B’01000000’          LED slow blinking
+             B’00100000’          LED fast blinking
+             B’00010000’          LED very fast blinking
+
+    DATABYTE5 = high byte of current delay time
+    DATABYTE6 = mid byte of current delay time
+    DATABYTE7 = low byte of current delay time
+    DATABYTE8 = dimmer configuration
+             Contents               Contents
+             B’11xxxxxx’            Zero crossing error
+             B’1x1xxxxx’            Too inductive load
+             B’1xx0xxxx’            50Hz
+             B’1xx1xxxx’            60Hz
+             B’1xxx0xxx’            For electronic transformer
+             B’1xxx1xxx’            For ferro transformer
+             B’1xxxx001’            Last 3 bits = version number
+
+    Remark: [DATABYTE5][DATABYTE6][DATABYTE7] contain a 24-bit time in seconds
+
+
+
+                                           VMBDME PROTOCOL – edition 1            4
+Transmits the module type:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 7 databytes to send
+    DATABYTE1 = COMMAND_MODULE_TYPE (H’FF’)
+    DATABYTE2 = DIMMER_MODULE_FOR_ELECTRONIC_TRANSFORMER_TYPE (H’14’)
+    DATABYTE3 = Mode setting
+
+                   Contents          Mode
+                   0                 Start/stop timer
+                   1                 Staircase timer
+                   2                 Dimmer
+                   3                 Dimmer with memory
+                   4                 Multi step dimmer
+                   5                 Slow on dimmer
+                   6                 Slow off dimmer
+                   7                 Slow on/off dimmer
+
+   DATABYTE4 = Time switch setting
+
+                   Contents          Time
+                   0                 Momentary
+                   1                 5s
+                   2                 10s
+                   3                 15s
+                   4                 30s
+                   5                 1min
+                   6                 2min
+                   7                 5min
+                   8                 10min
+                   9                 15min
+                   A                 30min
+                   B                 1h
+                   C                 2h
+                   D                 5h
+                   E                 1day
+                   F                 No timer or max dimspeed
+
+   DATABYTE5 = dimmer configuration
+
+               Contents              Contents
+               B’11xxxxxx’           Zero crossing error
+               B’1x1xxxxx’           Too inductive load
+               B’1xx0xxxx’           50Hz
+               B’1xx1xxxx’           60Hz
+               B’1xxx0xxx’           For electronic transformer
+               B’1xxx1xxx’           For ferro transformer
+               B’1xxxx001’           Last 3 bits = version number
+
+   DATABYTE6 = Build Year
+   DATABYTE7 = Build Week
+
+Transmit: Bus error counter status
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_BUSERROR_COUNTER_STATUS (H’DA’)
+    DATABYTE2 = Transmit error counter
+    DATABYTE3 = Receive error counter
+    DATABYTE4 = Bus off counter
+
+
+
+                                         VMBDME PROTOCOL – edition 1    5
+Transmits the first part of the dimmer name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_DIMMER_NAME_PART1 (H’F0’)
+    DATABYTE2 = Dimmer bit number (B‘00000001’)
+    DATABYTE3 = Character 1 of the dimmer name
+    DATABYTE4 = Character 2 of the dimmer name
+    DATABYTE5 = Character 3 of the dimmer name
+    DATABYTE6 = Character 4 of the dimmer name
+    DATABYTE7 = Character 5 of the dimmer name
+    DATABYTE8 = Character 6 of the dimmer name
+
+Transmits the second part of the dimmer name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_DIMMER_NAME_PART2 (H’F1’)
+    DATABYTE2 = Dimmer bit number (B‘00000001’)
+    DATABYTE3 = Character 7 of the dimmer name
+    DATABYTE4 = Character 8 of the dimmer name
+    DATABYTE5 = Character 9 of the dimmer name
+    DATABYTE6 = Character 10 of the dimmer name
+    DATABYTE7 = Character 11 of the dimmer name
+    DATABYTE8 = Character 12 of the dimmer name
+
+Transmits the third part of the dimmer name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 6 databytes to send
+    DATABYTE1 = COMMAND_DIMMER_NAME_PART3 (H’F2’)
+    DATABYTE2 = Dimmer bit number (B‘00000001’)
+    DATABYTE3 = Character 13 of the dimmer name
+    DATABYTE4 = Character 14 of the dimmer name
+    DATABYTE5 = Character 15 of the dimmer name
+    DATABYTE6 = Character 16 of the dimmer name
+
+   Remarks:
+   Unused characters contain H’FF’.
+
+Transmits the first part of the local dim push button name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_PUSH_BUTTON_NAME_PART1 (H’F0’)
+    DATABYTE2 = Push button identifier bit (B’00010000’)
+    DATABYTE3 = Character 1 of the local dim push button name
+    DATABYTE4 = Character 2 of the local dim push button name
+    DATABYTE5 = Character 3 of the local dim push button name
+    DATABYTE6 = Character 4 of the local dim push button name
+    DATABYTE7 = Character 5 of the local dim push button name
+    DATABYTE8 = Character 6 of the local dim push button name
+
+
+
+
+                                      VMBDME PROTOCOL – edition 1   6
+Transmits the second part of the local dim push button name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_PUSH_BUTTON_NAME_PART2 (H’F1’)
+    DATABYTE2 = Push button identifier bit (B’00010000’)
+    DATABYTE3 = Character 7 of the local dim push button name
+    DATABYTE4 = Character 8 of the local dim push button name
+    DATABYTE5 = Character 9 of the local dim push button name
+    DATABYTE6 = Character 10 of the local dim push button name
+    DATABYTE7 = Character 11 of the local dim push button name
+    DATABYTE8 = Character 12 of the local dim push button name
+
+Transmits the third part of the local dim push button name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 6 databytes to send
+    DATABYTE1 = COMMAND_PUSH_BUTTON_NAME_PART3 (H’F2’)
+    DATABYTE2 = Push button identifier bit (B’00010000’)
+    DATABYTE3 = Character 13 of the local dim push button name
+    DATABYTE4 = Character 14 of the local dim push button name
+    DATABYTE5 = Character 15 of the local dim push button name
+    DATABYTE6 = Character 16 of the local dim push button name
+
+    Remarks: Unused characters contain H’FF’.
+
+Transmits the memory data:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_MEMORY_DATA (H’FE’)
+    DATABYTE2 = High memory address (must be H’00’)
+    DATABYTE3 = LOW memory address (H’00’...H’FF’)
+    DATABYTE4 = memory data
+
+Transmits memory data block (4 bytes):
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the module
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_MEMORY_DATA_BLOCK (H’CC’)
+    DATABYTE2 = High start address of memory block (must be H’00’)
+    DATABYTE3 = LOW start address of memory block (H’00’...H’FC’)
+    DATABYTE4 = memory data1
+    DATABYTE5 = memory data2
+    DATABYTE6 = memory data3
+    DATABYTE7 = memory data4
+
+‘Push button status’ received:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Address of the push button module
+    RTR = 0
+    DLC3...DLC0 = 4 databytes received
+    DATABYTE1 = COMMAND_PUSH_BUTTON_STATUS (H’00’)
+    DATABYTE2 = Push buttons just pressed (1 = just pressed)
+    DATABYTE3 = Push buttons just released (1 = just released)
+    DATABYTE4 = Push buttons long pressed (1 = longer than 0.85s pressed)
+
+
+
+
+                                          VMBDME PROTOCOL – edition 1       7
+‘Slider status’ received:
+     SID10-SID9 = 00 (highest priority)
+     SID8...SID1 = Address of the slider module
+     RTR = 0
+     DLC3...DLC0 = 4 databytes received
+     DATABYTE1 = COMMAND_SLIDER_STATUS (H’0F’)
+     DATABYTE2 = Slider channel
+     DATABYTE3 = Slider status (0...100%)
+     DATABYTE4 = Slider channel long pressed (1 = longer than 0.85s pressed)
+
+‘Clear LED’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the push button module
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_CLEAR_LED (H’F5’)
+    DATABYTE2 = LEDs to clear (a one clears the corresponding LED)
+
+‘Set dimvalue’ command received:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 5 databytes received
+     DATABYTE1 = COMMAND_SET_DIMVALUE (H’07’)
+     DATABYTE2 = Dimmer bit number (B‘00000001’)
+     DATABYTE3 = Dimvalue (0 to 100%)
+     DATABYTE4 = high byte of dimspeed
+     DATABYTE5 = low byte of dimspeed
+
+    Remark: [DATABYTE4][DATABYTE5] contains a 16-bit time in seconds needed for dimming from 0 to 100%.
+    If the dimspeed parameter contains zero then the dimspeed set by the hex switches on the dimmer module is chosen.
+    If the dimspeed parameter contains H’FFFF’ then the fastest dimspeed (1.5s) is chosen.
+
+‘Set dimvalue at last used dimvalue’ command received:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 5 databytes received
+     DATABYTE1 = COMMAND_RESTORE_LAST_DIMVALUE (H’11’)
+     DATABYTE2 = Dimmer bit number (B‘00000001’)
+     DATABYTE3 = Don’t care
+     DATABYTE4 = high byte of dimspeed
+     DATABYTE5 = low byte of dimspeed
+
+    Remark: [DATABYTE4][DATABYTE5] contains a 16-bit time in seconds needed for dimming from 0 to 100%.
+    If the dimspeed parameter contains zero then the dimspeed set by the hex switches on the dimmer module is chosen.
+    If the dimspeed parameter contains H’FFFF’ then the fastest dimspeed (1.5s) is chosen.
+
+‘Stop dimming’ command received:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_STOP_DIMMING (H’10’)
+    DATABYTE2 = Dimmer bit number (B‘00000001’)
+
+‘Start dimmer timer’ command received:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 5 databytes received
+    DATABYTE1 = COMMAND_START_DIMMER_TIMER (H’08’)
+    DATABYTE2 = Dimmer bit number (B‘00000001’)
+    DATABYTE3 = high byte of time-out time
+    DATABYTE4 = mid byte of time-out time
+    DATABYTE5 = low byte of time-out time
+
+
+                                            VMBDME PROTOCOL – edition 1                                                 8
+    Remark: [DATABYTE3][DATABYTE4][DATABYTE5] contains a 24-bit time-out time in seconds.
+    If the time-out parameter contains zero then the timer starts for a time set by the hex switches on the dimmer module.
+    If the time-out parameter contains H’FFxxxx’ then the light switches permanently on (no time-out).
+
+‘Dimmer status request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_DIMMER_STATUS_REQUEST (H’FA’)
+    DATABYTE2 = Dimmer bit number (B‘00000001’)
+
+‘Module type request’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Address set by hex switches
+   RTR = 1
+   DLC3...DLC0 = 0 databytes received
+
+‘Bus error counter status request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 1 databytes to send
+    DATABYTE1 = COMMAND_BUS_ERROR_CONTER_STATUS_REQUEST (H’D9’)
+
+‘Dimmer and/or dim push button name request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_DIMMER_NAME_REQUEST (H’EF’)
+    DATABYTE2 = Dimmer and/or dim push button bit number (B‘00000001’ : dimmer identifier)
+                                                           (B‘00010000’ : dim push button identifier)
+
+‘Read data from memory’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_READ_DATA_FROM_MEMORY (H’FD’)
+    DATABYTE2 = High memory address (must be H’00’)
+    DATABYTE3 = LOW memory address (H’00’...H’FF’)
+
+‘Memory dump request’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Address of the module
+   RTR = 0
+   DLC3...DLC0 = 1 databytes received
+   DATABYTE1 = COMMAND_MEMORY_DUMP_REQUEST (H’CB’)
+
+‘Read data block from memory’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_READ_MEMORY_BLOCK (H’C9’)
+    DATABYTE2 = High memory address (must be H’00’)
+    DATABYTE3 = LOW memory address (H’00’...H’FC’)
+
+
+
+
+                                             VMBDME PROTOCOL – edition 1                                                     9
+‘Write data to memory’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 4 databytes received
+    DATABYTE1 = COMMAND_WRITE_DATA_TO_MEMORY (H’FC’)
+    DATABYTE2 = High memory address (must be H’00’)
+    DATABYTE3 = LOW memory address (H’00’...H’FF’)
+    DATABYTE4 = memory data to write
+
+   Remark: Wait at least 10ms for sending a next command on the velbus.
+
+‘Write memory block’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 7 databytes received
+    DATABYTE1 = COMMAND_WRITE_MEMORY_BLOCK (H’CA’)
+    DATABYTE2 = High memory address (must be H’00’)
+    DATABYTE3 = LOW memory address (H’00’...H’FC’)
+    DATABYTE4 = memory databyte1 to write
+    DATABYTE5 = memory databyte2 to write
+    DATABYTE6 = memory databyte3 to write
+    DATABYTE7 = memory databyte4 to write
+
+   Remark: Wait for ‘memory data block’ feedback before sending a next command on the velbus.
+
+
+
+
+                                          VMBDME PROTOCOL – edition 1                           10
+Memory map build 0819 or higher:
+
+    Address    Contents                                  Address   Contents
+    H’0000’    Push button module address                H’0001’   Clear push button 1 bit numbers
+    ...        ...                                       ...       ...
+    H’0018’    Push button module address                H’0019’   Clear push button 13 bit numbers
+    H’001A’    Push button module address                H’001B’   Set push button 1 bit numbers
+    ...        ...                                       ...       ...
+    H’0033’    Push button module address                H’0033’   Set push button 13 bit numbers
+    H’0034’    Push button module address                H’0035’   Toggle push button 1 bit numbers
+    ...        ...                                       ...       ...
+    H’004C’    Push button module address                H’004D’   Toggle push button 13 bit numbers
+    H’004E’    Push button module address                H’004F’   Dim push button 1 bit numbers
+    ...        ...                                       ...       ...
+    H’0066’    Push button module address                H’0067’   Dim push button 13 bit numbers
+    H’0068’    Slider module address                     H’0069’   Slider 1 bit numbers
+    ...        ...                                       ...       ...
+    H’0080’    Slider module address                     H’0081’   Slider 13 bit numbers
+    H’0082’    Push button module address                H’0083    Dim up push button 1 bit numbers
+    ...        ...                                       ...       ...
+    H’009A’    Push button module address                H’009B’   Dim up push button 13 bit numbers
+    H’009C’    Push button module address                H’009D’   Dim down push button 1 bit numbers
+    ...        ...                                       ...       ...
+    H’00B4’    Push button module address                H’00B5’   Dim down push button 13 bit numbers
+    H’00B6’    Push button module address                H’00B7’   Atmospheric push button 1 bit numbers
+    ...        ...                                       ...       ...
+    H’00CE’    Push button module address                H’00CF’   Atmospheric push button 13 bit numbers
+    H’00D0’    Atmospheric dimvalue 1                    H’00E1’   Atmospheric dimvalue 2
+    ...        ...                                       ...       ...
+    H’00DC’    Atmospheric dimvalue 13                   H’00DD’   Unused
+    H’00DE’    Unused                                    H’00DF’   Unused
+    H’00E0’    Local Dim push button name character 1    H’00E1’   Local Dim push button name character 2
+    ...
+    H’00EE’    Local Dim push button name character 15   H’00EF’   Local Dim push button name character 16
+    H’00F0’    Dimmer name character 1                   H’00F1’   Dimmer name character 2
+    ...
+    H’00FE’    Dimmer name character 15                  H’00FF’   Dimmer name character 16
+
+   Remark: Unused locations contain H’FF’
+
+
+
+
+                                          VMBDME PROTOCOL – edition 1                                        11
+
