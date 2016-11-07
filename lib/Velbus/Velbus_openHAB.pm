@@ -61,9 +61,9 @@ sub openHAB () {
             if ( defined $Group ) {
                $openHAB .= "($Group) " ;
             }
-            #$openHAB .= "{http=\"" ;
-            #$openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Temperature&action=Get:10000:JSONPATH(\$.Temperature)]" ;
-            #$openHAB .= "\"}\n" ;
+            $openHAB .= "{http=\"" ;
+            $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Temperature&action=Get:60000:JSONPATH(\$.Temperature)]" ;
+            $openHAB .= "\"}\n" ;
 
             my $item = "HeaterMode_$address" ;
             $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{name}{value} mode\" " ;
@@ -73,7 +73,7 @@ sub openHAB () {
                $openHAB .= "($Group) " ;
             }
             $openHAB .= "{http=\"" ;
-            #$openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Get:1000000:JSONPATH(\$.Status)]" ;
+            $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Get:60000:JSONPATH(\$.Status)]" ;
             $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Set&value=%2\$s]" ;
             $openHAB .= "\"}\n" ;
 
@@ -85,13 +85,14 @@ sub openHAB () {
                $openHAB .= "($Group) " ;
             }
             $openHAB .= "{http=\"" ;
-            #$openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Get:10000:JSONPATH(\$.Status)]" ;
+            $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Get:60000:JSONPATH(\$.Status)]" ;
             $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Set&value=%2\$s]" ;
             $openHAB .= "\"}\n" ;
          }
 
          if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo} ) {
             foreach my $Channel ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{Address}{$address}{ChannelInfo}}) ) {
+               next if $Channel eq "00" ; # Channel 00 is used to store data about the module, so this Channel does not exist
                my $item = $address."_".$Channel ;
                # Dimmer
                if ( $type eq "12" or $type eq "15" ) {
@@ -103,7 +104,7 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  #$openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Get:1000:JSONPATH(\$.Status)]" ;
+                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Get:60000:JSONPATH(\$.Status)]" ;
                   $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Set&value=%2\$s]" ;
                   $openHAB .= "\"}\n" ;
 
@@ -117,7 +118,7 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  #$openHAB .=       "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Blind&action=Get:1000:JSONPATH(\$.Status)]" ;
+                  $openHAB .=       "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Blind&action=Get:60000:JSONPATH(\$.Status)]" ;
                   $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Blind&action=Set&value=%2\$s]" ;
                   $openHAB .= "\"}\n" ;
 
@@ -131,7 +132,7 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  #$openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Get:1000:JSONPATH(\$.Status)]" ;
+                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Get:60000:JSONPATH(\$.Status)]" ;
                   $openHAB .=  " >[ON:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=On] " ;
                   $openHAB .= " >[OFF:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Off]" ;
                   $openHAB .= "\"}\n" ;
