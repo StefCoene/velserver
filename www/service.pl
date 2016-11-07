@@ -1,5 +1,15 @@
 #!/usr/bin/perl
 
+# 1. item is updated by clicking in openHAB interface
+# 2. service.pl is called via the http binding
+# 3. service.pl checks the current state and if it differs calls the appropriate function to post a message to the velbus
+# 4. logger.pl picks up the response to this message and use the REST API of openHAB to inform openhab that something changed
+# 4bis. logger.pl also updates the mysql database
+# 5. item is updated in openHAB
+# 6. service.pl is called via the http binding
+# 7. service.pl checks the current state and if it differs calls the appropriate function to post a message to the velbus
+#      !!!!! if logger.pl is too slow in updating the mysql, service.pl is unaware of this change and will repost the velbus message
+
 use lib "/data/Velbus/perl/lib" ;
 
 use strict;
@@ -53,6 +63,18 @@ if ( defined $global{cgi}{params}{value} ) {
    $value = $global{cgi}{params}{value} ;
 }
 
+my $LOG ;
+if ( $action eq "Get" ) {
+} else {
+   #$LOG = "1" ;
+}
+open LOG,">>/tmp/velbus.log" if defined $LOG ;
+print LOG "address = $address\n" if defined $LOG ;
+print LOG "channel = $channel\n" if defined $LOG ;
+print LOG "action = $action\n"   if defined $LOG ;
+print LOG "type = $type\n"       if defined $LOG ;
+print LOG "value = $value\n"     if defined $LOG and defined $value ;
+
 my $json ;
 
 # Put the time on the bus
@@ -64,10 +86,9 @@ if ( defined $action and $action eq "TimeSync" ) {
 if ( $type eq "Temperature" and $action eq "Get" ) {
    if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
       my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
-      if ( %data ) {
-         $json->{Name}        = $data{TempSensor}{value} ;
-         $json->{Temperature} = $data{Temperature}{value} ;
-      }
+      $json->{Name}        = $data{TempSensor}{value}  if defined $data{TempSensor} ;
+      $json->{Temperature} = $data{Temperature}{value} if defined $data{Temperature} ;
+
       #my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
       #if ( %data ) {
       #   $json->{Temperature} = $data{'Current temperature'}{value} ;
@@ -77,43 +98,78 @@ if ( $type eq "Temperature" and $action eq "Get" ) {
 
 if ( $type eq "HeaterTemperature" and ( $action eq "Get" or $action eq "Set" ) ) {
    if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
-      if ( $action eq "Set" ) {
-         if ( defined $value ) {
-            &set_temperature ($sock, $address, $value) ;
-         }
-      }
       my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
-      if ( %data ) {
-         $json->{Name}        = $data{TempSensor}{value} ;
-         $json->{Temperature} = $data{Temperature}{value} ;
-      }
+      $json->{Name}        = $data{TempSensor}{value}  if defined $data{TempSensor} ;
+
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
-      if ( %data ) {
+      if ( defined $data{'Current temperature set'} ) {
          $json->{Temperature} = $data{'Current temperature set'}{value} ;
+         if ( $action eq "Set" and defined $value and $value ne $data{'Current temperature set'}{value} ) {
+            &set_temperature ($sock, $address, $value) ;
+            $json->{Action} = "$value"  ;
+         }
       }
    }
 }
 
 if ( $type eq "HeaterMode" and ( $action eq "Get" or $action eq "Set" ) ) {
    if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
-      if ( $action eq "Set" ) {
-         if ( defined $value ) {
-            &set_temperature_mode ($sock, $address, $value) ;
-         }
+      my %data ;
+      if ( $Moduletype eq "28" ) {
+         %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='21'","data") ;
       }
-      my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
-      if ( %data ) {
-         $json->{Name}   = $data{name}{value} ;
+      if ( $Moduletype eq "20" ) {
+         %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='09'","data") ;
+      }
+      $json->{Name} = $data{name}{value} if defined $data{name} ;
+
+      %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
+      if ( defined $data{'Temperature mode'} ) {
          if ( $data{'Temperature mode'}{value} =~ /comfort/i ) {
             $json->{Status} = 1 ;
+            if ( $action eq "Set" and defined $value and $value ne "1" ) {
+               &set_temperature_mode ($sock, $address, $value) ;
+               $json->{Action} = "1" ;
+            }
          } elsif ( $data{'Temperature mode'}{value} =~ /day/i ) {
             $json->{Status} = 2 ;
+            if ( $action eq "Set" and defined $value and $value ne "2" ) {
+               &set_temperature_mode ($sock, $address, $value) ;
+               $json->{Action} = "2" ;
+            }
          } elsif ( $data{'Temperature mode'}{value} =~ /night/i ) {
             $json->{Status} = 3 ;
+            if ( $action eq "Set" and defined $value and $value ne "3" ) {
+               &set_temperature_mode ($sock, $address, $value) ;
+               $json->{Action} = "3" ;
+            }
          } elsif ( $data{'Temperature mode'}{value} =~ /safe/i ) {
             $json->{Status} = 4 ;
+            if ( $action eq "Set" and defined $value and $value ne "4" ) {
+               &set_temperature_mode ($sock, $address, $value) ;
+               $json->{Action} = "4" ;
+            }
          } else {
             $json->{Status} = 0 ;
+            $json->{Action} = "NONE" ;
+         }
+      } else {
+         $json->{Error} = "NO_INFO" ;
+         if ( $action eq "Set" and defined $value and $value ne "1" ) {
+            &set_temperature_mode ($sock, $address, $value) ;
+            $json->{Action} = "1" ;
+         }
+         if ( $action eq "Set" and defined $value and $value ne "2" ) {
+            &set_temperature_mode ($sock, $address, $value) ;
+            $json->{Action} = "2" ;
+         }
+         if ( $action eq "Set" and defined $value and $value ne "3" ) {
+            &set_temperature_mode ($sock, $address, $value) ;
+            $json->{Action} = "3" ;
+         }
+         if ( $action eq "Set" and defined $value and $value ne "4" ) {
+            &set_temperature_mode ($sock, $address, $value) ;
+            $json->{Action} = "4" ;
          }
       }
    }
@@ -155,19 +211,35 @@ if ( $type eq "Blind" and ( $action eq "Get" or $action eq "Set" ) ) {
 
 if ( $type eq "Relay" and ( $action eq "Get" or $action eq "On" or $action eq "Off" ) ) {
    if ( defined $Moduletype and ( $Moduletype eq "02" or $Moduletype eq "08" or $Moduletype eq "10" or $Moduletype eq "11" ) ) {
-      if ( $action eq "On" ) {
-         &relay_on ($sock, $address, $channel) ;
-      }
-      if ( $action eq "Off" ) {
-         &relay_off ($sock, $address, $channel) ;
-      }
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;
-      if ( %data ) {
-         $json->{Name}   = $data{name}{value} ;
+
+      $json->{Name} = $data{name}{value} if defined $data{name} ;
+
+      if ( defined $data{'Relay status'} ) {
          if ( $data{'Relay status'}{value} eq "Relay channel off" ) {
             $json->{Status} = "OFF" ;
-         } else {
+            if ( $action eq "On" ) {
+               &relay_on ($sock, $address, $channel) ;
+               $json->{Action} = "On" ;
+            }
+
+         } elsif ( $data{'Relay status'}{value} eq "Relay channel on" ) {
             $json->{Status} = "ON" ;
+            if ( $action eq "Off" ) {
+               &relay_off ($sock, $address, $channel) ;
+               $json->{Action} = "Off" ;
+            }
+         }
+
+      } else {
+         $json->{Error} = "NO_INFO" ;
+         if ( $action eq "On" ) {
+            &relay_on ($sock, $address, $channel) ;
+            $json->{Action} = "On" ;
+         }
+         if ( $action eq "Off" ) {
+            &relay_off ($sock, $address, $channel) ;
+            $json->{Action} = "Off" ;
          }
       }
    }
@@ -176,6 +248,7 @@ if ( $type eq "Relay" and ( $action eq "Get" or $action eq "On" or $action eq "O
 if ( defined $json ) {
    print $session->header(-type=>'application/json') ;
    print encode_json($json);
+   print LOG encode_json($json)if defined $LOG ;
 } else {
    # Starting debug: dumping internal hash
    print $session->header() ;
@@ -186,3 +259,6 @@ if ( defined $json ) {
    #print Dumper {%global} ;
    print $global{cgi}{CGI}->end_html() ;
 }
+print LOG "\n" if defined $LOG ;
+print LOG "\n" if defined $LOG ;
+close LOG if defined $LOG ;

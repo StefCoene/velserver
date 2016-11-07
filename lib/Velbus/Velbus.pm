@@ -72,9 +72,9 @@ sub process_message {
 
          if ( $message{MessageType} eq "FF" ) { # Module type: answer to a Scan
             if ( defined $global{Cons}{ModuleTypes}{$hex[0]}{Type} ) {
-               $message{text} .= "address $message{address}, type = $global{Cons}{ModuleTypes}{$hex[0]}{Type} $global{Cons}{ModuleTypes}{$hex[0]}{Info}  " ;
+               $message{text} .= "address $message{address}, type = $global{Cons}{ModuleTypes}{$hex[0]}{Type} $global{Cons}{ModuleTypes}{$hex[0]}{Info}" ;
             } else {
-               $message{text} .= "address $message{address}, type = unknown $hex[0]  " ;
+               $message{text} .= "address $message{address}, type = unknown $hex[0]" ;
             }
             &do_query ($global{dbh},"insert into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `type`=values(type), `status`=values(status), `date`=values(date)", $message{address}, $hex[0], "Found") ;
             $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $hex[0] ;
@@ -84,59 +84,59 @@ sub process_message {
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "BuildWeek", $hex[5]) ;
 
          } elsif ( $message{MessageType} eq "B0" ) { # Module subtype: answer to a Scan
-            $message{text} .= "address $message{address}, extra info " ;
+            $message{text} .= "address $message{address}, extra info" ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr1", $hex[3]) if $hex[3] ne "FF" ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr2", $hex[4]) if $hex[4] ne "FF" ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr3", $hex[5]) if $hex[5] ne "FF" ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr4", $hex[6]) if $hex[6] ne "FF" ;
 
          } elsif ( $message{MessageType} eq "D8" ) { # Realtime clock update
-            $message{text} .= "Realtime clock status : " ;
+            $message{text} .= "Realtime clock status:" ;
             my $day  = hex ($hex[0]) ;
             my $hour = hex ($hex[1]) ; $hour = "0" . $hour if $hour < 10 ;
             my $min  = hex ($hex[2]) ; $min =  "0" . $min  if $min  < 10 ;
-            $message{text} .= "day = $global{Cons}{Days}{$day}, tijd = $hour:$min" ;
+            $message{text} .= " day = $global{Cons}{Days}{$day}, tijd = $hour:$min" ;
 
          } elsif ( $message{MessageType} eq "B7" ) { # Realtime clock update
-            $message{text} .= "Date sync : " ;
+            $message{text} .= "Date sync:" ;
             my $day  = hex ($hex[0]) ;
             my $mon  = hex ($hex[1]) ;
             my $year = hex ("$hex[2]$hex[3]") ;
-            $message{text} .= "day = $day, month = $mon, year = $year" ;
+            $message{text} .= " day = $day, month = $mon, year = $year" ;
 
          } elsif ( $message{MessageType} eq "E6" ) { # Temperature status
             my $temperature = sprintf ("%.2f",&hex_to_temperature($hex[0], $hex[1])) ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "Temperature", $temperature) ;
             $message{text} .= "Temperature = $temperature" ;
-            &openHAB_rest ("Temperature_$message{address}", $temperature) ;
+            &openHAB_update_state ("Temperature_$message{address}", $temperature) ;
 
          # Name of channel
          } elsif ( $message{MessageType} eq "F0"
                 or $message{MessageType} eq "F1" 
                 or $message{MessageType} eq "F2" ) {
 
-            my $channel = shift @hex;
+            my $Channel = shift @hex;
 
             if ( $message{MessageType} eq "F0" ) {
-               $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$channel}{Name}{value} = "" ; # Reset the name
+               $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value} = "" ; # Reset the name
             }
 
             foreach my $hex (@hex) {
                next if $hex eq "FF" ;
                my $test = chr hex $hex ;
-               $message{text} .= "$test" ;
-               $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$channel}{Name}{value} .= $test ; # Append the name
+               $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value} .= $test ; # Append the name
             }
 
             if ( $message{MessageType} eq "F2" ) {
                if ( defined $message{ModuleType} and 
-                    ( ( $message{ModuleType} eq "28" and $channel eq "21" ) or
-                      ( $message{ModuleType} eq "20" and $channel eq "09" ) )
+                    ( ( $message{ModuleType} eq "28" and $Channel eq "21" ) or
+                      ( $message{ModuleType} eq "20" and $Channel eq "09" ) )
                    ) {
                      # Channel 21 and channel 09 are virtual channels whose name is the temperature sensor name of the touch display.
-                     &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$channel}{Name}{value}) ;
+                     &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
                }
-               &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $channel, "Name", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$channel}{Name}{value}) ;
+               &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "Name", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
+               $message{text} .= "Channel $Channel name = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}" ;
             }
 
          } else {
@@ -145,8 +145,10 @@ sub process_message {
                  defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}} and
                  defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data} ) {
 
-
                my %info ;
+               my %openHAB_update_state ;
+
+               my $Channel = "00" ;
                foreach my $byte (0..8) { # Loop the 8 possible bytes
                   # Only process when there is information about this byte
                   if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte} ) {
@@ -178,7 +180,6 @@ sub process_message {
                         # If we have match, process the information
                         if ( $Match ) {
                            my $Value ; # To store the value of the message. This can be data found in the message or stored in {Info}
-                           my $Channel = "00" ;
                            my $SubName ;
 
                            if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Info} ) {
@@ -211,13 +212,17 @@ sub process_message {
                               my $openHAB = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{openHAB} ; # Handier var
                               if ( $openHAB =~ /:/ ) {
                                  my @openHAB = split ":", $openHAB ;
-                                 &openHAB_rest ("$openHAB[1]_$message{address}", $openHAB[0]) ;
+                                 if ( $Channel eq "00" ) {
+                                    $openHAB_update_state{"$openHAB[1]_$message{address}"} = $openHAB[0] ;
+                                 } else {
+                                    $openHAB_update_state{"$openHAB[1]_$message{address}_$Channel"} = $openHAB[0] ;
+                                 }
                               } else {
-                                 &openHAB_rest ("$openHAB"."_"."$message{address}", $Value) if defined $Value ;
+                                 $openHAB_update_state{"$openHAB"."_"."$message{address}"} = $Value if defined $Value ;
                               }
                            }
 
-                           push @{$info{$Channel}{$Name}}, $Value ;
+                           push @{$info{$Channel}{$Name}}, $Value if defined $Value ;
                            push @{$info{$Channel}{$SubName}}, $Value if defined $SubName ;
                         }
                      }  
@@ -232,20 +237,27 @@ sub process_message {
                foreach my $Channel (sort keys (%info) ) {
                   foreach my $Name (sort keys (%{$info{$Channel}}) ) {
                      my $temp = join ";", @{$info{$Channel}{$Name}} ;
-                     $message{text} .= "$Channel, $Name = $temp\n ";
+                     $message{text} .= "  $Channel, $Name = $temp\n" ;
                      &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, $Name, $temp) ;
                   }
                }
+
+               # Post the updates to openHAB.
+               # This must be done AFTER the mysql updates
+               foreach my $key (keys %openHAB_update_state) {
+                  &openHAB_update_state ($key, $openHAB_update_state{$key}) ;
+               }
+
             } else {
                my $temp = join " ", @hex ;
-               $message{text} .= "ModuleType = $message{ModuleType},  MessageType=$message{MessageType}: no Data info for: $temp" ;
+               $message{text} .= "no Data info for message $temp" ;
             }
          }
       }
    }
 
    my $date = `date` ; chomp $date ; # Get a date stamp
-   print "$date $message{prio} $message{address}=$message{ModuleType} $message{MessageType} = $message{MessageName} :: $message{text}\n" ;
+   print "$date $message{prio} $message{address}=$message{ModuleType} $message{MessageType}=$message{MessageName} :: $message{text}\n" ;
 
    &do_query ($global{dbh},"insert into `messages` (`date`, `raw`, `address`, `prio`, `type`, `rtr_size`) VALUES (NOW(), ?, ?, ?, ?, ? )", $message{Raw}, $message{address}, $message{prio}, $message{MessageType}, $message{RTR_size}) ;
 }

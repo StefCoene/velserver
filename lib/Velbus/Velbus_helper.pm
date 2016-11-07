@@ -260,7 +260,7 @@ sub bin_to_dec {
    return unpack("N", pack("B32", substr("0" x 32 . shift, -32)));
 }
 
-sub openHAB_rest {
+sub openHAB_update_state {
    my $name = $_[0] ;
    my $data = $_[1] ;
 
