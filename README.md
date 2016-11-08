@@ -45,6 +45,7 @@ This code is not finished. It does the basic stuff, but I'm constantly updating 
 - process counter values
 - merge information from http://www.docum.org/drupal/content/velbus-software
 - install instructions
+- logging
 
 ## DONE
 - can https://github.com/openhab/openhab/wiki/MQTT-Binding be used so the logger can push changes?
