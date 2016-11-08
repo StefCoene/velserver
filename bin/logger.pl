@@ -1,8 +1,8 @@
 #!/usr/bin/perl 
 
-use lib "/data/Velbus/perl/lib" ;
+use lib "/data/velserver/lib" ;
 our %global ;
-$global{Config}{BaseDir} = "/data/Velbus/perl" ;
+$global{Config}{BaseDir} = "/data/velserver" ;
 
 &init () ;
 # Connect to the Velbus server and monitor the bus.

@@ -10,7 +10,7 @@
 # 7. service.pl checks the current state and if it differs calls the appropriate function to post a message to the velbus
 #      !!!!! if logger.pl is too slow in updating the mysql, service.pl is unaware of this change and will repost the velbus message
 
-use lib "/data/Velbus/perl/lib" ;
+use lib "/data/velserver/lib" ;
 
 use strict;
 use POSIX qw/strftime/;
