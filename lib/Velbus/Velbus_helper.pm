@@ -264,12 +264,12 @@ sub openHAB_update_state {
    my $name = $_[0] ;
    my $data = $_[1] ;
 
-   my $URL = "http://geuze:8080/rest/items/$name" ;
+   my $URL = "http://geuze:8080/rest/items/$name/state" ;
 
    # Create the browser that will post the information.
    my $Browser = new LWP::UserAgent;
 
-   my $Page = $Browser->request(POST $URL,
+   my $Page = $Browser->request(PUT $URL,
       Content_Type => 'text/plain',
       Content => "$data"
    ) ;
