@@ -15,11 +15,12 @@ use lib "/data/velserver/lib" ;
 use strict;
 use POSIX qw/strftime/;
 
+our %global ; # Variable shared by all functions where we store all data
+$global{Config}{BaseDir} = "/data/velserver" ;
+
 use Velbus ;
 
 my $sock = &open_socket ;
-
-our %global ; # Variable shared by all functions where we store all data
 
 use Velbus ;
 use Velbus::Velbus_www ;
