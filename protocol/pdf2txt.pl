@@ -20,8 +20,6 @@
 # file{LocalMessage}
 #   {$CommandHex}{$CommandText}{$MessageType}
 
-# protocol_vmbgpo_vmbgptc.pdf -> this is actually VMBGPOD
-
 our %global ;
    # List of modules found on the internet
    $global{Cons}{ModuleTypes}{'01'}{Type} = "VMB8PB" ;
@@ -356,8 +354,8 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
          my $MessageAddressType  = $file{PerFile}{$file}{Messages}{$counter}{MessageAddressType} ; # Handier var
          my $CommandHex          = $file{PerFile}{$file}{Messages}{$counter}{CommandHex} ;         # Handier var
          my $CommandText         = $file{PerFile}{$file}{Messages}{$counter}{CommandText} ;        # Handier var
-         my $Info         = $file{PerFile}{$file}{Messages}{$counter}{Info} ;        # Handier var
-         my $Prio            = $file{PerFile}{$file}{Messages}{$counter}{Prio}    ;        # Handier var
+         my $Info                = $file{PerFile}{$file}{Messages}{$counter}{Info} ;               # Handier var
+         my $Prio                = $file{PerFile}{$file}{Messages}{$counter}{Prio} ;               # Handier var
 
          # Broadcast messages are stored and processed later
          # We keep all possible options by using them als keys for a hash
@@ -384,7 +382,6 @@ foreach my $ModuleTypeHex (keys %{$file{PerCommandHexLocal}}) {
    foreach my $CommandHex (keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}}) {
       if ( defined $file{PerCommandHexBroadcast}{$CommandHex} ) {
       } else {
-         # We take the first key of the hash
          my @Name = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{CommandText}} ;
          my @Info = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{Info}} ;
          my @Prio = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{Prio}} ;
@@ -413,6 +410,7 @@ foreach my $ModuleTypeHex (keys %{$file{PerCommandHexLocal}}) {
 }
 
 #print Dumper \%{$file{PerCommandHexBroadcast}} ;
+
 foreach my $CommandHex (keys %{$file{PerCommandHexBroadcast}}) {
    my @Name = keys %{$file{PerCommandHexBroadcast}{$CommandHex}{CommandText}} ;
    my @Info = keys %{$file{PerCommandHexBroadcast}{$CommandHex}{Info}} ;
