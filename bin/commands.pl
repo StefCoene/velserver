@@ -39,7 +39,7 @@ my $sock = &open_socket ;
 if ( $global{opts}{option} eq "test" ) {
    &test($sock) ;
 } elsif ( $global{opts}{option} eq "status" ) {
-   &get_modules_status($sock) ;
+   &update_module_status($sock) ;
 } elsif ( $global{opts}{option} eq "date" ) {
    &broadcast_datetime($sock) ;
 } elsif ( $global{opts}{option} eq "scan" ) {
