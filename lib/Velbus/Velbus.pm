@@ -149,6 +149,7 @@ sub process_message {
                my %openHAB_update_state ;
 
                my $Channel = "00" ;
+
                foreach my $byte (0..8) { # Loop the 8 possible bytes
                   # Only process when there is information about this byte
                   if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte} ) {
@@ -205,6 +206,23 @@ sub process_message {
                                  $Name = "Temperature" if ! defined $Name ;
                                  $Value = &hex_to_temperature ($hex[$byte]) ;
                               }
+
+                              # Simple Counter: first byte is divider + Channel
+                              if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Divider" ) {
+                                 $bin =~ /(......)(..)/ ;
+                                 $Channel = $2 ;
+                                 $Divider = $1 ;
+
+                                 $Channel = &bin_to_dec($Channel) ; $Channel ++ ;
+                                 $Divider = &bin_to_dec($Divider) ; $Divider *= 1 ;
+                                 $info{$Channel}{Divider} = $Divider ;
+                                 $Name = "Counter" if ! defined $Name ;
+                              }
+
+                              # Simple Counter
+                              if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
+                                 $info{$Channel}{Counter} = $hex[$byte] ;
+                              }
                            }
 
                            # Do we have to update the state in openHAB
@@ -222,8 +240,8 @@ sub process_message {
                               }
                            }
 
-                           push @{$info{$Channel}{$Name}}, $Value if defined $Value ;
-                           push @{$info{$Channel}{$SubName}}, $Value if defined $SubName ;
+                           push @{$info{$Channel}{$Name}{List}},    $Value if defined $Value ;
+                           push @{$info{$Channel}{$SubName}{List}}, $Value if defined $SubName ;
                         }
                      }  
                   }
@@ -236,9 +254,18 @@ sub process_message {
                $message{text} .= "\n" ;
                foreach my $Channel (sort keys (%info) ) {
                   foreach my $Name (sort keys (%{$info{$Channel}}) ) {
-                     my $temp = join ";", @{$info{$Channel}{$Name}} ;
-                     $message{text} .= "  $Channel, $Name = $temp\n" ;
-                     &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, $Name, $temp) ;
+                     if ( $info{$Channel}{$Name}{List}) {
+                        my $temp = join ";", @{$info{$Channel}{$Name}{List}} ;
+                        $message{text} .= "  $Channel, $Name = $temp\n" ;
+                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, $Name, $temp) ;
+                     } elsif ( $Name eq "Counter" ) {
+                        my $Counter = &hex_to_dec ($info{$Channel}{Counter}) ;
+                        $message{text} .= "  $Channel, Counter = $Counter\n" ;
+                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "Counter", $Counter) ;
+                     } else {
+                        $message{text} .= "  $Channel, $Name = $info{$Channel}{$Name}\n" ;
+                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, $Name, $info{$Channel}{$Name}) ;
+                     }
                   }
                }
 

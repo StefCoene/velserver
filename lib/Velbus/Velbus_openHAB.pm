@@ -66,7 +66,7 @@ sub openHAB () {
             $openHAB .= "\"}\n" ;
 
             my $item = "HeaterMode_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{name}{value} mode\" " ;
+            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{name}{value} mode [%.0f]\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
@@ -93,10 +93,10 @@ sub openHAB () {
          if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo} ) {
             foreach my $Channel ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{Address}{$address}{ChannelInfo}}) ) {
                next if $Channel eq "00" ; # Channel 00 is used to store data about the module, so this Channel does not exist
-               my $item = $address."_".$Channel ;
+               my $itemBase = $address."_".$Channel ;
                # Dimmer
                if ( $type eq "12" or $type eq "15" ) {
-                  $item = "Dimmer_$item" ;
+                  my $item = "Dimmer_$itemBase" ;
                   $openHAB .= "Dimmer $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{name}{value} [%s %%]\" " ;
                   $openHAB .= "<slider> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -110,7 +110,7 @@ sub openHAB () {
 
                #  Blinds
                } elsif ( $type eq "03" or $type eq "09" or $type eq "1D" ) {
-                  $item = "Blind_$item" ;
+                  my $item = "Blind_$itemBase" ;
                   $openHAB .= "Rollershutter $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{name}{value} [%s %%]\" " ;
                   $openHAB .= "<rollershutter> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -124,7 +124,7 @@ sub openHAB () {
 
                # Relay
                } elsif ( $type eq "02" or $type eq "08" or $type eq "10" or $type eq "11") {
-                  $item = "Switch_$item" ;
+                  my $item = "Switch_$itemBase" ;
                   $openHAB .= "Switch $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{name}{value}\" " ;
                   $openHAB .= "<switch> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -135,6 +135,30 @@ sub openHAB () {
                   $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Get:60000:JSONPATH(\$.Status)]" ;
                   $openHAB .=  " >[ON:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=On] " ;
                   $openHAB .= " >[OFF:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Off]" ;
+                  $openHAB .= "\"}\n" ;
+
+               # VMB7IN: counters
+               } elsif ( $type eq "22" ) {
+                  my $item = "Counter_$itemBase" ;
+                  $openHAB .= "Number $item \"$item [%.0f]\" " ;
+                  $openHAB .= " <chart> " ;
+                  my $Group = &openHAB_match_item($item) ;
+                  if ( defined $Group ) {
+                     $openHAB .= "($Group) " ;
+                  }
+                  $openHAB .= "{http=\"" ;
+                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounter:60000:JSONPATH(\$.Status)]" ;
+                  $openHAB .= "\"}\n" ;
+
+                  my $item = "Divider_$itemBase" ;
+                  $openHAB .= "Number $item \"$item [%.0f]\" " ;
+                  $openHAB .= " <chart> " ;
+                  my $Group = &openHAB_match_item($item) ;
+                  if ( defined $Group ) {
+                     $openHAB .= "($Group) " ;
+                  }
+                  $openHAB .= "{http=\"" ;
+                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetDivider:60000:JSONPATH(\$.Status)]" ;
                   $openHAB .= "\"}\n" ;
 
                } else {

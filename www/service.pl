@@ -246,6 +246,18 @@ if ( $type eq "Relay" and ( $action eq "Get" or $action eq "On" or $action eq "O
    }
 }
 
+if ( $type eq "Counter" and ( $action eq "GetCounter" or $action eq "GetDivider" ) ) {
+   if ( defined $Moduletype and $Moduletype eq "22" ) {
+      my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;
+
+      if ( $action eq "GetCounter" ) {
+         $json->{Status} = $data{Counter}{value} if defined $data{Counter} ;
+      } else {
+         $json->{Status} = $data{Divider}{value} if defined $data{Divider} ;
+      }
+   }
+}
+
 if ( defined $json ) {
    print $session->header(-type=>'application/json') ;
    print encode_json($json);
