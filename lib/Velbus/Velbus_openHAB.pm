@@ -66,7 +66,7 @@ sub openHAB () {
             $openHAB .= "\"}\n" ;
 
             my $item = "HeaterMode_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{name}{value} mode [%.0f]\" " ;
+            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{name}{value} mode\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
