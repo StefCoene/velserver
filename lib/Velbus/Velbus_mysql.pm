@@ -35,6 +35,7 @@ sub get_all_modules_info_from_mysql {
             $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} = $data{$data}{value} ;
          }
       }
+
       if ( @SubAddr ) {
          my $SubAddr = join ",", @SubAddr ;
          $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} = $SubAddr ;
@@ -49,6 +50,12 @@ sub get_all_modules_info_from_mysql {
          my $value   = $datatemp{$key}{value} ;   # Handier var
          $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{$data}{value} = $value ;
          $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{$data}{date}  = $date ;
+      }
+
+      if ( @SubAddr ) {
+         foreach my $SubAddr (@SubAddr) {
+            %{$global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}} = %{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}} 
+         }
       }
    }
 }
