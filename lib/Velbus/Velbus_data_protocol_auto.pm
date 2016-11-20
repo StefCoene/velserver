@@ -1,3 +1,7 @@
+# This is a big list of all Velbus module related info.
+# Most of the info comes from the protocol pdf files you can download.
+# Script pdf2txt.pl is used to extract the message information.
+
 $global{Cons}{ModuleTypes}{'03'}{Type} = "VMB1BL" ;
 $global{Cons}{ModuleTypes}{'03'}{Info} = "Blind Control Module " ;
 $global{Cons}{ModuleTypes}{'07'}{Type} = "VMB1DM" ;
