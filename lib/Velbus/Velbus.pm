@@ -19,8 +19,8 @@ sub process_message {
    $message{ETX}      = pop @hex ;
    $message{checksum} = pop @hex ;
 
-   $message{ModuleType} = "??" ;
-   $message{MessageType} ;
+   $message{ModuleType}  = "??" ;
+   $message{MessageType} = "??" ;
 
    if ( $message{STX} ne "0F" ) { # Only process valid packages
       $message{text} .= "Not a valid packet: STX: $message{STX} != 0F" ;
@@ -77,11 +77,14 @@ sub process_message {
                $message{text} .= "address $message{address}, type = unknown $hex[0]" ;
             }
             &do_query ($global{dbh},"insert into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `type`=values(type), `status`=values(status), `date`=values(date)", $message{address}, $hex[0], "Found") ;
+            &log_mysql ("module found: address=$message{address}, type=$hex[0]") ;
             $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $hex[0] ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "Serial1", $hex[1]) ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "Serial2", $hex[2]) ;
+            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "MemoryMap", $hex[3]) ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "BuildYear", $hex[4]) ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "BuildWeek", $hex[5]) ;
+            &log_mysql ("module info: address=$message{address}, Serial1=$hex[1], Serial2=$hex[2], MemoryMap=$hex[3], BuildYear=$hex[4], BuildWeek=$hex[5]") ;
 
          } elsif ( $message{MessageType} eq "B0" ) { # Module subtype: answer to a Scan
             $message{text} .= "address $message{address}, extra info" ;
@@ -89,6 +92,7 @@ sub process_message {
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr2", $hex[4]) if $hex[4] ne "FF" ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr3", $hex[5]) if $hex[5] ne "FF" ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr4", $hex[6]) if $hex[6] ne "FF" ;
+            &log_mysql ("module info: address=$message{address}, SubAddr1=$hex[3], SubAddr2=$hex[4], SubAddr3=$hex[5], SubAddr4=$hex[6]") ;
 
          } elsif ( $message{MessageType} eq "D8" ) { # Realtime clock update
             $message{text} .= "Realtime clock status:" ;
@@ -107,6 +111,7 @@ sub process_message {
          } elsif ( $message{MessageType} eq "E6" ) { # Temperature status
             my $temperature = sprintf ("%.2f",&hex_to_temperature($hex[0], $hex[1])) ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "Temperature", $temperature) ;
+            &log_mysql ("module data: address=$message{address}, Temperature=$temperature") ;
             $message{text} .= "Temperature = $temperature" ;
             &openHAB_update_state ("Temperature_$message{address}", $temperature) ;
 
@@ -134,8 +139,10 @@ sub process_message {
                    ) {
                      # Channel 21 and channel 09 are virtual channels whose name is the temperature sensor name of the touch display.
                      &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
+                     &log_mysql ("module TempSensor: address=$message{address}, TempSensor=$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}") ;
                }
                &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "Name", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
+               &log_mysql ("module channel name: address=$message{address}, Channel=$Channel, name=$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}") ;
                $message{text} .= "Channel $Channel name = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}" ;
             }
 
@@ -258,13 +265,16 @@ sub process_message {
                         my $temp = join ";", @{$info{$Channel}{$Name}{List}} ;
                         $message{text} .= "  $Channel, $Name = $temp\n" ;
                         &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, $Name, $temp) ;
+                        &log_mysql ("module channel name: address=$message{address}, Channel=$Channel, $Name=$temp") ;
                      } elsif ( $Name eq "Counter" ) {
                         my $Counter = &hex_to_dec ($info{$Channel}{Counter}) ;
                         $message{text} .= "  $Channel, Counter = $Counter\n" ;
                         &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "Counter", $Counter) ;
+                        &log_mysql ("module channel name: address=$message{address}, Channel=$Channel, Counter=$Counter") ;
                      } else {
                         $message{text} .= "  $Channel, $Name = $info{$Channel}{$Name}\n" ;
                         &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, $Name, $info{$Channel}{$Name}) ;
+                        &log_mysql ("module channel name: address=$message{address}, Channel=$Channel, $Name=$info{$Channel}{$Name}") ;
                      }
                   }
                }

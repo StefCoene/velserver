@@ -264,6 +264,8 @@ sub openHAB_update_state {
    my $name = $_[0] ;
    my $data = $_[1] ;
 
+   &log_openHAB ("$name: $data") ;
+
    my $URL = "http://geuze:8080/rest/items/$name/state" ;
 
    # Create the browser that will post the information.
@@ -275,6 +277,19 @@ sub openHAB_update_state {
    ) ;
 
    my $content = $Page->content ;
+}
+
+sub timestamp {
+   my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time) ;
+   $mon += 1 ;
+   $year += 1900 ;
+   if ( $hour < "10" ) { $hour = "0$hour" }
+   if ( $min  < "10" ) { $min  = "0$min"  }
+   if ( $sec  < "10" ) { $sec  = "0$sec"  }
+   if ( $mon  < "10" ) { $mon  = "0$mon"  }
+   if ( $mday < "10" ) { $mday = "0$mday" }
+   my $timestamp = $year."-".$mon."-".$mday."_".$hour."-".$min."-".$sec ;
+   return $timestamp ;
 }
 
 return 1

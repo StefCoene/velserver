@@ -1,3 +1,5 @@
+# Some fixed data that we need
+
 my %days ; # Days of the week
    $global{Cons}{Days}{0} = "monday" ;
    $global{Cons}{Days}{1} = "tuesday" ;
