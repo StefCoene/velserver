@@ -22,18 +22,20 @@ use Velbus::Velbus_data_protocol ;
 use Velbus::Velbus_data ;
 use Velbus::Velbus_helper ;
 use Velbus::Velbus_openHAB ;
+use Velbus::Velbus_log ;
 
 sub init {
-  &read_config("mysql") ;
-  &read_config("velbus") ;
-  &read_config("www") ;
-  &read_config("openHAB") ;
+   # Read some config files
+   &read_config("mysql") ;
+   &read_config("velbus") ;
+   &read_config("www") ;
+   &read_config("openHAB") ;
 
-  # open a connection to the mysql db
-  $global{dbh} = &connect_to_db ;
+   # open a connection to the mysql db
+   $global{dbh} = &connect_to_db ;
 
-  # Get all modules from the mysql db
-  &get_all_modules_from_mysql ;
+   # Get all modules from the mysql db
+   &get_all_modules_from_mysql ;
 }
 
 return 1
