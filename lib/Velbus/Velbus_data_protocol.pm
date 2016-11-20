@@ -1,12 +1,7 @@
-# This is a big list of all Velbus module related info.
-# Most of the info comes from the protocol pdf files you can download.
-# Script pdf2txt.pl is used to extract the message information.
+# This is a list of messages with extra options.
+# The format is easy to understand
 
-# list of possible messages
-#   $global{Cons}{MessageTypes}{'FF'}{Name} = "Module type" ;
-#   $global{Cons}{MessageTypes}{'B0'}{Name} = "Module subtype" ;
-#   $global{Cons}{MessageTypes}{'FA'}{Name} = "Status request" ;
-#   $global{Cons}{MessageTypes}{'D8'}{Name} = "Realtime clock status" ;
+# TODO: document the possible options
 
 # Channels of specific modules
 # 4-channel voltage-out relay module
