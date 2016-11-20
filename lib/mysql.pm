@@ -1,4 +1,8 @@
+# Some mysql related subfunctions
+
+# Connect to the mysql database and returns the databse handler
 sub connect_to_db {
+   # Default settings
    $global{Config}{mysql}{name} = "velbus"    if ! defined $global{Config}{mysql}{name} ;
    $global{Config}{mysql}{host} = "localhost" if ! defined $global{Config}{mysql}{host} ;
    $global{Config}{mysql}{user} = "velbus"    if ! defined $global{Config}{mysql}{user} ;
@@ -18,50 +22,55 @@ sub connect_to_db {
       print "Connection problem: $DBI::errstr\n" ;
       return undef ;
    } else {
-      return $dbh;
+      return $dbh ;
    }
 }
 
 sub disconnect {
-   my $dbh = shift;
+   my $dbh = shift ;
    # disconnect from database
    $dbh->disconnect;
 }
 
 sub do_insert {
-   my $dbh = shift;
-   my $query = shift;
+   my $dbh = shift ;
+   my $query = shift ;
    my @values = @_ ;
-   my $table_data = $dbh->prepare($query);
+   my $table_data = $dbh->prepare($query) ;
    $table_data->execute(@values) || return undef ;
    $inserted_id = $dbh->{'mysql_insertid'} ;
    return $inserted_id ;
 }
 
+# Execute a query
 sub do_query {
-   my $dbh = shift;
-   my $query = shift;
+   my $dbh = shift ;
+   my $query = shift ;
    my @values = @_ ;
-   my $table_data = $dbh->prepare($query);
+   my $table_data = $dbh->prepare($query) ;
    $table_data->execute(@values) || return undef ;
-   return $table_data;
+   return $table_data ;
 }
 
+# Fetch some data from the database and return the data in hash format
+# If a key is provided as third parameter, use this column as the key for the hash
 sub fetch_data {
-   my $dbh =  $_[0] ;
-   my $query = $_[1] ;
-   my $return_key = $_[2] ;
-   my $sth = $dbh->prepare("$query") ;
+   my $dbh =  shift ;
+   my $query = shift ;
+   my $return_key = shift ;
+   my @values = @_ ;
+   my $table_data = $dbh->prepare($query) ;
    my @keys ;
 
-   eval { $sth->execute ; } ;
+   eval { $table_data->execute(@values) } ;
    if ( $@ ne "" ) {
-      print "Error executing $query<br>\n----<br>\n$@----<br>\n" ;
+      print "Error executing $query:\n" ;
+      print "$@\n" ;
       return undef ;
    } else {
       my %data ;
       my $counter = 0 ;
-      while ( my $ref = $sth->fetchrow_hashref() ) {
+      while ( my $ref = $table_data->fetchrow_hashref() ) {
          if ( defined $return_key ) {
             $data{$ref->{$return_key}} = $ref ;
          } else {
@@ -69,7 +78,7 @@ sub fetch_data {
          }
          $counter ++ ;
       }
-      $sth->finish() ;
+      $table_data->finish() ;
       return %data ;
    }
 }
