@@ -27,7 +27,7 @@ sub get_all_modules_info_from_mysql {
       foreach my $data (sort keys (%data)) {
 
          # Sub addresses are kept in 'SubAddr' for easy access
-         if ( $data =~ /^SubAddr/ ) {
+         if ( $data =~ /^SubAddr/ and $data{$data}{value} ne "FF" ) {
             # TODO: save type per sub address, sometimes info is transmitted with the sub address like COMMAND_MODULE_STATUS
             my $SubAddr = $data{$data}{value} ; # Handier var
             push @SubAddr, $SubAddr ;

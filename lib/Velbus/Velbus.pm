@@ -88,10 +88,21 @@ sub process_message {
 
          } elsif ( $message{MessageType} eq "B0" ) { # Module subtype: answer to a Scan
             $message{text} .= "address $message{address}, extra info" ;
-            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr1", $hex[3]) if $hex[3] ne "FF" ;
-            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr2", $hex[4]) if $hex[4] ne "FF" ;
-            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr3", $hex[5]) if $hex[5] ne "FF" ;
-            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr4", $hex[6]) if $hex[6] ne "FF" ;
+            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr1", $hex[3]) ;
+            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr2", $hex[4]) ;
+            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr3", $hex[5]) ;
+            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr4", $hex[6]) ;
+            if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ) {
+               if ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
+                  &log_mysql ("module info: address=$message{address}, Serial1=$hex[1], Serial2=$hex[2], MemoryMap=$hex[3], BuildYear=$hex[4], BuildWeek=$hex[5]") ;
+                  &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TemperatureAddr", $hex[6]) ;
+               }
+               if ( ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "1E" ) or # VMBGP1D
+                    ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "1F" ) or # VMBGP2D
+                    ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "20" ) ) { # VMBGP4D
+                  &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TemperatureAddr", $hex[3]) ;
+               }
+            }
             &log_mysql ("module info: address=$message{address}, SubAddr1=$hex[3], SubAddr2=$hex[4], SubAddr3=$hex[5], SubAddr4=$hex[6]") ;
 
          } elsif ( $message{MessageType} eq "D8" ) { # Realtime clock update
