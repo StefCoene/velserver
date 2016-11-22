@@ -55,7 +55,7 @@ sub openHAB () {
             }
 
             my $item = "Temperature_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{name}{value} [%.1f °C]\" " ;
+            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{Name}{value} [%.1f °C]\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
@@ -66,7 +66,7 @@ sub openHAB () {
             $openHAB .= "\"}\n" ;
 
             my $item = "HeaterMode_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{name}{value} mode\" " ;
+            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{Name}{value} mode\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
@@ -78,7 +78,7 @@ sub openHAB () {
             $openHAB .= "\"}\n" ;
 
             my $item = "HeaterTemperature_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{name}{value} temperature target [%.1f °C]\" " ;
+            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{Name}{value} temperature target [%.1f °C]\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
@@ -97,7 +97,7 @@ sub openHAB () {
                # Dimmer
                if ( $type eq "12" or $type eq "15" ) {
                   my $item = "Dimmer_$itemBase" ;
-                  $openHAB .= "Dimmer $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{name}{value} [%s %%]\" " ;
+                  $openHAB .= "Dimmer $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} [%s %%]\" " ;
                   $openHAB .= "<slider> " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -111,7 +111,7 @@ sub openHAB () {
                #  Blinds
                } elsif ( $type eq "03" or $type eq "09" or $type eq "1D" ) {
                   my $item = "Blind_$itemBase" ;
-                  $openHAB .= "Rollershutter $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{name}{value} [%s %%]\" " ;
+                  $openHAB .= "Rollershutter $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} [%s %%]\" " ;
                   $openHAB .= "<rollershutter> " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -125,7 +125,7 @@ sub openHAB () {
                # Relay
                } elsif ( $type eq "02" or $type eq "08" or $type eq "10" or $type eq "11") {
                   my $item = "Switch_$itemBase" ;
-                  $openHAB .= "Switch $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{name}{value}\" " ;
+                  $openHAB .= "Switch $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value}\" " ;
                   $openHAB .= "<switch> " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -162,7 +162,7 @@ sub openHAB () {
                   $openHAB .= "\"}\n" ;
 
                } else {
-                  print "$address :: $Channel = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{name}{value}<br>\n" ;
+                  print "$address :: $Channel = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value}<br>\n" ;
                }
             }
          }
