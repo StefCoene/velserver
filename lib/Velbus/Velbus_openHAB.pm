@@ -55,7 +55,7 @@ sub openHAB () {
             }
 
             my $item = "Temperature_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{Name}{value} [%.1f °C]\" " ;
+            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} [%.1f °C]\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
@@ -66,7 +66,7 @@ sub openHAB () {
             $openHAB .= "\"}\n" ;
 
             my $item = "HeaterMode_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{Name}{value} mode\" " ;
+            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} mode\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
@@ -78,7 +78,7 @@ sub openHAB () {
             $openHAB .= "\"}\n" ;
 
             my $item = "HeaterTemperature_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{Name}{value} temperature target [%.1f °C]\" " ;
+            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} temperature target [%.1f °C]\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
