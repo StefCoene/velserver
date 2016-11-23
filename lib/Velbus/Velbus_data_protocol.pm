@@ -3,45 +3,55 @@
 
 # TODO: document the possible options
 
+################### Relays: Channel names
 # Channels of specific modules
-# 4-channel voltage-out relay module
+# 4-channel voltage-out relay module: VMB4RYLD
 $global{Cons}{ModuleTypes}{'10'}{Channels}{"0x01"}{Name} = "Relay 1" ;
 $global{Cons}{ModuleTypes}{'10'}{Channels}{"0x02"}{Name} = "Relay 2" ;
 $global{Cons}{ModuleTypes}{'10'}{Channels}{"0x04"}{Name} = "Relay 3" ;
 $global{Cons}{ModuleTypes}{'10'}{Channels}{"0x08"}{Name} = "Relay 4" ;
 $global{Cons}{ModuleTypes}{'10'}{Channels}{"0x10"}{Name} = "Virtual Relay" ;
 
-# 4-channel relay module
+# 4-channel relay module:  VMB4RYNO
 $global{Cons}{ModuleTypes}{'11'}{Channels}{"0x01"}{Name} = "Relay 1" ;
 $global{Cons}{ModuleTypes}{'11'}{Channels}{"0x02"}{Name} = "Relay 2" ;
 $global{Cons}{ModuleTypes}{'11'}{Channels}{"0x04"}{Name} = "Relay 3" ;
 $global{Cons}{ModuleTypes}{'11'}{Channels}{"0x08"}{Name} = "Relay 4" ;
 $global{Cons}{ModuleTypes}{'11'}{Channels}{"0x10"}{Name} = "Virtual Relay" ;
 
+################### Dimmer: Channel names
 # 1-channel 0(1)-10V control: VMB1DM
 $global{Cons}{ModuleTypes}{'07'}{Channels}{"0x01"}{Name} = "Dimmer 1" ;
+
 # 1-channel LED: VMB1LED
 $global{Cons}{ModuleTypes}{'0F'}{Channels}{"0x01"}{Name} = "Dimmer 1" ;
+
 # 4-channel 0(1)-10V control
 $global{Cons}{ModuleTypes}{'12'}{Channels}{"0x01"}{Name} = "Dimmer 1" ;
 $global{Cons}{ModuleTypes}{'12'}{Channels}{"0x02"}{Name} = "Dimmer 2" ;
 $global{Cons}{ModuleTypes}{'12'}{Channels}{"0x04"}{Name} = "Dimmer 3" ;
 $global{Cons}{ModuleTypes}{'12'}{Channels}{"0x08"}{Name} = "Dimmer 4" ;
+
 # 1-channel Dimmer: VMBDME
 $global{Cons}{ModuleTypes}{'14'}{Channels}{"0x01"}{Name} = "Dimmer 1" ;
+
 # 1-channel Dimmer: VMBDMI
 $global{Cons}{ModuleTypes}{'15'}{Channels}{"0x01"}{Name} = "Dimmer 1" ;
 
+################### Blind: Channel names
 # 1-channel blind control module: VMB1BL
 $global{Cons}{ModuleTypes}{'03'}{Channels}{"0x01"}{Name} = "Blind 1" ;
+
 # 2-channel blind control module: VMB2BL
 $global{Cons}{ModuleTypes}{'09'}{Channels}{"0x01"}{Name} = "Blind 1" ;
 $global{Cons}{ModuleTypes}{'09'}{Channels}{"0x01"}{Name} = "Blind 2" ;
+
 # 2-channel blind control module: VMB2BLE
 $global{Cons}{ModuleTypes}{'1D'}{Channels}{"0x01"}{Name} = "Blind 1" ;
 $global{Cons}{ModuleTypes}{'1D'}{Channels}{"0x02"}{Name} = "Blind 2" ;
 
-# Extra command info
+################### Relays
+# 4 channel relay module with directload connections: VMB4RYLD
 # FB = COMMAND_RELAY_STATUS
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000001'}{Channel} = "01" ;
@@ -72,6 +82,8 @@ $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'3'}{Match}{'00100000'}{I
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'3'}{Match}{'00010000'}{Info} = "LED very fast blinking" ;
 # 5 + 6 + 7 -> 24 bit time in seconds for current delay time (TODO)
 
+# 4 channel relay module with normalopen contacts: VMB4RYNO
+# FB = COMMAND_RELAY_STATUS
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000001'}{Channel} = "01" ;
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000010'}{Channel} = "02" ;
@@ -101,6 +113,8 @@ $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'3'}{Match}{'00100000'}{I
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'3'}{Match}{'00010000'}{Info} = "LED very fast blinking" ;
 # 5 + 6 + 7 -> 24 bit time in seconds for current delay time (TODO)
 
+################### Dimmer
+# Dimmer module: VMB1DM
 # 0F = COMMAND_SLIDER_STATUS"
 $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
@@ -108,6 +122,7 @@ $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{'1'}{Name} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{openHAB} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
 
+# PWM LED strip dimmer module: VMB1LED
 # 0F = COMMAND_SLIDER_STATUS"
 $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
@@ -115,6 +130,7 @@ $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{'1'}{Name} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{openHAB} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
 
+# 0/1 to 10V dimmer controller module: VMB4DC
 # 07 = COMMAND_SET_DIMVALUE
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
@@ -123,6 +139,7 @@ $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Match}{'04'}{Channel
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Match}{'08'}{Channel} = "08" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'1'}{Name} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
+
 # 0F = COMMAND_SLIDER_STATUS
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
@@ -154,6 +171,7 @@ $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'3'}{Match}{'00100000'}{I
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'3'}{Match}{'00010000'}{Info} = "LED very fast blinking" ;
 # 5 + 6 + 7 -> 24 bit time in seconds for current delay time (TODO)
 
+# Dimmer module: VMBDME
 # 0F = COMMAND_SLIDER_STATUS"
 $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
@@ -161,6 +179,7 @@ $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{'1'}{Name} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{openHAB} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
 
+# Velbus dimmer for resistive orinductive load:    VMBDMI
 # 0F = COMMAND_SLIDER_STATUS"
 $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
@@ -168,14 +187,18 @@ $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{'1'}{Name} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{openHAB} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
 
+################### Blind
+# Blind Control Module: VMB1BL
 # EC = COMMAND_BLIND_STATUS
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
+
 # Blind status
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'2'}{Name} = "Blind status" ;
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'2'}{Match}{'00'}{Info} = "Off" ;
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'2'}{Match}{'01'}{Info} = "Up" ;
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'2'}{Match}{'02'}{Info} = "Down" ;
+
 # LED status
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'3'}{Name} = "Led status" ;
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'3'}{Match}{'00'}{Info} = "Leds off" ;
@@ -188,10 +211,12 @@ $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'3'}{Match}{'04'}{Info} =
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'3'}{Match}{'02'}{Info} = "Up LED fast blinking" ;
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'3'}{Match}{'01'}{Info} = "Up LED very fast blinking" ;
 
+# 2-channel Blind Control Module: VMB2BL
 # EC = COMMAND_BLIND_STATUS
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'0'}{Match}{'02'}{Channel} = "02" ;
+
 # Blind status
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'2'}{Name} = "Blind status" ;
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'2'}{Match}{'00000000'}{Info} = "Blinds off" ;
@@ -199,6 +224,7 @@ $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'2'}{Match}{'00000001'}{I
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'2'}{Match}{'00000010'}{Info} = "Blind 1 down" ;
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'2'}{Match}{'00000100'}{Info} = "Blind 2 up" ;
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'2'}{Match}{'00001000'}{Info} = "Blind 2 down" ;
+
 # LED status
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'3'}{Name} = "Led status" ;
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'3'}{Match}{'00'}{Info} = "Leds off" ;
@@ -211,15 +237,18 @@ $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'3'}{Match}{'04'}{Info} =
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'3'}{Match}{'02'}{Info} = "Up LED fast blinking" ;
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'3'}{Match}{'01'}{Info} = "Up LED very fast blinking" ;
 
+# 2 channel blind module: VMB2BLE
 # EC = COMMAND_BLIND_STATUS
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'0'}{Match}{'02'}{Channel} = "02" ;
+
 # Blind status
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'2'}{Name} = "Blind status" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'2'}{Match}{'00'}{Info} = "Off" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'2'}{Match}{'01'}{Info} = "Up" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'2'}{Match}{'02'}{Info} = "Down" ;
+
 # LED status
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'3'}{Name} = "Led status" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'3'}{Match}{'00'}{Info} = "Leds off" ;
@@ -231,10 +260,12 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'3'}{Match}{'08'}{Info} =
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'3'}{Match}{'04'}{Info} = "Up LED slow blinking" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'3'}{Match}{'02'}{Info} = "Up LED fast blinking" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'3'}{Match}{'01'}{Info} = "Up LED very fast blinking" ;
+
 # blind position (0% = up...100%=down)
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'4'}{Name} = "Position" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'4'}{Match}{'%.'}{openHAB} = "Position" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'4'}{Match}{'%.'}{Convert} = "Procent" ;
+
 # Channel status
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'5'}{Name} = "Channel status" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'5'}{Match}{'00'}{Info} = "Channel normal" ;
@@ -244,6 +275,7 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'5'}{Match}{'03'}{Info} =
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'5'}{Match}{'04'}{Info} = "Channel forced down" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'5'}{Match}{'05'}{Info} = "Channel forced up" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'5'}{Match}{'06'}{Info} = "Channel locked" ;
+
 # Channel options
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Name} = "Options" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Match}{'%......00'}{Info} = "Auto mode disabled" ;
@@ -263,6 +295,8 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Match}{'%.1......'}{
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Match}{'%0.......'}{Info} = "Sunset disabled" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Match}{'%1.......'}{Info} = "Sunset enabled" ;
 
+################### Touch
+# One, two or four touch buttonsmodule: VMBGP4
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Name} = "Operating mode" ;
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Mode push button locked" ;
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......0'}{Info} = "Mode push button unlocked" ;
@@ -327,6 +361,7 @@ $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Name} = "Current tem
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "HeaterTemperature" ;
 
+# Touch panel with Oled display: VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Name} = "Operating mode" ;
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Mode push button locked" ;
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......0'}{Info} = "Mode push button unlocked" ;
@@ -410,8 +445,9 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB
 #$global{Cons}{ModuleTypes}{'28'}{Messages}{'ED'}{Data}{'5'}{Match}{'%0.......'}{Info} = "Sunset disabled" ;
 #$global{Cons}{ModuleTypes}{'28'}{Messages}{'ED'}{Data}{'5'}{Match}{'%1.......'}{Info} = "Sunset enabled" ;
 
+################### Input
+# 7 channel input module: VMB7IN
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'0'}{Match}{'%........'}{Convert} = "Divider" ;
-
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'1'}{Match}{'%.'}{Convert} = "Counter" ;
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'2'}{Match}{'%.'}{Convert} = "Counter" ;
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'3'}{Match}{'%.'}{Convert} = "Counter" ;
