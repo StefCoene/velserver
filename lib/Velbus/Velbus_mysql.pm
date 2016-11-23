@@ -3,7 +3,7 @@
 
 # Get all modules from the mysql database
 sub get_all_modules_from_mysql {
-   my %data = &fetch_data ($global{dbh},"select * from modules","address" ) ;
+   my %data = &fetch_data ($global{dbh},"select * from `modules` where `status`='found'","address" ) ;
 
    foreach my $address (sort keys %data ) {
       my $type   = $data{$address}{type} ; # Handier var
@@ -25,7 +25,6 @@ sub get_all_modules_info_from_mysql {
 
       my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data" ) ;
       foreach my $data (sort keys (%data)) {
-
          # Sub addresses are kept in 'SubAddr' for easy access
          if ( $data =~ /^SubAddr/ and $data{$data}{value} ne "FF" ) {
             # TODO: save type per sub address, sometimes info is transmitted with the sub address like COMMAND_MODULE_STATUS
@@ -36,6 +35,7 @@ sub get_all_modules_info_from_mysql {
          }
       }
 
+      # Store a list of sub addresses in 1 variable
       if ( @SubAddr ) {
          my $SubAddr = join ",", @SubAddr ;
          $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} = $SubAddr ;
