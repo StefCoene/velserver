@@ -124,7 +124,7 @@ sub openHAB () {
 
                # Relay
                } elsif ( $type eq "02" or $type eq "08" or $type eq "10" or $type eq "11") {
-                  my $item = "Switch_$itemBase" ;
+                  my $item = "Relay_$itemBase" ;
                   $openHAB .= "Switch $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value}\" " ;
                   $openHAB .= "<switch> " ;
                   my $Group = &openHAB_match_item($item) ;
