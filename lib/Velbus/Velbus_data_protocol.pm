@@ -296,6 +296,23 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Match}{'%.1......'}{
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Match}{'%0.......'}{Info} = "Sunset disabled" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Match}{'%1.......'}{Info} = "Sunset enabled" ;
 
+################### Touch
+# One, two or four touch buttonsmodule: VMBGP4
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
+
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Name} = "Operating mode" ;
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Mode push button locked" ;
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......0'}{Info} = "Mode push button unlocked" ;
@@ -359,6 +376,22 @@ $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'3'}{Match}{'%.'}{Convert
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Name} = "Current temperature set" ;
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "HeaterTemperature" ;
+
+# Touch panel with Oled display: VMBGPOD
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
 
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Name} = "Operating mode" ;
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Mode push button locked" ;
@@ -464,8 +497,24 @@ $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%..
 $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 just deactivated" ;
 $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 alarm deactivated" ;
 
-$global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'0'}{Match}{'%........'}{Convert} = "Divider" ;
+################### Input
+# 7 channel input module: VMB7IN
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
 
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'0'}{Match}{'%........'}{Convert} = "Divider" ;
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'1'}{Match}{'%.'}{Convert} = "Counter" ;
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'2'}{Match}{'%.'}{Convert} = "Counter" ;
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'3'}{Match}{'%.'}{Convert} = "Counter" ;

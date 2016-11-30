@@ -297,4 +297,24 @@ sub timestamp {
    return $timestamp ;
 }
 
+sub SubAddr_Channel {
+   my $address = shift ;
+   my $SubAddr = shift ;
+   my $Channel = shift ;
+   if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} and
+      $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} eq "$SubAddr" ) {
+      $Channel = &hex_to_dec($Channel) + 8 ;
+   }
+   if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} and
+      $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} eq "$SubAddr" ) {
+      $Channel = &hex_to_dec($Channel) + 16 ;
+   }
+   if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} and
+      $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} eq "$SubAddr" ) {
+      $Channel = &hex_to_dec($Channel) + 24 ;
+   }
+   $Channel = &dec_to_hex($Channel) ;
+   return $Channel ;
+}
+
 return 1

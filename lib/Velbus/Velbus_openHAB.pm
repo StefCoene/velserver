@@ -92,6 +92,63 @@ sub openHAB () {
             $openHAB .= "\"}\n" ;
          }
 
+         # Touch buttons + Input modules
+         if ( ( $type eq "1E" ) or
+              ( $type eq "1F" ) or
+              ( $type eq "20" ) or
+              ( $type eq "28" ) or
+              ( $type eq "22" ) ) {
+
+            my @Channel ;
+            if (      $type eq "1E" ) { # VMBGP1
+               @channel = ("01") ;
+            } elsif ( $type eq "1F" ) { # VMBGP2
+               @channel = ("01","02") ;
+            } elsif ( $type eq "20" ) { # VMBGP4
+               @channel = ("01","02","03","04","05","06","07","08") ;
+            } elsif ( $type eq "28" ) { # VMBGPOD
+               @channel = ("01","02","03","04","05","06","07","08") ;
+            } elsif ( $type eq "22" ) { # VMB7IN
+               @channel = ("01","02","03","04","05","06","07") ;
+            } else {
+            }
+
+            foreach my $Channel (sort @channel) {
+               my $item = "Button_$address"."_"."$Channel" ;
+               my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+               $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+               $openHAB .= "Switch $item \"$Name\" " ;
+               my $Group = &openHAB_match_item($item) ;
+               if ( defined $Group ) {
+                  $openHAB .= "($Group) " ;
+               }
+               $openHAB .= "{http=\"" ;
+               $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+               $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=Switch&action=Set&value=%2\$s]" ;
+               $openHAB .= "\"}\n" ;
+            }
+
+            if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
+               foreach my $SubAddr (split ",", $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
+                  foreach my $Channel (sort @channel) {
+                     my $item = "Button_$SubAddr"."_"."$Channel" ;
+                     my $SubChannel = &SubAddr_Channel ($address, $SubAddr, $Channel) ; # Calculate the 'real' channel address based on the channel and sub address
+                     my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} ;
+                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                     $openHAB .= "Switch $item \"$Name\" " ;
+                     my $Group = &openHAB_match_item($item) ;
+                     if ( defined $Group ) {
+                        $openHAB .= "($Group) " ;
+                     }
+                     $openHAB .= "{http=\"" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$SubAddr&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$SubAddr&type=Switch&action=Set&value=%2\$s]" ;
+                     $openHAB .= "\"}\n" ;
+                  }
+               }
+            }
+         }
+
          if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo} ) {
             foreach my $Channel ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{Address}{$address}{ChannelInfo}}) ) {
                next if $Channel eq "00" ; # Channel 00 is used to store data about the module, so this Channel does not exist
