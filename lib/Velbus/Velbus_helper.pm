@@ -246,6 +246,11 @@ sub read_config {
    return 0
 }
 
+sub dec_to_hex {
+   my $dec = $_[0] ;
+   return sprintf ("%02X",$dec) ;
+}
+
 sub hex_to_bin {
    my $hex = $_[0] ;
    return sprintf ("%08b",hex $hex) ;
