@@ -257,7 +257,11 @@ sub process_message {
                                     $openHAB_update_state{"$openHAB[1]_$message{address}_$Channel"} = $openHAB[0] ;
                                  }
                               } else {
-                                 $openHAB_update_state{"$openHAB"."_"."$message{address}"} = $Value if defined $Value ;
+                                 if ( $Channel eq "00" ) {
+                                    $openHAB_update_state{"$openHAB"."_"."$message{address}"} = $Value if defined $Value ;
+                                 } else {
+                                    $openHAB_update_state{"$openHAB"."_"."$message{address}_$Channel"} = $Value if defined $Value ;
+                                 }
                               }
                            }
 
