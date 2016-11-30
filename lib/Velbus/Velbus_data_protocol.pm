@@ -264,7 +264,7 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'3'}{Match}{'01'}{Info} =
 
 # blind position (0% = up...100%=down)
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'4'}{Name} = "Position" ;
-$global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'4'}{Match}{'%.'}{openHAB} = "Position" ;
+$global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'4'}{Match}{'%.'}{openHAB} = "Blind" ;
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'4'}{Match}{'%.'}{Convert} = "Procent" ;
 
 # Channel status
