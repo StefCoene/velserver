@@ -31,8 +31,12 @@ sub get_all_modules_info_from_mysql {
             my $SubAddr = $data{$data}{value} ; # Handier var
             push @SubAddr, $SubAddr ;
          } else {
-            $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} = $data{$data}{value} ;
+            # If there is an address for the temperature sensor, add this address to the list with type 'Temperature'
+            if ( $data eq "TemperatureAddr" ) {
+               $global{Vars}{Modules}{Address}{$data{$data}{value}}{ModuleInfo}{type} = "Temperature" ;
+            }
          }
+         $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} = $data{$data}{value} ;
       }
 
       # Store a list of sub addresses in 1 variable

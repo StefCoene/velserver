@@ -234,6 +234,7 @@ sub process_message {
                                  $Divider = $1 ;
 
                                  $Channel = &bin_to_dec($Channel) ; $Channel ++ ;
+                                 $Channel = "0" . $Channel if $Channel =~ /^.$/ ;
                                  $Divider = &bin_to_dec($Divider) ; $Divider *= 1 ;
                                  $info{$Channel}{Divider} = $Divider ;
                                  $Name = "Counter" if ! defined $Name ;
@@ -243,12 +244,33 @@ sub process_message {
                               if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
                                  $info{$Channel}{Counter} = $hex[$byte] ;
                               }
+
+                              # Button pressed on touch or an other input
+                              if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
+                                 $Channel = $hex[$byte] ;
+                                 next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
+                                 $Channel = $global{Cons}{ConvertButton}{$Channel} if defined $global{Cons}{ConvertButton}{$Channel} ; # Convert the Channel to a usefull number
+                                 $info{$Channel}{Button} = $Value if defined $Channel ;
+                              }
                            }
 
                            # Do we have to update the state in openHAB
                            if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{openHAB} ) {
                               my $openHAB = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{openHAB} ; # Handier var
-                              if ( $openHAB =~ /:/ ) {
+
+                              if ( $openHAB =~ "(.+):Button" ) { # A Button is tricky: we have to do something on RELEASED, but we need to know if it was a short or a long predd
+                                 my $action = $1 ;
+                                 if ( $action eq "RELEASED" ) {
+                                    if ( $global{openHAB}{ButtonState}{$message{address}}{$Channel} eq "PRESSED" ) {
+                                       $openHAB_update_state{"Button_$message{address}_$Channel"} = "ON OFF" ;
+                                    } else { # LONGPRESSED
+                                       $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "ON OFF" ;
+                                    }
+                                 } else {
+                                    $global{openHAB}{ButtonState}{$message{address}}{$Channel} = $action ; # PRESSED or LONGPRESSED
+                                 }
+                                 
+                              } elsif ( $openHAB =~ /:/ ) {
                                  my @openHAB = split ":", $openHAB ;
                                  if ( $Channel eq "00" ) {
                                     $openHAB_update_state{"$openHAB[1]_$message{address}"} = $openHAB[0] ;
@@ -256,7 +278,11 @@ sub process_message {
                                     $openHAB_update_state{"$openHAB[1]_$message{address}_$Channel"} = $openHAB[0] ;
                                  }
                               } else {
-                                 $openHAB_update_state{"$openHAB"."_"."$message{address}"} = $Value if defined $Value ;
+                                 if ( $Channel eq "00" ) {
+                                    $openHAB_update_state{"$openHAB"."_"."$message{address}"} = $Value if defined $Value ;
+                                 } else {
+                                    $openHAB_update_state{"$openHAB"."_"."$message{address}_$Channel"} = $Value if defined $Value ;
+                                 }
                               }
                            }
 
@@ -295,7 +321,9 @@ sub process_message {
                # Post the updates to openHAB.
                # This must be done AFTER the mysql updates
                foreach my $key (keys %openHAB_update_state) {
-                  &openHAB_update_state ($key, $openHAB_update_state{$key}) ;
+                  foreach my $state (split " ", $openHAB_update_state{$key} ) {
+                     &openHAB_update_state ($key, $state) ;
+                  }
                }
 
             } else {

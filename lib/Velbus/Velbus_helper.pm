@@ -246,6 +246,11 @@ sub read_config {
    return 0
 }
 
+sub dec_to_hex {
+   my $dec = $_[0] ;
+   return sprintf ("%02X",$dec) ;
+}
+
 sub hex_to_bin {
    my $hex = $_[0] ;
    return sprintf ("%08b",hex $hex) ;
@@ -290,6 +295,26 @@ sub timestamp {
    if ( $mday < "10" ) { $mday = "0$mday" }
    my $timestamp = $year."-".$mon."-".$mday."_".$hour."-".$min."-".$sec ;
    return $timestamp ;
+}
+
+sub SubAddr_Channel {
+   my $address = shift ;
+   my $SubAddr = shift ;
+   my $Channel = shift ;
+   if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} and
+      $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} eq "$SubAddr" ) {
+      $Channel = &hex_to_dec($Channel) + 8 ;
+   }
+   if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} and
+      $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} eq "$SubAddr" ) {
+      $Channel = &hex_to_dec($Channel) + 16 ;
+   }
+   if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} and
+      $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} eq "$SubAddr" ) {
+      $Channel = &hex_to_dec($Channel) + 24 ;
+   }
+   $Channel = &dec_to_hex($Channel) ;
+   return $Channel ;
 }
 
 return 1

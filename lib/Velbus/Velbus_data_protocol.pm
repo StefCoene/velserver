@@ -68,11 +68,11 @@ $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'1'}{Match}{'%......11'}{
 
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'2'}{Name} = "Relay status" ;
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......00'}{Info} = "Relay channel off" ;
-$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......00'}{openHAB} = "OFF:Switch" ;
+$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......00'}{openHAB} = "OFF:Relay" ;
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......01'}{Info} = "Relay channel on" ;
-$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......01'}{openHAB} = "ON:Switch" ;
+$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......01'}{openHAB} = "ON:Relay" ;
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......11'}{Info} = "Relay channel interval timer on" ;
-$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......11'}{openHAB} = "ON:Switch" ;
+$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......11'}{openHAB} = "ON:Relay" ;
 
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'3'}{Name} = "LED status" ;
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'3'}{Match}{'00000000'}{Info} = "LED off" ;
@@ -99,11 +99,11 @@ $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'1'}{Match}{'%......11'}{
 
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'2'}{Name} = "Relay status" ;
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......00'}{Info} = "Relay channel off" ;
-$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......00'}{openHAB} = "OFF:Switch" ;
+$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......00'}{openHAB} = "OFF:Relay" ;
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......01'}{Info} = "Relay channel on" ;
-$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......01'}{openHAB} = "ON:Switch" ;
+$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......01'}{openHAB} = "ON:Relay" ;
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......11'}{Info} = "Relay channel interval timer on" ;
-$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......11'}{openHAB} = "ON:Switch" ;
+$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......11'}{openHAB} = "ON:Relay" ;
 
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'3'}{Name} = "LED status" ;
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'3'}{Match}{'00000000'}{Info} = "LED off" ;
@@ -150,7 +150,7 @@ $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'1'}{Name} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{openHAB} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
 
-# B8 = COMMAND_DIMMERCONTROLLER_STATUS
+# B8 = COMMAND_DIMMERCONTROLLER_STATUS: answer to 07 = COMMAND_SET_DIMVALUE
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'0'}{Match}{'00000001'}{Channel} = "01" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'0'}{Match}{'00000010'}{Channel} = "02" ;
@@ -163,6 +163,7 @@ $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'1'}{Match}{'%......10'}{
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'1'}{Match}{'%......11'}{Info} = "Channel disabled" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'2'}{Name} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'2'}{Match}{'%.'}{Convert} = "Procent" ;
+$global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'2'}{Match}{'%.'}{openHAB} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'3'}{Name} = "LED status" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'3'}{Match}{'00000000'}{Info} = "LED off" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'3'}{Match}{'10000000'}{Info} = "LED on" ;
@@ -297,6 +298,21 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Match}{'%1.......'}{
 
 ################### Touch
 # One, two or four touch buttonsmodule: VMBGP4
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
+
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Name} = "Operating mode" ;
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Mode push button locked" ;
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......0'}{Info} = "Mode push button unlocked" ;
@@ -362,6 +378,21 @@ $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{Convert
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "HeaterTemperature" ;
 
 # Touch panel with Oled display: VMBGPOD
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
+
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Name} = "Operating mode" ;
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Mode push button locked" ;
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......0'}{Info} = "Mode push button unlocked" ;
@@ -445,8 +476,45 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB
 #$global{Cons}{ModuleTypes}{'28'}{Messages}{'ED'}{Data}{'5'}{Match}{'%0.......'}{Info} = "Sunset disabled" ;
 #$global{Cons}{ModuleTypes}{'28'}{Messages}{'ED'}{Data}{'5'}{Match}{'%1.......'}{Info} = "Sunset enabled" ;
 
+# 7 channel input module: VMB7IN
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Name} = "COMMAND_OUTPUT_STATUS" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Name} = "Output channel just activated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Heater just activated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Match}{'%......1.'}{Info} = "Boost heater/cooler just activated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Match}{'%.....1..'}{Info} = "Pump just activated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Match}{'%....1...'}{Info} = "Cooler just activated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 just activated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 alarm activated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 just activated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 alarm activated" ;
+
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Name} = "Output channel just deactivated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%.......1'}{Info} = "Heater just deactivated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%......1.'}{Info} = "Boost heater/cooler just deactivated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%.....1..'}{Info} = "Pump just deactivated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%....1...'}{Info} = "Cooler just deactivated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 just deactivated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 alarm deactivated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 just deactivated" ;
+$global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'1'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 alarm deactivated" ;
+
 ################### Input
 # 7 channel input module: VMB7IN
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
+
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'0'}{Match}{'%........'}{Convert} = "Divider" ;
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'1'}{Match}{'%.'}{Convert} = "Counter" ;
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'2'}{Match}{'%.'}{Convert} = "Counter" ;
