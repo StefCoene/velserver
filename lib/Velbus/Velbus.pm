@@ -234,6 +234,7 @@ sub process_message {
                                  $Divider = $1 ;
 
                                  $Channel = &bin_to_dec($Channel) ; $Channel ++ ;
+                                 $Channel = "0" . $Channel if $Channel =~ /^.$/ ;
                                  $Divider = &bin_to_dec($Divider) ; $Divider *= 1 ;
                                  $info{$Channel}{Divider} = $Divider ;
                                  $Name = "Counter" if ! defined $Name ;
