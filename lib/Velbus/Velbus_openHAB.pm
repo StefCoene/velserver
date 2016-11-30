@@ -32,6 +32,8 @@ sub openHAB_match_item {
    if ( %group ) {
       my $group = join ",", sort keys %group ;
       return $group ;
+   } else {
+      return undef ;
    }
 }
 
@@ -126,12 +128,39 @@ sub openHAB () {
                $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
                $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=Switch&action=Set&value=%2\$s]" ;
                $openHAB .= "\"}\n" ;
+
+               my $item = "ButtonLong_$address"."_"."$Channel" ;
+               my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+               $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+               $openHAB .= "Switch $item \"$Name\" " ;
+               my $Group = &openHAB_match_item($item) ;
+               if ( defined $Group ) {
+                  $openHAB .= "($Group) " ;
+               }
+               $openHAB .= "{http=\"" ;
+               $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+               $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=Switch&action=Set&value=%2\$s]" ;
+               $openHAB .= "\"}\n" ;
             }
 
             if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
                foreach my $SubAddr (split ",", $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
                   foreach my $Channel (sort @channel) {
                      my $item = "Button_$SubAddr"."_"."$Channel" ;
+                     my $SubChannel = &SubAddr_Channel ($address, $SubAddr, $Channel) ; # Calculate the 'real' channel address based on the channel and sub address
+                     my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} ;
+                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                     $openHAB .= "Switch $item \"$Name\" " ;
+                     my $Group = &openHAB_match_item($item) ;
+                     if ( defined $Group ) {
+                        $openHAB .= "($Group) " ;
+                     }
+                     $openHAB .= "{http=\"" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$SubAddr&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$SubAddr&type=Switch&action=Set&value=%2\$s]" ;
+                     $openHAB .= "\"}\n" ;
+
+                     my $item = "ButtonLong_$SubAddr"."_"."$Channel" ;
                      my $SubChannel = &SubAddr_Channel ($address, $SubAddr, $Channel) ; # Calculate the 'real' channel address based on the channel and sub address
                      my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} ;
                      $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
