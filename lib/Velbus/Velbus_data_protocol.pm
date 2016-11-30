@@ -476,6 +476,23 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB
 #$global{Cons}{ModuleTypes}{'28'}{Messages}{'ED'}{Data}{'5'}{Match}{'%0.......'}{Info} = "Sunset disabled" ;
 #$global{Cons}{ModuleTypes}{'28'}{Messages}{'ED'}{Data}{'5'}{Match}{'%1.......'}{Info} = "Sunset enabled" ;
 
+# Mini PIR detector module: VMBPIRM
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
+
+
 # 7 channel input module: VMB7IN
 $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Name} = "COMMAND_OUTPUT_STATUS" ;
 $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Name} = "Output channel just activated" ;
