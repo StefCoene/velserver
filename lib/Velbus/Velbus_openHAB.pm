@@ -99,7 +99,10 @@ sub openHAB () {
                # Dimmer
                if ( $type eq "12" or $type eq "15" ) {
                   my $item = "Dimmer_$itemBase" ;
-                  $openHAB .= "Dimmer $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} [%s %%]\" " ;
+                  my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " [%s %%]" ;
+                  $openHAB .= "Dimmer $item \"$Name\" " ;
                   $openHAB .= "<slider> " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -113,7 +116,10 @@ sub openHAB () {
                #  Blinds
                } elsif ( $type eq "03" or $type eq "09" or $type eq "1D" ) {
                   my $item = "Blind_$itemBase" ;
-                  $openHAB .= "Rollershutter $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} [%s %%]\" " ;
+                  my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " [%s %%]" ;
+                  $openHAB .= "Rollershutter $item \"$Name\" " ;
                   $openHAB .= "<rollershutter> " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -127,7 +133,9 @@ sub openHAB () {
                # Relay
                } elsif ( $type eq "02" or $type eq "08" or $type eq "10" or $type eq "11") {
                   my $item = "Relay_$itemBase" ;
-                  $openHAB .= "Switch $item \"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value}\" " ;
+                  my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $openHAB .= "Switch $item \"$Name\" " ;
                   $openHAB .= "<switch> " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
