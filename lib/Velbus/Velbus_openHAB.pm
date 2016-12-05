@@ -19,8 +19,8 @@ sub openHAB_config {
 sub openHAB_match_item {
    my $item_input  = $_[0] ;
    my %group ;
-   foreach my $group (keys %{$global{openHAB}{config}}) {
-      foreach my $item (keys %{$global{openHAB}{config}{$group}{item}}) {
+   foreach my $item (keys %{$global{openHAB}{config}{item}}) {
+      foreach my $group (keys %{$global{openHAB}{config}{item}{$item}{Group}}) {
          if ( $item =~ /^%(.+)/i ) {
             my $match = $1 ;
             if ( $item_input =~ /$match/i ) {

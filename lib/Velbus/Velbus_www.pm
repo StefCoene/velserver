@@ -308,6 +308,18 @@ sub www_scan () {
    &scan($sock) ;
 }
 
+sub www_clear_database  () {
+   print "Recommended procedure:\n" ;
+   print "<ul>\n" ;
+   print "<li>Stop logger.pl</li>\n" ;
+   print "<li>Visit this page</li>\n" ;
+   print "<li>Start logger.pl</li>\n" ;
+   print "<li>Trigger a scan</li>\n" ;
+   print "<li>Get an update of all module states</li>\n" ;
+   print "</ul>\n" ;
+   &clear_database() ;
+}
+
 sub www_update_module_status () {
    my $sock = &open_socket ;
    my $temp = &update_module_status($sock) ;

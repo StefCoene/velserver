@@ -50,7 +50,8 @@ print "<a href=?key=$global{cgi}{params}{key}&appl=print_modules>Modules on bus<
 print "<a href=?key=$global{cgi}{params}{key}&appl=print_velbus_protocol>Velbus protocol</a> || " ;
 print "<a href=?key=$global{cgi}{params}{key}&appl=print_velbus_messages>Velbus messages</a> || " ;
 print "<a href=?key=$global{cgi}{params}{key}&appl=openHAB>openHAB config</a> || " ;
-print "<a href=?key=$global{cgi}{params}{key}&appl=scan>Scan the bus</a> " ;
+print "<a href=?key=$global{cgi}{params}{key}&appl=scan>Scan the busi || </a> " ;
+print "<a href=?key=$global{cgi}{params}{key}&appl=clear_database>Clear mysql info</a> " ;
 print "</p>\n" ;
 
 if ( defined $global{cgi}{params}{appl} ) {
@@ -73,6 +74,9 @@ if ( defined $global{cgi}{params}{appl} ) {
    }
    if ( $global{cgi}{params}{appl} eq "scan" ) {
       &www_scan ;
+   }
+   if ( $global{cgi}{params}{appl} eq "clear_database" ) {
+      &www_clear_database ;
    }
    if ( $global{cgi}{params}{appl} eq "debug" ) {
       print "<pre>\n" ;

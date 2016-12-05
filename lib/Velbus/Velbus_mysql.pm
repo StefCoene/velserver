@@ -64,4 +64,11 @@ sub get_all_modules_info_from_mysql {
    }
 }
 
+# Truncate the tables in de mysql database for a new start
+sub clear_database {
+   &do_query ($global{dbh},"TRUNCATE TABLE `modules`" ) ;
+   &do_query ($global{dbh},"TRUNCATE TABLE `modules_info`" ) ;
+   &do_query ($global{dbh},"TRUNCATE TABLE `modules_channel_info`" ) ;
+}
+
 return 1 ;
