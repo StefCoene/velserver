@@ -235,14 +235,15 @@ sub process_message {
 
                                  $Channel = &bin_to_dec($Channel) ; $Channel ++ ;
                                  $Channel = "0" . $Channel if $Channel =~ /^.$/ ;
-                                 $Divider = &bin_to_dec($Divider) ; $Divider *= 1 ;
+                                 $Divider = &bin_to_dec($Divider) ;
+                                 $Divider *= 100 ;
                                  $info{$Channel}{Divider} = $Divider ;
                                  $Name = "Counter" if ! defined $Name ;
                               }
 
                               # Simple Counter
                               if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
-                                 $info{$Channel}{Counter} = $hex[$byte] ;
+                                 $info{$Channel}{Counter} .= $hex[$byte] ;
                               }
 
                               # Button pressed on touch or an other input
@@ -262,14 +263,20 @@ sub process_message {
                                  my $action = $1 ;
                                  if ( $action eq "RELEASED" ) {
                                     if ( $global{openHAB}{ButtonState}{$message{address}}{$Channel} eq "PRESSED" ) {
+                                       # PRESSED: send ON + OFF
                                        $openHAB_update_state{"Button_$message{address}_$Channel"} = "ON OFF" ;
-                                    } else { # LONGPRESSED
-                                       $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "ON OFF" ;
+                                    } else {
+                                       # LONGPRESSED: send OFF
+                                       $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "OFF" ;
                                     }
                                  } else {
-                                    $global{openHAB}{ButtonState}{$message{address}}{$Channel} = $action ; # PRESSED or LONGPRESSED
+                                    $global{openHAB}{ButtonState}{$message{address}}{$Channel} = $action ; # remember type: PRESSED or LONGPRESSED
+                                    if ( $action eq "PRESSED" ) {
+                                       # Don't send ON yet, wait for RELEASED. Because for a LONGPRESSED, there is also a PRESSED message first
+                                    } elsif ( $action eq "LONGPRESSED" ) {
+                                       $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "ON" ;
+                                    }
                                  }
-                                 
                               } elsif ( $openHAB =~ /:/ ) {
                                  my @openHAB = split ":", $openHAB ;
                                  if ( $Channel eq "00" ) {
@@ -277,6 +284,7 @@ sub process_message {
                                  } else {
                                     $openHAB_update_state{"$openHAB[1]_$message{address}_$Channel"} = $openHAB[0] ;
                                  }
+
                               } else {
                                  if ( $Channel eq "00" ) {
                                     $openHAB_update_state{"$openHAB"."_"."$message{address}"} = $Value if defined $Value ;
