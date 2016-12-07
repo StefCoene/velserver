@@ -14,10 +14,10 @@ sub print_help {
 
    -o = 
       test = for testing new functionality
+      scan = scan all modules on the bus
       status = get status off all modules
       date = broadcast date and time
-      scan = scan all modules on the bus
-      blind = query blind status on address 0x01
+      openHAB = create the openHAB items file
    
 " ;
    exit ;
@@ -38,14 +38,16 @@ my $sock = &open_socket ;
 
 if ( $global{opts}{option} eq "test" ) {
    &test($sock) ;
+} elsif ( $global{opts}{option} eq "scan" ) {
+   &scan($sock) ;
 } elsif ( $global{opts}{option} eq "status" ) {
    &update_module_status($sock) ;
 } elsif ( $global{opts}{option} eq "date" ) {
    &broadcast_datetime($sock) ;
-} elsif ( $global{opts}{option} eq "scan" ) {
-   &scan($sock) ;
-} elsif ( $global{opts}{option} eq "blind" ) {
-   &get_module_status ($sock,"0x01","1D") ;
+} elsif ( $global{opts}{option} eq "openHAB" ) {
+   &openHAB_config () ;
+   my $openHAB = &openHAB () ;
+   print $openHAB ;
 } else {
    &print_help ;
 }
