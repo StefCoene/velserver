@@ -53,7 +53,7 @@ sub openHAB () {
    my $openHAB ;
 
    # Default value if not specified in config file
-   $global{Config}{openHAB}{polling} = 600 if ! defined $global{Config}{openHAB}{polling} ;
+   $global{Config}{openHAB}{polling} = 60000 if ! defined $global{Config}{openHAB}{polling} ;
 
    # Loop all module types
    foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
@@ -77,7 +77,10 @@ sub openHAB () {
 
             # Get the current temperature
             my $item = "Temperature_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} [%.1f °C]\" " ;
+
+            my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
+            $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+            $openHAB .= "Number $item \"$Name [%.1f °C]\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
@@ -294,17 +297,16 @@ sub openHAB () {
    if ( -f $global{Config}{openHAB}{ITEM_FILE} ) {
       if ( -w $global{Config}{openHAB}{ITEM_FILE} ) {
          open ITEM_FILE, ">$global{Config}{openHAB}{ITEM_FILE}" ;
-         print  ITEM_FILE"$openHAB\n" ;
+         print ITEM_FILE "$openHAB\n" ;
          close ITEM_FILE ;
       } else {
-         print "Warning: $global{Config}{openHAB}{ITEM_FILE} not writable!<br>\n" ;
+         print "Warning: $global{Config}{openHAB}{ITEM_FILE} not writable!\n" ;
       }
+   } else {
+      print "Warning: no ITEM_FILE definition\n" ;
    }
 
-   $openHAB =~ s/</&lt;/g ;    # Prepare for html output
-   $openHAB =~ s/>/&gt;/g ;    # Prepare for html output
-   $openHAB =~ s/\n/<br>\n/g ; # Prepare for html output
-   print "$openHAB\n" ;
+   return $openHAB ;
 }
 
 return 1 ;

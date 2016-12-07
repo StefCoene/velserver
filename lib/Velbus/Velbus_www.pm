@@ -300,7 +300,11 @@ sub www_print_velbus_protocol_print_modules () {
 
 sub www_openHAB () {
    &openHAB_config () ;
-   &openHAB () ;
+   my $openHAB = &openHAB () ;
+   $openHAB =~ s/</&lt;/g ;    # Prepare for html output
+   $openHAB =~ s/>/&gt;/g ;    # Prepare for html output
+   $openHAB =~ s/\n/<br>\n/g ; # Prepare for html output
+   print "$openHAB\n" ;
 }
 
 sub www_scan () {
