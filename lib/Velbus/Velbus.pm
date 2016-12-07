@@ -371,6 +371,7 @@ sub get_module_info () {
 
    my @message = ("0x$command", $channel) ;
    &print_sock ($sock,$prio,"0x$address",$rtr,@message) ;
+   usleep (50000) ;
 }
 
 # Get status and name
@@ -605,6 +606,7 @@ sub scan () {
    my $sock = $_[0] ;
    foreach my $addr (1..255) {
       &print_sock ($sock,"0xFB","$addr","0x40") ;
+      usleep (20000) ;
    }
 }
 
