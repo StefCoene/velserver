@@ -180,6 +180,8 @@ if ( $type eq "Dimmer" and ( $action eq "Get" or $action eq "Set" ) ) {
    if ( defined $Moduletype and ( $Moduletype eq "07" or $Moduletype eq "0F" or $Moduletype eq "12" or $Moduletype eq "14" or $Moduletype eq "15" ) ) {
       if ( $action eq "Set" ) {
          if ( defined $value ) {
+            $value = "100" if $value eq "ON" ;
+            $value = "0"   if $value eq "OFF" ;
             &set_dim_value ($sock, $address, $channel, $value) ;
          }
       }
