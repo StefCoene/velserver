@@ -122,7 +122,7 @@ if ( $type eq "HeaterMode" and ( $action eq "Get" or $action eq "Set" ) ) {
       if ( $Moduletype eq "20" ) {
          %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='09'","data") ;
       }
-      $json->{Name} = $data{name}{value} if defined $data{name} ;
+      $json->{Name} = $data{Name}{value} if defined $data{Name} ;
 
       %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
       if ( defined $data{'Temperature mode'} ) {
@@ -187,7 +187,7 @@ if ( $type eq "Dimmer" and ( $action eq "Get" or $action eq "Set" ) ) {
       }
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;
       if ( %data ) {
-         $json->{Name}   = $data{name}{value} ;
+         $json->{Name}   = $data{Name}{value} ;
          $json->{Status} = $data{Dimmer}{value} ;
       }
    }
@@ -206,7 +206,7 @@ if ( $type eq "Blind" and ( $action eq "Get" or $action eq "Set" ) ) {
       }
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;
       if ( %data ) {
-         $json->{Name}   = $data{name}{value} ;
+         $json->{Name}   = $data{Name}{value} ;
          $json->{Status} = $data{Position}{value} ;
       }
    }
@@ -216,7 +216,7 @@ if ( $type eq "Relay" and ( $action eq "Get" or $action eq "On" or $action eq "O
    if ( defined $Moduletype and ( $Moduletype eq "02" or $Moduletype eq "08" or $Moduletype eq "10" or $Moduletype eq "11" ) ) {
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;
 
-      $json->{Name} = $data{name}{value} if defined $data{name} ;
+      $json->{Name} = $data{Name}{value} if defined $data{Name} ;
 
       if ( defined $data{'Relay status'} ) {
          if ( $data{'Relay status'}{value} eq "Relay channel off" ) {
