@@ -92,7 +92,10 @@ sub openHAB () {
 
             # Get/Set the heater mode
             my $item = "HeaterMode_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} mode\" " ;
+
+            my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
+            $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+            $openHAB .= "Number $item \"$Name  mode\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
@@ -105,7 +108,10 @@ sub openHAB () {
 
             # Get/Set the target temperature
             my $item = "HeaterTemperature_$address" ;
-            $openHAB .= "Number $item \"$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} temperature target [%.1f °C]\" " ;
+
+            my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
+            $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+            $openHAB .= "Number $item \"$Name temperature target [%.1f °C]\" " ;
             $openHAB .= "<temperature> " ;
             my $Group = &openHAB_match_item($item) ;
             if ( defined $Group ) {
