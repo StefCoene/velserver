@@ -176,13 +176,28 @@ if ( $type eq "HeaterMode" and ( $action eq "Get" or $action eq "Set" ) ) {
    }
 }
 
+if ( $type eq "Switch" and ( $action eq "Get" or $action eq "Set" ) ) {
+   if ( defined $Moduletype and ( $Moduletype eq "1E" or $Moduletype eq "1F" or $Moduletype eq "20" or $Moduletype eq "28" or $Moduletype eq "22" ) ) {
+      if ( $action eq "Set" ) {
+         if ( defined $value ) {
+            &button_set ($sock, $address, $channel, $value) ;
+         }
+      }
+      my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;
+      if ( %data ) {
+         $json->{Name}   = $data{Name}{value} ;
+         $json->{Status} = $data{Button}{value} ;
+      }
+   }
+}
+
 if ( $type eq "Dimmer" and ( $action eq "Get" or $action eq "Set" ) ) {
    if ( defined $Moduletype and ( $Moduletype eq "07" or $Moduletype eq "0F" or $Moduletype eq "12" or $Moduletype eq "14" or $Moduletype eq "15" ) ) {
       if ( $action eq "Set" ) {
          if ( defined $value ) {
             $value = "100" if $value eq "ON" ;
             $value = "0"   if $value eq "OFF" ;
-            &set_dim_value ($sock, $address, $channel, $value) ;
+            &dim_value ($sock, $address, $channel, $value) ;
          }
       }
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;

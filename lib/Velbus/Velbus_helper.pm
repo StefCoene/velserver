@@ -269,7 +269,7 @@ sub openHAB_update_state {
    my $name = $_[0] ;
    my $data = $_[1] ;
 
-   &log_openHAB ("$name: $data") ;
+   &log("openHAB","$name: $data") ;
 
    my $URL = "http://geuze:8080/rest/items/$name/state" ;
 

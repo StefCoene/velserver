@@ -155,8 +155,8 @@ sub openHAB () {
                   $openHAB .= "($Group) " ;
                }
                $openHAB .= "{http=\"" ;
-               $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
-               $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=Switch&action=Set&value=%2\$s]" ;
+               $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+               $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
                $openHAB .= "\"}\n" ;
 
                # Long pressed button
@@ -169,8 +169,8 @@ sub openHAB () {
                   $openHAB .= "($Group) " ;
                }
                $openHAB .= "{http=\"" ;
-               $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
-               $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=Switch&action=Set&value=%2\$s]" ;
+               $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+               $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
                $openHAB .= "\"}\n" ;
             }
 
