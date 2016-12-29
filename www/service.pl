@@ -269,6 +269,8 @@ if ( $type eq "Counter" and ( $action eq "GetCounter" or $action eq "GetDivider"
 
       if ( $action eq "GetCounter" ) {
          $json->{Status} = $data{Counter}{value} if defined $data{Counter} ;
+      } elsif ( $action eq "GetCounterRaw" ) {
+         $json->{Status} = $data{CounterRaw}{value} if defined $data{CounterRaw} ;
       } else {
          $json->{Status} = $data{Divider}{value} if defined $data{Divider} ;
       }

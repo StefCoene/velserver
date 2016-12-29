@@ -268,6 +268,18 @@ sub openHAB () {
 
                # VMB7IN: counters
                } elsif ( $type eq "22" ) {
+
+                  my $item = "CounterRaw_$itemBase" ;
+                  $openHAB .= "Number $item \"$item [%.0f]\" " ;
+                  $openHAB .= " <chart> " ;
+                  my $Group = &openHAB_match_item($item) ;
+                  if ( defined $Group ) {
+                     $openHAB .= "($Group) " ;
+                  }
+                  $openHAB .= "{http=\"" ;
+                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterRaw:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .= "\"}\n" ;
+
                   my $item = "Counter_$itemBase" ;
                   $openHAB .= "Number $item \"$item [%.0f]\" " ;
                   $openHAB .= " <chart> " ;

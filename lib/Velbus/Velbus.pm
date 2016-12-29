@@ -313,11 +313,18 @@ sub process_message {
                         $message{text} .= "  $Channel, $Name = $temp\n" ;
                         &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, $Name, $temp) ;
                         &log("mysql","module channel info: address=$message{address}, Channel=$Channel, $Name=$temp") ;
+                     } elsif ( $Name eq "Divider" ) {
+                        $openHAB_update_state{"Divider_$message{address}_$Channel"} = $info{$Channel}{Divider} ;
                      } elsif ( $Name eq "Counter" ) {
-                        my $Counter = &hex_to_dec ($info{$Channel}{Counter}) ;
-                        $message{text} .= "  $Channel, Counter = $Counter\n" ;
+                        my $CounterRaw = &hex_to_dec ($info{$Channel}{Counter}) ;
+                        my $Counter = $CounterRaw / $info{$Channel}{Divider} ;
+                        $message{text} .= "  $Channel, Counter = $Counter, CounterRaw = $CounterRaw\n" ;
+                        $openHAB_update_state{"Counter_$message{address}_$Channel"} = $Counter ;
                         &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "Counter", $Counter) ;
                         &log("mysql","module channel name: address=$message{address}, Channel=$Channel, Counter=$Counter") ;
+                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "CounterRaw", $CounterRaw) ;
+                        &log("mysql","module channel name: address=$message{address}, Channel=$Channel, CounterRaw=$CounterRaw") ;
+                        $openHAB_update_state{"CounterRaw_$message{address}_$Channel"} = $CounterRaw ;
                      } else {
                         $message{text} .= "  $Channel, $Name = $info{$Channel}{$Name}\n" ;
                         &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, $Name, $info{$Channel}{$Name}) ;
