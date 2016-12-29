@@ -50,7 +50,7 @@ print "<a href=?key=$global{cgi}{params}{key}&appl=print_modules>Modules on bus<
 print "<a href=?key=$global{cgi}{params}{key}&appl=print_velbus_protocol>Velbus protocol</a> || " ;
 print "<a href=?key=$global{cgi}{params}{key}&appl=print_velbus_messages>Velbus messages</a> || " ;
 print "<a href=?key=$global{cgi}{params}{key}&appl=openHAB>openHAB config</a> || " ;
-print "<a href=?key=$global{cgi}{params}{key}&appl=scan>Scan the busi || </a> " ;
+print "<a href=?key=$global{cgi}{params}{key}&appl=scan>Scan the bus || </a> " ;
 print "<a href=?key=$global{cgi}{params}{key}&appl=clear_database>Clear mysql info</a> " ;
 print "</p>\n" ;
 
