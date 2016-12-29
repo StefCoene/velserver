@@ -271,7 +271,7 @@ sub openHAB_update_state {
 
    &log("openHAB","$name: $data") ;
 
-   my $URL = "http://geuze:8080/rest/items/$name/state" ;
+   my $URL = "http://$global{Config}{openHAB}{REST_URL}:8080/rest/items/$name/state" ;
 
    # Create the browser that will post the information.
    my $Browser = new LWP::UserAgent;
