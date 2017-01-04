@@ -219,6 +219,9 @@ if ( $type eq "Blind" and ( $action eq "Get" or $action eq "Set" ) ) {
       if ( $value eq "STOP" ) {
          &blind_stop ($sock, $address, $channel) ;
       }
+      if ( $value =~ /(\d+)/ ) {
+         &blind_pos ($sock, $address, $channel, $1) ;
+      }
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;
       if ( %data ) {
          $json->{Name}   = $data{Name}{value} ;

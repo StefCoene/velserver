@@ -304,7 +304,7 @@ sub process_message {
                #print "\n" ; # Debugging
                #print Dumper {%info} ; # Debugging
 
-               # Loop al found info and stored in the database
+               # Loop the found info and stored in the database
                $message{text} .= "\n" ;
                foreach my $Channel (sort keys (%info) ) {
                   foreach my $Name (sort keys (%{$info{$Channel}}) ) {
@@ -569,6 +569,20 @@ sub blind_down {
    my $rtr     = "0x00";
 
    @message = ("0x06", "$channel", "0x00", "0x00", "0x00") ; # COMMAND_BLIND_DOWN
+   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+}
+
+sub blind_pos {
+   my $sock = $_[0] ;
+   my $address  = "0x" . $_[1] ;
+   my $channel  = "0x" . $_[2] ;
+   my $position = "0x" . $_[3] ;
+   my $prio    = "0xF8"; # High
+   my $rtr     = "0x00";
+
+   $position = sprintf ("%02X",$position) ;
+
+   @message = ("0x1C", "$channel", "0x$position") ; # COMMAND_BLIND_POSN
    &print_sock ($sock,$prio,$address,$rtr,@message) ;
 }
 
