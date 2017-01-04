@@ -147,10 +147,12 @@ sub process_message {
 
             if ( $message{MessageType} eq "F2" ) {
                if ( defined $message{ModuleType} and 
-                    ( ( $message{ModuleType} eq "28" and $Channel eq "21" ) or
-                      ( $message{ModuleType} eq "20" and $Channel eq "09" ) )
+                    ( ( $message{ModuleType} eq "1E" and $Channel eq "09" ) or
+                      ( $message{ModuleType} eq "1F" and $Channel eq "09" ) or
+                      ( $message{ModuleType} eq "20" and $Channel eq "09" ) or
+                      ( $message{ModuleType} eq "28" and $Channel eq "21" ) )
                    ) {
-                     # Channel 21 and channel 09 are virtual channels whose name is the temperature sensor name of the touch display.
+                     # Channel 21 (and channel 03/05/09 (VMBGP1D/VMBGP2D/VMBGP4D) are virtual channels whose name is the temperature sensor name of the touch display.
                      &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
                      &log("mysql","module TempSensor: address=$message{address}, TempSensor=$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}") ;
                }
@@ -304,7 +306,7 @@ sub process_message {
                #print "\n" ; # Debugging
                #print Dumper {%info} ; # Debugging
 
-               # Loop the found info and stored in the database
+               # Loop all found info and store in the database
                $message{text} .= "\n" ;
                foreach my $Channel (sort keys (%info) ) {
                   foreach my $Name (sort keys (%{$info{$Channel}}) ) {
@@ -418,8 +420,10 @@ sub get_status () {
       }
    } else {
       if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) {
-         if ( $type eq "28" or
-              $type eq "20" ) { # Touch met OLED: channel FF will request the names of all channels
+         if ( $type eq "1E" or
+              $type eq "1F" or
+              $type eq "20" or
+              $type eq "28" ) { # Touch met OLED + VMBGP1D/VMBGP2D/VMBGP4D: channel FF will request the names of all channels
             &get_module_info ($sock, $address, $type, '0xFF', 'EF') ;
          } else {
             &get_module_info ($sock, $address, $type, '', 'EF') ;
