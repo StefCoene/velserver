@@ -576,7 +576,7 @@ sub blind_pos {
    my $sock = $_[0] ;
    my $address  = "0x" . $_[1] ;
    my $channel  = "0x" . $_[2] ;
-   my $position = "0x" . $_[3] ;
+   my $position = $_[3] ;
    my $prio    = "0xF8"; # High
    my $rtr     = "0x00";
 
