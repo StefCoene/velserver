@@ -411,15 +411,15 @@ sub get_status () {
    }
    if ( @channels ) {
       foreach my $channel (@channels) {
-         if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) {
+         if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) { # EF = COMMAND_CHANNEL_NAME_REQUEST
             &get_module_info ($sock, $address, $type, $channel, 'EF') ;
          }
-         if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'FA'} ) {
+         if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'FA'} ) { # FA = COMMAND_RELAY_STATUS_REQUEST
             &get_module_info ($sock, $address, $type, $channel, 'FA') ;
          }
       }
    } else {
-      if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) {
+      if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) { # EF = COMMAND_CHANNEL_NAME_REQUEST
          if ( $type eq "1E" or
               $type eq "1F" or
               $type eq "20" or
@@ -429,7 +429,7 @@ sub get_status () {
             &get_module_info ($sock, $address, $type, '', 'EF') ;
          }
       }
-      if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'FA'} ) {
+      if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'FA'} ) { # FA = COMMAND_RELAY_STATUS_REQUEST
          &get_module_info ($sock, $address, $type, '', 'FA') ;
       }
    }

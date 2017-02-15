@@ -131,23 +131,26 @@ sub openHAB () {
               ( $type eq "22" ) ) {
 
             my @Channel ; # List of input channels
-            if (      $type eq "1E" ) { # VMBGP1
-               @channel = ("01") ;
-            } elsif ( $type eq "1F" ) { # VMBGP2
-               @channel = ("01","02") ;
-            } elsif ( $type eq "20" ) { # VMBGP4
-               @channel = ("01","02","03","04","05","06","07","08") ;
-            } elsif ( $type eq "28" ) { # VMBGPOD
-               @channel = ("01","02","03","04","05","06","07","08") ;
-            } elsif ( $type eq "22" ) { # VMB7IN
-               @channel = ("01","02","03","04","05","06","07") ;
-            }
+            my @channel = sort keys %{$global{Cons}{ModuleTypes}{$type}{Channels}} ;
+            #if (      $type eq "1E" ) { # VMBGP1
+            #   @channel = ("01") ;
+            #} elsif ( $type eq "1F" ) { # VMBGP2
+            #   @channel = ("01","02") ;
+            #} elsif ( $type eq "20" ) { # VMBGP4
+            #   @channel = ("01","02","03","04","05","06","07","08") ;
+            #} elsif ( $type eq "28" ) { # VMBGPOD
+            #   @channel = ("01","02","03","04","05","06","07","08") ;
+            #} elsif ( $type eq "22" ) { # VMB7IN
+            #   @channel = ("01","02","03","04","05","06","07") ;
+            #}
 
             # Loop all possible channels
             foreach my $Channel (sort @channel) {
+               $Channel =~ s/^0x// ;
                # Short pressed button
                my $item = "Button_$address"."_"."$Channel" ;
-               my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+               my $Name = $item ;
+               $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
                $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
                $openHAB .= "Switch $item \"$Name\" " ;
                my $Group = &openHAB_match_item($item) ;
@@ -161,7 +164,8 @@ sub openHAB () {
 
                # Long pressed button
                my $item = "ButtonLong_$address"."_"."$Channel" ;
-               my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+               my $Name = $item ;
+               $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
                $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
                $openHAB .= "Switch $item \"$Name\" " ;
                my $Group = &openHAB_match_item($item) ;
@@ -180,7 +184,8 @@ sub openHAB () {
                   foreach my $Channel (sort @channel) {
                      my $item = "Button_$SubAddr"."_"."$Channel" ;
                      my $SubChannel = &SubAddr_Channel ($address, $SubAddr, $Channel) ; # Calculate the 'real' channel address based on the channel and sub address
-                     my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} ;
+                     my $Name = $item ;
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} ne "" ;
                      $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
                      $openHAB .= "Switch $item \"$Name\" " ;
                      my $Group = &openHAB_match_item($item) ;
@@ -194,7 +199,8 @@ sub openHAB () {
 
                      my $item = "ButtonLong_$SubAddr"."_"."$Channel" ;
                      my $SubChannel = &SubAddr_Channel ($address, $SubAddr, $Channel) ; # Calculate the 'real' channel address based on the channel and sub address
-                     my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} ;
+                     my $Name = $item ;
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} ne "" ;
                      $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
                      $openHAB .= "Switch $item \"$Name\" " ;
                      my $Group = &openHAB_match_item($item) ;
@@ -218,7 +224,8 @@ sub openHAB () {
                # Dimmer
                if ( $type eq "12" or $type eq "15" ) {
                   my $item = "Dimmer_$itemBase" ;
-                  my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  my $Name = $item ;
+                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
                   $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
                   $Name .= " [%s %%]" ;
                   $openHAB .= "Dimmer $item \"$Name\" " ;
@@ -235,7 +242,8 @@ sub openHAB () {
                # Blind
                } elsif ( $type eq "03" or $type eq "09" or $type eq "1D" ) {
                   my $item = "Blind_$itemBase" ;
-                  my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  my $Name = $item ;
+                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
                   $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
                   $Name .= " [%s %%]" ;
                   $openHAB .= "Rollershutter $item \"$Name\" " ;
@@ -252,7 +260,8 @@ sub openHAB () {
                # Relay
                } elsif ( $type eq "02" or $type eq "08" or $type eq "10" or $type eq "11") {
                   my $item = "Relay_$itemBase" ;
-                  my $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  my $Name = $item ;
+                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
                   $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
                   $openHAB .= "Switch $item \"$Name\" " ;
                   $openHAB .= "<switch> " ;
@@ -268,7 +277,6 @@ sub openHAB () {
 
                # VMB7IN: counters
                } elsif ( $type eq "22" ) {
-
                   my $item = "CounterRaw_$itemBase" ;
                   $openHAB .= "Number $item \"$item [%.0f]\" " ;
                   $openHAB .= " <chart> " ;

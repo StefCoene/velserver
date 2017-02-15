@@ -6,49 +6,116 @@
 ################### Relays: Channel names
 # Channels of specific modules
 # 4-channel voltage-out relay module: VMB4RYLD
-$global{Cons}{ModuleTypes}{'10'}{Channels}{"0x01"}{Name} = "Relay 1" ;
-$global{Cons}{ModuleTypes}{'10'}{Channels}{"0x02"}{Name} = "Relay 2" ;
-$global{Cons}{ModuleTypes}{'10'}{Channels}{"0x04"}{Name} = "Relay 3" ;
-$global{Cons}{ModuleTypes}{'10'}{Channels}{"0x08"}{Name} = "Relay 4" ;
-$global{Cons}{ModuleTypes}{'10'}{Channels}{"0x10"}{Name} = "Virtual Relay" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"01"}{Name} = "Relay 1" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"02"}{Name} = "Relay 2" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"04"}{Name} = "Relay 3" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"08"}{Name} = "Relay 4" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"16"}{Name} = "Virtual Relay" ;
 
 # 4-channel relay module:  VMB4RYNO
-$global{Cons}{ModuleTypes}{'11'}{Channels}{"0x01"}{Name} = "Relay 1" ;
-$global{Cons}{ModuleTypes}{'11'}{Channels}{"0x02"}{Name} = "Relay 2" ;
-$global{Cons}{ModuleTypes}{'11'}{Channels}{"0x04"}{Name} = "Relay 3" ;
-$global{Cons}{ModuleTypes}{'11'}{Channels}{"0x08"}{Name} = "Relay 4" ;
-$global{Cons}{ModuleTypes}{'11'}{Channels}{"0x10"}{Name} = "Virtual Relay" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"01"}{Name} = "Relay 1" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"02"}{Name} = "Relay 2" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"04"}{Name} = "Relay 3" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"08"}{Name} = "Relay 4" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"16"}{Name} = "Virtual Relay" ;
 
 ################### Dimmer: Channel names
 # 1-channel 0(1)-10V control: VMB1DM
-$global{Cons}{ModuleTypes}{'07'}{Channels}{"0x01"}{Name} = "Dimmer 1" ;
+$global{Cons}{ModuleTypes}{'07'}{Channels}{"01"}{Name} = "Dimmer 1" ;
 
 # 1-channel LED: VMB1LED
-$global{Cons}{ModuleTypes}{'0F'}{Channels}{"0x01"}{Name} = "Dimmer 1" ;
+$global{Cons}{ModuleTypes}{'0F'}{Channels}{"01"}{Name} = "Dimmer 1" ;
 
 # 4-channel 0(1)-10V control
-$global{Cons}{ModuleTypes}{'12'}{Channels}{"0x01"}{Name} = "Dimmer 1" ;
-$global{Cons}{ModuleTypes}{'12'}{Channels}{"0x02"}{Name} = "Dimmer 2" ;
-$global{Cons}{ModuleTypes}{'12'}{Channels}{"0x04"}{Name} = "Dimmer 3" ;
-$global{Cons}{ModuleTypes}{'12'}{Channels}{"0x08"}{Name} = "Dimmer 4" ;
+$global{Cons}{ModuleTypes}{'12'}{Channels}{"01"}{Name} = "Dimmer 1" ;
+$global{Cons}{ModuleTypes}{'12'}{Channels}{"02"}{Name} = "Dimmer 2" ;
+$global{Cons}{ModuleTypes}{'12'}{Channels}{"04"}{Name} = "Dimmer 3" ;
+$global{Cons}{ModuleTypes}{'12'}{Channels}{"08"}{Name} = "Dimmer 4" ;
 
 # 1-channel Dimmer: VMBDME
-$global{Cons}{ModuleTypes}{'14'}{Channels}{"0x01"}{Name} = "Dimmer 1" ;
+$global{Cons}{ModuleTypes}{'14'}{Channels}{"01"}{Name} = "Dimmer 1" ;
 
 # 1-channel Dimmer: VMBDMI
-$global{Cons}{ModuleTypes}{'15'}{Channels}{"0x01"}{Name} = "Dimmer 1" ;
+$global{Cons}{ModuleTypes}{'15'}{Channels}{"01"}{Name} = "Dimmer 1" ;
 
 ################### Blind: Channel names
 # 1-channel blind control module: VMB1BL
-$global{Cons}{ModuleTypes}{'03'}{Channels}{"0x01"}{Name} = "Blind 1" ;
+$global{Cons}{ModuleTypes}{'03'}{Channels}{"01"}{Name} = "Blind 1" ;
 
 # 2-channel blind control module: VMB2BL
-$global{Cons}{ModuleTypes}{'09'}{Channels}{"0x01"}{Name} = "Blind 1" ;
-$global{Cons}{ModuleTypes}{'09'}{Channels}{"0x01"}{Name} = "Blind 2" ;
+$global{Cons}{ModuleTypes}{'09'}{Channels}{"01"}{Name} = "Blind 1" ;
+$global{Cons}{ModuleTypes}{'09'}{Channels}{"01"}{Name} = "Blind 2" ;
 
 # 2-channel blind control module: VMB2BLE
-$global{Cons}{ModuleTypes}{'1D'}{Channels}{"0x01"}{Name} = "Blind 1" ;
-$global{Cons}{ModuleTypes}{'1D'}{Channels}{"0x02"}{Name} = "Blind 2" ;
+$global{Cons}{ModuleTypes}{'1D'}{Channels}{"01"}{Name} = "Blind 1" ;
+$global{Cons}{ModuleTypes}{'1D'}{Channels}{"02"}{Name} = "Blind 2" ;
+
+# PIR sensor: VMBPIRM
+#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"01"}{Name} = "Dark output" ;
+#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"02"}{Name} = "Light output" ;
+#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"04"}{Name} = "Motion output 1" ;
+#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"08"}{Name} = "Motion output 1 (LD)" ;
+#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"10"}{Name} = "Motion output 2" ;
+#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"20"}{Name} = "Motion output 2 (LD)" ;
+#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"40"}{Name} = "Absence sensor" ;
+
+# VMBGP1
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push Button 1" ;
+# VMBGP2
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push Button 1" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"02"}{Name} = "Push Button 2" ;
+# VMBGP4
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push Button 1" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"02"}{Name} = "Push Button 2" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"03"}{Name} = "Push Button 3" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"04"}{Name} = "Push Button 4" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"05"}{Name} = "Push Button 5" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"06"}{Name} = "Push Button 6" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"07"}{Name} = "Push Button 7" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"08"}{Name} = "Push Button 8" ;
+
+# VMBGPOD
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push Button 1" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"02"}{Name} = "Push Button 2" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"03"}{Name} = "Push Button 3" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"04"}{Name} = "Push Button 4" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"05"}{Name} = "Push Button 5" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"06"}{Name} = "Push Button 6" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"07"}{Name} = "Push Button 7" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"08"}{Name} = "Push Button 8" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"09"}{Name} = "Push Button 9" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"10"}{Name} = "Push Button 10" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"11"}{Name} = "Push Button 11" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"12"}{Name} = "Push Button 12" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"13"}{Name} = "Push Button 13" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"14"}{Name} = "Push Button 14" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"15"}{Name} = "Push Button 15" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"16"}{Name} = "Push Button 16" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"17"}{Name} = "Push Button 17" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"18"}{Name} = "Push Button 18" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"19"}{Name} = "Push Button 19" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"20"}{Name} = "Push Button 10" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"21"}{Name} = "Push Button 21" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"22"}{Name} = "Push Button 22" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"23"}{Name} = "Push Button 23" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"24"}{Name} = "Push Button 24" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"25"}{Name} = "Push Button 25" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"26"}{Name} = "Push Button 26" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"27"}{Name} = "Push Button 27" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"28"}{Name} = "Push Button 28" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"29"}{Name} = "Push Button 29" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"30"}{Name} = "Push Button 30" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"31"}{Name} = "Push Button 31" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"32"}{Name} = "Push Button 32" ;
+
+# 7-channel input: VMB7IN
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"01"}{Name} = "Push Button 1" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"02"}{Name} = "Push Button 2" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"04"}{Name} = "Push Button 3" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"08"}{Name} = "Push Button 4" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"16"}{Name} = "Push Button 5" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"32"}{Name} = "Push Button 6" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"64"}{Name} = "Push Button 7" ;
 
 ################### Relays
 # 4 channel relay module with directload connections: VMB4RYLD
