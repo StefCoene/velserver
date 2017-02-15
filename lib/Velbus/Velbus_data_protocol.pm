@@ -61,9 +61,14 @@ $global{Cons}{ModuleTypes}{'1D'}{Channels}{"02"}{Name} = "Blind 2" ;
 
 # VMBGP1
 $global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push Button 1" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"02"}{Name} = "Push Button 2" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"03"}{Name} = "Temperature" ;
 # VMBGP2
 $global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push Button 1" ;
 $global{Cons}{ModuleTypes}{'1F'}{Channels}{"02"}{Name} = "Push Button 2" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"03"}{Name} = "Push Button 3" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"04"}{Name} = "Push Button 4" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"05"}{Name} = "Temperature" ;
 # VMBGP4
 $global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push Button 1" ;
 $global{Cons}{ModuleTypes}{'20'}{Channels}{"02"}{Name} = "Push Button 2" ;
@@ -73,6 +78,7 @@ $global{Cons}{ModuleTypes}{'20'}{Channels}{"05"}{Name} = "Push Button 5" ;
 $global{Cons}{ModuleTypes}{'20'}{Channels}{"06"}{Name} = "Push Button 6" ;
 $global{Cons}{ModuleTypes}{'20'}{Channels}{"07"}{Name} = "Push Button 7" ;
 $global{Cons}{ModuleTypes}{'20'}{Channels}{"08"}{Name} = "Push Button 8" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"09"}{Name} = "Temperature" ;
 
 # VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push Button 1" ;
@@ -107,6 +113,7 @@ $global{Cons}{ModuleTypes}{'28'}{Channels}{"29"}{Name} = "Push Button 29" ;
 $global{Cons}{ModuleTypes}{'28'}{Channels}{"30"}{Name} = "Push Button 30" ;
 $global{Cons}{ModuleTypes}{'28'}{Channels}{"31"}{Name} = "Push Button 31" ;
 $global{Cons}{ModuleTypes}{'28'}{Channels}{"32"}{Name} = "Push Button 32" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"33"}{Name} = "Temperature" ;
 
 # 7-channel input: VMB7IN
 $global{Cons}{ModuleTypes}{'22'}{Channels}{"01"}{Name} = "Push Button 1" ;

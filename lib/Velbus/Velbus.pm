@@ -235,7 +235,7 @@ sub process_message {
                                  $Channel = $2 ;
                                  $Divider = $1 ;
 
-                                 $Channel = &bin_to_dec($Channel) ; $Channel ++ ;
+                                 $Channel = &bin_to_hex($Channel) ; $Channel ++ ;
                                  $Channel = "0" . $Channel if $Channel =~ /^.$/ ;
                                  $Divider = &bin_to_dec($Divider) ;
                                  $Divider *= 100 ;

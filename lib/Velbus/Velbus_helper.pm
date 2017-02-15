@@ -261,6 +261,11 @@ sub hex_to_dec {
    return hex ($hex) ;
 }
 
+sub bin_to_hex {
+   my $hex = $_[0] ;
+   &dec_to_hex(&bin_to_dec($hex)) ;
+}
+
 sub bin_to_dec {
    return unpack("N", pack("B32", substr("0" x 32 . shift, -32)));
 }
@@ -316,5 +321,6 @@ sub SubAddr_Channel {
    $Channel = &dec_to_hex($Channel) ;
    return $Channel ;
 }
+
 
 return 1
