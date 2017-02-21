@@ -92,7 +92,7 @@ foreach my $pdf (sort `ls protocol*.pdf`) {
 my %file ; # Contains all raw info read from the files
 
 # Loop all files and process the raw input.
-foreach my $file (`ls protocol*.txt`) {
+foreach my $file (sort `ls protocol*.txt`) {
    chomp $file ;
    #print "File: $file\n" ;
 
@@ -378,8 +378,8 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
 
 #print Dumper %{$file{PerCommandHexLocal}} ;
 
-foreach my $ModuleTypeHex (keys %{$file{PerCommandHexLocal}}) {
-   foreach my $CommandHex (keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}}) {
+foreach my $ModuleTypeHex (sort keys %{$file{PerCommandHexLocal}}) {
+   foreach my $CommandHex (sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}}) {
       if ( defined $file{PerCommandHexBroadcast}{$CommandHex} ) {
       } else {
          my @Name = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{CommandText}} ;
@@ -411,7 +411,7 @@ foreach my $ModuleTypeHex (keys %{$file{PerCommandHexLocal}}) {
 
 #print Dumper \%{$file{PerCommandHexBroadcast}} ;
 
-foreach my $CommandHex (keys %{$file{PerCommandHexBroadcast}}) {
+foreach my $CommandHex (sort keys %{$file{PerCommandHexBroadcast}}) {
    my @Name = keys %{$file{PerCommandHexBroadcast}{$CommandHex}{CommandText}} ;
    my @Info = keys %{$file{PerCommandHexBroadcast}{$CommandHex}{Info}} ;
    my @Prio = keys %{$file{PerCommandHexBroadcast}{$CommandHex}{Prio}} ;
