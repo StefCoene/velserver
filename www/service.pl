@@ -117,7 +117,7 @@ if ( $type eq "HeaterMode" and ( $action eq "Get" or $action eq "Set" ) ) {
    if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
       my %data ;
       if ( $Moduletype eq "28" ) {
-         %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='21'","data") ;
+         %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='33'","data") ;
       }
       if ( $Moduletype eq "20" ) {
          %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='09'","data") ;
