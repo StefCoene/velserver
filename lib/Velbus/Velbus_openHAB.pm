@@ -121,37 +121,44 @@ sub openHAB () {
                   $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Temperature&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Temperature)]" ;
                   $openHAB .= "\"}\n" ;
 
-                  # Get/Set the heater mode
-                  my $item = "HeaterMode_$address" ;
+                  # Touch + Input modules: heater control
+                  if ( ( $type eq "1E" ) or
+                       ( $type eq "1F" ) or
+                       ( $type eq "20" ) or
+                       ( $type eq "28" ) ) {
 
-                  my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
-                  $openHAB .= "Number $item \"$Name  mode\" " ;
-                  $openHAB .= "<temperature> " ;
-                  my $Group = &openHAB_match_item($item) ;
-                  if ( defined $Group ) {
-                     $openHAB .= "($Group) " ;
+                     # Get/Set the heater mode
+                     my $item = "HeaterMode_$address" ;
+
+                     my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
+                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                     $openHAB .= "Number $item \"$Name  mode\" " ;
+                     $openHAB .= "<temperature> " ;
+                     my $Group = &openHAB_match_item($item) ;
+                     if ( defined $Group ) {
+                        $openHAB .= "($Group) " ;
+                     }
+                     $openHAB .= "{http=\"" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Set&value=%2\$s]" ;
+                     $openHAB .= "\"}\n" ;
+
+                     # Get/Set the target temperature
+                     my $item = "HeaterTemperature_$address" ;
+
+                     my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
+                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                     $openHAB .= "Number $item \"$Name temperature target [%.1f °C]\" " ;
+                     $openHAB .= "<temperature> " ;
+                     my $Group = &openHAB_match_item($item) ;
+                     if ( defined $Group ) {
+                        $openHAB .= "($Group) " ;
+                     }
+                     $openHAB .= "{http=\"" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Set&value=%2\$s]" ;
+                     $openHAB .= "\"}\n" ;
                   }
-                  $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Set&value=%2\$s]" ;
-                  $openHAB .= "\"}\n" ;
-
-                  # Get/Set the target temperature
-                  my $item = "HeaterTemperature_$address" ;
-
-                  my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
-                  $openHAB .= "Number $item \"$Name temperature target [%.1f °C]\" " ;
-                  $openHAB .= "<temperature> " ;
-                  my $Group = &openHAB_match_item($item) ;
-                  if ( defined $Group ) {
-                     $openHAB .= "($Group) " ;
-                  }
-                  $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Set&value=%2\$s]" ;
-                  $openHAB .= "\"}\n" ;
                }
                if ( $Type eq "Dimmer" ) {
                   my $item = "Dimmer_$itemBase" ;
