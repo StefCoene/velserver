@@ -571,11 +571,8 @@ sub relay_off {
    my $channel = $_[2] ;
    my $prio    = "0xF8"; # High
    my $rtr     = "0x00";
-open (LOG,">>/tmp/scne") ;
-print LOG "$channel\n" ;
 
    $channel = "0x" . &channel_number_to_id($channel) ;
-print LOG "$channel\n" ;
 
    @message = ("0x01", "$channel") ; # COMMAND_SWITCH_RELAY_OFF
    &print_sock ($sock,$prio,$address,$rtr,@message) ;
