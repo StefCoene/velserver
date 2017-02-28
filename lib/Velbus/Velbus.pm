@@ -162,7 +162,7 @@ sub process_message {
                        $message{ModuleType} eq "1F" and $Channel eq "09" or
                        $message{ModuleType} eq "20" and $Channel eq "09" or
                        $message{ModuleType} eq "28" and $Channel eq "33" )
-                      ) {
+                      {
                         # Channel 21 and channel 09 (VMBGP1D/VMBGP2D/VMBGP4D/VMBPIRO) are virtual channels whose name is the temperature sensor name of the touch display.
                         &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
                         &log("mysql","module TempSensor: address=$message{address}, TempSensor=$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}") ;
