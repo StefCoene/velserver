@@ -552,12 +552,13 @@ sub dim_value {
    my $sock = $_[0] ;
    # Dimmer: 0x04 = channel 3, 0x1A = 26%
    my $address = "0x" . $_[1] ;
-   my $channel = "0x" . $_[2] ;
+   my $channel = $_[2] ;
    my $value   = $_[3] ;
    my $prio    = "0xF8"; # High
    my $rtr     = "0x00";
 
    $value = sprintf ("%02X",$value) ;
+   $channel = "0x" . &channel_number_to_id($channel) ;
 
    @message = ("0x07", "$channel", "0x$value", "0x00", "0x00") ; # COMMAND_SET_DIMVALUE
    &print_sock ($sock,$prio,$address,$rtr,@message) ;
