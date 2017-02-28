@@ -20,9 +20,10 @@ $global{Config}{BaseDir} = "/data/velserver" ;
 
 use Velbus ;
 
+&init ;
+
 my $sock = &open_socket ;
 
-use Velbus ;
 use Velbus::Velbus_www ;
 
 use CGI ;
@@ -35,8 +36,6 @@ use JSON ;
 
 %{$global{cgi}{params}} = $global{cgi}{CGI}->Vars; # Get all supplied parameters in a hash
  
-&init ;
-
 my $address ;    # Address of the module
 my $Moduletype ; # Type of the module, based on $address
 my $channel ;    # Channel of the module
