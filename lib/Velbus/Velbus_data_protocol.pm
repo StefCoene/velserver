@@ -7,122 +7,253 @@
 # Channels of specific modules
 # 4-channel voltage-out relay module: VMB4RYLD
 $global{Cons}{ModuleTypes}{'10'}{Channels}{"01"}{Name} = "Relay 1" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"01"}{Type} = "Relay" ;
 $global{Cons}{ModuleTypes}{'10'}{Channels}{"02"}{Name} = "Relay 2" ;
-$global{Cons}{ModuleTypes}{'10'}{Channels}{"04"}{Name} = "Relay 3" ;
-$global{Cons}{ModuleTypes}{'10'}{Channels}{"08"}{Name} = "Relay 4" ;
-$global{Cons}{ModuleTypes}{'10'}{Channels}{"16"}{Name} = "Virtual Relay" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"02"}{Type} = "Relay" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"03"}{Name} = "Relay 3" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"03"}{Type} = "Relay" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"04"}{Name} = "Relay 4" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"04"}{Type} = "Relay" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"05"}{Name} = "Virtual relay" ;
+$global{Cons}{ModuleTypes}{'10'}{Channels}{"05"}{Type} = "Relay" ;
 
 # 4-channel relay module:  VMB4RYNO
 $global{Cons}{ModuleTypes}{'11'}{Channels}{"01"}{Name} = "Relay 1" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"01"}{Type} = "Relay" ;
 $global{Cons}{ModuleTypes}{'11'}{Channels}{"02"}{Name} = "Relay 2" ;
-$global{Cons}{ModuleTypes}{'11'}{Channels}{"04"}{Name} = "Relay 3" ;
-$global{Cons}{ModuleTypes}{'11'}{Channels}{"08"}{Name} = "Relay 4" ;
-$global{Cons}{ModuleTypes}{'11'}{Channels}{"16"}{Name} = "Virtual Relay" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"02"}{Type} = "Relay" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"03"}{Name} = "Relay 3" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"03"}{Type} = "Relay" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"04"}{Name} = "Relay 4" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"04"}{Type} = "Relay" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"05"}{Name} = "Virtual relay" ;
+$global{Cons}{ModuleTypes}{'11'}{Channels}{"05"}{Type} = "Relay" ;
 
 ################### Dimmer: Channel names
 # 1-channel 0(1)-10V control: VMB1DM
 $global{Cons}{ModuleTypes}{'07'}{Channels}{"01"}{Name} = "Dimmer 1" ;
+$global{Cons}{ModuleTypes}{'07'}{Channels}{"01"}{Type} = "Dimmer 1" ;
 
 # 1-channel LED: VMB1LED
 $global{Cons}{ModuleTypes}{'0F'}{Channels}{"01"}{Name} = "Dimmer 1" ;
+$global{Cons}{ModuleTypes}{'0F'}{Channels}{"01"}{Type} = "Dimmer 1" ;
 
 # 4-channel 0(1)-10V control
 $global{Cons}{ModuleTypes}{'12'}{Channels}{"01"}{Name} = "Dimmer 1" ;
+$global{Cons}{ModuleTypes}{'12'}{Channels}{"01"}{Type} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'12'}{Channels}{"02"}{Name} = "Dimmer 2" ;
-$global{Cons}{ModuleTypes}{'12'}{Channels}{"04"}{Name} = "Dimmer 3" ;
-$global{Cons}{ModuleTypes}{'12'}{Channels}{"08"}{Name} = "Dimmer 4" ;
+$global{Cons}{ModuleTypes}{'12'}{Channels}{"02"}{Type} = "Dimmer" ;
+$global{Cons}{ModuleTypes}{'12'}{Channels}{"03"}{Name} = "Dimmer 3" ;
+$global{Cons}{ModuleTypes}{'12'}{Channels}{"03"}{Type} = "Dimmer" ;
+$global{Cons}{ModuleTypes}{'12'}{Channels}{"04"}{Name} = "Dimmer 4" ;
+$global{Cons}{ModuleTypes}{'12'}{Channels}{"04"}{Type} = "Dimmer" ;
 
 # 1-channel Dimmer: VMBDME
 $global{Cons}{ModuleTypes}{'14'}{Channels}{"01"}{Name} = "Dimmer 1" ;
+$global{Cons}{ModuleTypes}{'14'}{Channels}{"01"}{Type} = "Dimmer 1" ;
 
 # 1-channel Dimmer: VMBDMI
 $global{Cons}{ModuleTypes}{'15'}{Channels}{"01"}{Name} = "Dimmer 1" ;
+$global{Cons}{ModuleTypes}{'15'}{Channels}{"01"}{Type} = "Dimmer 1" ;
 
 ################### Blind: Channel names
 # 1-channel blind control module: VMB1BL
 $global{Cons}{ModuleTypes}{'03'}{Channels}{"01"}{Name} = "Blind 1" ;
+$global{Cons}{ModuleTypes}{'03'}{Channels}{"01"}{Type} = "Blind" ;
 
 # 2-channel blind control module: VMB2BL
 $global{Cons}{ModuleTypes}{'09'}{Channels}{"01"}{Name} = "Blind 1" ;
+$global{Cons}{ModuleTypes}{'09'}{Channels}{"01"}{Type} = "Blind" ;
 $global{Cons}{ModuleTypes}{'09'}{Channels}{"01"}{Name} = "Blind 2" ;
+$global{Cons}{ModuleTypes}{'09'}{Channels}{"01"}{Type} = "Blind" ;
 
 # 2-channel blind control module: VMB2BLE
 $global{Cons}{ModuleTypes}{'1D'}{Channels}{"01"}{Name} = "Blind 1" ;
+$global{Cons}{ModuleTypes}{'1D'}{Channels}{"01"}{Type} = "Blind" ;
 $global{Cons}{ModuleTypes}{'1D'}{Channels}{"02"}{Name} = "Blind 2" ;
+$global{Cons}{ModuleTypes}{'1D'}{Channels}{"02"}{Type} = "Blind" ;
 
 # PIR sensor: VMBPIRM
-#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"01"}{Name} = "Dark output" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"02"}{Name} = "Light output" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"04"}{Name} = "Motion output 1" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"08"}{Name} = "Motion output 1 (LD)" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"10"}{Name} = "Motion output 2" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"20"}{Name} = "Motion output 2 (LD)" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Channels}{"40"}{Name} = "Absence sensor" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"01"}{Name} = "Dark output" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"01"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"02"}{Name} = "Light output" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"02"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"03"}{Name} = "Motion output 1" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"03"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"04"}{Name} = "Motion output 1 (LD)" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"04"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"05"}{Name} = "Motion output 2" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"05"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"06"}{Name} = "Motion output 2 (LD)" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"06"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"07"}{Name} = "Absence sensor" ;
+$global{Cons}{ModuleTypes}{'2A'}{Channels}{"07"}{Type} = "Button" ;
+
+# PIR sensor: VMBPIRO
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Name} = "Dark output" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"02"}{Name} = "Light output" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"02"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"03"}{Name} = "Motion output 1" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"03"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"04"}{Name} = "Motion output 1 (LD)" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"04"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"05"}{Name} = "Motion output 2" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"05"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"06"}{Name} = "Motion output 2 (LD)" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"06"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"07"}{Name} = "Low alarm" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"07"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"08"}{Name} = "High alarm" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"08"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Name} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Type} = "Temperature" ;
 
 # VMBGP1
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push Button 1" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"02"}{Name} = "Push Button 2" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"03"}{Name} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'1E'}{ChannelNaming} = "dec" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push button 1" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"02"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"02"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"03"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"03"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"04"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"04"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"05"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"05"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"06"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"06"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"07"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"07"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"08"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"08"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"09"}{Name} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'1E'}{Channels}{"09"}{Type} = "Temperature" ;
+
 # VMBGP2
-$global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push Button 1" ;
-$global{Cons}{ModuleTypes}{'1F'}{Channels}{"02"}{Name} = "Push Button 2" ;
-$global{Cons}{ModuleTypes}{'1F'}{Channels}{"03"}{Name} = "Push Button 3" ;
-$global{Cons}{ModuleTypes}{'1F'}{Channels}{"04"}{Name} = "Push Button 4" ;
-$global{Cons}{ModuleTypes}{'1F'}{Channels}{"05"}{Name} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'1F'}{ChannelNaming} = "dec" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push button 1" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"02"}{Name} = "Push button 2" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"02"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"03"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"03"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"04"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"04"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"05"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"05"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"06"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"06"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"07"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"08"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"08"}{Name} = "Virtual button" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"09"}{Name} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"09"}{Type} = "Temperature" ;
 # VMBGP4
-$global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push Button 1" ;
-$global{Cons}{ModuleTypes}{'20'}{Channels}{"02"}{Name} = "Push Button 2" ;
-$global{Cons}{ModuleTypes}{'20'}{Channels}{"03"}{Name} = "Push Button 3" ;
-$global{Cons}{ModuleTypes}{'20'}{Channels}{"04"}{Name} = "Push Button 4" ;
-$global{Cons}{ModuleTypes}{'20'}{Channels}{"05"}{Name} = "Push Button 5" ;
-$global{Cons}{ModuleTypes}{'20'}{Channels}{"06"}{Name} = "Push Button 6" ;
-$global{Cons}{ModuleTypes}{'20'}{Channels}{"07"}{Name} = "Push Button 7" ;
-$global{Cons}{ModuleTypes}{'20'}{Channels}{"08"}{Name} = "Push Button 8" ;
+$global{Cons}{ModuleTypes}{'20'}{ChannelNaming} = "dec" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push button 1" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"02"}{Name} = "Push button 2" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"02"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"03"}{Name} = "Push button 3" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"03"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"04"}{Name} = "Push button 4" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"04"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"05"}{Name} = "Push button 5" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"05"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"06"}{Name} = "Push button 6" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"06"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"07"}{Name} = "Push button 7" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"07"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"08"}{Name} = "Push button 8" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"08"}{Type} = "Button" ;
 $global{Cons}{ModuleTypes}{'20'}{Channels}{"09"}{Name} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"09"}{Type} = "Temperature" ;
 
 # VMBGPOD
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push Button 1" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"02"}{Name} = "Push Button 2" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"03"}{Name} = "Push Button 3" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"04"}{Name} = "Push Button 4" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"05"}{Name} = "Push Button 5" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"06"}{Name} = "Push Button 6" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"07"}{Name} = "Push Button 7" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"08"}{Name} = "Push Button 8" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"09"}{Name} = "Push Button 9" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"10"}{Name} = "Push Button 10" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"11"}{Name} = "Push Button 11" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"12"}{Name} = "Push Button 12" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"13"}{Name} = "Push Button 13" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"14"}{Name} = "Push Button 14" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"15"}{Name} = "Push Button 15" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"16"}{Name} = "Push Button 16" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"17"}{Name} = "Push Button 17" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"18"}{Name} = "Push Button 18" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"19"}{Name} = "Push Button 19" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"20"}{Name} = "Push Button 10" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"21"}{Name} = "Push Button 21" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"22"}{Name} = "Push Button 22" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"23"}{Name} = "Push Button 23" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"24"}{Name} = "Push Button 24" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"25"}{Name} = "Push Button 25" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"26"}{Name} = "Push Button 26" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"27"}{Name} = "Push Button 27" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"28"}{Name} = "Push Button 28" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"29"}{Name} = "Push Button 29" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"30"}{Name} = "Push Button 30" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"31"}{Name} = "Push Button 31" ;
-$global{Cons}{ModuleTypes}{'28'}{Channels}{"32"}{Name} = "Push Button 32" ;
+$global{Cons}{ModuleTypes}{'28'}{ChannelNaming} = "dec" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push button 1" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"02"}{Name} = "Push button 2" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"02"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"03"}{Name} = "Push button 3" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"03"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"04"}{Name} = "Push button 4" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"04"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"05"}{Name} = "Push button 5" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"05"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"06"}{Name} = "Push button 6" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"06"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"07"}{Name} = "Push button 7" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"07"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"08"}{Name} = "Push button 8" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"08"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"09"}{Name} = "Push button 9" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"09"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"10"}{Name} = "Push button 10" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"10"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"11"}{Name} = "Push button 11" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"11"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"12"}{Name} = "Push button 12" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"12"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"13"}{Name} = "Push button 13" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"13"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"14"}{Name} = "Push button 14" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"14"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"15"}{Name} = "Push button 15" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"15"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"16"}{Name} = "Push button 16" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"16"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"17"}{Name} = "Push button 17" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"17"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"18"}{Name} = "Push button 18" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"18"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"19"}{Name} = "Push button 19" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"19"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"20"}{Name} = "Push button 10" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"20"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"21"}{Name} = "Push button 21" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"21"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"22"}{Name} = "Push button 22" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"22"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"23"}{Name} = "Push button 23" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"23"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"24"}{Name} = "Push button 24" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"24"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"25"}{Name} = "Push button 25" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"25"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"26"}{Name} = "Push button 26" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"26"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"27"}{Name} = "Push button 27" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"27"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"28"}{Name} = "Push button 28" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"28"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"29"}{Name} = "Push button 29" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"29"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"30"}{Name} = "Push button 30" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"30"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"31"}{Name} = "Push button 31" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"31"}{Type} = "Button" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"32"}{Name} = "Push button 32" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"32"}{Type} = "Button" ;
 $global{Cons}{ModuleTypes}{'28'}{Channels}{"33"}{Name} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"33"}{Type} = "Temperature" ;
 
 # 7-channel input: VMB7IN
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"01"}{Name} = "Push Button 1" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"02"}{Name} = "Push Button 2" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"04"}{Name} = "Push Button 3" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"08"}{Name} = "Push Button 4" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"16"}{Name} = "Push Button 5" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"32"}{Name} = "Push Button 6" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"64"}{Name} = "Push Button 7" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"01"}{Name} = "Push button 1" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"01"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"02"}{Name} = "Push button 2" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"02"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"03"}{Name} = "Push button 3" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"03"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"04"}{Name} = "Push button 4" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"04"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"05"}{Name} = "Push button 5" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"05"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"06"}{Name} = "Push button 6" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"06"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"07"}{Name} = "Push button 7" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"07"}{Type} = "Counter" ;
 
 ################### Relays
 # 4 channel relay module with directload connections: VMB4RYLD
@@ -130,9 +261,9 @@ $global{Cons}{ModuleTypes}{'22'}{Channels}{"64"}{Name} = "Push Button 7" ;
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000001'}{Channel} = "01" ;
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000010'}{Channel} = "02" ;
-$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000100'}{Channel} = "04" ;
-$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Match}{'00001000'}{Channel} = "08" ;
-$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Match}{'00010000'}{Channel} = "10" ;
+$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000100'}{Channel} = "03" ;
+$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Match}{'00001000'}{Channel} = "04" ;
+$global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'0'}{Match}{'00010000'}{Channel} = "05" ;
 
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'1'}{Name} = "Channel status" ;
 $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'1'}{Match}{'%......00'}{Info} = "Channel normal" ;
@@ -161,9 +292,9 @@ $global{Cons}{ModuleTypes}{'10'}{Messages}{'FB'}{Data}{'3'}{Match}{'00010000'}{I
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000001'}{Channel} = "01" ;
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000010'}{Channel} = "02" ;
-$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000100'}{Channel} = "04" ;
-$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Match}{'00001000'}{Channel} = "08" ;
-$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Match}{'00010000'}{Channel} = "10" ;
+$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000100'}{Channel} = "03" ;
+$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Match}{'00001000'}{Channel} = "04" ;
+$global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Match}{'00010000'}{Channel} = "05" ;
 
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'1'}{Name} = "Channel status" ;
 $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'1'}{Match}{'%......00'}{Info} = "Channel normal" ;
@@ -209,8 +340,8 @@ $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{Convert
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Match}{'02'}{Channel} = "02" ;
-$global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Match}{'04'}{Channel} = "04" ;
-$global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Match}{'08'}{Channel} = "08" ;
+$global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Match}{'04'}{Channel} = "03" ;
+$global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'0'}{Match}{'08'}{Channel} = "04" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'1'}{Name} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
 
@@ -218,8 +349,8 @@ $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{'1'}{Match}{'%.'}{Convert
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'0'}{Match}{'02'}{Channel} = "02" ;
-$global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'0'}{Match}{'04'}{Channel} = "04" ;
-$global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'0'}{Match}{'08'}{Channel} = "08" ;
+$global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'0'}{Match}{'04'}{Channel} = "03" ;
+$global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'0'}{Match}{'08'}{Channel} = "04" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'1'}{Name} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{openHAB} = "Dimmer" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
@@ -228,8 +359,8 @@ $global{Cons}{ModuleTypes}{'12'}{Messages}{'0F'}{Data}{'1'}{Match}{'%.'}{Convert
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'0'}{Name} = "Channel" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'0'}{Match}{'00000001'}{Channel} = "01" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'0'}{Match}{'00000010'}{Channel} = "02" ;
-$global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'0'}{Match}{'00000100'}{Channel} = "04" ;
-$global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'0'}{Match}{'00001000'}{Channel} = "08" ;
+$global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'0'}{Match}{'00000100'}{Channel} = "03" ;
+$global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'0'}{Match}{'00001000'}{Channel} = "04" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'1'}{Name} = "Channel status" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'1'}{Match}{'%......00'}{Info} = "Channel normal" ;
 $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{'1'}{Match}{'%......01'}{Info} = "Channel inhibted" ;
@@ -552,9 +683,9 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB
 
 # Mini PIR detector module: VMBPIRM
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
 
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Dark output" ;
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%......1.'}{Info} = "Light output" ;
@@ -565,9 +696,9 @@ $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%..1.....'}{
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'0'}{Match}{'%.1......'}{Info} = "Absence output" ;
 
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
 
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.......1'}{Info} = "Dark output" ;
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%......1.'}{Info} = "Light output" ;
@@ -578,9 +709,9 @@ $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%..1.....'}{
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'1'}{Match}{'%.1......'}{Info} = "Absence output" ;
 
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
-#$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
 
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.......1'}{Info} = "Dark output" ;
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%......1.'}{Info} = "Light output" ;
@@ -590,7 +721,6 @@ $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%...1....'}{
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%..1.....'}{Info} = "Light depending motion 2 output" ;
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{Data}{'2'}{Match}{'%.1......'}{Info} = "Absence output" ;
 
-# 7 channel input module: VMB7IN
 $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Name} = "COMMAND_OUTPUT_STATUS" ;
 $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Name} = "Output channel just activated" ;
 $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Heater just activated" ;

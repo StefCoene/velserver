@@ -21,7 +21,7 @@ sub get_all_modules_from_mysql {
 # Loop all found modules and load the extra info from the mysql database
 sub get_all_modules_info_from_mysql {
    foreach my $address (sort keys (%{$global{Vars}{Modules}{PerStatus}{Found}{ModuleList}}) ) {
-      my @SubAddr ;
+      my %SubAddr ;
 
       my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data" ) ;
       foreach my $data (sort keys (%data)) {
@@ -29,7 +29,7 @@ sub get_all_modules_info_from_mysql {
          if ( $data =~ /^SubAddr/ and $data{$data}{value} ne "FF" ) {
             # TODO: save type per sub address, sometimes info is transmitted with the sub address like COMMAND_MODULE_STATUS
             my $SubAddr = $data{$data}{value} ; # Handier var
-            push @SubAddr, $SubAddr ;
+            $SubAddr{$SubAddr} = $data ;
          } else {
             # If there is an address for the temperature sensor, add this address to the list with type 'Temperature'
             if ( $data eq "TemperatureAddr" ) {
@@ -40,8 +40,8 @@ sub get_all_modules_info_from_mysql {
       }
 
       # Store a list of sub addresses in 1 variable
-      if ( @SubAddr ) {
-         my $SubAddr = join ",", @SubAddr ;
+      if ( %SubAddr ) {
+         my $SubAddr = join ",", keys  %SubAddr ;
          $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} = $SubAddr ;
       }
 
@@ -56,9 +56,13 @@ sub get_all_modules_info_from_mysql {
          $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{$data}{date}  = $date ;
       }
 
-      if ( @SubAddr ) {
-         foreach my $SubAddr (@SubAddr) {
-            %{$global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}} = %{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}} 
+      # A VMBGPOD has multiple address. When the a button is pressed, it is submitted from the sub address and so we need to add '8' per subaddress to the channel.
+      if ( %SubAddr ) {
+         foreach my $SubAddr (keys %SubAddr) {
+            %{$global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}} = %{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}} ;
+            if ( $SubAddr{$SubAddr} =~ /SubAddr(\d+)/ ) {
+               $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{SubAddrMulti} = $1 * 8 ;
+            }
          }
       }
    }

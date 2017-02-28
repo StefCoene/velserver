@@ -42,14 +42,19 @@ sub process_message {
          # TODO: when an unknown module is found: trigger a scan
          if ( defined $global{Vars}{Modules}{Address}{$message{address}} and
                       $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ne '' ) {
-             $message{ModuleType} = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ;
+            $message{addressMaster} = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{address} ; # This is the master address, used for a VMBGPOD because it has sub addresses. We use this when updating the mysql DB.
+            $message{ModuleType}    = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ;
+         } else {
+            $message{addressMaster} = $message{address} ;
          }
       }
 
       # RTR_size = 40 > Scan message
       if ( $message{RTR_size} eq "40" ) {
          $message{text} .= "Scan" ;
-         &do_query ($global{dbh},"insert into `modules` (`address`, `status`, `date`) VALUES (?, ?, NOW() ) ON DUPLICATE KEY UPDATE `status`=values(status), `date`=values(date)", $message{address}, "Start scan") ;
+         my $sql = "insert into `modules` (`address`, `status`, `date`) VALUES (?, ?, NOW() ) ON DUPLICATE KEY UPDATE `status`=values(status), `date`=values(date)" ;
+         &do_query ($global{dbh},$sql, $message{address}, "Start scan") ;
+         $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{address} = $message{address} ;
 
       } else {
          $message{MessageType} = shift @hex ;
@@ -76,7 +81,7 @@ sub process_message {
             } else {
                $message{text} .= "address $message{address}, type = unknown $hex[0]" ;
             }
-            &do_query ($global{dbh},"insert into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `type`=values(type), `status`=values(status), `date`=values(date)", $message{address}, $hex[0], "Found") ;
+            &do_query ($global{dbh},"insert into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `type`=values(type), `status`=values(status), `date`=values(date)", $message{addressMaster}, $hex[0], "Found") ;
             &log("mysql","module found: address=$message{address}, type=$hex[0]") ;
             $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $hex[0] ;
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "Serial1", $hex[1]) ;
@@ -126,14 +131,15 @@ sub process_message {
             &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "Temperature", $temperature) ;
             &log("mysql","module data: address=$message{address}, Temperature=$temperature") ;
             $message{text} .= "Temperature = $temperature" ;
-            &openHAB_update_state ("Temperature_$message{address}", $temperature) ;
+            &openHAB_update_state ("Temperature_$message{addressMaster}", $temperature) ;
 
          # Name of channel
          } elsif ( $message{MessageType} eq "F0"
                 or $message{MessageType} eq "F1" 
                 or $message{MessageType} eq "F2" ) {
 
-            my $Channel = shift @hex;
+            my $hex = shift @hex ;
+            my $Channel = &channel_id_to_number($hex,$message{ModuleType}) ;
 
             if ( $message{MessageType} eq "F0" ) {
                $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value} = "" ; # Reset the name
@@ -150,7 +156,7 @@ sub process_message {
                     ( ( $message{ModuleType} eq "1E" and $Channel eq "09" ) or
                       ( $message{ModuleType} eq "1F" and $Channel eq "09" ) or
                       ( $message{ModuleType} eq "20" and $Channel eq "09" ) or
-                      ( $message{ModuleType} eq "28" and $Channel eq "21" ) )
+                      ( $message{ModuleType} eq "28" and $Channel eq "33" ) )
                    ) {
                      # Channel 21 (and channel 03/05/09 (VMBGP1D/VMBGP2D/VMBGP4D) are virtual channels whose name is the temperature sensor name of the touch display.
                      &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
@@ -250,10 +256,12 @@ sub process_message {
 
                               # Button pressed on touch or an other input
                               if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
+
                                  $Channel = $hex[$byte] ;
                                  next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-                                 $Channel = $global{Cons}{ConvertButton}{$Channel} if defined $global{Cons}{ConvertButton}{$Channel} ; # Convert the Channel to a usefull number
-                                 $info{$Channel}{Button} = $Value if defined $Channel ;
+                                 $Channel = &channel_id_to_number ($Channel) ; # Convert it to a number
+                                 $Channel += $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SubAddrMulti} if defined $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SubAddrMulti} ; # If the button is on a sub address (from a VMBGPOD), add the sub address ofset to the channel
+                                 $info{$Channel}{Button} = $Value ;
                               }
                            }
 
@@ -264,34 +272,34 @@ sub process_message {
                               if ( $openHAB =~ "(.+):Button" ) { # A Button is tricky: we have to do something on RELEASED, but we need to know if it was a short or a long predd
                                  my $action = $1 ;
                                  if ( $action eq "RELEASED" ) {
-                                    if ( $global{openHAB}{ButtonState}{$message{address}}{$Channel} eq "PRESSED" ) {
+                                    if ( $global{openHAB}{ButtonState}{$message{addressMaster}}{$Channel} eq "PRESSED" ) {
                                        # PRESSED: send ON + OFF
-                                       $openHAB_update_state{"Button_$message{address}_$Channel"} = "ON OFF" ;
+                                       $openHAB_update_state{"Button_$message{addressMaster}_$Channel"} = "ON OFF" ;
                                     } else {
                                        # LONGPRESSED: send OFF
-                                       $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "OFF" ;
+                                       $openHAB_update_state{"ButtonLong_$message{addressMaster}_$Channel"} = "OFF" ;
                                     }
                                  } else {
-                                    $global{openHAB}{ButtonState}{$message{address}}{$Channel} = $action ; # remember type: PRESSED or LONGPRESSED
+                                    $global{openHAB}{ButtonState}{$message{addressMaster}}{$Channel} = $action ; # remember type: PRESSED or LONGPRESSED
                                     if ( $action eq "PRESSED" ) {
                                        # Don't send ON yet, wait for RELEASED. Because for a LONGPRESSED, there is also a PRESSED message first
                                     } elsif ( $action eq "LONGPRESSED" ) {
-                                       $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "ON" ;
+                                       $openHAB_update_state{"ButtonLong_$message{addressMaster}_$Channel"} = "ON" ;
                                     }
                                  }
                               } elsif ( $openHAB =~ /:/ ) {
                                  my @openHAB = split ":", $openHAB ;
                                  if ( $Channel eq "00" ) {
-                                    $openHAB_update_state{"$openHAB[1]_$message{address}"} = $openHAB[0] ;
+                                    $openHAB_update_state{"$openHAB[1]_$message{addressMaster}"} = $openHAB[0] ;
                                  } else {
-                                    $openHAB_update_state{"$openHAB[1]_$message{address}_$Channel"} = $openHAB[0] ;
+                                    $openHAB_update_state{"$openHAB[1]_$message{addressMaster}_$Channel"} = $openHAB[0] ;
                                  }
 
                               } else {
                                  if ( $Channel eq "00" ) {
-                                    $openHAB_update_state{"$openHAB"."_"."$message{address}"} = $Value if defined $Value ;
+                                    $openHAB_update_state{"$openHAB"."_"."$message{addressMaster}"} = $Value if defined $Value ;
                                  } else {
-                                    $openHAB_update_state{"$openHAB"."_"."$message{address}_$Channel"} = $Value if defined $Value ;
+                                    $openHAB_update_state{"$openHAB"."_"."$message{addressMaster}_$Channel"} = $Value if defined $Value ;
                                  }
                               }
                            }
@@ -313,24 +321,24 @@ sub process_message {
                      if ( $info{$Channel}{$Name}{List}) {
                         my $temp = join ";", @{$info{$Channel}{$Name}{List}} ;
                         $message{text} .= "  $Channel, $Name = $temp\n" ;
-                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, $Name, $temp) ;
-                        &log("mysql","module channel info: address=$message{address}, Channel=$Channel, $Name=$temp") ;
+                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{addressMaster}, $Channel, $Name, $temp) ;
+                        &log("mysql","module channel info: address=$message{address}, addressMaster=$message{addressMaster}, Channel=$Channel, $Name=$temp") ;
                      } elsif ( $Name eq "Divider" ) {
-                        $openHAB_update_state{"Divider_$message{address}_$Channel"} = $info{$Channel}{Divider} ;
+                        $openHAB_update_state{"Divider_$message{addressMaster}_$Channel"} = $info{$Channel}{Divider} ;
                      } elsif ( $Name eq "Counter" ) {
                         my $CounterRaw = &hex_to_dec ($info{$Channel}{Counter}) ;
                         my $Counter = $CounterRaw / $info{$Channel}{Divider} ;
                         $message{text} .= "  $Channel, Counter = $Counter, CounterRaw = $CounterRaw\n" ;
-                        $openHAB_update_state{"Counter_$message{address}_$Channel"} = $Counter ;
-                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "Counter", $Counter) ;
-                        &log("mysql","module channel name: address=$message{address}, Channel=$Channel, Counter=$Counter") ;
-                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "CounterRaw", $CounterRaw) ;
-                        &log("mysql","module channel name: address=$message{address}, Channel=$Channel, CounterRaw=$CounterRaw") ;
-                        $openHAB_update_state{"CounterRaw_$message{address}_$Channel"} = $CounterRaw ;
+                        $openHAB_update_state{"Counter_$message{addressMaster}_$Channel"} = $Counter ;
+                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{addressMaster}, $Channel, "Counter", $Counter) ;
+                        &log("mysql","module channel name: address=$message{address}, addressMaster=$message{addressMaster}, Channel=$Channel, Counter=$Counter") ;
+                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{addressMaster}, $Channel, "CounterRaw", $CounterRaw) ;
+                        &log("mysql","module channel name: address=$message{address}, addressMaster=$message{addressMaster}, Channel=$Channel, CounterRaw=$CounterRaw") ;
+                        $openHAB_update_state{"CounterRaw_$message{addressMaster}_$Channel"} = $CounterRaw ;
                      } else {
                         $message{text} .= "  $Channel, $Name = $info{$Channel}{$Name}\n" ;
-                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, $Name, $info{$Channel}{$Name}) ;
-                        &log("mysql","module channel name: address=$message{address}, Channel=$Channel, $Name=$info{$Channel}{$Name}") ;
+                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{addressMaster}, $Channel, $Name, $info{$Channel}{$Name}) ;
+                        &log("mysql","module channel name: address=$message{address}, addressMaster=$message{addressMaster}, Channel=$Channel, $Name=$info{$Channel}{$Name}") ;
                      }
                   }
                }
@@ -352,7 +360,7 @@ sub process_message {
    }
 
    my $date = `date` ; chomp $date ; # Get a date stamp
-   print "$date $message{prio} $message{address}=$message{ModuleType} $message{MessageType}=$message{MessageName} :: $message{text}\n" ;
+   print "$date $message{prio} $message{address}($message{addressMaster})=$message{ModuleType} $message{MessageType}=$message{MessageName} :: $message{text}\n" ;
 
    &do_query ($global{dbh},"insert into `messages` (`date`, `raw`, `address`, `prio`, `type`, `rtr_size`) VALUES (NOW(), ?, ?, ?, ?, ? )", $message{Raw}, $message{address}, $message{prio}, $message{MessageType}, $message{RTR_size}) ;
 }
@@ -378,6 +386,7 @@ sub get_module_info () {
 
    $rtr     = "0x00" ;
 
+   $channel = &channel_number_to_id ($channel,$type) ;
    my @message = ("0x$command", $channel) ;
    &print_sock ($sock,$prio,"0x$address",$rtr,@message) ;
    usleep (50000) ;
@@ -423,7 +432,7 @@ sub get_status () {
          if ( $type eq "1E" or
               $type eq "1F" or
               $type eq "20" or
-              $type eq "28" ) { # Touch met OLED + VMBGP1D/VMBGP2D/VMBGP4D: channel FF will request the names of all channels
+              $type eq "28" ) { # Touch with OLED + VMBGP1D/VMBGP2D/VMBGP4D: channel FF will request the names of all channels
             &get_module_info ($sock, $address, $type, '0xFF', 'EF') ;
          } else {
             &get_module_info ($sock, $address, $type, '', 'EF') ;
@@ -434,16 +443,43 @@ sub get_status () {
       }
    }
 
-   if ( ( $type eq "1D" ) or # Blind
-        ( $type eq "10" ) or # Relay
-        ( $type eq "11" ) or # Relay
-        ( $type eq "12" ) ) { # Dimmer
-   } 
-
-   if ( $type eq "28" ) { # Touch
-   }
-
    return $output ;
+}
+
+# Convert channel number to channel bit. 3 = 1000 -> 8
+# Used by commands.pl & scripts
+sub channel_number_to_id () {
+   my $channel = $_[0] ;
+   my $type    = $_[1] ;
+   if ( defined $global{Cons}{ModuleTypes}{$type}{ChannelNaming} and
+                $global{Cons}{ModuleTypes}{$type}{ChannelNaming} eq "dec" ) {
+   } else {
+      $channel -- ;
+      my $test = "1" . "0" x $channel ;
+      $channel = &bin_to_dec ($test) ;
+   }
+   return $channel ;
+}
+
+# Convert channnel bit to channel number. 8 -> 1000 = 3
+# Used by logger.pl
+sub channel_id_to_number () {
+   my $channel = $_[0] ;
+   my $type    = $_[1] ; # Optional
+   #print "IN  $channel $type\n" ;
+   if ( defined $type and
+        defined $global{Cons}{ModuleTypes}{$type}{ChannelNaming} and
+                $global{Cons}{ModuleTypes}{$type}{ChannelNaming} eq "dec" ) {
+      $channel = &hex_to_dec ($channel) ;
+   } else {
+      $channel = &hex_to_bin ($channel) ;
+      $channel =~ /(0*)$/ ; # Filter out last 0's
+      $channel = ($1 =~ tr/0//); # Count last 0's
+      $channel ++ ;
+   }
+   $channel = "0" . $channel if $channel < 10 ;
+   #print "OUT $channel $type\n" ;
+   return $channel ;
 }
 
 # Get the status of modules
