@@ -462,7 +462,7 @@ sub channel_number_to_id () {
    } else {
       $channel -- ;
       my $test = "1" . "0" x $channel ;
-      $channel = &bin_to_dec ($test) ;
+      $channel = &bin_to_hex ($test) ;
    }
    return $channel ;
 }
@@ -530,14 +530,15 @@ sub update_module_status () {
 
 sub button_set {
    my $sock = $_[0] ;
-   # Dimmer: 0x04 = channel 3, 0x1A = 26%
    my $address = "0x" . $_[1] ;
-   my $channel = "0x" . $_[2] ;
+   my $channel = $_[2] ;
    my $value   = $_[3] ;
    my $prio    = "0xF8"; # High
    my $rtr     = "0x00";
 
    if ( $value eq "ON" ) {
+      $channel = "0x" . &channel_number_to_id($channel) ;
+
       # DATABYTE2 = Channel just pressed
       # DATABYTE3 = Channel just released
       # DATABYTE4 = Channel long pressed
@@ -557,8 +558,8 @@ sub dim_value {
    my $prio    = "0xF8"; # High
    my $rtr     = "0x00";
 
-   $value = sprintf ("%02X",$value) ;
    $channel = "0x" . &channel_number_to_id($channel) ;
+   $value = sprintf ("%02X",$value) ;
 
    @message = ("0x07", "$channel", "0x$value", "0x00", "0x00") ; # COMMAND_SET_DIMVALUE
    &print_sock ($sock,$prio,$address,$rtr,@message) ;
@@ -567,9 +568,14 @@ sub dim_value {
 sub relay_off {
    my $sock = $_[0] ;
    my $address = "0x" . $_[1] ;
-   my $channel = "0x" . $_[2] ;
+   my $channel = $_[2] ;
    my $prio    = "0xF8"; # High
    my $rtr     = "0x00";
+open (LOG,">>/tmp/scne") ;
+print LOG "$channel\n" ;
+
+   $channel = "0x" . &channel_number_to_id($channel) ;
+print LOG "$channel\n" ;
 
    @message = ("0x01", "$channel") ; # COMMAND_SWITCH_RELAY_OFF
    &print_sock ($sock,$prio,$address,$rtr,@message) ;
@@ -578,9 +584,11 @@ sub relay_off {
 sub relay_on {
    my $sock = $_[0] ;
    my $address = "0x" . $_[1] ;
-   my $channel = "0x" . $_[2] ;
+   my $channel = $_[2] ;
    my $prio    = "0xF8"; # High
    my $rtr     = "0x00";
+
+   $channel = "0x" . &channel_number_to_id($channel) ;
 
    @message = ("0x02", "$channel") ; # COMMAND_SWITCH_RELAY_ON
    &print_sock ($sock,$prio,$address,$rtr,@message) ;
