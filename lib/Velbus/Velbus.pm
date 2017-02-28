@@ -152,19 +152,25 @@ sub process_message {
             }
 
             if ( $message{MessageType} eq "F2" ) {
-               if ( defined $message{ModuleType} and 
-                    ( ( $message{ModuleType} eq "1E" and $Channel eq "09" ) or
-                      ( $message{ModuleType} eq "1F" and $Channel eq "09" ) or
-                      ( $message{ModuleType} eq "20" and $Channel eq "09" ) or
-                      ( $message{ModuleType} eq "28" and $Channel eq "33" ) )
-                   ) {
-                     # Channel 21 (and channel 03/05/09 (VMBGP1D/VMBGP2D/VMBGP4D) are virtual channels whose name is the temperature sensor name of the touch display.
-                     &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
-                     &log("mysql","module TempSensor: address=$message{address}, TempSensor=$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}") ;
+               if ( defined $message{ModuleType} ) {
+                  # For 2C = VMBPIRO, only the sensor name is returned as Channel 01. But this is in reality channel 08.
+                  if ( $message{ModuleType} eq "2C" ) {
+                     $Channel = "09" ;
+                  }
+                  if ( $message{ModuleType} eq "2C" and $Channel eq "09" or
+                       $message{ModuleType} eq "1E" and $Channel eq "09" or
+                       $message{ModuleType} eq "1F" and $Channel eq "09" or
+                       $message{ModuleType} eq "20" and $Channel eq "09" or
+                       $message{ModuleType} eq "28" and $Channel eq "33" )
+                      ) {
+                        # Channel 21 and channel 09 (VMBGP1D/VMBGP2D/VMBGP4D/VMBPIRO) are virtual channels whose name is the temperature sensor name of the touch display.
+                        &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
+                        &log("mysql","module TempSensor: address=$message{address}, TempSensor=$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}") ;
+                  }
+                  &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "Name", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
+                  &log("mysql","module channel name: address=$message{address}, Channel=$Channel, name=$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}") ;
+                  $message{text} .= "Channel $Channel name = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}" ;
                }
-               &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "Name", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
-               &log("mysql","module channel name: address=$message{address}, Channel=$Channel, name=$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}") ;
-               $message{text} .= "Channel $Channel name = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}" ;
             }
 
          } else {
