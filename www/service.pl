@@ -179,7 +179,7 @@ if ( $type eq "Switch" and ( $action eq "Get" or $action eq "Set" ) ) {
    if ( defined $Moduletype and ( $Moduletype eq "1E" or $Moduletype eq "1F" or $Moduletype eq "20" or $Moduletype eq "28" or $Moduletype eq "22" ) ) {
       if ( $action eq "Set" ) {
          if ( defined $value ) {
-            &button_set ($sock, $address, $channel, $value) ;
+            &button_pressed ($sock, $address, $channel, $value) ;
          }
       }
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;
@@ -265,12 +265,14 @@ if ( $type eq "Relay" and ( $action eq "Get" or $action eq "On" or $action eq "O
    }
 }
 
-if ( $type eq "Counter" and ( $action eq "GetCounter" or $action eq "GetDivider" ) ) {
+if ( $type eq "Counter" and ( $action eq "GetCounter"  or $action eq "GetCounterCurrent" or $action eq "GetDivider" ) ) {
    if ( defined $Moduletype and $Moduletype eq "22" ) {
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;
 
       if ( $action eq "GetCounter" ) {
          $json->{Status} = $data{Counter}{value} if defined $data{Counter} ;
+      } elsif ( $action eq "GetCounterCurrent" ) {
+         $json->{Status} = $data{CounterCurrent}{value} if defined $data{CounterCurrent} ;
       } elsif ( $action eq "GetCounterRaw" ) {
          $json->{Status} = $data{CounterRaw}{value} if defined $data{CounterRaw} ;
       } else {

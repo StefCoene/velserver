@@ -241,19 +241,19 @@ $global{Cons}{ModuleTypes}{'28'}{Channels}{"33"}{Type} = "Temperature" ;
 
 # 7-channel input: VMB7IN
 $global{Cons}{ModuleTypes}{'22'}{Channels}{"01"}{Name} = "Push button 1" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"01"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"01"}{Type} = "ButtonCounter" ;
 $global{Cons}{ModuleTypes}{'22'}{Channels}{"02"}{Name} = "Push button 2" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"02"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"02"}{Type} = "ButtonCounter" ;
 $global{Cons}{ModuleTypes}{'22'}{Channels}{"03"}{Name} = "Push button 3" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"03"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"03"}{Type} = "ButtonCounter" ;
 $global{Cons}{ModuleTypes}{'22'}{Channels}{"04"}{Name} = "Push button 4" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"04"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"04"}{Type} = "ButtonCounter" ;
 $global{Cons}{ModuleTypes}{'22'}{Channels}{"05"}{Name} = "Push button 5" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"05"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"05"}{Type} = "Button" ;
 $global{Cons}{ModuleTypes}{'22'}{Channels}{"06"}{Name} = "Push button 6" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"06"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"06"}{Type} = "Button" ;
 $global{Cons}{ModuleTypes}{'22'}{Channels}{"07"}{Name} = "Push button 7" ;
-$global{Cons}{ModuleTypes}{'22'}{Channels}{"07"}{Type} = "Counter" ;
+$global{Cons}{ModuleTypes}{'22'}{Channels}{"07"}{Type} = "Button" ;
 
 ################### Relays
 # 4 channel relay module with directload connections: VMB4RYLD

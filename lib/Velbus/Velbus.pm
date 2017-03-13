@@ -1,3 +1,10 @@
+
+#Thu Mar  9 22:00:01 CET 2017 lo  3A(3A)=20 E6=COMMAND_SENSOR_TEMPERATURE :: Temperature = 21.62
+#Thu Mar  9 22:00:17 CET 2017 lo  36(36)=20 E6=COMMAND_SENSOR_TEMPERATURE :: Temperature = 19.19
+#Thu Mar  9 22:00:39 CET 2017 HI  35()=Temperature 00=COMMAND_OUTPUT_STATUS ::
+#  00, Output channel just activated = Heater just activated;Pump just activated
+
+
 use HTTP::Request::Common;
 use LWP::UserAgent ;
 
@@ -9,6 +16,10 @@ sub process_message {
    my %message ; # Info about the message
 
    $message{Raw} = join " ", @hex ;
+
+   &log("raw","$message{Raw}") ;
+
+   #$message{text} .= "RAW = $message{Raw}" ;
 
    # Message format:
    $message{STX}      = shift @hex ;
@@ -82,33 +93,30 @@ sub process_message {
                $message{text} .= "address $message{address}, type = unknown $hex[0]" ;
             }
             &do_query ($global{dbh},"insert into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `type`=values(type), `status`=values(status), `date`=values(date)", $message{addressMaster}, $hex[0], "Found") ;
-            &log("mysql","module found: address=$message{address}, type=$hex[0]") ;
             $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $hex[0] ;
-            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "Serial1", $hex[1]) ;
-            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "Serial2", $hex[2]) ;
-            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "MemoryMap", $hex[3]) ;
-            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "BuildYear", $hex[4]) ;
-            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "BuildWeek", $hex[5]) ;
-            &log("mysql","module info: address=$message{address}, Serial1=$hex[1], Serial2=$hex[2], MemoryMap=$hex[3], BuildYear=$hex[4], BuildWeek=$hex[5]") ;
+            &update_modules_info ($message{address}, "Serial1", $hex[1]) ;
+            &update_modules_info ($message{address}, "Serial2", $hex[2]) ;
+            &update_modules_info ($message{address}, "MemoryMap", $hex[3]) ;
+            &update_modules_info ($message{address}, "BuildYear", $hex[4]) ;
+            &update_modules_info ($message{address}, "BuildWeek", $hex[5]) ;
 
          } elsif ( $message{MessageType} eq "B0" ) { # Module subtype: answer to a Scan
             $message{text} .= "address $message{address}, extra info" ;
             if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ) {
                # The touch modules have a special address for the temperature sensor
                if ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
-                  &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TemperatureAddr", $hex[6]) ;
-                  &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr1", $hex[3]) ;
-                  &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr2", $hex[4]) ;
-                  &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "SubAddr3", $hex[5]) ;
-                  &log("mysql","module info: address=$message{address}, TemperatureAddr=$hex[6]") ;
-                  &log("mysql","module info: address=$message{address}, SubAddr1=$hex[3], SubAddr2=$hex[4], SubAddr3=$hex[5]") ;
+                  &update_modules_info ($message{address}, "SubAddr1", $hex[3]) ;
+                  &update_modules_info ($message{address}, "SubAddr2", $hex[4]) ;
+                  &update_modules_info ($message{address}, "SubAddr3", $hex[5]) ;
+                  &update_modules_info ($message{address}, "SubAddr4", $hex[6]) ;
+                  &update_modules_info ($message{address}, "TemperatureAddr", $hex[6]) ;
                }
 
                if ( ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "1E" ) or # VMBGP1D
                     ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "1F" ) or # VMBGP2D
                     ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "20" ) ) { # VMBGP4D
-                  &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TemperatureAddr", $hex[3]) ;
-                  &log("mysql","module info: address=$message{address}, TemperatureAddr=$hex[3]") ;
+                  &update_modules_info ($message{address}, "SubAddr1", $hex[3]) ;
+                  &update_modules_info ($message{address}, "TemperatureAddr", $hex[3]) ;
                }
             }
 
@@ -128,8 +136,7 @@ sub process_message {
 
          } elsif ( $message{MessageType} eq "E6" ) { # Temperature status
             my $temperature = sprintf ("%.2f",&hex_to_temperature($hex[0], $hex[1])) ;
-            &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "Temperature", $temperature) ;
-            &log("mysql","module data: address=$message{address}, Temperature=$temperature") ;
+            &update_modules_info ($message{address}, "Temperature", $temperature) ;
             $message{text} .= "Temperature = $temperature" ;
             &openHAB_update_state ("Temperature_$message{addressMaster}", $temperature) ;
 
@@ -164,12 +171,10 @@ sub process_message {
                        $message{ModuleType} eq "28" and $Channel eq "33" )
                       {
                         # Channel 21 and channel 09 (VMBGP1D/VMBGP2D/VMBGP4D/VMBPIRO) are virtual channels whose name is the temperature sensor name of the touch display.
-                        &do_query ($global{dbh},"insert into `modules_info` (`address`, `data`, `value`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
-                        &log("mysql","module TempSensor: address=$message{address}, TempSensor=$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}") ;
+                        &update_modules_info ($message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
                   }
-                  &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{address}, $Channel, "Name", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
-                  &log("mysql","module channel name: address=$message{address}, Channel=$Channel, name=$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}") ;
-                  $message{text} .= "Channel $Channel name = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}" ;
+                  $message{text} .= "\n  Channel $Channel, Name = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}" ;
+                  &update_modules_channel_info ($message{address}, $Channel, "Name", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
                }
             }
 
@@ -265,7 +270,7 @@ sub process_message {
 
                                  $Channel = $hex[$byte] ;
                                  next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-                                 $Channel = &channel_id_to_number ($Channel) ; # Convert it to a number
+                                 $Channel = &channel_id_to_number($Channel,$message{ModuleType}) ; # Convert it to a number
                                  $Channel += $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SubAddrMulti} if defined $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SubAddrMulti} ; # If the button is on a sub address (from a VMBGPOD), add the sub address ofset to the channel
                                  $info{$Channel}{Button} = $Value ;
                               }
@@ -327,24 +332,48 @@ sub process_message {
                      if ( $info{$Channel}{$Name}{List}) {
                         my $temp = join ";", @{$info{$Channel}{$Name}{List}} ;
                         $message{text} .= "  $Channel, $Name = $temp\n" ;
-                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{addressMaster}, $Channel, $Name, $temp) ;
-                        &log("mysql","module channel info: address=$message{address}, addressMaster=$message{addressMaster}, Channel=$Channel, $Name=$temp") ;
+                        &update_modules_channel_info ($message{addressMaster}, $Channel, $Name, $temp) ;
                      } elsif ( $Name eq "Divider" ) {
                         $openHAB_update_state{"Divider_$message{addressMaster}_$Channel"} = $info{$Channel}{Divider} ;
+                        $message{text} .= "  $Channel, Divider = $Divider\n" ;
                      } elsif ( $Name eq "Counter" ) {
                         my $CounterRaw = &hex_to_dec ($info{$Channel}{Counter}) ;
                         my $Counter = $CounterRaw / $info{$Channel}{Divider} ;
-                        $message{text} .= "  $Channel, Counter = $Counter, CounterRaw = $CounterRaw\n" ;
-                        $openHAB_update_state{"Counter_$message{addressMaster}_$Channel"} = $Counter ;
-                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{addressMaster}, $Channel, "Counter", $Counter) ;
-                        &log("mysql","module channel name: address=$message{address}, addressMaster=$message{addressMaster}, Channel=$Channel, Counter=$Counter") ;
-                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{addressMaster}, $Channel, "CounterRaw", $CounterRaw) ;
-                        &log("mysql","module channel name: address=$message{address}, addressMaster=$message{addressMaster}, Channel=$Channel, CounterRaw=$CounterRaw") ;
+
+                        &update_modules_channel_info ($message{addressMaster}, $Channel, "CounterRaw", $CounterRaw) ;
+                        &update_modules_channel_info ($message{addressMaster}, $Channel, "Counter", $Counter) ;
                         $openHAB_update_state{"CounterRaw_$message{addressMaster}_$Channel"} = $CounterRaw ;
+                        $openHAB_update_state{"Counter_$message{addressMaster}_$Channel"} = $Counter ;
+
+                        $message{text} .= "  $Channel, Counter = $Counter, CounterRaw = $CounterRaw\n" ;
+
+                        # Using the current epoch seconds and the previous value, we can calculate the change per second of the counter
+                        if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{CounterPrevious}{value} ) { # Only do something if we have a previous value
+                           my $time = time ; # Current time in seconds
+                           # Number of seconds between now and the previous update of the counter + Counter change
+                           my $TimeElapsed    = $time    - $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{CounterPreviousTime}{value} ;
+                           next if $TimeElapsed == 0 ;
+                           my $CounterElapsed = $Counter - $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{CounterPrevious}{value} ;
+
+                           # Calculate counter change
+                           my $CounterCurrent ;
+                           if ( $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
+                              $CounterCurrent = ( $CounterElapsed / $TimeElapsed ) * 1000 * 60 * 60 ; # Current in W per hour
+                           } else {
+                              $CounterCurrent = ( $CounterElapsed / $TimeElapsed ) * 60 * 60 ; # For m3 and liter: per hour
+                           }
+                           $message{text} .= "  $Channel, CounterCurrent = $CounterCurrent\n" ;
+
+                           &update_modules_channel_info ($message{addressMaster}, $Channel, "CounterCurrent", $CounterCurrent) ;
+                           $openHAB_update_state{"CounterCurrent_$message{addressMaster}_$Channel"} = $CounterCurrent ;
+                        }
+
+                        # Remember the counter and epoch seconds
+                        $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{CounterPrevious}{value}     = $Counter ;
+                        $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{CounterPreviousTime}{value} = time ;
                      } else {
                         $message{text} .= "  $Channel, $Name = $info{$Channel}{$Name}\n" ;
-                        &do_query ($global{dbh},"insert into `modules_channel_info` (`address`, `channel`, `data`, `value`, `date`) VALUES (?, ?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `value`=values(value), `date`=values(date)", $message{addressMaster}, $Channel, $Name, $info{$Channel}{$Name}) ;
-                        &log("mysql","module channel name: address=$message{address}, addressMaster=$message{addressMaster}, Channel=$Channel, $Name=$info{$Channel}{$Name}") ;
+                        &update_modules_channel_info ($message{addressMaster}, $Channel, $Name, $info{$Channel}{$Name}) ;
                      }
                   }
                }
@@ -357,9 +386,206 @@ sub process_message {
                   }
                }
 
+            } elsif ( $message{MessageType} eq 'CC' ) { # COMMAND_MEMORY_DATA 
+               my $memory = shift @hex ; $memory .=  shift @hex ;
+
+               $message{text} .= "\n" ;
+
+               my $MemoryMap = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} ;
+               $memoryDec = &hex_to_dec ($memory) ; # Memory in decimal so we can loop the 4 returned memory blocks
+               foreach (0..3) {
+                  my $memory = &dec_to_4hex($memoryDec) ; # Memory location in hex
+
+                  my $hex = shift @hex ;         # Memory content
+                  my $bin = &hex_to_bin ($hex) ; # Memory content in binary format
+                  my $dec = &hex_to_dec ($hex) ; # Memory content in decimal
+                  my $char = chr hex $hex; ;     # Memory content in char
+
+                  if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}} and
+                       defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"} and
+                       defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory} ) {
+                     my $char = chr hex $hex; ;
+
+                     # See if we have a Type defined for the memory
+                     if ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} ) {
+                        if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} eq "ModuleNameStart" ) {
+                           $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} = $char if $hex ne "FF" ;
+                        }
+                        if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} eq "ModuleName" ) {
+                           $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
+                        }
+                        if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} eq "ModuleNameSave" ) {
+                           $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
+                           &update_modules_info ($message{address}, "ModuleName", $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}) ;
+                           $message{text} .= "  ModuleName=$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}\n" ;
+                        }
+                     } else {
+
+                        # No type: loop possible Match keys
+                        my %info ;
+                        my $bin = &hex_to_bin ($temp) ;
+                        my $dec = &hex_to_dec ($temp) ;
+
+                        foreach my $key (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}}) {
+                           my $Value ; my $Channel ; my $SubName ;
+
+                           foreach my $Matchkey (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}}) {
+                              my $Match ; # We set this variable if we have a match
+
+                              # Regular exression is always binary based match
+                              if ( $Matchkey =~ /^%(.+)$/ ) {
+                                 my $regex = $1 ;
+                                 if ( $bin =~ /$regex/ ) {
+                                    $Match = "yes" ;
+                                 }
+
+                              # The rest is a hex match or a bin match
+                              } elsif ( $Matchkey eq $hex[$byte] or 
+                                       $Matchkey eq $bin ) {
+                                 $Match = "yes" ;
+                              }
+
+                              # If we have match, process the information
+                              if ( $Match ) {
+                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Value} ) {
+                                    $Value = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Value} ;
+                                    if ( $Value eq "PulsePerUnits" ) {
+                                       if ( $bin eq "00000000" ) {
+                                          $Value = "Disabled" ;
+                                       } else {
+                                          $Value = &bin_to_dec($bin) ;
+                                          $Value *= 100 ;
+                                       }
+                                    }
+                                 }
+                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Channel} ) {
+                                    $Channel = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Channel} ;
+                                 }
+                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{SubName} ) {
+                                    $SubName = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{SubName} ;
+                                 }
+                              }
+                           }
+   
+                           $info{$Channel}{$SubName} = $Value if defined $Channel and defined $SubName and defined $Value ;
+                        }
+
+                        # print Dumper {%info} ;
+                        foreach my $Channel (sort keys (%info) ) {
+                           foreach my $SubName (sort keys (%{$info{$Channel}}) ) {
+                              $message{text} .= " $Channel, $SubName = $info{$Channel}{$SubName}\n" ;
+                              &update_modules_channel_info ($message{addressMaster}, $Channel, $SubName, $info{$Channel}{$SubName}) ;
+                           }
+                        }
+                     }
+                  } else {
+                     $message{text} .= "No data for memory = $memory, MemoryMap=$MemoryMap, hex = $hex, bin = $bin, char = $char\n" ;
+                  }
+                  $memoryDec ++ ;
+               }
+
+            } elsif ( $message{MessageType} eq 'FE' ) { # COMMAND_MEMORY_DATA 
+               my $memory = shift @hex ;
+               $memory .= shift @hex ;
+
+               $message{text} .= "\n" ;
+               $message{text} .= "   memory=$memory\n" ;
+
+               my $counter = 0 ;
+               foreach my $hex (@hex) {
+                  my $bin = &hex_to_bin ($hex) ;
+                  my $dec = &hex_to_dec ($hex) ;
+                  $counter ++ ;
+                  $message{text} .= "    content: $counter: hex = $hex, bin = $bin\n" ;
+               }
+
+               my $MemoryMap = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} ;
+
+               if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}} and
+                    defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"} and
+                    defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory} ) {
+                  my $hex = $hex[0] ;
+                  my $char = chr hex $hex; ;
+
+                  # See if we have a Type defined for the memory
+                  if ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} ) {
+                     if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} eq "ModuleNameStart" ) {
+                        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} = $char if $hex ne "FF" ;
+                     }
+                     if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} eq "ModuleName" ) {
+                        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
+                     }
+                     if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} eq "ModuleNameSave" ) {
+                        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
+                        &update_modules_info ($message{address}, "ModuleName", $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}) ;
+                        $message{text} .= "  ModuleName=$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}\n" ;
+                     }
+                  } else {
+
+                  # Not type: loop possible Match keys
+                  my %info ;
+                     foreach my $temp (@hex) {
+                        my $bin = &hex_to_bin ($temp) ;
+                        my $dec = &hex_to_dec ($temp) ;
+
+                        foreach my $key (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}}) {
+                           my $Value ; my $Channel ; my $SubName ;
+
+                           foreach my $Matchkey (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}}) {
+                              my $Match ; # We set this variable if we have a match
+
+                              # Regular exression is always binary based match
+                              if ( $Matchkey =~ /^%(.+)$/ ) {
+                                 my $regex = $1 ;
+                                 if ( $bin =~ /$regex/ ) {
+                                    $Match = "yes" ;
+                                 }
+
+                              # The rest is a hex match or a bin match
+                              } elsif ( $Matchkey eq $hex[$byte] or 
+                                       $Matchkey eq $bin ) {
+                                 $Match = "yes" ;
+                              }
+
+                              # If we have match, process the information
+                              if ( $Match ) {
+                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Value} ) {
+                                    $Value = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Value} ;
+                                    if ( $Value eq "PulsePerUnits" ) {
+                                       if ( $bin eq "00000000" ) {
+                                          $Value = "Disabled" ;
+                                       } else {
+                                          $Value = &bin_to_dec($bin) ;
+                                          $Value *= 100 ;
+                                       }
+                                    }
+                                 }
+                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Channel} ) {
+                                    $Channel = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Channel} ;
+                                 }
+                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{SubName} ) {
+                                    $SubName = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{SubName} ;
+                                 }
+                              }
+                           }
+
+                           $info{$Channel}{$SubName} = $Value if defined $Channel and defined $SubName and defined $Value ;
+                        }
+                     }
+                  }
+
+                  # print Dumper {%info} ;
+                  foreach my $Channel (sort keys (%info) ) {
+                     foreach my $SubName (sort keys (%{$info{$Channel}}) ) {
+                        $message{text} .= " $Channel, $SubName = $info{$Channel}{$SubName}\n" ;
+                        &update_modules_channel_info ($message{addressMaster}, $Channel, $SubName, $info{$Channel}{$SubName}) ;
+                     }
+                  }
+               } else {
+                  $message{text} .= "No data for memory = $memory, MemoryMap=$MemoryMap\n" ;
+               }
             } else {
-               my $temp = join " ", @hex ;
-               $message{text} .= "no Data info for message $temp" ;
+               $message{text} .= "No data info for message $temp ($message{Raw})" ;
             }
          }
       }
@@ -371,20 +597,79 @@ sub process_message {
    &do_query ($global{dbh},"insert into `messages` (`date`, `raw`, `address`, `prio`, `type`, `rtr_size`) VALUES (NOW(), ?, ?, ?, ?, ? )", $message{Raw}, $message{address}, $message{prio}, $message{MessageType}, $message{RTR_size}) ;
 }
 
+# Put a message on the bus
+# 1: socket
+# 2: address
+# 3: commando
+# 4: channel
+sub send_message () {
+   my $sock    = shift @_ ;
+   my $address = shift @_ ;
+   my $command = shift @_ ;
+   my $channel = shift @_ ;
+   my @other   = @_ ;
+
+   $address =~ s/^0x//g ;
+   $command =~ s/^0x//g ;
+
+   if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ) {
+      my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
+
+      # Find prio for the command
+      my $prio ;
+      if ( defined $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Prio} and
+                   $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Prio} =~ /High/i ) {
+         $prio    = "0xF8" ;
+      } else {
+         $prio    = "0xFB" ;
+      }
+
+      $address = "0x$address" ;
+
+      my $rtr     = "0x00" ; # Only for scan this is not 0x00
+
+      my @message ;
+
+      push @message, "0x$command" ;
+
+      if ( defined $channel and $channel ne "" and $channel !~ /^0x/ ) {
+         $channel = &channel_number_to_id ($channel,$type) ;
+         push @message, $channel ;
+      }
+
+      foreach my $other (@other) {
+         if ( $other =~ /^0x/ ) {
+            push @message, $other ;
+         } else {
+            push @message, "0x".$other ;
+         }
+      }
+
+      my $message = join " ", @message ;
+      my $Name = $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Name} ; # Name of command
+      &log("message","prio=$prio, address=$address (type=$type), rtr=$rtr, command=$command, message = $message, $Name") ;
+
+      &print_sock ($sock,$prio,$address,$rtr,@message) ;
+      usleep (50000) ;
+   }
+}
+
+# OLD, replaced by send_message
 # Query status of module
 # 1: socket
 # 2: address
 # 3: module type
-sub get_module_info () {
-   my $sock    = $_[0] ;
-   my $address = $_[1] ;
-   my $type    = $_[2] ;
-   my $channel = $_[3] ;
-   my $command = $_[4] ;
+sub OLD_get_module_info () {
+   my $sock    = shift @_ ;
+   my $address = shift @_ ;
+   my $type    = shift @_ ;
+   my $channel = shift @_ ;
+   my $command = shift @_ ;
+   my @other   = @_ ;
 
    my $prio ;
-   if ( defined $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Priority} and
-                $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Priority} =~ /High/i ) {
+   if ( defined $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Prio} and
+                $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Prio} =~ /High/i ) {
       $prio    = "0xF8" ;
    } else {
       $prio    = "0xFB" ;
@@ -392,13 +677,12 @@ sub get_module_info () {
 
    $rtr     = "0x00" ;
 
-   $channel = &channel_number_to_id ($channel,$type) ;
-   my @message = ("0x$command", $channel) ;
+   my @message = ("0x$command", "$channel") ;
    &print_sock ($sock,$prio,"0x$address",$rtr,@message) ;
    usleep (50000) ;
 }
 
-# Get status and name
+# Get all possible info from a module
 # 
 # 1: socket
 # 2: address
@@ -410,46 +694,83 @@ sub get_status () {
    my $type    = $_[2] ;
    my $channel = $_[3] ; # Optional
 
-   my $output ;
+   my $output ; # Some informational text we return
    if ( defined $channel ) {
       $output .= "address = $address, type = $type, channel = $channel<br>\n" ;
    } else {
       $output .= "address = $address, type = $type<br>\n" ;
    }
 
+   # Get module name
+   my $MemoryMap = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ;
+   if ( $global{Cons}{ModuleTypes}{"$type"}{Memory}{"$MemoryMap"}{ModuleName} ) {
+      my ($start,$end) = split ":", $global{Cons}{ModuleTypes}{"$type"}{Memory}{"$MemoryMap"}{ModuleName} ;
+      $start = &hex_to_dec ($start) ;
+      $end   = &hex_to_dec ($end) ;
+      for ($i="$start"; $i <= "$end"; $i+=4) {
+         my $hex = &dec_to_4hex($i) ;
+         $hex =~ /(..)(..)/ ;
+         my $hex1 = $1 ;
+         my $hex2 = $2 ;
+
+         &send_message ($sock, $address, 'C9', undef, $hex1 ,$hex2) ;
+      }
+   }
+
    # Getting a list of possible channels of the specific module
    my @channels ;
    if ( defined $channel ) {
-      $channels[0] = $channel ;
+      $channels[0] = $channel ; # Channel given as parameter
    } elsif ( defined $global{Cons}{ModuleTypes}{$type}{Channels} ) {
-      @channels = sort keys %{$global{Cons}{ModuleTypes}{$type}{Channels}} ;
-   }
-   if ( @channels ) {
-      foreach my $channel (@channels) {
-         if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) { # EF = COMMAND_CHANNEL_NAME_REQUEST
-            &get_module_info ($sock, $address, $type, $channel, 'EF') ;
-         }
-         if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'FA'} ) { # FA = COMMAND_RELAY_STATUS_REQUEST
-            &get_module_info ($sock, $address, $type, $channel, 'FA') ;
-         }
-      }
-   } else {
-      if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) { # EF = COMMAND_CHANNEL_NAME_REQUEST
-         if ( $type eq "1E" or
+      # Touch with OLED + VMBGP1D/VMBGP2D/VMBGP4D: channel FF will request the names of all channels (message type EF)
+      if ( ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) and
+            ( $type eq "1E" or
               $type eq "1F" or
               $type eq "20" or
-              $type eq "28" ) { # Touch with OLED + VMBGP1D/VMBGP2D/VMBGP4D: channel FF will request the names of all channels
-            &get_module_info ($sock, $address, $type, '0xFF', 'EF') ;
-         } else {
-            &get_module_info ($sock, $address, $type, '', 'EF') ;
-         }
+              $type eq "28" ) ) {
+         $channels[0] = "255" ; # 255 = 0xFF
+      } else {
+         @channels = sort keys %{$global{Cons}{ModuleTypes}{$type}{Channels}} ;
+      }
+   }
+
+   if ( $type eq '22' ) { # VMB7IN
+      &get_status_VMB7IN ($sock, $address) ;
+   }
+
+   # Loop the channels and get names, status, ...
+   foreach my $channel (@channels) {
+      if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) { # EF = COMMAND_CHANNEL_NAME_REQUEST
+         &send_message ($sock, $address, 'EF', $channel) ;
       }
       if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'FA'} ) { # FA = COMMAND_RELAY_STATUS_REQUEST
-         &get_module_info ($sock, $address, $type, '', 'FA') ;
+         &send_message ($sock, $address, 'FA', $channel) ;
       }
    }
 
    return $output ;
+}
+
+sub get_status_VMB7IN () {
+   my $sock = $_[0] ;
+   my $address = $_[1] ;
+
+   my @channel ;
+   if ( defined $channel and $channel ne "" ) {
+      $channels[0] = $channel ;
+   } else {
+      $channels = ("01", "02", "03", "04") ;
+   }
+
+   # Request counter type: kWh, m3, liter:
+   &send_message ($sock, $address, 'FD', undef, '03' ,'FE') ;
+
+print "get_status_VMB7IN<br>\n" ;
+   # Request "Pulse per Units divide by 100" per channel:
+   #&send_message ($sock, $address, 'FD', undef, '00' ,'E4') ;
+   #&send_message ($sock, $address, 'FD', undef, '00' ,'E9') ;
+   #&send_message ($sock, $address, 'FD', undef, '00' ,'EE') ;
+   #&send_message ($sock, $address, 'FD', undef, '00' ,'F3') ;
 }
 
 # Convert channel number to channel bit. 3 = 1000 -> 8
@@ -459,11 +780,13 @@ sub channel_number_to_id () {
    my $type    = $_[1] ;
    if ( defined $global{Cons}{ModuleTypes}{$type}{ChannelNaming} and
                 $global{Cons}{ModuleTypes}{$type}{ChannelNaming} eq "dec" ) {
+      $channel = &dec_to_hex ($channel) ;
    } else {
       $channel -- ;
       my $test = "1" . "0" x $channel ;
       $channel = &bin_to_hex ($test) ;
    }
+   $channel = "0x$channel" ;
    return $channel ;
 }
 
@@ -472,7 +795,7 @@ sub channel_number_to_id () {
 sub channel_id_to_number () {
    my $channel = $_[0] ;
    my $type    = $_[1] ; # Optional
-   #print "IN  $channel $type\n" ;
+ 
    if ( defined $type and
         defined $global{Cons}{ModuleTypes}{$type}{ChannelNaming} and
                 $global{Cons}{ModuleTypes}{$type}{ChannelNaming} eq "dec" ) {
@@ -484,7 +807,6 @@ sub channel_id_to_number () {
       $channel ++ ;
    }
    $channel = "0" . $channel if $channel < 10 ;
-   #print "OUT $channel $type\n" ;
    return $channel ;
 }
 
@@ -528,126 +850,95 @@ sub update_module_status () {
    return $output ;
 }
 
-sub button_set {
+sub button_pressed {
    my $sock = $_[0] ;
-   my $address = "0x" . $_[1] ;
+   my $address = $_[1] ;
    my $channel = $_[2] ;
    my $value   = $_[3] ;
-   my $prio    = "0xF8"; # High
-   my $rtr     = "0x00";
-
    if ( $value eq "ON" ) {
-      $channel = "0x" . &channel_number_to_id($channel) ;
+      if ( $channel > 25 ) {
+         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
+         $channel -= 24 ;
+      } elsif ( $channel > 17 ) {
+         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ;
+         $channel -= 16 ;
+      } elsif ( $channel > 9 ) {
+         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
+         $channel -= 8 ;
+      }
+
+      $channel -- ;
+      my $test = "1" . "0" x $channel ;
+      $channel = &bin_to_hex ($test) ;
 
       # DATABYTE2 = Channel just pressed
       # DATABYTE3 = Channel just released
       # DATABYTE4 = Channel long pressed
-      @message = ("0x00", "$channel", "0x00", "0x00") ; # COMMAND_PUSH_BUTTON_STATUS
-      &print_sock ($sock,$prio,$address,$rtr,@message) ;
-      @message = ("0x00", "0x00", "$channel", "0x00") ; # COMMAND_PUSH_BUTTON_STATUS
-      &print_sock ($sock,$prio,$address,$rtr,@message) ;
+      &send_message ($sock, $address, "00", "", $channel, "00", "00" ) ; # Channel just pressed
+      &send_message ($sock, $address, "00", "", "00", $channel, "00" ) ; # Channel just released
    }
 }
 
 sub dim_value {
    my $sock = $_[0] ;
-   # Dimmer: 0x04 = channel 3, 0x1A = 26%
-   my $address = "0x" . $_[1] ;
+   my $address = $_[1] ;
    my $channel = $_[2] ;
    my $value   = $_[3] ;
-   my $prio    = "0xF8"; # High
-   my $rtr     = "0x00";
-
-   $channel = "0x" . &channel_number_to_id($channel) ;
    $value = sprintf ("%02X",$value) ;
-
-   @message = ("0x07", "$channel", "0x$value", "0x00", "0x00") ; # COMMAND_SET_DIMVALUE
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   &send_message ($sock, $address, "07", $channel, $value, "00", "00" ) ;
 }
 
 sub relay_off {
    my $sock = $_[0] ;
-   my $address = "0x" . $_[1] ;
+   my $address = $_[1] ;
    my $channel = $_[2] ;
-   my $prio    = "0xF8"; # High
-   my $rtr     = "0x00";
-
-   $channel = "0x" . &channel_number_to_id($channel) ;
-
-   @message = ("0x01", "$channel") ; # COMMAND_SWITCH_RELAY_OFF
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   &send_message ($sock, $address, "01", $channel) ;
 }
 
 sub relay_on {
    my $sock = $_[0] ;
-   my $address = "0x" . $_[1] ;
+   my $address = $_[1] ;
    my $channel = $_[2] ;
-   my $prio    = "0xF8"; # High
-   my $rtr     = "0x00";
-
-   $channel = "0x" . &channel_number_to_id($channel) ;
-
-   @message = ("0x02", "$channel") ; # COMMAND_SWITCH_RELAY_ON
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   &send_message ($sock, $address, "02", $channel) ;
 }
 
 sub blind_stop {
    my $sock = $_[0] ;
-   my $address = "0x" . $_[1] ;
-   my $channel = "0x" . $_[2] ;
-   my $prio    = "0xF8"; # High
-   my $rtr     = "0x00";
-
-   @message = ("0x04", "$channel") ; # COMMAND_BLIND_OFF
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   my $address = $_[1] ;
+   my $channel = $_[2] ;
+   &send_message ($sock, $address, "04", $channel) ; # COMMAND_BLIND_OFF
 }
 
 sub blind_up {
    my $sock = $_[0] ;
-   my $address = "0x" . $_[1] ;
-   my $channel = "0x" . $_[2] ;
-   my $prio    = "0xF8"; # High
-   my $rtr     = "0x00";
-
-   @message = ("0x05", "$channel", "0x00", "0x00", "0x00") ; # COMMAND_BLIND_UP
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   my $address = $_[1] ;
+   my $channel = $_[2] ;
+   &send_message ($sock, $address, "05", $channel, "00", "00", "00") ; # COMMAND_BLIND_UP
 }
 
 sub blind_down {
    my $sock = $_[0] ;
-   my $address = "0x" . $_[1] ;
-   my $channel = "0x" . $_[2] ;
-   my $prio    = "0xF8"; # High
-   my $rtr     = "0x00";
-
-   @message = ("0x06", "$channel", "0x00", "0x00", "0x00") ; # COMMAND_BLIND_DOWN
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   my $address = $_[1] ;
+   my $channel = $_[2] ;
+   &send_message ($sock, $address, "06", $channel, "00", "00", "00") ; # COMMAND_BLIND_DOWN
 }
 
 sub blind_pos {
    my $sock = $_[0] ;
-   my $address  = "0x" . $_[1] ;
-   my $channel  = "0x" . $_[2] ;
+   my $address  = $_[1] ;
+   my $channel  = $_[2] ;
    my $position = $_[3] ;
-   my $prio    = "0xF8"; # High
-   my $rtr     = "0x00";
-
    $position = sprintf ("%02X",$position) ;
-
-   @message = ("0x1C", "$channel", "0x$position") ; # COMMAND_BLIND_POSN
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   &send_message ($sock, $address, "1C", $channel, $position) ; # COMMAND_BLIND_POS
 }
 
 sub set_temperature {
    my $sock = $_[0] ;
-   my $address = "0x" . $_[1] ;
+   my $address = $_[1] ;
    my $temperature = $_[2] ;
    $temperature = &temperature_to_hex ($temperature) ;
 
-   $prio    = "0xFB"; # Low
-   $rtr     = "0x00";
-   @message = ("0xE4", "0x00", "0x$temperature") ;
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   &send_message ($sock, $address, "E4", undef, "00", $temperature) ; # COMMAND_SET_TEMP
 }
 
 sub set_temperature_mode {
@@ -656,7 +947,7 @@ sub set_temperature_mode {
    # COMMAND_SWITCH_TO_DAY_MODE     (DC) = 2
    # COMMAND_SWITCH_TO_NIGHT_MODE   (DD) = 3
    # COMMAND_SWITCH_TO_SAFE_MODE    (DE) = 4
-   my $address = "0x" . $_[1] ;
+   my $address = $_[1] ;
    my $mode = $_[2] ;
 
    if ( $mode =~ /1/ ) {
@@ -668,19 +959,23 @@ sub set_temperature_mode {
    } elsif ( $mode =~ /4/ ) {
       $mode = "DE" ;
    }
-   $prio    = "0xFB"; # Low
-   $rtr     = "0x00";
-   @message = ("0x$mode", "0x00", "0x00") ;
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   &send_message ($sock, $address, $mode, undef, "00", "00") ; # COMMAND_SET_TEMP
 }
 
 sub test () {
    my $sock = $_[0] ;
-   $address = "0x36";
-   $prio    = "0xF8"; # High
+   $address = "0x30";
+   #$prio    = "0xF8"; # High
    $prio    = "0xFB"; # Low
    $rtr     = "0x00";
-   @message = ("0xDC", "0x00", "0x00") ;
+   # H’03FE’     Counter units
+   @message = ("0xFD", "0x00", "0xE4") ;
+   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   @message = ("0xFD", "0x00", "0xE9") ;
+   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   @message = ("0xFD", "0x00", "0xEE") ;
+   &print_sock ($sock,$prio,$address,$rtr,@message) ;
+   @message = ("0xFD", "0x00", "0xF3") ;
    &print_sock ($sock,$prio,$address,$rtr,@message) ;
 }
 

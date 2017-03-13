@@ -53,7 +53,7 @@ sub openHAB () {
    my $openHAB ;
 
    # Default value if not specified in config file
-   $global{Config}{openHAB}{polling} = 60000 if ! defined $global{Config}{openHAB}{polling} ;
+   $global{Config}{openHAB}{polling} = 60000000 if ! defined $global{Config}{openHAB}{polling} ;
 
    # Loop all module types
    foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
@@ -73,7 +73,11 @@ sub openHAB () {
                #next if $Channel eq "00" ; # Channel 00 is used to store data about the module, so this Channel does not exist
                my $itemBase = $address."_".$Channel ;
 
-               if ( $Type eq "Button" ) {
+               # ButtonCounter is for VMB7IN, it's a Button when Divier = Disabled
+               if ( $Type eq "Button" or
+                    ( $Type eq "ButtonCounter" and 
+                       defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} and
+                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
                   # Short pressed button
                   my $item = "Button_$itemBase" ;
                   my $Name = $item ;
@@ -211,12 +215,14 @@ sub openHAB () {
                   $openHAB .= " >[OFF:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Off]" ;
                   $openHAB .= "\"}\n" ;
                }
-               if ( $Type eq "Counter" ) {
+               if ( $Type eq "ButtonCounter" and 
+                     defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} and
+                     $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
                   my $item = "CounterRaw_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
                   $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
-                  $openHAB .= "Number $item \"$Name [%.0f]\" " ;
+                  $openHAB .= "Number $item \"$Name (raw) [%.0f]\" " ;
                   $openHAB .= " <chart> " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -226,8 +232,41 @@ sub openHAB () {
                   $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterRaw:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
                   $openHAB .= "\"}\n" ;
 
+                  my $item = "CounterCurrent_$itemBase" ;
+                  my $Name = $item ;
+                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $openHAB .= "Number $item \"$Name (current) [%.0f" ;
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} ) {
+                     if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
+                        $openHAB .= " W/s" ;
+                     } else {
+                        $openHAB .= " " . $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} . "/s";
+                     }
+                  }
+                  $openHAB .= "]\" " ;
+                  $openHAB .= " <chart> " ;
+                  my $Group = &openHAB_match_item($item) ;
+                  if ( defined $Group ) {
+                     $openHAB .= "($Group) " ;
+                  }
+                  $openHAB .= "{http=\"" ;
+                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterCurrent:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .= "\"}\n" ;
+
                   my $item = "Counter_$itemBase" ;
-                  $openHAB .= "Number $item \"$Name [%.0f]\" " ;
+                  my $Name = $item ;
+                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $openHAB .= "Number $item \"$Name [%.0f" ;
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} ) {
+                     if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
+                        $openHAB .= " kWh" ;
+                     } else {
+                        $openHAB .= " " . $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} ;
+                     }
+                  }
+                  $openHAB .= "]\" " ;
                   $openHAB .= " <chart> " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -238,7 +277,10 @@ sub openHAB () {
                   $openHAB .= "\"}\n" ;
 
                   my $item = "Divider_$itemBase" ;
-                  $openHAB .= "Number $item \"$Name [%.0f]\" " ;
+                  my $Name = $item ;
+                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $openHAB .= "Number $item \"$Name (divider) [%.0f]\" " ;
                   $openHAB .= " <chart> " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {

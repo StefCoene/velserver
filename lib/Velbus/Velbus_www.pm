@@ -41,7 +41,9 @@ sub www_print_modules () {
       $html .= "  <tr>\n" ;
       $html .= "    <th>Address</th>\n" ;
       $html .= "    <th>Type</th>\n" ;
+      $html .= "    <th>Name</th>\n" ;
       $html .= "    <th>Info</th>\n" ;
+      $html .= "    <th>MemoryMap</th>\n" ;
       $html .= "    <th>Date</th>\n" ;
       $html .= "    <th>Action</th>\n" ;
       $html .= "  </tr>\n" ;
@@ -52,14 +54,15 @@ sub www_print_modules () {
       foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}{$status}{ModuleList}}) ) {
          $html .= "  <tr>\n" ;
          if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
-            my $SubAddr = join ",", @{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr}} ;
-            $html .= "    <th>$address ($SubAddr)</th>\n" ;
+            $html .= "    <th>$address ($global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr})</th>\n" ;
          } else {
             $html .= "    <th>$address</th>\n" ;
          }
          my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'type'} ; # Handier var
          $html .= "    <td>$global{Cons}{ModuleTypes}{$type}{Type} ($type)</td>\n" ;
          $html .= "    <td>$global{Cons}{ModuleTypes}{$type}{Info}</td>\n" ;
+         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}</td>\n" ;
+         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap}</td>\n" ;
          $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'date'}</td>\n" ;
          $html .= "    <td><a href=\"?appl=print_modules&action=status&address=$address\">refresh status</a></td>\n" ;
          $html .= "  </tr>\n" ;
