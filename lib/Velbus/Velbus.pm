@@ -386,17 +386,17 @@ sub process_message {
                   }
                }
 
-            } elsif ( $message{MessageType} eq 'CC' ) { # COMMAND_MEMORY_DATA 
+            } elsif ( $message{MessageType} eq 'CC' or # COMMAND_MEMORY_DATA
+                      $message{MessageType} eq 'FE' ) { # COMMAND_MEMORY_DATA
                my $memory = shift @hex ; $memory .=  shift @hex ;
 
                $message{text} .= "\n" ;
 
                my $MemoryMap = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} ;
                $memoryDec = &hex_to_dec ($memory) ; # Memory in decimal so we can loop the 4 returned memory blocks
-               foreach (0..3) {
+               foreach $hex (@hex) {
                   my $memory = &dec_to_4hex($memoryDec) ; # Memory location in hex
 
-                  my $hex = shift @hex ;         # Memory content
                   my $bin = &hex_to_bin ($hex) ; # Memory content in binary format
                   my $dec = &hex_to_dec ($hex) ; # Memory content in decimal
                   my $char = chr hex $hex; ;     # Memory content in char
@@ -423,9 +423,6 @@ sub process_message {
 
                         # No type: loop possible Match keys
                         my %info ;
-                        my $bin = &hex_to_bin ($temp) ;
-                        my $dec = &hex_to_dec ($temp) ;
-
                         foreach my $key (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}}) {
                            my $Value ; my $Channel ; my $SubName ;
 
@@ -484,106 +481,6 @@ sub process_message {
                   $memoryDec ++ ;
                }
 
-            } elsif ( $message{MessageType} eq 'FE' ) { # COMMAND_MEMORY_DATA 
-               my $memory = shift @hex ;
-               $memory .= shift @hex ;
-
-               $message{text} .= "\n" ;
-               $message{text} .= "   memory=$memory\n" ;
-
-               my $counter = 0 ;
-               foreach my $hex (@hex) {
-                  my $bin = &hex_to_bin ($hex) ;
-                  my $dec = &hex_to_dec ($hex) ;
-                  $counter ++ ;
-                  $message{text} .= "    content: $counter: hex = $hex, bin = $bin\n" ;
-               }
-
-               my $MemoryMap = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} ;
-
-               if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}} and
-                    defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"} and
-                    defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory} ) {
-                  my $hex = $hex[0] ;
-                  my $char = chr hex $hex; ;
-
-                  # See if we have a Type defined for the memory
-                  if ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} ) {
-                     if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} eq "ModuleNameStart" ) {
-                        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} = $char if $hex ne "FF" ;
-                     }
-                     if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} eq "ModuleName" ) {
-                        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
-                     }
-                     if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{$memory}{Type} eq "ModuleNameSave" ) {
-                        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
-                        &update_modules_info ($message{address}, "ModuleName", $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}) ;
-                        $message{text} .= "  ModuleName=$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}\n" ;
-                     }
-                  } else {
-
-                  # Not type: loop possible Match keys
-                  my %info ;
-                     foreach my $temp (@hex) {
-                        my $bin = &hex_to_bin ($temp) ;
-                        my $dec = &hex_to_dec ($temp) ;
-
-                        foreach my $key (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}}) {
-                           my $Value ; my $Channel ; my $SubName ;
-
-                           foreach my $Matchkey (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}}) {
-                              my $Match ; # We set this variable if we have a match
-
-                              # Regular exression is always binary based match
-                              if ( $Matchkey =~ /^%(.+)$/ ) {
-                                 my $regex = $1 ;
-                                 if ( $bin =~ /$regex/ ) {
-                                    $Match = "yes" ;
-                                 }
-
-                              # The rest is a hex match or a bin match
-                              } elsif ( $Matchkey eq $hex[$byte] or 
-                                       $Matchkey eq $bin ) {
-                                 $Match = "yes" ;
-                              }
-
-                              # If we have match, process the information
-                              if ( $Match ) {
-                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Value} ) {
-                                    $Value = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Value} ;
-                                    if ( $Value eq "PulsePerUnits" ) {
-                                       if ( $bin eq "00000000" ) {
-                                          $Value = "Disabled" ;
-                                       } else {
-                                          $Value = &bin_to_dec($bin) ;
-                                          $Value *= 100 ;
-                                       }
-                                    }
-                                 }
-                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Channel} ) {
-                                    $Channel = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Channel} ;
-                                 }
-                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{SubName} ) {
-                                    $SubName = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryMap"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{SubName} ;
-                                 }
-                              }
-                           }
-
-                           $info{$Channel}{$SubName} = $Value if defined $Channel and defined $SubName and defined $Value ;
-                        }
-                     }
-                  }
-
-                  # print Dumper {%info} ;
-                  foreach my $Channel (sort keys (%info) ) {
-                     foreach my $SubName (sort keys (%{$info{$Channel}}) ) {
-                        $message{text} .= " $Channel, $SubName = $info{$Channel}{$SubName}\n" ;
-                        &update_modules_channel_info ($message{addressMaster}, $Channel, $SubName, $info{$Channel}{$SubName}) ;
-                     }
-                  }
-               } else {
-                  $message{text} .= "No data for memory = $memory, MemoryMap=$MemoryMap\n" ;
-               }
             } else {
                $message{text} .= "No data info for message $temp ($message{Raw})" ;
             }
