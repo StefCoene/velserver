@@ -336,16 +336,17 @@ sub process_message {
                      } elsif ( $Name eq "Divider" ) {
                         $openHAB_update_state{"Divider_$message{addressMaster}_$Channel"} = $info{$Channel}{Divider} ;
                         $message{text} .= "  $Channel, Divider = $Divider\n" ;
+                        &update_modules_channel_info ($message{addressMaster}, $Channel, $Name, $info{$Channel}{Divider}) ;
+                        $openHAB_update_state{"Divider_$message{addressMaster}_$Channel"} = $info{$Channel}{Divider} ;
                      } elsif ( $Name eq "Counter" ) {
                         my $CounterRaw = &hex_to_dec ($info{$Channel}{Counter}) ;
                         my $Counter = $CounterRaw / $info{$Channel}{Divider} ;
 
+                        $message{text} .= "  $Channel, Counter = $Counter, CounterRaw = $CounterRaw\n" ;
                         &update_modules_channel_info ($message{addressMaster}, $Channel, "CounterRaw", $CounterRaw) ;
                         &update_modules_channel_info ($message{addressMaster}, $Channel, "Counter", $Counter) ;
                         $openHAB_update_state{"CounterRaw_$message{addressMaster}_$Channel"} = $CounterRaw ;
                         $openHAB_update_state{"Counter_$message{addressMaster}_$Channel"} = $Counter ;
-
-                        $message{text} .= "  $Channel, Counter = $Counter, CounterRaw = $CounterRaw\n" ;
 
                         # Using the current epoch seconds and the previous value, we can calculate the change per second of the counter
                         if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{CounterPrevious}{value} ) { # Only do something if we have a previous value
@@ -362,8 +363,8 @@ sub process_message {
                            } else {
                               $CounterCurrent = ( $CounterElapsed / $TimeElapsed ) * 60 * 60 ; # For m3 and liter: per hour
                            }
-                           $message{text} .= "  $Channel, CounterCurrent = $CounterCurrent\n" ;
 
+                           $message{text} .= "  $Channel, CounterCurrent = $CounterCurrent\n" ;
                            &update_modules_channel_info ($message{addressMaster}, $Channel, "CounterCurrent", $CounterCurrent) ;
                            $openHAB_update_state{"CounterCurrent_$message{addressMaster}_$Channel"} = $CounterCurrent ;
                         }
@@ -662,7 +663,6 @@ sub get_status_VMB7IN () {
    # Request counter type: kWh, m3, liter:
    &send_message ($sock, $address, 'FD', undef, '03' ,'FE') ;
 
-print "get_status_VMB7IN<br>\n" ;
    # Request "Pulse per Units divide by 100" per channel:
    #&send_message ($sock, $address, 'FD', undef, '00' ,'E4') ;
    #&send_message ($sock, $address, 'FD', undef, '00' ,'E9') ;
