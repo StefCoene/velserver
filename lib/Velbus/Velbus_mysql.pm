@@ -120,7 +120,7 @@ sub update_modules_info {
          $value
       ) ;
       &log("mysql","Address=$address, data=$data = $value") ;
-      $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} = $data{$data}{value} ;
+      $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} = $value ;
    } else {
       &log("mysql","ERROR: Address=$address,                   data=$data = $value") ;
    }

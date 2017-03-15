@@ -37,31 +37,10 @@ sub init {
 
    # Get all modules from the mysql db
    &get_all_modules_from_mysql ;
-   
-   foreach my $Type (sort keys %{$global{Cons}{ModuleTypes}}) {
-      foreach my $MemoryMap (sort keys %{$global{Cons}{ModuleTypes}{$Type}{Memory}}) {
-         if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryMap}{ModuleName} ) {
-            # print "Type = $Type, MemoryMap = $MemoryMap\n" ;
-
-            my ($start,$end) = split ":", $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryMap}{ModuleName} ;
-            $start = &hex_to_dec ($start) ;
-            $end   = &hex_to_dec ($end) ;
-            my $hex = &dec_to_4hex($start) ;
-            $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryMap}{Address}{"$hex"}{Type} = "ModuleNameStart" ;
-
-            my $hex1 ; my $hex2 ;
-            for ($i="$start"; $i <= "$end"; $i++) {
-               my $hex = &dec_to_4hex($i) ;
-               $hex =~ /(..)(..)/ ;
-               $hex1 = $1 ;
-               $hex2 = $2 ;
-               $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryMap}{Address}{"$hex1$hex2"}{Type} = "ModuleName" if ! defined $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryMap}{Address}{"$hex1$hex2"}{Type} ;
-            }
-            $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryMap}{Address}{"$hex1$hex2"}{Type} = "ModuleNameSave" ;
-
-         }
-      }
-   }
+ 
+   # Find memory addresses for module name
+   &find_memory_addresses ;
+  
 }
 
 return 1

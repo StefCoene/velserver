@@ -43,7 +43,8 @@ sub www_print_modules () {
       $html .= "    <th>Type</th>\n" ;
       $html .= "    <th>Name</th>\n" ;
       $html .= "    <th>Info</th>\n" ;
-      $html .= "    <th>MemoryMap</th>\n" ;
+      $html .= "    <th>Build</th>\n" ;
+      $html .= "    <th>MemoryKey</th>\n" ;
       $html .= "    <th>Date</th>\n" ;
       $html .= "    <th>Action</th>\n" ;
       $html .= "  </tr>\n" ;
@@ -52,17 +53,23 @@ sub www_print_modules () {
       $html .= "<tbody>\n" ;
       my $html2 ;
       foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}{$status}{ModuleList}}) ) {
+         my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'type'} ; # Handier var
+         my $MemoryKey = &module_find_MemoryKey ($address, $type) ; # Handier var
          $html .= "  <tr>\n" ;
          if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
             $html .= "    <th>$address ($global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr})</th>\n" ;
          } else {
             $html .= "    <th>$address</th>\n" ;
          }
-         my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'type'} ; # Handier var
          $html .= "    <td>$global{Cons}{ModuleTypes}{$type}{Type} ($type)</td>\n" ;
          $html .= "    <td>$global{Cons}{ModuleTypes}{$type}{Info}</td>\n" ;
          $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}</td>\n" ;
-         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap}</td>\n" ;
+         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildYear}$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildWeek}</td>\n" ;
+         if ( defined $MemoryKey ) {
+            $html .= "    <td>$MemoryKey</td>\n" ;
+         } else {
+            $html .= "    <td>No MemoryKey found!</td>\n" ;
+         }
          $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'date'}</td>\n" ;
          $html .= "    <td><a href=\"?appl=print_modules&action=status&address=$address\">refresh status</a></td>\n" ;
          $html .= "  </tr>\n" ;

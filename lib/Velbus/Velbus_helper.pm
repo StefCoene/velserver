@@ -128,10 +128,10 @@ sub temperature_to_hex {
 #   11000000   -32°C
 sub hex_to_temperature {
    my $temperature = $_[0] ;
-   my $negative ; 
+   my $negative ;
    if ( $temperature =~ s/^1/0/ ) {
       $negative = 1 ;
-   }  
+   }
    $temperature = &hex_to_dec ($temperature) ;
    $temperature = $temperature / 2 ;
    if ( $negative ) {
@@ -327,5 +327,44 @@ sub SubAddr_Channel {
    return $Channel ;
 }
 
+# Find memory address for the Module Name
+sub find_memory_addresses {
+   foreach my $Type (sort keys %{$global{Cons}{ModuleTypes}}) {
+      if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory} ) {
+         foreach my $MemoryKey (sort keys %{$global{Cons}{ModuleTypes}{$Type}{Memory}}) {
+            if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{ModuleName} ) {
+
+               my $counter = 0 ; # Number of address
+               my $AddressHex ; # The address in hex
+
+               my @ModuleNameAddress ; # To store all addresses
+               foreach my $loop (split ";", $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{ModuleName}) {
+                  #print "loop $loop\n" ;
+                  my ($start,$end) = split "-", $loop ;
+                  $start = &hex_to_dec ($start) ;
+                  $end   = &hex_to_dec ($end) ;
+                  for ($i="$start"; $i <= "$end"; $i++) {
+                     $AddressHex = &dec_to_4hex($i) ;
+                     push @ModuleNameAddress, $AddressHex ;
+                     if ( $counter eq "0" ) {
+                        # First address
+                        $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{ModuleName} = "$counter:Start" ;
+                     } else {
+                        $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{ModuleName} = "$counter" ;
+                     }
+                     $counter ++ ;
+                  }
+               }
+
+               # Save all addresses for the get_status procedure
+               $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{ModuleNameAddress} = join ";", @ModuleNameAddress ;
+
+               # Remember last adress
+               $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{ModuleName} = "$counter:Save" ;
+            }
+         }
+      }
+   }
+}
 
 return 1
