@@ -17,7 +17,7 @@ sub process_message {
 
    $message{Raw} = join " ", @hex ;
 
-   &log("raw","$message{Raw}") ;
+   #&log("raw","$message{Raw}") ;
 
    #$message{text} .= "RAW = $message{Raw}" ;
 
@@ -509,7 +509,7 @@ sub process_message {
    my $date = `date` ; chomp $date ; # Get a date stamp
    print "$date $message{prio} $message{address}($message{addressMaster})=$message{ModuleType} $message{MessageType}=$message{MessageName} :: $message{text}\n" ;
 
-   &do_query ($global{dbh},"insert into `messages` (`date`, `raw`, `address`, `prio`, `type`, `rtr_size`) VALUES (NOW(), ?, ?, ?, ?, ? )", $message{Raw}, $message{address}, $message{prio}, $message{MessageType}, $message{RTR_size}) ;
+   #&do_query ($global{dbh},"insert into `messages` (`date`, `raw`, `address`, `prio`, `type`, `rtr_size`) VALUES (NOW(), ?, ?, ?, ?, ? )", $message{Raw}, $message{address}, $message{prio}, $message{MessageType}, $message{RTR_size}) ;
 }
 
 # Put a message on the bus
