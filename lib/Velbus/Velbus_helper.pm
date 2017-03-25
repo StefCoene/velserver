@@ -202,14 +202,14 @@ sub check_valid {
 # Param 2: port (default = 3788)
 # Return: socket
 sub open_socket () {
-   $global{Config}{velbus}{host} = "localhost"    if ! defined $global{Config}{velbus}{host} ;
-   $global{Config}{velbus}{port} = "3788"         if ! defined $global{Config}{velbus}{port} ;
+   $global{Config}{velbus}{HOST} = "localhost"    if ! defined $global{Config}{velbus}{HOST} ;
+   $global{Config}{velbus}{PORT} = "3788"         if ! defined $global{Config}{velbus}{PORT} ;
 
    my $sock = new IO::Socket::INET(
-                   PeerAddr => $global{Config}{velbus}{host},
-                   PeerPort => $global{Config}{velbus}{port},
+                   PeerAddr => $global{Config}{velbus}{HOST},
+                   PeerPort => $global{Config}{velbus}{PORT},
                    Proto    => 'tcp');
-   $sock or die "no socket :$!";
+   $sock or die "No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}: $!";
 
    $sock->autoflush(1);
 
@@ -275,12 +275,22 @@ sub bin_to_dec {
    return unpack("N", pack("B32", substr("0" x 32 . shift, -32)));
 }
 
+# Convert a channel index to a hex number. Channel 4 -> 1000 -> 0x08
+sub channel_to_hex {
+   my $channel = $_[0] ;
+   $channel -- ;
+   $chennel = "1" . "0" x $channel ;
+   $channel = &bin_to_hex ($chennel) ;
+   return $channel ;
+}
+
 sub openHAB_update_state {
    my $name = $_[0] ;
    my $data = $_[1] ;
 
    &log("openHAB","$name: $data") ;
 
+   $global{Config}{openHAB}{REST_URL} = "http://localhost:8080/rest/items" if ! defined $global{Config}{openHAB}{REST_URL} ;
    my $URL = "$global{Config}{openHAB}{REST_URL}/$name/state" ;
 
    # Create the browser that will post the information.

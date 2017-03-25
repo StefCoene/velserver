@@ -3,15 +3,15 @@
 # Connect to the mysql database and returns the databse handler
 sub connect_to_db {
    # Default settings
-   $global{Config}{mysql}{name} = "velbus"    if ! defined $global{Config}{mysql}{name} ;
-   $global{Config}{mysql}{host} = "localhost" if ! defined $global{Config}{mysql}{host} ;
-   $global{Config}{mysql}{user} = "velbus"    if ! defined $global{Config}{mysql}{user} ;
-   $global{Config}{mysql}{pass} = "velbus"    if ! defined $global{Config}{mysql}{pass} ;
+   $global{Config}{mysql}{NAME} = "velbus"    if ! defined $global{Config}{mysql}{NAME} ;
+   $global{Config}{mysql}{HOST} = "localhost" if ! defined $global{Config}{mysql}{HOST} ;
+   $global{Config}{mysql}{USER} = "velbus"    if ! defined $global{Config}{mysql}{USER} ;
+   $global{Config}{mysql}{PASS} = "velbus"    if ! defined $global{Config}{mysql}{PASS} ;
 
    my $dbh = DBI->connect(
-      "DBI:mysql:$global{Config}{mysql}{name}:$global{Config}{mysql}{host}:mysql_client_found_rows=1",
-      $global{Config}{mysql}{user},
-      $global{Config}{mysql}{pass},
+      "DBI:mysql:$global{Config}{mysql}{NAME}:$global{Config}{mysql}{HOST}:mysql_client_found_rows=1",
+      $global{Config}{mysql}{USER},
+      $global{Config}{mysql}{PASS},
          {
             AutoCommit=>1,
             mysql_auto_reconnect=>1

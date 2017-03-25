@@ -1,12 +1,12 @@
 #!/usr/bin/perl
 
-use lib "/data/velserver/lib" ;
+use lib "/home/velbus/velserver/lib" ;
 
 use strict;
 use POSIX qw/strftime/;
 
 our %global ; # Variable shared by all functions where we store all data
-$global{Config}{BaseDir} = "/data/velserver" ;
+$global{Config}{BaseDir} = "/home/velbus/velserver" ;
 
 use Velbus ;
 &init ;

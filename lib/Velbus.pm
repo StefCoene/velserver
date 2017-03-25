@@ -40,7 +40,6 @@ sub init {
  
    # Find memory addresses for module name
    &find_memory_addresses ;
-  
 }
 
 return 1

@@ -146,7 +146,7 @@ sub process_message {
                 or $message{MessageType} eq "F2" ) {
 
             my $hex = shift @hex ;
-            my $Channel = &channel_id_to_number($hex,$message{ModuleType}) ;
+            my $Channel = &channel_id_to_number($hex,$message{address},"Name") ;
 
             if ( $message{MessageType} eq "F0" ) {
                $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value} = "" ; # Reset the name
@@ -270,8 +270,9 @@ sub process_message {
 
                                  $Channel = $hex[$byte] ;
                                  next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-                                 $Channel = &channel_id_to_number($Channel,$message{ModuleType}) ; # Convert it to a number
-                                 $Channel += $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SubAddrMulti} if defined $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SubAddrMulti} ; # If the button is on a sub address (from a VMBGPOD), add the sub address ofset to the channel
+
+                                 $Channel = &channel_id_to_number($Channel,$message{address},"Convert Channel") ; # Convert it to a number
+
                                  $info{$Channel}{Button} = $Value ;
                               }
                            }
@@ -399,7 +400,7 @@ sub process_message {
 
                   my $bin = &hex_to_bin ($hex) ; # Memory content in binary format
                   my $dec = &hex_to_dec ($hex) ; # Memory content in decimal
-                  my $char = chr hex $hex; ;     # Memory content in char
+                  my $char = chr hex $hex ;     # Memory content in char
 
                   my $MemoryKey = &module_find_MemoryKey ($message{address}, $message{ModuleType}) ;
 
@@ -539,17 +540,19 @@ sub send_message () {
          $prio    = "0xFB" ;
       }
 
-      $address = "0x$address" ;
-
       my $rtr     = "0x00" ; # Only for scan this is not 0x00
 
       my @message ;
 
       push @message, "0x$command" ;
 
-      if ( defined $channel and $channel ne "" and $channel !~ /^0x/ ) {
-         $channel = &channel_number_to_id ($channel,$type) ;
-         push @message, $channel ;
+      if ( defined $channel and $channel ne "" ) {
+         if ( $channel =~ /^0x/ ) {
+            push @message, "$channel" ;
+         } else {
+            ($channel,$address) = &channel_number_to_id ($channel,$address,"make_message") ;
+            push @message, "0x$channel" ;
+         }
       }
 
       foreach my $other (@other) {
@@ -562,6 +565,8 @@ sub send_message () {
 
       my $message = join " ", @message ;
       my $Name = $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Name} ; # Name of command
+      $address = "0x$address" ;
+
       &log("message","prio=$prio, address=$address (type=$type), rtr=$rtr, command=$command, message = $message, $Name") ;
 
       &print_sock ($sock,$prio,$address,$rtr,@message) ;
@@ -616,30 +621,19 @@ sub get_status () {
       $output .= "address = $address, type = $type<br>\n" ;
    }
 
-   # Get module name
-   my $MemoryKey = &module_find_MemoryKey ($address, $type) ;
-   if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{ModuleNameAddress} ) {
-      my @memory = split ";", $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{ModuleNameAddress} ;
-      foreach my $memory (@memory) {
-         $memory =~ /(..)(..)/ ;
-         my $hex1 = $1 ;
-         my $hex2 = $2 ;
-         &send_message ($sock, $address, 'FD', undef, $hex1 ,$hex2) ;
+   # Get module name if no channel name is requested
+   if ( ! defined $channel ) {
+      my $MemoryKey = &module_find_MemoryKey ($address, $type) ;
+      if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{ModuleNameAddress} ) {
+         my @memory = split ";", $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{ModuleNameAddress} ;
+         foreach my $memory (@memory) {
+            $memory =~ /(..)(..)/ ;
+            my $hex1 = $1 ;
+            my $hex2 = $2 ;
+            &send_message ($sock, $address, 'FD', undef, $hex1 ,$hex2) ;
+         }
       }
    }
-   #if ( $global{Cons}{ModuleTypes}{"$type"}{Memory}{"$MemoryKey"}{ModuleName} ) {
-   #   my ($start,$end) = split ":", $global{Cons}{ModuleTypes}{"$type"}{Memory}{"$MemoryKey"}{ModuleName} ;
-   #   $start = &hex_to_dec ($start) ;
-   #   $end   = &hex_to_dec ($end) ;
-   #   for ($i="$start"; $i <= "$end"; $i+=4) {
-   #      my $hex = &dec_to_4hex($i) ;
-   #      $hex =~ /(..)(..)/ ;
-   #      my $hex1 = $1 ;
-   #      my $hex2 = $2 ;
-
-   #      &send_message ($sock, $address, 'C9', undef, $hex1 ,$hex2) ;
-   #   }
-   #}
 
    # Getting a list of possible channels of the specific module
    my @channels ;
@@ -652,7 +646,7 @@ sub get_status () {
               $type eq "1F" or
               $type eq "20" or
               $type eq "28" ) ) {
-         $channels[0] = "255" ; # 255 = 0xFF
+         $channels[0] = "0xFF" ;
       } else {
          @channels = sort keys %{$global{Cons}{ModuleTypes}{$type}{Channels}} ;
       }
@@ -696,39 +690,75 @@ sub get_status_VMB7IN () {
    #&send_message ($sock, $address, 'FD', undef, '00' ,'F3') ;
 }
 
-# Convert channel number to channel bit. 3 = 1000 -> 8
+# Convert channel number and address to channel bit. 3 = 1000 -> 8 and sub address
 # Used by commands.pl & scripts
 sub channel_number_to_id () {
    my $channel = $_[0] ;
-   my $type    = $_[1] ;
-   if ( defined $global{Cons}{ModuleTypes}{$type}{ChannelNaming} and
-                $global{Cons}{ModuleTypes}{$type}{ChannelNaming} eq "dec" ) {
-      $channel = &dec_to_hex ($channel) ;
+   my $address = $_[1] ;
+
+   &log("channel_number_to_id","START $_[2], input: $channel @ $address") ;
+   if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" or
+        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" or
+        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" or
+        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "20" ) {
+      #if ( $channel > 24 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ) {
+      #   $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
+      #   $channel -= 24 ;
+      #} elsif ( $channel > 16 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ) {
+      #   $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ;
+      #   $channel -= 16 ;
+      #} elsif ( $channel > 8 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ) {
+      #   $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
+      #   $channel -= 8 ;
+      #}
+      $channel = &dec_to_hex($channel) ;
+      &log("channel_number_to_id","type = Touch dec -> hex: channel = $channel") ;
    } else {
       $channel -- ;
-      my $test = "1" . "0" x $channel ;
-      $channel = &bin_to_hex ($test) ;
+      &log("channel_number_to_id","min -: $channel @ $address") ;
+      $channel = "1" . "0" x $channel ;
+      &log("channel_number_to_id","binary: $channel @ $address") ;
+      $channel = &bin_to_hex ($channel) ;
+      &log("channel_number_to_id","binary to hex: $channel @ $address") ;
    }
-   $channel = "0x$channel" ;
-   return $channel ;
+   &log("channel_number_to_id","Retrun: $channel @ $address") ;
+   &log("channel_number_to_id","") ;
+   return ($channel,$address) ;
 }
 
 # Convert channnel bit to channel number. 8 -> 1000 = 3
-# Used by logger.pl
+# Used by logger.pl for the touch screens & channel names
 sub channel_id_to_number () {
    my $channel = $_[0] ;
-   my $type    = $_[1] ; # Optional
+   my $address = $_[1] ; # Optional
  
-   if ( defined $type and
-        defined $global{Cons}{ModuleTypes}{$type}{ChannelNaming} and
-                $global{Cons}{ModuleTypes}{$type}{ChannelNaming} eq "dec" ) {
-      $channel = &hex_to_dec ($channel) ;
+   &log("channel_id_to_number","START $_[2], input: $channel @ $address") ;
+   if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" or
+        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" or
+        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" or
+        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "20" ) {
+      $channel = &hex_to_dec($channel) ;
+      &log("channel_id_to_number","type = Touch: hex to dec: $channel") ;
    } else {
       $channel = &hex_to_bin ($channel) ;
+      &log("channel_id_to_number","hex to bin: $channel") ;
       $channel =~ /(0*)$/ ; # Filter out last 0's
+      &log("channel_id_to_number","strip 0: $channel") ;
       $channel = ($1 =~ tr/0//); # Count last 0's
+      &log("channel_id_to_number","count 0: $channel") ;
       $channel ++ ;
+      &log("channel_id_to_number","+ 1: $channel") ;
+
+      # OLED has sub addresses for the different buttons
+      if ( defined $address and 
+         defined $global{Vars}{Modules}{Address}{$address} and
+         defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ) {
+         $channel += $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ;
+         &log("channel_id_to_number","OLED, multi channel: channel = $channel") ;
+      }
    }
+   &log("channel_id_to_number","Retrun: $channel @ $address") ;
+   &log("channel_id_to_number","") ;
    $channel = "0" . $channel if $channel < 10 ;
    return $channel ;
 }
@@ -779,25 +809,31 @@ sub button_pressed {
    my $channel = $_[2] ;
    my $value   = $_[3] ;
    if ( $value eq "ON" ) {
-      if ( $channel > 25 ) {
-         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
-         $channel -= 24 ;
-      } elsif ( $channel > 17 ) {
-         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ;
-         $channel -= 16 ;
-      } elsif ( $channel > 9 ) {
-         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
-         $channel -= 8 ;
-      }
+#print "button_pressed: $channel @ $address\n" ;
+#      # We need the sub address for the OLED module
+#      if ( $channel > 24 ) {
+#         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
+#         $channel -= 24 ;
+#      } elsif ( $channel > 16 ) {
+#         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ;
+#         $channel -= 16 ;
+#      } elsif ( $channel > 8 ) {
+#         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
+#         $channel -= 8 ;
+#      }
+#
+#      $channel -- ;
+#print "button_pressed: $channel\n" ;
+#      my $test = "1" . "0" x $channel ;
+#      $channel = &bin_to_hex ($test) ;
+#print "button_pressed: $channel @ $address\n" ;
 
-      $channel -- ;
-      my $test = "1" . "0" x $channel ;
-      $channel = &bin_to_hex ($test) ;
-
+      ($channel,$address) = &channel_number_to_id($channel,$address,"button_pressed") ;
       # DATABYTE2 = Channel just pressed
       # DATABYTE3 = Channel just released
       # DATABYTE4 = Channel long pressed
       &send_message ($sock, $address, "00", "", $channel, "00", "00" ) ; # Channel just pressed
+      usleep (20000) ;
       &send_message ($sock, $address, "00", "", "00", $channel, "00" ) ; # Channel just released
    }
 }

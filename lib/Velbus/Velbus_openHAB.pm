@@ -53,7 +53,9 @@ sub openHAB () {
    my $openHAB ;
 
    # Default value if not specified in config file
-   $global{Config}{openHAB}{polling} = 60000000 if ! defined $global{Config}{openHAB}{polling} ;
+   # 3600 seconds = 1 hour
+   $global{Config}{openHAB}{POLLING} = 3600 if ! defined $global{Config}{openHAB}{POLLING} ;
+   $global{Config}{openHAB}{BASE_URL} = "http://localhost/velserver/service.pl" if ! defined $global{Config}{openHAB}{BASE_URL} ;
 
    # Loop all module types
    foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
@@ -82,14 +84,14 @@ sub openHAB () {
                   my $item = "Button_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                   $openHAB .= "Switch $item \"$Name\" " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
                   $openHAB .= "\"}\n" ;
 
@@ -98,14 +100,14 @@ sub openHAB () {
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
                   $Name .= " (Long) " ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                   $openHAB .= "Switch $item \"$Name\" " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
                   $openHAB .= "\"}\n" ;
                }
@@ -114,7 +116,7 @@ sub openHAB () {
                   my $item = "Temperature_$address" ;
 
                   my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                   $openHAB .= "Number $item \"$Name [%.1f °C]\" " ;
                   $openHAB .= "<temperature> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -122,7 +124,7 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Temperature&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Temperature)]" ;
+                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Temperature&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Temperature)]" ;
                   $openHAB .= "\"}\n" ;
 
                   # Touch + Input modules: heater control
@@ -135,7 +137,7 @@ sub openHAB () {
                      my $item = "HeaterMode_$address" ;
 
                      my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                      $openHAB .= "Number $item \"$Name  mode\" " ;
                      $openHAB .= "<temperature> " ;
                      my $Group = &openHAB_match_item($item) ;
@@ -143,7 +145,7 @@ sub openHAB () {
                         $openHAB .= "($Group) " ;
                      }
                      $openHAB .= "{http=\"" ;
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                      $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Set&value=%2\$s]" ;
                      $openHAB .= "\"}\n" ;
 
@@ -151,7 +153,7 @@ sub openHAB () {
                      my $item = "HeaterTemperature_$address" ;
 
                      my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                      $openHAB .= "Number $item \"$Name temperature target [%.1f °C]\" " ;
                      $openHAB .= "<temperature> " ;
                      my $Group = &openHAB_match_item($item) ;
@@ -159,7 +161,7 @@ sub openHAB () {
                         $openHAB .= "($Group) " ;
                      }
                      $openHAB .= "{http=\"" ;
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                      $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Set&value=%2\$s]" ;
                      $openHAB .= "\"}\n" ;
                   }
@@ -168,7 +170,7 @@ sub openHAB () {
                   my $item = "Dimmer_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                   $Name .= " [%s %%]" ;
                   $openHAB .= "Dimmer $item \"$Name\" " ;
                   $openHAB .= "<slider> " ;
@@ -177,7 +179,7 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Set&value=%2\$s]" ;
                   $openHAB .= "\"}\n" ;
                }
@@ -185,7 +187,7 @@ sub openHAB () {
                   my $item = "Blind_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                   $Name .= " [%s %%]" ;
                   $openHAB .= "Rollershutter $item \"$Name\" " ;
                   $openHAB .= "<rollershutter> " ;
@@ -194,7 +196,7 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=       "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Blind&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .=       "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Blind&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Blind&action=Set&value=%2\$s]" ;
                   $openHAB .= "\"}\n" ;
                }
@@ -202,7 +204,7 @@ sub openHAB () {
                   my $item = "Relay_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                   $openHAB .= "Switch $item \"$Name\" " ;
                   $openHAB .= "<switch> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -210,7 +212,7 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .=  " >[ON:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=On] " ;
                   $openHAB .= " >[OFF:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Off]" ;
                   $openHAB .= "\"}\n" ;
@@ -221,7 +223,7 @@ sub openHAB () {
                   my $item = "CounterRaw_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                   $openHAB .= "Number $item \"$Name (raw) [%.0f]\" " ;
                   $openHAB .= " <chart> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -229,13 +231,13 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterRaw:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterRaw:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= "\"}\n" ;
 
                   my $item = "CounterCurrent_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                   $openHAB .= "Number $item \"$Name (current) [%.0f" ;
                   if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} ) {
                      if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
@@ -251,13 +253,13 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterCurrent:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterCurrent:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= "\"}\n" ;
 
                   my $item = "Counter_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                   $openHAB .= "Number $item \"$Name [%.0f" ;
                   if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} ) {
                      if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
@@ -273,13 +275,13 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounter:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounter:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= "\"}\n" ;
 
                   my $item = "Divider_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
                   $openHAB .= "Number $item \"$Name (divider) [%.0f]\" " ;
                   $openHAB .= " <chart> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -287,67 +289,8 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetDivider:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
+                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetDivider:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= "\"}\n" ;
-               }
-            }
-         }
-
-         # Touch + Input modules: make items for the buttons
-         if ( ( $type eq "1E" ) or
-              ( $type eq "1F" ) or
-              ( $type eq "20" ) or
-              ( $type eq "28" ) or
-              ( $type eq "22" ) ) {
-
-            my @channel = sort keys %{$global{Cons}{ModuleTypes}{$type}{Channels}} ;
-            #if (      $type eq "1E" ) { # VMBGP1
-            #   @channel = ("01") ;
-            #} elsif ( $type eq "1F" ) { # VMBGP2
-            #   @channel = ("01","02") ;
-            #} elsif ( $type eq "20" ) { # VMBGP4
-            #   @channel = ("01","02","03","04","05","06","07","08") ;
-            #} elsif ( $type eq "28" ) { # VMBGPOD
-            #   @channel = ("01","02","03","04","05","06","07","08") ;
-            #} elsif ( $type eq "22" ) { # VMB7IN
-            #   @channel = ("01","02","03","04","05","06","07") ;
-            #}
-
-            # If the module has sub addresses, repeat the previous for the sub addresses
-            if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
-next ;
-               foreach my $SubAddr (split ",", $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
-                  foreach my $Channel (sort @channel) {
-                     my $item = "Button_$SubAddr"."_"."$Channel" ;
-                     my $SubChannel = &SubAddr_Channel ($address, $SubAddr, $Channel) ; # Calculate the 'real' channel address based on the channel and sub address
-                     my $Name = $item ;
-                     $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} ne "" ;
-                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
-                     $openHAB .= "Switch $item \"$Name\" " ;
-                     my $Group = &openHAB_match_item($item) ;
-                     if ( defined $Group ) {
-                        $openHAB .= "($Group) " ;
-                     }
-                     $openHAB .= "{http=\"" ;
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$SubAddr&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
-                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$SubAddr&type=Switch&action=Set&value=%2\$s]" ;
-                     $openHAB .= "\"}\n" ;
-
-                     my $item = "ButtonLong_$SubAddr"."_"."$Channel" ;
-                     my $SubChannel = &SubAddr_Channel ($address, $SubAddr, $Channel) ; # Calculate the 'real' channel address based on the channel and sub address
-                     my $Name = $item ;
-                     $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$SubChannel}{Name}{value} ne "" ;
-                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{debug} ;
-                     $openHAB .= "Switch $item \"$Name\" " ;
-                     my $Group = &openHAB_match_item($item) ;
-                     if ( defined $Group ) {
-                        $openHAB .= "($Group) " ;
-                     }
-                     $openHAB .= "{http=\"" ;
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$SubAddr&type=Switch&action=Get:$global{Config}{openHAB}{polling}:JSONPATH(\$.Status)]" ;
-                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$SubAddr&type=Switch&action=Set&value=%2\$s]" ;
-                     $openHAB .= "\"}\n" ;
-                  }
                }
             }
          }
@@ -355,6 +298,7 @@ next ;
    }
 
    # If the item file exists and is writable, update the item file
+   $global{Config}{openHAB}{ITEM_FILE} = "/etc/openhab2/items/velbus.items" if ! defined $global{Config}{openHAB}{ITEM_FILE} ;
    if ( -f $global{Config}{openHAB}{ITEM_FILE} ) {
       if ( -w $global{Config}{openHAB}{ITEM_FILE} ) {
          open ITEM_FILE, ">$global{Config}{openHAB}{ITEM_FILE}" ;

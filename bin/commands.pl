@@ -1,8 +1,8 @@
 #!/usr/bin/perl 
 
-use lib "/data/velserver/lib" ;
+use lib "/home/velbus/velserver/lib" ;
 our %global ;
-$global{Config}{BaseDir} = "/data/velserver" ;
+$global{Config}{BaseDir} = "/home/velbus/velserver" ;
 
 use Getopt::Long ;
 &GetOptions ('option=s' => \$global{opts}{option} ,
@@ -51,3 +51,4 @@ if ( $global{opts}{option} eq "test" ) {
 } else {
    &print_help ;
 }
+
