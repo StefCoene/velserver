@@ -84,7 +84,7 @@ sub openHAB () {
                   my $item = "Button_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $openHAB .= "Switch $item \"$Name\" " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -100,7 +100,7 @@ sub openHAB () {
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
                   $Name .= " (Long) " ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $openHAB .= "Switch $item \"$Name\" " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -116,7 +116,7 @@ sub openHAB () {
                   my $item = "Temperature_$address" ;
 
                   my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $openHAB .= "Number $item \"$Name [%.1f °C]\" " ;
                   $openHAB .= "<temperature> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -137,7 +137,7 @@ sub openHAB () {
                      my $item = "HeaterMode_$address" ;
 
                      my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                      $openHAB .= "Number $item \"$Name  mode\" " ;
                      $openHAB .= "<temperature> " ;
                      my $Group = &openHAB_match_item($item) ;
@@ -153,7 +153,7 @@ sub openHAB () {
                      my $item = "HeaterTemperature_$address" ;
 
                      my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                      $openHAB .= "Number $item \"$Name temperature target [%.1f °C]\" " ;
                      $openHAB .= "<temperature> " ;
                      my $Group = &openHAB_match_item($item) ;
@@ -170,7 +170,7 @@ sub openHAB () {
                   my $item = "Dimmer_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $Name .= " [%s %%]" ;
                   $openHAB .= "Dimmer $item \"$Name\" " ;
                   $openHAB .= "<slider> " ;
@@ -187,7 +187,7 @@ sub openHAB () {
                   my $item = "Blind_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $Name .= " [%s %%]" ;
                   $openHAB .= "Rollershutter $item \"$Name\" " ;
                   $openHAB .= "<rollershutter> " ;
@@ -204,7 +204,7 @@ sub openHAB () {
                   my $item = "Relay_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $openHAB .= "Switch $item \"$Name\" " ;
                   $openHAB .= "<switch> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -223,7 +223,7 @@ sub openHAB () {
                   my $item = "CounterRaw_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $openHAB .= "Number $item \"$Name (raw) [%.0f]\" " ;
                   $openHAB .= " <chart> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -237,7 +237,7 @@ sub openHAB () {
                   my $item = "CounterCurrent_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $openHAB .= "Number $item \"$Name (current) [%.0f" ;
                   if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} ) {
                      if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
@@ -259,7 +259,7 @@ sub openHAB () {
                   my $item = "Counter_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $openHAB .= "Number $item \"$Name [%.0f" ;
                   if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} ) {
                      if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
@@ -281,7 +281,7 @@ sub openHAB () {
                   my $item = "Divider_$itemBase" ;
                   my $Name = $item ;
                   $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{PRINT_AC} ;
+                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $openHAB .= "Number $item \"$Name (divider) [%.0f]\" " ;
                   $openHAB .= " <chart> " ;
                   my $Group = &openHAB_match_item($item) ;
