@@ -267,12 +267,9 @@ sub process_message {
 
                               # Button pressed on touch or an other input
                               if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
-
                                  $Channel = $hex[$byte] ;
                                  next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-
                                  $Channel = &channel_id_to_number($Channel,$message{address},"Convert Channel") ; # Convert it to a number
-
                                  $info{$Channel}{Button} = $Value ;
                               }
                            }
@@ -696,33 +693,24 @@ sub channel_number_to_id () {
    my $channel = $_[0] ;
    my $address = $_[1] ;
 
-   &log("channel_number_to_id","START $_[2], input: $channel @ $address") ;
    if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" or
         $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" or
         $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" or
         $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "20" ) {
-      #if ( $channel > 24 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ) {
-      #   $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
-      #   $channel -= 24 ;
-      #} elsif ( $channel > 16 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ) {
-      #   $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ;
-      #   $channel -= 16 ;
-      #} elsif ( $channel > 8 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ) {
-      #   $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
-      #   $channel -= 8 ;
-      #}
-      $channel = &dec_to_hex($channel) ;
-      &log("channel_number_to_id","type = Touch dec -> hex: channel = $channel") ;
-   } else {
-      $channel -- ;
-      &log("channel_number_to_id","min -: $channel @ $address") ;
-      $channel = "1" . "0" x $channel ;
-      &log("channel_number_to_id","binary: $channel @ $address") ;
-      $channel = &bin_to_hex ($channel) ;
-      &log("channel_number_to_id","binary to hex: $channel @ $address") ;
+      if ( $channel > 24 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ) {
+         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
+         $channel -= 24 ;
+      } elsif ( $channel > 16 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ) {
+         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ;
+         $channel -= 16 ;
+      } elsif ( $channel > 8 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ) {
+         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
+         $channel -= 8 ;
+      }
    }
-   &log("channel_number_to_id","Retrun: $channel @ $address") ;
-   &log("channel_number_to_id","") ;
+   $channel -- ;
+   $channel = "1" . "0" x $channel ;
+   $channel = &bin_to_hex ($channel) ;
    return ($channel,$address) ;
 }
 
@@ -732,33 +720,17 @@ sub channel_id_to_number () {
    my $channel = $_[0] ;
    my $address = $_[1] ; # Optional
  
-   &log("channel_id_to_number","START $_[2], input: $channel @ $address") ;
-   if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" or
-        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" or
-        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" or
-        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "20" ) {
-      $channel = &hex_to_dec($channel) ;
-      &log("channel_id_to_number","type = Touch: hex to dec: $channel") ;
-   } else {
-      $channel = &hex_to_bin ($channel) ;
-      &log("channel_id_to_number","hex to bin: $channel") ;
-      $channel =~ /(0*)$/ ; # Filter out last 0's
-      &log("channel_id_to_number","strip 0: $channel") ;
-      $channel = ($1 =~ tr/0//); # Count last 0's
-      &log("channel_id_to_number","count 0: $channel") ;
-      $channel ++ ;
-      &log("channel_id_to_number","+ 1: $channel") ;
+   $channel = &hex_to_bin ($channel) ;
+   $channel =~ /(0*)$/ ; # Filter out last 0's
+   $channel = ($1 =~ tr/0//); # Count last 0's
+   $channel ++ ;
 
-      # OLED has sub addresses for the different buttons
-      if ( defined $address and 
-         defined $global{Vars}{Modules}{Address}{$address} and
-         defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ) {
-         $channel += $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ;
-         &log("channel_id_to_number","OLED, multi channel: channel = $channel") ;
-      }
+   if ( defined $address and 
+      defined $global{Vars}{Modules}{Address}{$address} and
+      defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ) {
+      $channel += $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ;
    }
-   &log("channel_id_to_number","Retrun: $channel @ $address") ;
-   &log("channel_id_to_number","") ;
+
    $channel = "0" . $channel if $channel < 10 ;
    return $channel ;
 }
