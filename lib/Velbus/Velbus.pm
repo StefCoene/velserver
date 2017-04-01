@@ -504,8 +504,7 @@ sub process_message {
       }
    }
 
-   my $date = `date` ; chomp $date ; # Get a date stamp
-   print "$date $message{prio} $message{address}($message{addressMaster})=$message{ModuleType} $message{MessageType}=$message{MessageName} :: $message{text}\n" ;
+   print &timestamp . " $message{prio} $message{address}($message{addressMaster})=$message{ModuleType} $message{MessageType}=$message{MessageName} :: $message{text}\n" ;
 
    #&do_query ($global{dbh},"insert into `messages` (`date`, `raw`, `address`, `prio`, `type`, `rtr_size`) VALUES (NOW(), ?, ?, ?, ?, ? )", $message{Raw}, $message{address}, $message{prio}, $message{MessageType}, $message{RTR_size}) ;
 }
@@ -900,13 +899,15 @@ sub test () {
    $prio    = "0xFB"; # Low
    $rtr     = "0x00";
    # H’03FE’     Counter units
-   @message = ("0xFD", "0x00", "0xE4") ;
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
-   @message = ("0xFD", "0x00", "0xE9") ;
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
-   @message = ("0xFD", "0x00", "0xEE") ;
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
-   @message = ("0xFD", "0x00", "0xF3") ;
+   #@message = ("0xFD", "0x00", "0xE4") ;
+   #&print_sock ($sock,$prio,$address,$rtr,@message) ;
+   #@message = ("0xFD", "0x00", "0xE9") ;
+   #&print_sock ($sock,$prio,$address,$rtr,@message) ;
+   #@message = ("0xFD", "0x00", "0xEE") ;
+   #&print_sock ($sock,$prio,$address,$rtr,@message) ;
+   #@message = ("0xFD", "0x00", "0xF3") ;
+   #&print_sock ($sock,$prio,$address,$rtr,@message) ;
+   @message = ("0xD7") ; # Request time
    &print_sock ($sock,$prio,$address,$rtr,@message) ;
 }
 
