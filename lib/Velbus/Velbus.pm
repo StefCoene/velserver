@@ -142,7 +142,7 @@ sub process_message {
 
          # Name of channel
          } elsif ( $message{MessageType} eq "F0"
-                or $message{MessageType} eq "F1" 
+                or $message{MessageType} eq "F1"
                 or $message{MessageType} eq "F2" ) {
 
             my $hex = shift @hex ;
@@ -212,7 +212,7 @@ sub process_message {
                            }
 
                         # The rest is a hex match or a bin match
-                        } elsif ( $key eq $hex[$byte] or 
+                        } elsif ( $key eq $hex[$byte] or
                                   $key eq $bin ) {
                            $Match = "yes" ;
                         }
@@ -316,7 +316,7 @@ sub process_message {
                            push @{$info{$Channel}{$Name}{List}},    $Value if defined $Value ;
                            push @{$info{$Channel}{$SubName}{List}}, $Value if defined $SubName ;
                         }
-                     }  
+                     }
                   }
                }
 
@@ -452,7 +452,7 @@ sub process_message {
                                  }
 
                               # The rest is a hex match or a bin match
-                              } elsif ( $Matchkey eq $hex[$byte] or 
+                              } elsif ( $Matchkey eq $hex[$byte] or
                                        $Matchkey eq $bin ) {
                                  $Match = "yes" ;
                               }
@@ -478,7 +478,7 @@ sub process_message {
                                  }
                               }
                            }
-   
+
                            $info{$Channel}{$SubName} = $Value if defined $Channel and defined $SubName and defined $Value ;
                         }
 
@@ -599,7 +599,7 @@ sub OLD_get_module_info () {
 }
 
 # Get all possible info from a module
-# 
+#
 # 1: socket
 # 2: address
 # 3: module type
@@ -718,19 +718,36 @@ sub channel_number_to_id () {
 sub channel_id_to_number () {
    my $channel = $_[0] ;
    my $address = $_[1] ; # Optional
- 
-   $channel = &hex_to_bin ($channel) ;
-   $channel =~ /(0*)$/ ; # Filter out last 0's
-   $channel = ($1 =~ tr/0//); # Count last 0's
-   $channel ++ ;
+   my $type    = $_[2] ;
 
-   if ( defined $address and 
-      defined $global{Vars}{Modules}{Address}{$address} and
-      defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ) {
-      $channel += $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ;
+   if ( $type eq "Name" ) {
+      if ( ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" ) or # VMBGP1D
+           ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" ) or # VMBGP2D
+           ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "20" ) or # VMBGP4D
+           ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) ) { # VMBGPOD
+         $channel = &hex_to_dec ($channel) ; # Only usefull for VMBGPOD
+         $channel = "0" . $channel if $channel < 10 ;
+      } else {
+         $channel = &hex_to_bin ($channel) ;
+         $channel =~ /(0*)$/ ; # Filter out last 0's
+         $channel = ($1 =~ tr/0//); # Count last 0's
+         $channel ++ ;
+         $channel = "0" . $channel if $channel < 10 ;
+      }
+   } else {
+      $channel = &hex_to_bin ($channel) ;
+      $channel =~ /(0*)$/ ; # Filter out last 0's
+      $channel = ($1 =~ tr/0//); # Count last 0's
+      $channel ++ ;
+
+      if ( defined $address and
+           defined $global{Vars}{Modules}{Address}{$address} and
+           defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ) {
+         $channel += $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ;
+      }
+
+      $channel = "0" . $channel if $channel < 10 ;
    }
-
-   $channel = "0" . $channel if $channel < 10 ;
    return $channel ;
 }
 
