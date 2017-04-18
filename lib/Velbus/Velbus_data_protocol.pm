@@ -2,6 +2,14 @@
 # The format is easy to understand
 
 # TODO: document the possible options
+#   {type}
+#     "Blind"
+#     "Button"
+#     "ButtonCounter"
+#     "Dimmer
+#     "Dimmer"
+#     "Relay"
+#     "Temperature"
 
 ################### Relays: Channel names
 # Channels of specific modules
@@ -502,6 +510,166 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Match}{'%0.......'}{
 $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'8'}{Match}{'%1.......'}{Info} = "Sunset enabled" ;
 
 ################### Touch
+# One, two or four touch buttonsmodule: VMBGP1
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Name} = "Operating mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Mode push button locked" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......0'}{Info} = "Mode push button unlocked" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%X....11.'}{Info} = "Disable mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.....01.'}{Info} = "Manual mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.....10.'}{Info} = "Sleep timer mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.....00.'}{Info} = "Run mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%....1...'}{Info} = "Auto send sensor temperature enabled" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%....0...'}{Info} = "Auto send sensor temperature disabled" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Name} = "Temperature mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Info} = "Comfort mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:HeaterMode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Name} = "Temperature mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Info} = "Day mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:HeaterMode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Name} = "Temperature mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Info} = "Night mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:HeaterMode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Name} = "Temperature mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Info} = "Safe temp mode (anti frost)" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:HeaterMode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Info} = "Cooler mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Info} = "Heater mode" ;
+
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Name} = "Program step mode" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.....0..'}{Info} = "No sensor program group 1" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.....1..'}{Info} = "Sensor program group 1 available" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%....0...'}{Info} = "No sensor program group 2" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%....1...'}{Info} = "Sensor program group 2 available" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%0.......'}{Info} = "No sensor program group 3" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%1.......'}{Info} = "Sensor program group 3 available" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.100....'}{Info} = "Comfort program step received" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.010....'}{Info} = "Day program step received" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.001....'}{Info} = "Night program step received" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%X000....'}{Info} = "Safe temperature program step received" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%......1.'}{Info} = "Enable unjamming heater valve" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%......0.'}{Info} = "Disable unjamming heater valve" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.......1'}{Info} = "Enable unjamming pump" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.......0'}{Info} = "Disable unjamming pump" ;
+
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Name} = "Output status" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.......0'}{Info} = "Heater off" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.......1'}{Info} = "Heater on" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%......0.'}{Info} = "Boost heater/cooler off" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%......1.'}{Info} = "Boost heater/cooler on" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.....0..'}{Info} = "Pump off" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.....1..'}{Info} = "Pump on" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%....0...'}{Info} = "Cooler off" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%....1...'}{Info} = "Cooler on" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%...0....'}{Info} = "Temperature alarm 1 off" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 on" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%..0.....'}{Info} = "Temperature alarm 2 off" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 on" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.0......'}{Info} = "Temperature alarm 3 off" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 on" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%0.......'}{Info} = "Temperature alarm 4 off" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'2'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 on" ;
+
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'3'}{Name} = "Current temperature" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'3'}{Match}{'%.'}{Convert} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'4'}{Name} = "Current temperature set" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "HeaterTemperature" ;
+
+# One, two or four touch buttonsmodule: VMBGP2
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Name} = "Operating mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......1'}{Info} = "Mode push button locked" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.......0'}{Info} = "Mode push button unlocked" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%X....11.'}{Info} = "Disable mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.....01.'}{Info} = "Manual mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.....10.'}{Info} = "Sleep timer mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.....00.'}{Info} = "Run mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%....1...'}{Info} = "Auto send sensor temperature enabled" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%....0...'}{Info} = "Auto send sensor temperature disabled" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Name} = "Temperature mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Info} = "Comfort mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:HeaterMode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Name} = "Temperature mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Info} = "Day mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:HeaterMode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Name} = "Temperature mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Info} = "Night mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:HeaterMode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Name} = "Temperature mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Info} = "Safe temp mode (anti frost)" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:HeaterMode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Info} = "Cooler mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Info} = "Heater mode" ;
+
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Name} = "Program step mode" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.....0..'}{Info} = "No sensor program group 1" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.....1..'}{Info} = "Sensor program group 1 available" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%....0...'}{Info} = "No sensor program group 2" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%....1...'}{Info} = "Sensor program group 2 available" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%0.......'}{Info} = "No sensor program group 3" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%1.......'}{Info} = "Sensor program group 3 available" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.100....'}{Info} = "Comfort program step received" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.010....'}{Info} = "Day program step received" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.001....'}{Info} = "Night program step received" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%X000....'}{Info} = "Safe temperature program step received" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%......1.'}{Info} = "Enable unjamming heater valve" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%......0.'}{Info} = "Disable unjamming heater valve" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.......1'}{Info} = "Enable unjamming pump" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.......0'}{Info} = "Disable unjamming pump" ;
+
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Name} = "Output status" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.......0'}{Info} = "Heater off" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.......1'}{Info} = "Heater on" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%......0.'}{Info} = "Boost heater/cooler off" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%......1.'}{Info} = "Boost heater/cooler on" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.....0..'}{Info} = "Pump off" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.....1..'}{Info} = "Pump on" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%....0...'}{Info} = "Cooler off" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%....1...'}{Info} = "Cooler on" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%...0....'}{Info} = "Temperature alarm 1 off" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 on" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%..0.....'}{Info} = "Temperature alarm 2 off" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 on" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.0......'}{Info} = "Temperature alarm 3 off" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 on" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%0.......'}{Info} = "Temperature alarm 4 off" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'2'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 on" ;
+
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'3'}{Name} = "Current temperature" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'3'}{Match}{'%.'}{Convert} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'4'}{Name} = "Current temperature set" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
+$global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "HeaterTemperature" ;
+
 # One, two or four touch buttonsmodule: VMBGP4
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
