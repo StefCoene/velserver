@@ -25,5 +25,4 @@ while (1) {
    chomp($recv_data);
 
    &process_raw_message ($recv_data) ;
-   &disconnect ($global{dbh}) ;
 }
