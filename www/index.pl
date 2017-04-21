@@ -55,12 +55,6 @@ print "<a href=?key=$global{cgi}{params}{key}&appl=clear_database>Clear mysql in
 print "</p>\n" ;
 
 if ( defined $global{cgi}{params}{appl} ) {
-   if ( $global{cgi}{params}{appl} eq "print_velbus_protocol" ) {
-      &www_print_velbus_protocol ;
-   }
-   if ( $global{cgi}{params}{appl} eq "print_velbus_messages" ) {
-      &www_print_velbus_messages ;
-   }
    if ( $global{cgi}{params}{appl} eq "print_modules" ) {
       if ( defined $global{cgi}{params}{action} ) {
          if ( $global{cgi}{params}{action} eq "status" ) {
@@ -68,6 +62,12 @@ if ( defined $global{cgi}{params}{appl} ) {
          }
       }
       &www_print_modules ;
+   }
+   if ( $global{cgi}{params}{appl} eq "print_velbus_protocol" ) {
+      &www_print_velbus_protocol ;
+   }
+   if ( $global{cgi}{params}{appl} eq "print_velbus_messages" ) {
+      &www_print_velbus_messages ;
    }
    if ( $global{cgi}{params}{appl} eq "openHAB" ) {
       &www_openHAB ;

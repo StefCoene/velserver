@@ -1,10 +1,3 @@
-
-#Thu Mar  9 22:00:01 CET 2017 lo  3A(3A)=20 E6=COMMAND_SENSOR_TEMPERATURE :: Temperature = 21.62
-#Thu Mar  9 22:00:17 CET 2017 lo  36(36)=20 E6=COMMAND_SENSOR_TEMPERATURE :: Temperature = 19.19
-#Thu Mar  9 22:00:39 CET 2017 HI  35()=Temperature 00=COMMAND_OUTPUT_STATUS ::
-#  00, Output channel just activated = Heater just activated;Pump just activated
-
-
 use HTTP::Request::Common;
 use LWP::UserAgent ;
 
@@ -506,7 +499,13 @@ sub process_message {
 
    print &timestamp . " $message{prio} $message{address}($message{addressMaster})=$message{ModuleType} $message{MessageType}=$message{MessageName} :: $message{text}\n" ;
 
-   #&do_query ($global{dbh},"insert into `messages` (`date`, `raw`, `address`, `prio`, `type`, `rtr_size`) VALUES (NOW(), ?, ?, ?, ?, ? )", $message{Raw}, $message{address}, $message{prio}, $message{MessageType}, $message{RTR_size}) ;
+   if ( defined $global{Config}{velbus}{ENABLE_RAWMESSAGE_LOGGING} ) {
+      &log("raw","$message{address} : $message{prio} : $message{MessageType} : $message{RTR_size} : $message{Raw}") ;
+   }
+ 
+   if ( defined $global{Config}{mysql}{ENABLE_RAWMESSAGE_LOGGING} ) {
+      &do_query ($global{dbh},"insert into `messages` (`date`, `raw`, `address`, `prio`, `type`, `rtr_size`) VALUES (NOW(), ?, ?, ?, ?, ? )", $message{Raw}, $message{address}, $message{prio}, $message{MessageType}, $message{RTR_size}) ;
+   }
 }
 
 # Put a message on the bus
@@ -570,36 +569,7 @@ sub send_message () {
    }
 }
 
-# OLD, replaced by send_message
-# Query status of module
-# 1: socket
-# 2: address
-# 3: module type
-sub OLD_get_module_info () {
-   my $sock    = shift @_ ;
-   my $address = shift @_ ;
-   my $type    = shift @_ ;
-   my $channel = shift @_ ;
-   my $command = shift @_ ;
-   my @other   = @_ ;
-
-   my $prio ;
-   if ( defined $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Prio} and
-                $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Prio} =~ /High/i ) {
-      $prio    = "0xF8" ;
-   } else {
-      $prio    = "0xFB" ;
-   }
-
-   $rtr     = "0x00" ;
-
-   my @message = ("0x$command", "$channel") ;
-   &print_sock ($sock,$prio,"0x$address",$rtr,@message) ;
-   usleep (50000) ;
-}
-
 # Get all possible info from a module
-#
 # 1: socket
 # 2: address
 # 3: module type
@@ -665,8 +635,11 @@ sub get_status () {
    return $output ;
 }
 
+# Get the counter type from the VMB7IN module
+# 1: socket
+# 2: address
 sub get_status_VMB7IN () {
-   my $sock = $_[0] ;
+   my $sock    = $_[0] ;
    my $address = $_[1] ;
 
    my @channel ;
@@ -678,12 +651,6 @@ sub get_status_VMB7IN () {
 
    # Request counter type: kWh, m3, liter:
    &send_message ($sock, $address, 'FD', undef, '03' ,'FE') ;
-
-   # Request "Pulse per Units divide by 100" per channel:
-   #&send_message ($sock, $address, 'FD', undef, '00' ,'E4') ;
-   #&send_message ($sock, $address, 'FD', undef, '00' ,'E9') ;
-   #&send_message ($sock, $address, 'FD', undef, '00' ,'EE') ;
-   #&send_message ($sock, $address, 'FD', undef, '00' ,'F3') ;
 }
 
 # Convert channel number and address to channel bit. 3 = 1000 -> 8 and sub address
@@ -691,6 +658,8 @@ sub get_status_VMB7IN () {
 sub channel_number_to_id () {
    my $channel = $_[0] ;
    my $address = $_[1] ;
+# 1: channel
+# 2: address
 
    if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" or
         $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" or
@@ -715,6 +684,9 @@ sub channel_number_to_id () {
 
 # Convert channnel bit to channel number. 8 -> 1000 = 3
 # Used by logger.pl for the touch screens & channel names
+# 1: channel
+# 2: address
+# 3: type: Name or nothing
 sub channel_id_to_number () {
    my $channel = $_[0] ;
    my $address = $_[1] ; # Optional
@@ -791,43 +763,31 @@ sub update_module_status () {
    return $output ;
 }
 
+# Simulate a button press by sending 'Channel just pressed', sleep 20 ms, send 'Channel just release'
+# 1: socket
+# 2: address
+# 3: channel
 sub button_pressed {
-   my $sock = $_[0] ;
+   my $sock    = $_[0] ;
    my $address = $_[1] ;
    my $channel = $_[2] ;
    my $value   = $_[3] ;
-   if ( $value eq "ON" ) {
-#print "button_pressed: $channel @ $address\n" ;
-#      # We need the sub address for the OLED module
-#      if ( $channel > 24 ) {
-#         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
-#         $channel -= 24 ;
-#      } elsif ( $channel > 16 ) {
-#         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ;
-#         $channel -= 16 ;
-#      } elsif ( $channel > 8 ) {
-#         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
-#         $channel -= 8 ;
-#      }
-#
-#      $channel -- ;
-#print "button_pressed: $channel\n" ;
-#      my $test = "1" . "0" x $channel ;
-#      $channel = &bin_to_hex ($test) ;
-#print "button_pressed: $channel @ $address\n" ;
-
-      ($channel,$address) = &channel_number_to_id($channel,$address,"button_pressed") ;
-      # DATABYTE2 = Channel just pressed
-      # DATABYTE3 = Channel just released
-      # DATABYTE4 = Channel long pressed
-      &send_message ($sock, $address, "00", "", $channel, "00", "00" ) ; # Channel just pressed
-      usleep (20000) ;
-      &send_message ($sock, $address, "00", "", "00", $channel, "00" ) ; # Channel just released
-   }
+   ($channel,$address) = &channel_number_to_id($channel,$address,"button_pressed") ;
+   # DATABYTE2 = Channel just pressed
+   # DATABYTE3 = Channel just released
+   # DATABYTE4 = Channel long pressed
+   &send_message ($sock, $address, "00", "", $channel, "00", "00" ) ; # Channel just pressed
+   usleep (20000) ;
+   &send_message ($sock, $address, "00", "", "00", $channel, "00" ) ; # Channel just released
 }
 
+# Set the value of a dimmer. value should be between 0 and 100.
+# 1: socket
+# 2: address
+# 3: channel
+# 4: value
 sub dim_value {
-   my $sock = $_[0] ;
+   my $sock    = $_[0] ;
    my $address = $_[1] ;
    my $channel = $_[2] ;
    my $value   = $_[3] ;
@@ -835,43 +795,68 @@ sub dim_value {
    &send_message ($sock, $address, "07", $channel, $value, "00", "00" ) ;
 }
 
+# Switch off a relay
+# 1: socket
+# 2: address
+# 3: channel
 sub relay_off {
-   my $sock = $_[0] ;
+   my $sock    = $_[0] ;
    my $address = $_[1] ;
    my $channel = $_[2] ;
    &send_message ($sock, $address, "01", $channel) ;
 }
 
+# Switch on a relay
+# 1: socket
+# 2: address
+# 3: channel
 sub relay_on {
-   my $sock = $_[0] ;
+   my $sock    = $_[0] ;
    my $address = $_[1] ;
    my $channel = $_[2] ;
    &send_message ($sock, $address, "02", $channel) ;
 }
 
+# Stop a blind
+# 1: socket
+# 2: address
+# 3: channel
 sub blind_stop {
-   my $sock = $_[0] ;
+   my $sock    = $_[0] ;
    my $address = $_[1] ;
    my $channel = $_[2] ;
    &send_message ($sock, $address, "04", $channel) ; # COMMAND_BLIND_OFF
 }
 
+# Move a blind up
+# 1: socket
+# 2: address
+# 3: channel
 sub blind_up {
-   my $sock = $_[0] ;
+   my $sock    = $_[0] ;
    my $address = $_[1] ;
    my $channel = $_[2] ;
    &send_message ($sock, $address, "05", $channel, "00", "00", "00") ; # COMMAND_BLIND_UP
 }
 
+# Move a blind down
+# 1: socket
+# 2: address
+# 3: channel
 sub blind_down {
-   my $sock = $_[0] ;
+   my $sock    = $_[0] ;
    my $address = $_[1] ;
    my $channel = $_[2] ;
    &send_message ($sock, $address, "06", $channel, "00", "00", "00") ; # COMMAND_BLIND_DOWN
 }
 
+# Move a blind to a position. position should be between 0 and 100.
+# 1: socket
+# 2: address
+# 3: channel
+# 4: position
 sub blind_pos {
-   my $sock = $_[0] ;
+   my $sock     = $_[0] ;
    my $address  = $_[1] ;
    my $channel  = $_[2] ;
    my $position = $_[3] ;
@@ -879,23 +864,30 @@ sub blind_pos {
    &send_message ($sock, $address, "1C", $channel, $position) ; # COMMAND_BLIND_POS
 }
 
+# Set the target temperature for a glass planel
+# 1: socket
+# 2: address
+# 3: temperature
 sub set_temperature {
-   my $sock = $_[0] ;
-   my $address = $_[1] ;
+   my $sock        = $_[0] ;
+   my $address     = $_[1] ;
    my $temperature = $_[2] ;
    $temperature = &temperature_to_hex ($temperature) ;
-
    &send_message ($sock, $address, "E4", undef, "00", $temperature) ; # COMMAND_SET_TEMP
 }
 
+# Set the temperature mode for a glass planel
+# COMMAND_SWITCH_TO_COMFORT_MODE (DB) = 1
+# COMMAND_SWITCH_TO_DAY_MODE     (DC) = 2
+# COMMAND_SWITCH_TO_NIGHT_MODE   (DD) = 3
+# COMMAND_SWITCH_TO_SAFE_MODE    (DE) = 4
+# 1: socket
+# 2: address
+# 3: temperature
 sub set_temperature_mode {
-   my $sock = $_[0] ;
-   # COMMAND_SWITCH_TO_COMFORT_MODE (DB) = 1
-   # COMMAND_SWITCH_TO_DAY_MODE     (DC) = 2
-   # COMMAND_SWITCH_TO_NIGHT_MODE   (DD) = 3
-   # COMMAND_SWITCH_TO_SAFE_MODE    (DE) = 4
+   my $sock    = $_[0] ;
    my $address = $_[1] ;
-   my $mode = $_[2] ;
+   my $mode    = $_[2] ;
 
    if ( $mode =~ /1/ ) {
       $mode = "DB" ;
@@ -909,36 +901,7 @@ sub set_temperature_mode {
    &send_message ($sock, $address, $mode, undef, "00", "00") ; # COMMAND_SET_TEMP
 }
 
-sub test () {
-   my $sock = $_[0] ;
-   $address = "0x30";
-   #$prio    = "0xF8"; # High
-   $prio    = "0xFB"; # Low
-   $rtr     = "0x00";
-   # H’03FE’     Counter units
-   #@message = ("0xFD", "0x00", "0xE4") ;
-   #&print_sock ($sock,$prio,$address,$rtr,@message) ;
-   #@message = ("0xFD", "0x00", "0xE9") ;
-   #&print_sock ($sock,$prio,$address,$rtr,@message) ;
-   #@message = ("0xFD", "0x00", "0xEE") ;
-   #&print_sock ($sock,$prio,$address,$rtr,@message) ;
-   #@message = ("0xFD", "0x00", "0xF3") ;
-   #&print_sock ($sock,$prio,$address,$rtr,@message) ;
-   @message = ("0xD7") ; # Request time
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
-}
-
-# Query the temp of a touch
-# Never used
-sub query_temperature () {
-   my $sock = $_[0] ;
-   my $address = $_[1] ;
-   $prio    = "0xFB";
-   $rtr     = "0x00";
-   @message = ("0xE5", "0x00") ;
-   &print_sock ($sock,$prio,$address,$rtr,@message) ;
-}
-
+# Scan all the address. The result is a message from the module with the type.
 sub scan () {
    my $sock = $_[0] ;
    foreach my $addr (1..255) {
@@ -947,12 +910,13 @@ sub scan () {
    }
 }
 
+# Brocadcast current date and time
 sub broadcast_datetime () {
    my $sock = $_[0] ;
 
    ($global{Tijd}{sec},$global{Tijd}{min},$global{Tijd}{hour},$global{Tijd}{mday},$global{Tijd}{mon},$global{Tijd}{year},$global{Tijd}{wday},$global{Tijd}{yday},$global{Tijd}{isdst}) = localtime(time) ;
 
-   # For Velbus is 0 = monday, but in perl 0 = synday
+   # For Velbus 0 = monday, but in perl 0 = synday
    $global{Tijd}{wday} -- ;
    $global{Tijd}{wday} = 6 if $global{Tijd}{wday} eq "-1" ;
 
@@ -967,6 +931,8 @@ sub broadcast_datetime () {
    &print_sock ($sock,"0xFB","0x00","0x00","0xB7", @message) ;
 }
 
+# This is a bit tricky. Find the MemoryKey based on the Buld and the module type.
+# MemoryKey is used to specify the memory address that has to be used. These addresses can differ between Build versions.
 sub module_find_MemoryKey () {
    my $address = $_[0] ;
    my $type    = $_[1] ;

@@ -13,11 +13,11 @@ sub print_help {
    print "Possible options:
 
    -o = 
-      test = for testing new functionality
       scan = scan all modules on the bus
       status = get status off all modules
       date = broadcast date and time
       openHAB = create the openHAB items file
+         it also prints the file
    
 " ;
    exit ;
@@ -36,9 +36,7 @@ use Velbus ;
 
 my $sock = &open_socket ;
 
-if ( $global{opts}{option} eq "test" ) {
-   &test($sock) ;
-} elsif ( $global{opts}{option} eq "scan" ) {
+if ( $global{opts}{option} eq "scan" ) {
    &scan($sock) ;
 } elsif ( $global{opts}{option} eq "status" ) {
    &update_module_status($sock) ;

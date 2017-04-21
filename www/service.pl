@@ -178,8 +178,8 @@ if ( $type eq "HeaterMode" and ( $action eq "Get" or $action eq "Set" ) ) {
 if ( $type eq "Switch" and ( $action eq "Get" or $action eq "Set" ) ) {
    if ( defined $Moduletype and ( $Moduletype eq "1E" or $Moduletype eq "1F" or $Moduletype eq "20" or $Moduletype eq "28" or $Moduletype eq "22" ) ) {
       if ( $action eq "Set" ) {
-         if ( defined $value ) {
-            &button_pressed ($sock, $address, $channel, $value) ;
+         if ( defined $value and $value eq "ON" ) {
+            &button_pressed ($sock, $address, $channel) ;
          }
       }
       my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$channel'","data") ;

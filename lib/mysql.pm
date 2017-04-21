@@ -26,27 +26,12 @@ sub connect_to_db {
    }
 }
 
-sub disconnect {
-   my $dbh = shift ;
-   # disconnect from database
-   $dbh->disconnect;
-}
-
-sub do_insert {
-   my $dbh = shift ;
-   my $query = shift ;
-   my @values = @_ ;
-   my $table_data = $dbh->prepare($query) ;
-   $table_data->execute(@values) || return undef ;
-   $inserted_id = $dbh->{'mysql_insertid'} ;
-   return $inserted_id ;
-}
-
 # Execute a query
 sub do_query {
-   my $dbh = shift ;
-   my $query = shift ;
+   my $dbh    = shift ;
+   my $query  = shift ;
    my @values = @_ ;
+
    my $table_data = $dbh->prepare($query) ;
    $table_data->execute(@values) || return undef ;
    return $table_data ;
@@ -55,10 +40,11 @@ sub do_query {
 # Fetch some data from the database and return the data in hash format
 # If a key is provided as third parameter, use this column as the key for the hash
 sub fetch_data {
-   my $dbh =  shift ;
-   my $query = shift ;
+   my $dbh        = shift ;
+   my $query      = shift ;
    my $return_key = shift ;
-   my @values = @_ ;
+   my @values     = @_ ;
+
    my $table_data = $dbh->prepare($query) ;
    my @keys ;
 
