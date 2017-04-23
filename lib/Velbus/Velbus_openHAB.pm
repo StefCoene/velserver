@@ -48,7 +48,6 @@ sub openHAB_match_item {
 #   HeaterTemperature
 #   Relay
 #   Button
-
 sub openHAB () {
    my $openHAB ;
 
@@ -93,7 +92,7 @@ sub openHAB () {
                   $openHAB .= "{http=\"" ;
                   $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
-                  $openHAB .= "\"}\n" ;
+                  $openHAB .= "\", autoupdate=\"false\"}\n" ;
 
                   # Long pressed button
                   my $item = "ButtonLong_$itemBase" ;
@@ -109,7 +108,7 @@ sub openHAB () {
                   $openHAB .= "{http=\"" ;
                   $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
-                  $openHAB .= "\"}\n" ;
+                  $openHAB .= "\", autoupdate=\"false\"}\n" ;
                }
                if ( $Type eq "Temperature" ) {
                   # Get the current temperature
