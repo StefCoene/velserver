@@ -1,3 +1,263 @@
+# Website with some basic menus
+sub www_index {
+   my $content ;
+   $content .= "<p>\n" ;
+   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_modules>Modules on bus</a> || " ;
+   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_velbus_protocol>Velbus protocol</a> || " ;
+   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_velbus_messages>Velbus messages</a> || " ;
+   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=openHAB>openHAB config</a> || " ;
+   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=scan>Scan the bus</a> || " ;
+   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=clear_database>Clear the database</a> " ;
+   $content .= "</p>\n" ;
+
+   if ( $global{cgi}{params}{appl} eq "print_modules" ) {
+      if ( defined $global{cgi}{params}{action} ) {
+         if ( $global{cgi}{params}{action} eq "status" ) {
+            $content .= &www_update_module_status ;
+         }
+      }
+      $content .= &www_print_modules ;
+   }
+   if ( $global{cgi}{params}{appl} eq "print_velbus_protocol" ) {
+      $content .= &www_print_velbus_protocol ;
+   }
+   if ( $global{cgi}{params}{appl} eq "print_velbus_messages" ) {
+      $content .= &www_print_velbus_messages ;
+   }
+   if ( $global{cgi}{params}{appl} eq "openHAB" ) {
+      $content .= &www_openHAB ;
+   }
+   if ( $global{cgi}{params}{appl} eq "scan" ) {
+      $content .= &www_scan ;
+   }
+   if ( $global{cgi}{params}{appl} eq "clear_database" ) {
+      $content .= &www_clear_database ;
+   }
+   if ( $global{cgi}{params}{appl} eq "debug" ) {
+      $content .= "<pre>\n" ;
+      $content .= Dumper {%global} ;
+      $content .= "</pre>\n" ;
+   }
+   return $content ;
+}
+
+# Webservice for remote access
+sub www_service {
+   my $sock = &open_socket ;
+   my $address ;
+   my $Moduletype ; # Type of the module, based on $address
+
+   my %json ;
+
+   # Parse options
+   if ( defined $global{cgi}{params}{address} ) {
+      $address = $global{cgi}{params}{address} ;
+      if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} and $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ne '' ) {
+         $Moduletype = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
+      }
+   }
+
+   if ( $global{cgi}{params}{type} eq "Temperature" and $global{cgi}{params}{action} eq "Get" ) {
+      if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
+         my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
+         $json{Name}        = $data{TempSensor}{value}  if defined $data{TempSensor} ;
+         $json{Temperature} = $data{Temperature}{value} if defined $data{Temperature} ;
+      }
+   }
+
+   # Put the time on the bus
+   if ( defined $global{cgi}{params}{action} and $global{cgi}{params}{action} eq "TimeSync" ) {
+      &broadcast_datetime($sock) ;
+      $json = "" ;
+   }
+
+   if ( $global{cgi}{params}{type} eq "HeaterTemperature" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
+         my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
+         $json{Name} = $data{TempSensor}{value}  if defined $data{TempSensor} ;
+
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
+         if ( defined $data{'Current temperature set'} ) {
+            $json{Temperature} = $data{'Current temperature set'}{value} ;
+            if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne $data{'Current temperature set'}{value} ) {
+               &set_temperature ($sock, $address, $global{cgi}{params}{value}) ;
+               $json{Action} = "$global{cgi}{params}{value}"  ;
+            }
+         }
+      }
+   }
+
+   if ( $global{cgi}{params}{type} eq "HeaterMode" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
+         my %data ;
+         if ( $Moduletype eq "28" ) {
+            %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='33'","data") ;
+         }
+         if ( $Moduletype eq "20" ) {
+            %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='09'","data") ;
+         }
+         $json{Name} = $data{Name}{value} if defined $data{Name} ;
+
+         %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
+         if ( defined $data{'Temperature mode'} ) {
+            if ( $data{'Temperature mode'}{value} =~ /comfort/i ) {
+               $json{Status} = 1 ;
+               if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "1" ) {
+                  &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
+                  $json{Action} = "1" ;
+               }
+            } elsif ( $data{'Temperature mode'}{value} =~ /day/i ) {
+               $json{Status} = 2 ;
+               if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "2" ) {
+                  &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
+                  $json{Action} = "2" ;
+               }
+            } elsif ( $data{'Temperature mode'}{value} =~ /night/i ) {
+               $json{Status} = 3 ;
+               if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "3" ) {
+                  &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
+                  $json{Action} = "3" ;
+               }
+            } elsif ( $data{'Temperature mode'}{value} =~ /safe/i ) {
+               $json{Status} = 4 ;
+               if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "4" ) {
+                  &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
+                  $json{Action} = "4" ;
+               }
+            } else {
+               $json{Status} = 0 ;
+               $json{Action} = "NONE" ;
+            }
+         } else {
+            $json{Error} = "NO_INFO" ;
+            if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "1" ) {
+               &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
+               $json{Action} = "1" ;
+            }
+            if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "2" ) {
+               &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
+               $json{Action} = "2" ;
+            }
+            if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "3" ) {
+               &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
+               $json{Action} = "3" ;
+            }
+            if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "4" ) {
+               &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
+               $json{Action} = "4" ;
+            }
+         }
+      }
+   }
+
+   if ( $global{cgi}{params}{type} eq "Switch" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      if ( defined $Moduletype and ( $Moduletype eq "1E" or $Moduletype eq "1F" or $Moduletype eq "20" or $Moduletype eq "28" or $Moduletype eq "22" ) ) {
+         if ( $global{cgi}{params}{action} eq "Set" ) {
+            if ( defined $global{cgi}{params}{value} and $global{cgi}{params}{value} eq "ON" ) {
+               &button_pressed ($sock, $address, $global{cgi}{params}{channel}) ;
+            }
+         }
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
+         if ( %data ) {
+            $json{Name}   = $data{Name}{value} ;
+            $json{Status} = $data{Button}{value} ;
+         }
+      }
+   }
+
+   if ( $global{cgi}{params}{type} eq "Dimmer" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      if ( defined $Moduletype and ( $Moduletype eq "07" or $Moduletype eq "0F" or $Moduletype eq "12" or $Moduletype eq "14" or $Moduletype eq "15" ) ) {
+         if ( $global{cgi}{params}{action} eq "Set" ) {
+            if ( defined $global{cgi}{params}{value} ) {
+               $global{cgi}{params}{value} = "100" if $global{cgi}{params}{value} eq "ON" ;
+               $global{cgi}{params}{value} = "0"   if $global{cgi}{params}{value} eq "OFF" ;
+               &dim_value ($sock, $address, $global{cgi}{params}{channel}, $global{cgi}{params}{value}) ;
+            }
+         }
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
+         if ( %data ) {
+            $json{Name}   = $data{Name}{value} ;
+            $json{Status} = $data{Dimmer}{value} ;
+         }
+      }
+   }
+
+   if ( $global{cgi}{params}{type} eq "Blind" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      if ( defined $Moduletype and ( $Moduletype eq "03" or $Moduletype eq "09" or $Moduletype eq "1D" ) ) {
+         if ( $global{cgi}{params}{value} eq "UP" ) {
+            &blind_up ($sock, $address, $global{cgi}{params}{channel}) ;
+         }
+         if ( $global{cgi}{params}{value} eq "DOWN" ) {
+            &blind_down ($sock, $address, $global{cgi}{params}{channel}) ;
+         }
+         if ( $global{cgi}{params}{value} eq "STOP" ) {
+            &blind_stop ($sock, $address, $global{cgi}{params}{channel}) ;
+         }
+         if ( $global{cgi}{params}{value} =~ /(\d+)/ ) {
+            &blind_pos ($sock, $address, $global{cgi}{params}{channel}, $1) ;
+         }
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
+         if ( %data ) {
+            $json{Name}   = $data{Name}{value} ;
+            $json{Status} = $data{Position}{value} ;
+         }
+      }
+   }
+
+   if ( $global{cgi}{params}{type} eq "Relay" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "On" or $global{cgi}{params}{action} eq "Off" ) ) {
+      if ( defined $Moduletype and ( $Moduletype eq "02" or $Moduletype eq "08" or $Moduletype eq "10" or $Moduletype eq "11" ) ) {
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
+
+         $json{Name} = $data{Name}{value} if defined $data{Name} ;
+
+         if ( defined $data{'Relay status'} ) {
+            if ( $data{'Relay status'}{value} eq "Relay channel off" ) {
+               $json{Status} = "OFF" ;
+               if ( $global{cgi}{params}{action} eq "On" ) {
+                  &relay_on ($sock, $address, $global{cgi}{params}{channel}) ;
+                  $json{Action} = "On" ;
+               }
+
+            } elsif ( $data{'Relay status'}{value} eq "Relay channel on" ) {
+               $json{Status} = "ON" ;
+               if ( $global{cgi}{params}{action} eq "Off" ) {
+                  &relay_off ($sock, $address, $global{cgi}{params}{channel}) ;
+                  $json{Action} = "Off" ;
+               }
+            }
+
+         } else {
+            $json{Error} = "NO_INFO" ;
+            if ( $global{cgi}{params}{action} eq "On" ) {
+               &relay_on ($sock, $address, $global{cgi}{params}{channel}) ;
+               $json{Action} = "On" ;
+            }
+            if ( $global{cgi}{params}{action} eq "Off" ) {
+               &relay_off ($sock, $address, $global{cgi}{params}{channel}) ;
+               $json{Action} = "Off" ;
+            }
+         }
+      }
+   }
+
+   if ( $global{cgi}{params}{type} eq "Counter" and ( $global{cgi}{params}{action} eq "GetCounter"  or $global{cgi}{params}{action} eq "GetCounterCurrent" or $global{cgi}{params}{action} eq "GetDivider" ) ) {
+      if ( defined $Moduletype and $Moduletype eq "22" ) {
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
+
+         if ( $global{cgi}{params}{action} eq "GetCounter" ) {
+            $json{Status} = $data{Counter}{value} if defined $data{Counter} ;
+         } elsif ( $global{cgi}{params}{action} eq "GetCounterCurrent" ) {
+            $json{Status} = $data{CounterCurrent}{value} if defined $data{CounterCurrent} ;
+         } elsif ( $global{cgi}{params}{action} eq "GetCounterRaw" ) {
+            $json{Status} = $data{CounterRaw}{value} if defined $data{CounterRaw} ;
+         } else {
+            $json{Status} = $data{Divider}{value} if defined $data{Divider} ;
+         }
+      }
+   }
+   return %json ;
+}
+
 sub www_print_modules () {
    my $html ;
    $html .= "<h1>All modules on bus (<a href=\"?appl=print_modules&action=status\">refresh status</a>)</h1>\n" ;
@@ -160,12 +420,12 @@ sub www_print_modules () {
    #$html .= Dumper \%{$global{Vars}} ;
    #$html .= Dumper \%data ;
    #$html .= "</pre>\n" ;
-   print $html ;
+   return $html ;
 }
 
 sub www_print_velbus_messages () {
 
-my %data ;
+   my %data ;
 
    foreach my $Message (sort (keys %{$global{Cons}{MessagesBroadCast}}) ) {
       my $Name = $global{Cons}{MessagesBroadCast}{$Message}{Name} ; # Handier var
@@ -188,9 +448,11 @@ my %data ;
          $data{$Name}{Prio} = $Prio ;
       }
    }
-print "<pre>\n" ;
-print Dumper {%data} ;
-print "</pre>\n" ;
+   my $html ;
+   $html .= "<pre>\n" ;
+   $html .= Dumper {%data} ;
+   $html .= "</pre>\n" ;
+   return $html ;
 }
 
 sub www_print_velbus_protocol () {
@@ -283,7 +545,7 @@ sub www_print_velbus_protocol_print_moduleType () {
       $html .= "</table>\n" ;
       $html .= $html2 if defined $html2 ;
    }
-   print $html ;
+   return $html ;
 }
 
 sub www_print_velbus_protocol_print_modules () {
@@ -309,7 +571,7 @@ sub www_print_velbus_protocol_print_modules () {
    $html .= "<tbody>\n" ;
    $html .= "</tbody>\n" ;
    $html .= "</table>\n" ;
-   print $html ;
+   return $html ;
 }
 
 sub www_openHAB () {
@@ -318,7 +580,7 @@ sub www_openHAB () {
    $openHAB =~ s/</&lt;/g ;    # Prepare for html output
    $openHAB =~ s/>/&gt;/g ;    # Prepare for html output
    $openHAB =~ s/\n/<br>\n/g ; # Prepare for html output
-   print "$openHAB\n" ;
+   return "$openHAB\n" ;
 }
 
 sub www_scan () {
@@ -327,21 +589,23 @@ sub www_scan () {
 }
 
 sub www_clear_database  () {
-   print "Recommended procedure:\n" ;
-   print "<ul>\n" ;
-   print "<li>Stop logger.pl</li>\n" ;
-   print "<li>Visit this page</li>\n" ;
-   print "<li>Start logger.pl</li>\n" ;
-   print "<li>Trigger a scan</li>\n" ;
-   print "<li>Get an update of all module states</li>\n" ;
-   print "</ul>\n" ;
+   my $html ;
+   $html .= "Recommended procedure:\n" ;
+   $html .= "<ul>\n" ;
+   $html .= "<li>Stop logger.pl</li>\n" ;
+   $html .= "<li>Visit this page</li>\n" ;
+   $html .= "<li>Start logger.pl</li>\n" ;
+   $html .= "<li>Trigger a scan</li>\n" ;
+   $html .= "<li>Get an update of all module</li>\n" ;
+   $html .= "</ul>\n" ;
    &clear_database() ;
+   return $html ;
 }
 
 sub www_update_module_status () {
    my $sock = &open_socket ;
    my $temp = &update_module_status($sock) ;
-   print $temp ;
+   return $temp ;
 }
 
 return 1 ;

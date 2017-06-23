@@ -10,10 +10,6 @@ sub process_message {
 
    $message{Raw} = join " ", @hex ;
 
-   #&log("raw","$message{Raw}") ;
-
-   #$message{text} .= "RAW = $message{Raw}" ;
-
    # Message format:
    $message{STX}      = shift @hex ;
    $message{prio}     = shift @hex ;
@@ -46,7 +42,7 @@ sub process_message {
          # TODO: when an unknown module is found: trigger a scan
          if ( defined $global{Vars}{Modules}{Address}{$message{address}} and
                       $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ne '' ) {
-            $message{addressMaster} = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{address} ; # This is the master address, used for a VMBGPOD because it has sub addresses. We use this when updating the mysql DB.
+            $message{addressMaster} = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{address} ; # This is the master address, used for a VMBGPOD because it has sub addresses. We use this when updating the database
             $message{ModuleType}    = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ;
          } else {
             $message{addressMaster} = $message{address} ;
@@ -56,7 +52,8 @@ sub process_message {
       # RTR_size = 40 > Scan message
       if ( $message{RTR_size} eq "40" ) {
          $message{text} .= "Scan" ;
-         my $sql = "insert into `modules` (`address`, `status`, `date`) VALUES (?, ?, NOW() ) ON DUPLICATE KEY UPDATE `status`=values(status), `date`=values(date)" ;
+         #my $sql = "insert into `modules` (`address`, `status`, `date`) VALUES (?, ?, NOW() ) ON DUPLICATE KEY UPDATE `status`=values(status), `date`=values(date)" ;
+         my $sql = "replace into `modules` (`address`, `status`, `date`) VALUES (?, ?, CURRENT_TIMESTAMP )" ;
          &do_query ($global{dbh},$sql, $message{address}, "Start scan") ;
          $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{address} = $message{address} ;
 
@@ -85,7 +82,8 @@ sub process_message {
             } else {
                $message{text} .= "address $message{address}, type = unknown $hex[0]" ;
             }
-            &do_query ($global{dbh},"insert into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `type`=values(type), `status`=values(status), `date`=values(date)", $message{addressMaster}, $hex[0], "Found") ;
+            #&do_query ($global{dbh},"insert into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, NOW() ) ON DUPLICATE KEY UPDATE `type`=values(type), `status`=values(status), `date`=values(date)", $message{addressMaster}, $hex[0], "Found") ;
+            &do_query ($global{dbh},"replace into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", $message{addressMaster}, $hex[0], "Found") ;
             $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $hex[0] ;
             &update_modules_info ($message{address}, "Serial1", $hex[1]) ;
             &update_modules_info ($message{address}, "Serial2", $hex[2]) ;
@@ -371,7 +369,7 @@ sub process_message {
                }
 
                # Post the updates to openHAB.
-               # This must be done AFTER the mysql updates
+               # This must be done AFTER the database updates
                foreach my $key (keys %openHAB_update_state) {
                   foreach my $state (split " ", $openHAB_update_state{$key} ) {
                      &openHAB_update_state ($key, $state) ;

@@ -2,12 +2,12 @@
 
 use lib "/home/velbus/velserver/lib" ;
 our %global ;
-$global{Config}{BaseDir} = "/home/velbus/velserver" ;
+$global{BaseDir} = "/home/velbus/velserver" ;
 
 &init () ;
 # Connect to the Velbus server and monitor the bus.
 # All packets are analysed and printed on STDOUT.
-# All packets are logged in mysql.
+# All packets are logged in the database (only for mysql and if enabled in the config file)
 
 use strict;
 use POSIX qw/strftime/;

@@ -202,9 +202,6 @@ sub check_valid {
 # Param 2: port (default = 3788)
 # Return: socket
 sub open_socket () {
-   $global{Config}{velbus}{HOST} = "localhost"    if ! defined $global{Config}{velbus}{HOST} ;
-   $global{Config}{velbus}{PORT} = "3788"         if ! defined $global{Config}{velbus}{PORT} ;
-
    my $sock = new IO::Socket::INET(
                    PeerAddr => $global{Config}{velbus}{HOST},
                    PeerPort => $global{Config}{velbus}{PORT},
@@ -227,7 +224,7 @@ sub print_sock {
 # Read a config file
 sub read_config {
    my $config = $_[0] ;
-   my $file = "$global{Config}{BaseDir}/etc/".$config.".cfg" ;
+   my $file = "$global{BaseDir}/etc/".$config.".cfg" ;
 
    if ( -f $file ) {
       open (CONFIG, "<$file" ) ;
@@ -284,13 +281,13 @@ sub channel_to_hex {
    return $channel ;
 }
 
+# Push a change of an item to openHAB
 sub openHAB_update_state {
    my $name = $_[0] ;
    my $data = $_[1] ;
 
    &log("openHAB","$name: $data") ;
 
-   $global{Config}{openHAB}{REST_URL} = "http://localhost:8080/rest/items" if ! defined $global{Config}{openHAB}{REST_URL} ;
    my $URL = "$global{Config}{openHAB}{REST_URL}/$name/state" ;
 
    # Create the browser that will post the information.
@@ -304,6 +301,7 @@ sub openHAB_update_state {
    my $content = $Page->content ;
 }
 
+# Get a pretty printed timestamp, used for logging
 sub timestamp {
    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time) ;
    $mon += 1 ;
@@ -317,6 +315,8 @@ sub timestamp {
    return $timestamp ;
 }
 
+# Calculate the Channel based on te address and sub address
+# Never used
 sub SubAddr_Channel {
    my $address = shift ;
    my $SubAddr = shift ;

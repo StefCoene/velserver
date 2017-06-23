@@ -51,11 +51,6 @@ sub openHAB_match_item {
 sub openHAB () {
    my $openHAB ;
 
-   # Default value if not specified in config file
-   # 3600 seconds = 1 hour
-   $global{Config}{openHAB}{POLLING} = 3600 if ! defined $global{Config}{openHAB}{POLLING} ;
-   $global{Config}{openHAB}{BASE_URL} = "http://localhost/velserver/service.pl" if ! defined $global{Config}{openHAB}{BASE_URL} ;
-
    # Loop all module types
    foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
 
@@ -76,7 +71,7 @@ sub openHAB () {
 
                # ButtonCounter is for VMB7IN, it's a Button when Divier = Disabled
                if ( $Type eq "Button" or
-                    ( $Type eq "ButtonCounter" and 
+                    ( $Type eq "ButtonCounter" and
                        defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} and
                        $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
                   # Short pressed button
@@ -216,7 +211,7 @@ sub openHAB () {
                   $openHAB .= " >[OFF:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Off]" ;
                   $openHAB .= "\"}\n" ;
                }
-               if ( $Type eq "ButtonCounter" and 
+               if ( $Type eq "ButtonCounter" and
                      defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} and
                      $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
                   my $item = "CounterRaw_$itemBase" ;
@@ -297,17 +292,11 @@ sub openHAB () {
    }
 
    # If the item file exists and is writable, update the item file
-   $global{Config}{openHAB}{ITEM_FILE} = "/etc/openhab2/items/velbus.items" if ! defined $global{Config}{openHAB}{ITEM_FILE} ;
-   if ( -f $global{Config}{openHAB}{ITEM_FILE} ) {
-      if ( -w $global{Config}{openHAB}{ITEM_FILE} ) {
-         open ITEM_FILE, ">$global{Config}{openHAB}{ITEM_FILE}" ;
-         print ITEM_FILE "$openHAB\n" ;
-         close ITEM_FILE ;
-      } else {
-         print "Warning: $global{Config}{openHAB}{ITEM_FILE} not writable!\n" ;
-      }
+   if ( open ITEM_FILE, ">$global{Config}{openHAB}{ITEM_FILE}" ) {
+      print ITEM_FILE "$openHAB\n" ;
+      close ITEM_FILE ;
    } else {
-      print "Warning: no ITEM_FILE definition\n" ;
+      $openHAB = "Warning: $global{Config}{openHAB}{ITEM_FILE} not writable!\n" . $openHAB ;
    }
 
    return $openHAB ;

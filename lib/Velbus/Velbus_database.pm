@@ -1,9 +1,9 @@
 
-# Mysql related sub functions to get the data out of the mysql database
+# Mysql related sub functions to get the data out of the database
 
-# Get all modules from the mysql database
-sub get_all_modules_from_mysql {
-   my %data = &fetch_data ($global{dbh},"select * from `modules` where `status`='found'","address" ) ;
+# Get all modules from the database
+sub get_all_modules_from_database {
+   my %data = &fetch_data ($global{dbh},"select * from `modules` where `status`='Found'","address" ) ;
 
    foreach my $address (sort keys %data ) {
       my $type   = $data{$address}{type} ; # Handier var
@@ -15,11 +15,11 @@ sub get_all_modules_from_mysql {
       $global{Vars}{Modules}{PerType}{$type}{ModuleList}{$address} = "yes" ; # List of alle modules per type module
    }
 
-   &get_all_modules_info_from_mysql ;
+   &get_all_modules_info_from_database ;
 }
 
-# Loop all found modules and load the extra info from the mysql database
-sub get_all_modules_info_from_mysql {
+# Loop all found modules and load the extra info from the database
+sub get_all_modules_info_from_database {
    foreach my $address (sort keys (%{$global{Vars}{Modules}{PerStatus}{Found}{ModuleList}}) ) {
       my %SubAddr ;
 
@@ -68,11 +68,11 @@ sub get_all_modules_info_from_mysql {
    }
 }
 
-# Truncate the tables in de mysql database for a new start
+# Truncate the tables in the database for a new start
 sub clear_database {
-   &do_query ($global{dbh},"TRUNCATE TABLE `modules`" ) ;
-   &do_query ($global{dbh},"TRUNCATE TABLE `modules_info`" ) ;
-   &do_query ($global{dbh},"TRUNCATE TABLE `modules_channel_info`" ) ;
+   &do_query ($global{dbh},"delete from `modules`" ) ;
+   &do_query ($global{dbh},"delete from `modules_info`" ) ;
+   &do_query ($global{dbh},"delete from `modules_channel_info`" ) ;
 }
 
 sub update_modules_channel_info {
@@ -81,24 +81,34 @@ sub update_modules_channel_info {
         defined $channel and $channel ne "" and
         defined $data    and $data    ne "" and
         defined $value   and $value   ne "") {
-      &do_query ($global{dbh},"insert into `modules_channel_info` 
+      #&do_query ($global{dbh},"insert into `modules_channel_info` 
+      #      (`address`, `channel`, `data`, `value`, `date`) 
+      #         VALUES 
+      #      (?, ?, ?, ?, NOW() ) 
+      #      ON DUPLICATE KEY UPDATE 
+      #         `value`=values(value), 
+      #         `date`=values(date)
+      #   ", 
+      #   $address, 
+      #   $channel, 
+      #   $data, 
+      #   $value
+      #) ;
+      &do_query ($global{dbh},"replace into `modules_channel_info` 
             (`address`, `channel`, `data`, `value`, `date`) 
                VALUES 
-            (?, ?, ?, ?, NOW() ) 
-            ON DUPLICATE KEY UPDATE 
-               `value`=values(value), 
-               `date`=values(date)
+            (?, ?, ?, ?, CURRENT_TIMESTAMP ) 
          ", 
          $address, 
          $channel, 
          $data, 
          $value
       ) ;
-      &log("mysql","Address=$address, Channel=$channel, data=$data = $value") ;
+      &log("database","Address=$address, Channel=$channel, data=$data = $value") ;
       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{$data}{value} = $value ;
       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{$data}{date}  = $date ;
    } else {
-      &log("mysql","ERROR: Address=$address, Channel=$channel, data=$data = $value") ;
+      &log("database","ERROR: Address=$address, Channel=$channel, data=$data = $value") ;
    }
 }
 
@@ -107,22 +117,31 @@ sub update_modules_info {
    if ( defined $address and $address ne "" and
         defined $data    and $data    ne "" and
         defined $value   and $value   ne "") {
-      &do_query ($global{dbh},"insert into `modules_info` 
+      #&do_query ($global{dbh},"insert into `modules_info` 
+      #      (`address`, `data`, `value`, `date`) 
+      #         VALUES 
+      #      (?, ?, ?, NOW() ) 
+      #      ON DUPLICATE KEY UPDATE 
+      #         `value`=values(value), 
+      #         `date`=values(date)
+      #   ", 
+      #   $address, 
+      #   $data, 
+      #   $value
+      #) ;
+      &do_query ($global{dbh},"replace into `modules_info` 
             (`address`, `data`, `value`, `date`) 
                VALUES 
-            (?, ?, ?, NOW() ) 
-            ON DUPLICATE KEY UPDATE 
-               `value`=values(value), 
-               `date`=values(date)
+            (?, ?, ?, CURRENT_TIMESTAMP ) 
          ", 
          $address, 
          $data, 
          $value
       ) ;
-      &log("mysql","Address=$address, data=$data = $value") ;
+      &log("database","Address=$address, data=$data = $value") ;
       $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} = $value ;
    } else {
-      &log("mysql","ERROR: Address=$address,                   data=$data = $value") ;
+      &log("database","ERROR: Address=$address,                   data=$data = $value") ;
    }
 }
 

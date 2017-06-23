@@ -2,7 +2,7 @@
 
 use lib "/home/velbus/velserver/lib" ;
 our %global ;
-$global{Config}{BaseDir} = "/home/velbus/velserver" ;
+$global{BaseDir} = "/home/velbus/velserver" ;
 
 use Getopt::Long ;
 &GetOptions ('option=s' => \$global{opts}{option} ,
