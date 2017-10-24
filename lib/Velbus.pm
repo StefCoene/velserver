@@ -5,10 +5,10 @@ $Data::Dumper::Deepcopy = 1 ; # Enable deep copies of structures
 $Data::Dumper::Indent = 1 ;   # Output in a reasonable style (but no array indexes)
 
 # To be able to open a socket to the Velbus server
-use IO::Socket;
+use IO::Socket ;
 
-# high res timer
-use Time::HiRes qw(usleep nanosleep);
+# high resolution timer
+use Time::HiRes qw(usleep) ;
 
 # For communication with the database
 use DBI ;
@@ -40,8 +40,11 @@ sub read_all_configs {
       $global{Config}{mysql}{HOST} = "localhost" if ! defined $global{Config}{mysql}{HOST} ;
       $global{Config}{mysql}{USER} = "velbus"    if ! defined $global{Config}{mysql}{USER} ;
       $global{Config}{mysql}{PASS} = "velbus"    if ! defined $global{Config}{mysql}{PASS} ;
+      $global{Config}{mysql}{PORT} = "3306"      if ! defined $global{Config}{mysql}{PORT} ;
    } else {
+      $global{Config}{SQLite}{dbdir}  = $global{BaseDir} . "/db" ;
       $global{Config}{SQLite}{dbfile} = $global{BaseDir} . "/db/database.dbf" ;
+      mkdir ("$global{Config}{SQLite}{dbdir}") if ! -d $global{Config}{SQLite}{dbdir} ;
    }
 
    $global{Config}{velserver}{WEBSERVERPORT} = "80" if ! defined $global{Config}{velserver}{WEBSERVERPORT} ;

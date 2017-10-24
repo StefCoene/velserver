@@ -12,7 +12,7 @@ $global{Cons}{ModuleTypes}{'1F'}{MemoryMatch}{1}{Version} = "1" ;
 $global{Cons}{ModuleTypes}{'20'}{MemoryMatch}{1}{Build}   = "=> 1415" ;
 $global{Cons}{ModuleTypes}{'20'}{MemoryMatch}{1}{Version} = "1" ;
 # VMBPIRM
-$global{Cons}{ModuleTypes}{'2A'}{MemoryMatch}{1}{Build}   = "== 1607" ;
+$global{Cons}{ModuleTypes}{'2A'}{MemoryMatch}{1}{Build}   = "=> 1607" ;
 $global{Cons}{ModuleTypes}{'2A'}{MemoryMatch}{1}{Version} = "1" ;
 # VMB2BLE
 $global{Cons}{ModuleTypes}{'1D'}{MemoryMatch}{1}{Build}   = "=> 1409" ;
@@ -32,6 +32,10 @@ $global{Cons}{ModuleTypes}{'28'}{MemoryMatch}{1}{Version} = "1" ;
 # VMB7IN
 $global{Cons}{ModuleTypes}{'22'}{MemoryMatch}{1}{Build}   = "=> 1424" ;
 $global{Cons}{ModuleTypes}{'22'}{MemoryMatch}{1}{Version} = "1" ;
+
+# VMBPIRO
+$global{Cons}{ModuleTypes}{'2C'}{MemoryMatch}{1}{Build}   = "=> 1519 " ;
+$global{Cons}{ModuleTypes}{'2C'}{MemoryMatch}{1}{Version} = "1" ;
 
 # VMB7IN
 $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'03FE'}{Match}{'1'}{'%......00'}{Value} = "reserved" ;
@@ -104,3 +108,4 @@ $global{Cons}{ModuleTypes}{'2B'}{Memory}{1}{ModuleName} = "00B0-00EF" ;
 $global{Cons}{ModuleTypes}{'2A'}{Memory}{1}{ModuleName} = "00B0-00EF" ;
 # VMBPIRO
 $global{Cons}{ModuleTypes}{'2C'}{Memory}{1}{ModuleName} = "00B0-00EF" ;
+$global{Cons}{ModuleTypes}{'2C'}{Memory}{1}{SensorName} = "0080-008F" ;

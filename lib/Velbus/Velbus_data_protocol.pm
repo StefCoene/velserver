@@ -118,23 +118,23 @@ $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Name} = "Temperature" ;
 $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Type} = "Temperature" ;
 
 # VMBGP1
-$global{Cons}{ModuleTypes}{'1E'}{ChannelNaming} = "dec" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push button 1" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Type} = "Button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"02"}{Name} = "Virtual button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"02"}{Type} = "Button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"03"}{Name} = "Virtual button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"03"}{Type} = "Button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"04"}{Name} = "Virtual button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"04"}{Type} = "Button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"05"}{Name} = "Virtual button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"05"}{Type} = "Button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"06"}{Name} = "Virtual button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"06"}{Type} = "Button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"07"}{Name} = "Virtual button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"07"}{Type} = "Button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"08"}{Name} = "Virtual button" ;
-$global{Cons}{ModuleTypes}{'1E'}{Channels}{"08"}{Type} = "Button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{ChannelNaming} = "dec" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push button 1" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Type} = "Button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"02"}{Name} = "Virtual button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"02"}{Type} = "Button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"03"}{Name} = "Virtual button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"03"}{Type} = "Button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"04"}{Name} = "Virtual button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"04"}{Type} = "Button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"05"}{Name} = "Virtual button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"05"}{Type} = "Button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"06"}{Name} = "Virtual button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"06"}{Type} = "Button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"07"}{Name} = "Virtual button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"07"}{Type} = "Button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"08"}{Name} = "Virtual button" ;
+#$global{Cons}{ModuleTypes}{'1E'}{Channels}{"08"}{Type} = "Button" ;
 $global{Cons}{ModuleTypes}{'1E'}{Channels}{"09"}{Name} = "Temperature" ;
 $global{Cons}{ModuleTypes}{'1E'}{Channels}{"09"}{Type} = "Temperature" ;
 
@@ -932,5 +932,21 @@ $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'1'}{Match}{'%.'}{Convert
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'2'}{Match}{'%.'}{Convert} = "Counter" ;
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'3'}{Match}{'%.'}{Convert} = "Counter" ;
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{'4'}{Match}{'%.'}{Convert} = "Counter" ;
+
+# PIR sensor: VMBPIRO
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'1'}{Name} = "Channel just released" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{Info} = "released" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'2'}{Name} = "Channel long pressed" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{Data}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
 
 return 1 ;

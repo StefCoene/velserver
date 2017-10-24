@@ -9,7 +9,7 @@ sub connect_to_db {
    # Otherwise we ceate SQlite database
    if ( defined $global{Config}{mysql} ) {
       $dbh = DBI->connect(
-         "DBI:mysql:$global{Config}{mysql}{NAME}:$global{Config}{mysql}{HOST}:mysql_client_found_rows=1",
+         "DBI:mysql:$global{Config}{mysql}{NAME};host=$global{Config}{mysql}{HOST};port=$global{Config}{mysql}{PORT};mysql_client_found_rows=1",
          $global{Config}{mysql}{USER},
          $global{Config}{mysql}{PASS},
             {

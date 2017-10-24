@@ -414,18 +414,38 @@ sub process_message {
                            &update_modules_info ($message{address}, "ModuleName", $ModuleName) ;
                            $message{text} .= "  ModuleName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}\n" ;
                         }
-                     } elsif ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} ) {
-                        if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} eq "ModuleNameStart" ) {
-                           $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} = $char if $hex ne "FF" ;
+                     } elsif ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{SensorName} ) {
+                        my $number = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{SensorName} ;
+                        my $command ;
+                        if ( $number =~ /(\d+):(.+)/ ) {
+                           $number = $1 ;
+                           $command = $2 ;
                         }
-                        if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} eq "ModuleName" ) {
-                           $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
+
+                        if ( $command eq "Start" ) {
+                           # Reset our SensorName
+                           delete $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress} ;
                         }
-                        if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} eq "ModuleNameSave" ) {
-                           $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
-                           &update_modules_info ($message{address}, "ModuleName", $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}) ;
-                           $message{text} .= "  ModuleName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}\n" ;
+
+                        ${$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}}[$number] = $char if $hex ne "FF" ;
+
+                        if ( $command eq "Save" ) {
+                           my $SensorName = join '', @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}} ;
+                           &update_modules_info ($message{address}, "TempSensor", $SensorName) ;
+                           $message{text} .= "  SensorName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorName}\n" ;
                         }
+                     #} elsif ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} ) {
+                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} eq "ModuleNameStart" ) {
+                     #      $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} = $char if $hex ne "FF" ;
+                     #   }
+                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} eq "ModuleName" ) {
+                     #      $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
+                     #   }
+                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} eq "ModuleNameSave" ) {
+                     #      $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
+                     #      &update_modules_info ($message{address}, "ModuleName", $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}) ;
+                     #      $message{text} .= "  ModuleName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}\n" ;
+                     #   }
                      } else {
                         # No type: loop possible Match keys
                         my %info ;
@@ -588,6 +608,15 @@ sub get_status () {
    # Get module name if no channel name is requested
    if ( ! defined $channel ) {
       my $MemoryKey = &module_find_MemoryKey ($address, $type) ;
+      if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{SensorNameAddress} ) {
+         my @memory = split ";", $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{SensorNameAddress} ;
+         foreach my $memory (@memory) {
+            $memory =~ /(..)(..)/ ;
+            my $hex1 = $1 ;
+            my $hex2 = $2 ;
+            &send_message ($sock, $address, 'FD', undef, $hex1 ,$hex2) ;
+         }
+      }
       if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{ModuleNameAddress} ) {
          my @memory = split ";", $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{ModuleNameAddress} ;
          foreach my $memory (@memory) {

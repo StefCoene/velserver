@@ -305,8 +305,8 @@ sub www_print_modules () {
       $html .= "  <tr>\n" ;
       $html .= "    <th>Address</th>\n" ;
       $html .= "    <th>Type</th>\n" ;
-      $html .= "    <th>Name</th>\n" ;
       $html .= "    <th>Info</th>\n" ;
+      $html .= "    <th>Name</th>\n" ;
       $html .= "    <th>Build</th>\n" ;
       $html .= "    <th>MemoryKey</th>\n" ;
       $html .= "    <th>Date</th>\n" ;
