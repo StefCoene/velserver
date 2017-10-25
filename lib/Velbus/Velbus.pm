@@ -105,7 +105,8 @@ sub process_message {
 
                if ( ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "1E" ) or # VMBGP1D
                     ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "1F" ) or # VMBGP2D
-                    ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "20" ) ) { # VMBGP4D
+                    ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "20" ) or # VMBGP4D
+                    ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "2D" ) ) { # VMBGP4PIR
                   &update_modules_info ($message{address}, "SubAddr1", $hex[3]) ;
                   &update_modules_info ($message{address}, "TemperatureAddr", $hex[3]) ;
                }
@@ -155,11 +156,12 @@ sub process_message {
                   if ( $message{ModuleType} eq "2C" ) {
                      $Channel = "09" ;
                   }
-                  if ( $message{ModuleType} eq "2C" and $Channel eq "09" or
-                       $message{ModuleType} eq "1E" and $Channel eq "09" or
-                       $message{ModuleType} eq "1F" and $Channel eq "09" or
-                       $message{ModuleType} eq "20" and $Channel eq "09" or
-                       $message{ModuleType} eq "28" and $Channel eq "33" )
+                  if ( $message{ModuleType} eq "2C" and $Channel eq "09" or # VMBPIRO
+                       $message{ModuleType} eq "1E" and $Channel eq "09" or # VMBGP1D
+                       $message{ModuleType} eq "1F" and $Channel eq "09" or # VMBGP2D
+                       $message{ModuleType} eq "20" and $Channel eq "09" or # VMBGP2D
+                       $message{ModuleType} eq "2D" and $Channel eq "09" or # VMBGP4PIR
+                       $message{ModuleType} eq "28" and $Channel eq "33" )  # VMBGPOD
                       {
                         # Channel 21 and channel 09 (VMBGP1D/VMBGP2D/VMBGP4D/VMBPIRO) are virtual channels whose name is the temperature sensor name of the touch display.
                         &update_modules_info ($message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
@@ -635,9 +637,10 @@ sub get_status () {
    } elsif ( defined $global{Cons}{ModuleTypes}{$type}{Channels} ) {
       # Touch with OLED + VMBGP1D/VMBGP2D/VMBGP4D: channel FF will request the names of all channels (message type EF)
       if ( ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) and
-            ( $type eq "1E" or
-              $type eq "1F" or
-              $type eq "20" or
+            ( $type eq "1E" or # VMBGP1D
+              $type eq "1F" or # VMBGP2D
+              $type eq "20" or # VMBGP2D
+              $type eq "2D" or # VMBGP4PIR
               $type eq "28" ) ) {
          $channels[0] = "0xFF" ;
       } else {
@@ -688,10 +691,11 @@ sub channel_number_to_id () {
 # 1: channel
 # 2: address
 
-   if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" or
-        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" or
-        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" or
-        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "20" ) {
+   if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" or # VMBGP1D
+        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" or # VMBGP2D
+        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "20" or # VMBGP2D
+        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "2D" or # VMBGP4PIR
+        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
       if ( $channel > 24 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ) {
          $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
          $channel -= 24 ;
@@ -723,6 +727,7 @@ sub channel_id_to_number () {
       if ( ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" ) or # VMBGP1D
            ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" ) or # VMBGP2D
            ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "20" ) or # VMBGP4D
+           ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "2D" ) or # VMBGP4PIR
            ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) ) { # VMBGPOD
          $channel = &hex_to_dec ($channel) ; # Only usefull for VMBGPOD
          $channel = "0" . $channel if $channel < 10 ;

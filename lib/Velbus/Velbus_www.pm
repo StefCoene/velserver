@@ -57,22 +57,36 @@ sub www_service {
       }
    }
 
-   if ( $global{cgi}{params}{type} eq "Temperature" and $global{cgi}{params}{action} eq "Get" ) {
-      if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
-         my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
-         $json{Name}        = $data{TempSensor}{value}  if defined $data{TempSensor} ;
-         $json{Temperature} = $data{Temperature}{value} if defined $data{Temperature} ;
-      }
-   }
-
    # Put the time on the bus
    if ( defined $global{cgi}{params}{action} and $global{cgi}{params}{action} eq "TimeSync" ) {
       &broadcast_datetime($sock) ;
       $json = "" ;
    }
 
+   # Get the temperature: touch panels
+   if ( $global{cgi}{params}{type} eq "Temperature" and $global{cgi}{params}{action} eq "Get" ) {
+      if ( defined $Moduletype and (
+               $Moduletype eq "1E" or # VMBGP1
+               $Moduletype eq "1F" or # VMBGP2
+               $Moduletype eq "20" or # VMBGP4
+               $Moduletype eq "2D" or # VMBGP4PIR
+               $Moduletype eq "28"    # VMBGPOD
+            ) ) {
+         my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
+         $json{Name}        = $data{TempSensor}{value}  if defined $data{TempSensor} ;
+         $json{Temperature} = $data{Temperature}{value} if defined $data{Temperature} ;
+      }
+   }
+
+   # Get/Set the Heater temperature: touch panels
    if ( $global{cgi}{params}{type} eq "HeaterTemperature" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
-      if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
+      if ( defined $Moduletype and (
+               $Moduletype eq "1E" or # VMBGP1
+               $Moduletype eq "1F" or # VMBGP2
+               $Moduletype eq "20" or # VMBGP4
+               $Moduletype eq "2D" or # VMBGP4PIR
+               $Moduletype eq "28"    # VMBGPOD
+            ) ) {
          my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
          $json{Name} = $data{TempSensor}{value}  if defined $data{TempSensor} ;
 
@@ -87,13 +101,24 @@ sub www_service {
       }
    }
 
+   # Get/Set the Heater mode: touch panels
    if ( $global{cgi}{params}{type} eq "HeaterMode" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
-      if ( defined $Moduletype and ( $Moduletype eq "20" or $Moduletype eq "28" ) ) {
+      if ( defined $Moduletype and (
+               $Moduletype eq "1E" or # VMBGP1
+               $Moduletype eq "1F" or # VMBGP2
+               $Moduletype eq "20" or # VMBGP4
+               $Moduletype eq "2D" or # VMBGP4PIR
+               $Moduletype eq "28"    # VMBGPOD
+            ) ) {
          my %data ;
          if ( $Moduletype eq "28" ) {
             %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='33'","data") ;
          }
-         if ( $Moduletype eq "20" ) {
+         if ( $Moduletype eq "1E" or # VMBGP1
+              $Moduletype eq "1F" or # VMBGP2
+              $Moduletype eq "20" or # VMBGP4
+              $Moduletype eq "2D" # VMBGP4PIR
+            ) {
             %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='09'","data") ;
          }
          $json{Name} = $data{Name}{value} if defined $data{Name} ;
@@ -150,8 +175,22 @@ sub www_service {
       }
    }
 
+   # Get/Set button: toch, input, sensors, ...
    if ( $global{cgi}{params}{type} eq "Switch" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
-      if ( defined $Moduletype and ( $Moduletype eq "1E" or $Moduletype eq "1F" or $Moduletype eq "20" or $Moduletype eq "28" or $Moduletype eq "22" ) ) {
+      if ( defined $Moduletype and (
+               $Moduletype eq "1E" or # VMBGP1
+               $Moduletype eq "1F" or # VMBGP2
+               $Moduletype eq "20" or # VMBGP4
+               $Moduletype eq "2D" or # VMBGP4PIR
+               $Moduletype eq "28" or # VMBGPOD
+               $Moduletype eq "01" or # VMB8PBU
+               $Moduletype eq "05" or # VMB6IN
+               $Moduletype eq "16" or # VMB8PB
+               $Moduletype eq "22" or # VMB7IN
+               $Moduletype eq "0B" or # VMB4PD: Push button and timer panel
+               $Moduletype eq "2A" or # VMBPIRM: Indoor sensor
+               $Moduletype eq "2C"    # VMBPIRO: Outdoor sensor
+            ) ) {
          if ( $global{cgi}{params}{action} eq "Set" ) {
             if ( defined $global{cgi}{params}{value} and $global{cgi}{params}{value} eq "ON" ) {
                &button_pressed ($sock, $address, $global{cgi}{params}{channel}) ;
@@ -165,8 +204,15 @@ sub www_service {
       }
    }
 
+   # Get/Set Dimmer level
    if ( $global{cgi}{params}{type} eq "Dimmer" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
-      if ( defined $Moduletype and ( $Moduletype eq "07" or $Moduletype eq "0F" or $Moduletype eq "12" or $Moduletype eq "14" or $Moduletype eq "15" ) ) {
+      if ( defined $Moduletype and (
+               $Moduletype eq "07" or # VMB1DM
+               $Moduletype eq "0F" or # VMB1LED
+               $Moduletype eq "12" or # VMB4DC
+               $Moduletype eq "14" or # VMBDME
+               $Moduletype eq "15"    # VMBDMI
+            ) ) {
          if ( $global{cgi}{params}{action} eq "Set" ) {
             if ( defined $global{cgi}{params}{value} ) {
                $global{cgi}{params}{value} = "100" if $global{cgi}{params}{value} eq "ON" ;
@@ -182,8 +228,13 @@ sub www_service {
       }
    }
 
+   # Get/Set Blind positoin
    if ( $global{cgi}{params}{type} eq "Blind" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
-      if ( defined $Moduletype and ( $Moduletype eq "03" or $Moduletype eq "09" or $Moduletype eq "1D" ) ) {
+      if ( defined $Moduletype and (
+               $Moduletype eq "03" or # VMB1BL
+               $Moduletype eq "09" or # VMB2BL
+               $Moduletype eq "1D"    # VMB2BLE
+            ) ) {
          if ( $global{cgi}{params}{value} eq "UP" ) {
             &blind_up ($sock, $address, $global{cgi}{params}{channel}) ;
          }
@@ -204,8 +255,14 @@ sub www_service {
       }
    }
 
+   # Get/Set Relay status
    if ( $global{cgi}{params}{type} eq "Relay" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "On" or $global{cgi}{params}{action} eq "Off" ) ) {
-      if ( defined $Moduletype and ( $Moduletype eq "02" or $Moduletype eq "08" or $Moduletype eq "10" or $Moduletype eq "11" ) ) {
+      if ( defined $Moduletype and (
+               $Moduletype eq "02" or # VMB1RY
+               $Moduletype eq "08" or # VMB4RY
+               $Moduletype eq "10" or # VMB4RYLD
+               $Moduletype eq "11"    # VMB4RYNO
+            ) ) {
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
 
          $json{Name} = $data{Name}{value} if defined $data{Name} ;
@@ -240,7 +297,8 @@ sub www_service {
       }
    }
 
-   if ( $global{cgi}{params}{type} eq "Counter" and ( $global{cgi}{params}{action} eq "GetCounter"  or $global{cgi}{params}{action} eq "GetCounterCurrent" or $global{cgi}{params}{action} eq "GetDivider" ) ) {
+   # Get Counter : only for VMB7IN
+   if ( $global{cgi}{params}{type} eq "Counter" and ( $global{cgi}{params}{action} eq "GetCounter" or $global{cgi}{params}{action} eq "GetCounterCurrent" or $global{cgi}{params}{action} eq "GetDivider" ) ) {
       if ( defined $Moduletype and $Moduletype eq "22" ) {
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
 
@@ -255,6 +313,7 @@ sub www_service {
          }
       }
    }
+
    return %json ;
 }
 
