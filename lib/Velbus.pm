@@ -19,8 +19,8 @@ use Velbus::Velbus ;
 use Velbus::Velbus_database ;
 use Velbus::Velbus_data_protocol_auto ;
 use Velbus::Velbus_data_protocol_memory ;
-use Velbus::Velbus_data_protocol ;
 use Velbus::Velbus_data_protocol_messages ;
+use Velbus::Velbus_data_protocol ;
 use Velbus::Velbus_data ;
 use Velbus::Velbus_helper ;
 use Velbus::Velbus_openHAB ;
@@ -33,7 +33,7 @@ sub read_all_configs {
    &read_config("velbus") ;
    &read_config("www") ;
    &read_config("openHAB") ;
-   &read_config("verlserver") ;
+   &read_config("velserver") ;
 
    if ( defined $global{Config}{mysql} ) {
       # Default settings

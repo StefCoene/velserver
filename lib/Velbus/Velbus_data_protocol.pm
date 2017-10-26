@@ -72,11 +72,11 @@ $global{Cons}{ModuleTypes}{'12'}{Channels}{"01"}{Name} = "Dimmer 1" ;
 
 # 1-channel Dimmer: VMBDME
 $global{Cons}{ModuleTypes}{'14'}{Channels}{"01"}{Name} = "Dimmer 1" ;
-   $global{Cons}{ModuleTypes}{'14'}{Channels}{"01"}{Type} = "Dimmer 1" ;
+   $global{Cons}{ModuleTypes}{'14'}{Channels}{"01"}{Type} = "Dimmer" ;
 
 # 1-channel Dimmer: VMBDMI
 $global{Cons}{ModuleTypes}{'15'}{Channels}{"01"}{Name} = "Dimmer 1" ;
-   $global{Cons}{ModuleTypes}{'15'}{Channels}{"01"}{Type} = "Dimmer 1" ;
+   $global{Cons}{ModuleTypes}{'15'}{Channels}{"01"}{Type} = "Dimmer" ;
 
 ################### Blinds: Channel names
 # 1-channel blind control module: VMB1BL
@@ -86,8 +86,8 @@ $global{Cons}{ModuleTypes}{'03'}{Channels}{"01"}{Name} = "Blind 1" ;
 # 2-channel blind control module: VMB2BL
 $global{Cons}{ModuleTypes}{'09'}{Channels}{"01"}{Name} = "Blind 1" ;
    $global{Cons}{ModuleTypes}{'09'}{Channels}{"01"}{Type} = "Blind" ;
-   $global{Cons}{ModuleTypes}{'09'}{Channels}{"01"}{Name} = "Blind 2" ;
-   $global{Cons}{ModuleTypes}{'09'}{Channels}{"01"}{Type} = "Blind" ;
+   $global{Cons}{ModuleTypes}{'09'}{Channels}{"02"}{Name} = "Blind 2" ;
+   $global{Cons}{ModuleTypes}{'09'}{Channels}{"02"}{Type} = "Blind" ;
 
 # 2-channel blind control module: VMB2BLE
 $global{Cons}{ModuleTypes}{'1D'}{Channels}{"01"}{Name} = "Blind 1" ;

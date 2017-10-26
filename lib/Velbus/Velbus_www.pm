@@ -235,6 +235,17 @@ sub www_service {
                $Moduletype eq "09" or # VMB2BL
                $Moduletype eq "1D"    # VMB2BLE
             ) ) {
+         if ( $Moduletype eq "03" ) {
+            $global{cgi}{params}{channel} = "0x03" ;
+         }
+         if ( $Moduletype eq "09" ) {
+	    if ( $global{cgi}{params}{channel} eq "01" ) {
+               $global{cgi}{params}{channel} = "0x03" ;
+            }
+	    if ( $global{cgi}{params}{channel} eq "02" ) {
+               $global{cgi}{params}{channel} = "0x0C" ;
+            }
+         }
          if ( $global{cgi}{params}{value} eq "UP" ) {
             &blind_up ($sock, $address, $global{cgi}{params}{channel}) ;
          }
