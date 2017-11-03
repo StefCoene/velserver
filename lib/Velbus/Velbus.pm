@@ -152,7 +152,7 @@ sub process_message {
 
             if ( $message{MessageType} eq "F2" ) {
                if ( defined $message{ModuleType} ) {
-                  # For 2C = VMBPIRO, only the sensor name is returned as Channel 01. But this is in reality channel 08.
+                  # For 2C = VMBPIRO, only the sensor name is returned as Channel 01. But this is in reality channel 09.
                   if ( $message{ModuleType} eq "2C" ) {
                      $Channel = "09" ;
                   }
@@ -681,6 +681,12 @@ sub get_status_VMB7IN () {
 
    # Request counter type: kWh, m3, liter:
    &send_message ($sock, $address, 'FD', undef, '03' ,'FE') ;
+
+   # Request counter divider
+   &send_message ($sock, $address, 'FD', undef, '00', 'E4') ; # Channel 1
+   &send_message ($sock, $address, 'FD', undef, '00', 'E9') ; # Channel 2
+   &send_message ($sock, $address, 'FD', undef, '00', 'EE') ; # Channel 3
+   &send_message ($sock, $address, 'FD', undef, '00', 'F3') ; # Channel 4
 }
 
 # Convert channel number and address to channel bit. 3 = 1000 -> 8 and sub address

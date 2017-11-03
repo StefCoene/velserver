@@ -66,21 +66,21 @@ $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'03FE'}{Match}{'4'}{'%11...
 $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'03FE'}{Match}{'4'}{'%[01][01]......'}{Channel} = "04" ;
 $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'03FE'}{Match}{'4'}{'%[01][01]......'}{SubName} = "Unit" ;
 
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E4'}{Match}{'1'}{'%........'}{Value} = "PulsePerUnits" ;
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E4'}{Match}{'1'}{'%........'}{SubName} = "Divider" ;
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E4'}{Match}{'1'}{'%........'}{Channel} = "01" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E4'}{Match}{'1'}{'%........'}{Value} = "PulsePerUnits" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E4'}{Match}{'1'}{'%........'}{SubName} = "Divider" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E4'}{Match}{'1'}{'%........'}{Channel} = "01" ;
 
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E9'}{Match}{'1'}{'%........'}{Value} = "PulsePerUnits" ;
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E9'}{Match}{'1'}{'%........'}{SubName} = "Divider" ;
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E9'}{Match}{'1'}{'%........'}{Channel} = "02" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E9'}{Match}{'1'}{'%........'}{Value} = "PulsePerUnits" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E9'}{Match}{'1'}{'%........'}{SubName} = "Divider" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00E9'}{Match}{'1'}{'%........'}{Channel} = "02" ;
 
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00EE'}{Match}{'1'}{'%........'}{Value} = "PulsePerUnits" ;
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00EE'}{Match}{'1'}{'%........'}{SubName} = "Divider" ;
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00EE'}{Match}{'1'}{'%........'}{Channel} = "03" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00EE'}{Match}{'1'}{'%........'}{Value} = "PulsePerUnits" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00EE'}{Match}{'1'}{'%........'}{SubName} = "Divider" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00EE'}{Match}{'1'}{'%........'}{Channel} = "03" ;
 
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00F3'}{Match}{'1'}{'%........'}{Value} = "PulsePerUnits" ;
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00F3'}{Match}{'1'}{'%........'}{SubName} = "Divider" ;
-# Not used $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00F3'}{Match}{'1'}{'%........'}{Channel} = "04" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00F3'}{Match}{'1'}{'%........'}{Value} = "PulsePerUnits" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00F3'}{Match}{'1'}{'%........'}{SubName} = "Divider" ;
+$global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'00F3'}{Match}{'1'}{'%........'}{Channel} = "04" ;
 
 # VMB4RYLD
 $global{Cons}{ModuleTypes}{'10'}{Memory}{1}{ModuleName} = "00E3-00EF;01E3-01EF;02E3-02EF;03E3-03EF;04E3-04EE" ;
