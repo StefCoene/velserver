@@ -109,8 +109,19 @@ foreach my $file (sort `ls protocol*.txt`) {
    }
    $file{PerFile}{$file}{Info}{ModuleType} = $ModuleType ;
 
+   # Second last line can be used to filter out the edition of the file
+   &clean (pop @file) ;
+   $file{PerFile}{$file}{Info}{Edition} = &clean (pop @file) ;
+   if ( $file{PerFile}{$file}{Info}{Edition} =~ /– (edition \d+ _ rev\d+)/ ) {
+      $file{PerFile}{$file}{Info}{Edition} = $1 ;
+   } elsif ( $file{PerFile}{$file}{Info}{Edition} =~ /– (edition \d+)/ ) {
+      $file{PerFile}{$file}{Info}{Edition} = $1 ;
+   } else {
+      $file{PerFile}{$file}{Info}{Edition} = "" ;
+   }
+
    # Second and optional the third line contains information about the module
-   $file{PerFile}{$file}{Info}{ModuleText} = &clean (shift @file) ;
+   $file{PerFile}{$file}{Info}{ModuleText}  = &clean (shift @file) . " " ;
    $file{PerFile}{$file}{Info}{ModuleText} .= &clean (shift @file) ;
    $file{PerFile}{$file}{Info}{ModuleText} =~ s/PROTOCOL//g ; # Clean op some of the text
    $file{PerFile}{$file}{Info}{ModuleText} =~ s/for ?VELBUS ?system//ig ; # Clean op some of the text
@@ -330,13 +341,17 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                if ( $ModuleTypeHex eq "1E" ) {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Type} = \"VMBGP1\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Type} = \"VMBGP2\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Type} = \"VMBGP4\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
                } else {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Type} = \"$ModuleType\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
                }
 
             } else {
