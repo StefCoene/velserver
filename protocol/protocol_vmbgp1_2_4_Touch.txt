@@ -7,7 +7,7 @@ One, two or four touch buttons
 
 
 
-       VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1   1
+       VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   1
 Binairy format:
 
 <SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-ACK-ACKDEL-
@@ -74,7 +74,7 @@ The module can receive the following commands:
 
 
 
-                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                  2
+                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                  2
    Bus error counter status request
    Real-time clock status request
    Set real-time clock
@@ -93,8 +93,16 @@ The module can receive the following commands:
 
 
 
-                                   VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1   3
-Transmits real time clock status request:
+                                   VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   3
+Transmits power up message (build 1415 or higher):
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = H’00’
+    RTR = 0
+    DLC3...DLC0 = 2 databyte to send
+    DATABYTE1 = COMMAND_POWER_UP (H’AB’)
+    DATABYTE2 = module address
+
+Transmits real time clock status request:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = H’00’
     RTR = 0
@@ -151,7 +159,7 @@ Transmits the channel switch status:
 
 
 
-                        VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1   4
+                             VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   4
 Transmits the sensor output switch status:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Subaddress
@@ -220,7 +228,7 @@ Transmit: Bus error counter status
 
 
 
-                                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1   5
+                                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   5
 Transmits the memory data:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -246,7 +254,9 @@ Transmits memory data block (4 bytes):
     DATABYTE6 = memory data3
     DATABYTE7 = memory data4
 
-   Remark: address range: H’0000’ to H’03FC’
+   Remark:     address range: H’0000’ to H’03FC’
+               H’0400’ to H’07FC’ = eeprom data (build 1521 or higher)
+
 
 Transmits the first part of channel name:
     SID10-SID9 = 11 (lowest priority)
@@ -279,7 +289,7 @@ Transmits the second part of the channel name:
 
 
 
-                               VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1   6
+                               VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   6
 Transmits the third part of the channel name:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -347,7 +357,7 @@ Transmit the sensor status:
 
 
 
-                                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                 7
+                                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                 7
               x001xxxx       Night mode
               x000xxxx       Safe temp mode (anti frost)
               1xxxxxxx       Cooler mode
@@ -414,7 +424,7 @@ DATABYTE8 = Low byte of the sleep timer into minutes
 
 
 
-                            VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1               8
+                            VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2               8
     Remark:
     [DATABYTE7][DATABYTE8] contains a 16-bit sleep timer into minutes (1 to 65.279min).
     If the sleep timer contains H’0000’, the sleep timer is deactivated.
@@ -481,7 +491,7 @@ Transmit time statistics
 
 
 
-                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                                             9
+                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                             9
     Remark:
     The time is bcd formatted.
     Databytes 3, 4 & 5 gives the total ‘ON’ time of the heater or cooler in the corresponding mode.
@@ -534,8 +544,8 @@ Transmit the third part of the sensor settings:
     DATABYTE4 = Lower temperature range cool mode (resolution 0.5°)
     DATABYTE5 = Upper temperature range heat mode (resolution 0.5°)
     DATABYTE6 = Calibration offset factor (resolution 0.5°)
-                       Contents       Calibration factor
-                       00001111       Calibration factor +7.5°C
+                       Contents        Calibration factor
+                       00001111        Calibration factor +7.5°C
 
                        00000001       Calibration factor +0.5°C
                        00000000       Calibration factor +0°C
@@ -548,12 +558,12 @@ Transmit the third part of the sensor settings:
 
 
 
-                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                       10
+                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                       10
 Transmit the fourth part of the sensor settings:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
     RTR = 0
-    DLC3...DLC0 = 2 databytes to send
+    DLC3...DLC0 = 8 databytes to send
     DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART4 (H’B9’)
     DATABYTE2 = Minimum switching time (0…255s)
     DATABYTE3 = Pump delayed on time (0…255s)
@@ -617,7 +627,7 @@ Transmits program step info:
 
 
 
-                                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1        11
+                                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2        11
                         …
                      xxx00001       Rel. time = 15min
                      xxx00000       Rel. time = 0
@@ -683,7 +693,7 @@ DATABYTE6 = Program step minute & every flag & msb of day
 
 
 
-                            VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1            12
+                            VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2            12
                 Contents byte6     Contents byte4   Description
                   00xxxxxx           0000xxxx       Never
                   00xxxxxx           0001xxxx       Day 1of the month
@@ -747,7 +757,7 @@ DATABYTE7 = Program step action
 
 
 
-                         VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1          13
+                         VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2          13
 DATABYTE8 = Channel
                  Contents     Channel
                      1        Channel 1 or temperature sensor
@@ -759,7 +769,7 @@ DATABYTE7 = Program step action
 
 
 
-                       VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1   14
+                       VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   14
 ‘Linked push button status’ received:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Address of the linked push button module
@@ -769,6 +779,14 @@ DATABYTE7 = Program step action
     DATABYTE2 = Linked push buttons just pressed (1 = just pressed)
     DATABYTE3 = Linked push buttons just released (1 = just released)
     DATABYTE4 = linked push buttons long pressed (1 = longer than 0.85s pressed)
+
+Power up message’ received (build 1415 or higher):
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = H’00’
+   RTR = 0
+   DLC3...DLC0 = 2 databyte to send
+   DATABYTE1 = COMMAND_POWER_UP (H’AB’)
+   DATABYTE2 = module address
 
 ‘Real time clock status request’ command received:
     SID10-SID9 = 11 (lowest priority)
@@ -819,15 +837,15 @@ DATABYTE7 = Program step action
 
 
 
-                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1    15
+                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2    15
 ‘Enable/disable global sunrise/sunset related actions’ command received:
-   SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = H’00’
-   RTR = 0
-   DLC3...DLC0 = 3 databytes to send
-   DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
-   DATABYTE2 = Channel (FF)
-   DATABYTE3 = enable/disable flags
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = H’00’
+    RTR = 0
+    DLC3...DLC0 = 3 databytes to send
+    DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
+    DATABYTE2 = Channel (FF)
+    DATABYTE3 = enable/disable flags
                        Contents              Description
                     B’xxxxxxx0’              Disable sunrise related actions
                     B’xxxxxxx1’              Enable sunrise related actions
@@ -835,13 +853,13 @@ DATABYTE7 = Program step action
                     B’xxxxxx1x’              Enable sunset related actions
 
 ‘Enable/disable local sunrise/sunset related actions’ command received:
-   SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
-   RTR = 0
-   DLC3...DLC0 = 3 databytes to send
-   DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
-   DATABYTE2 = Channel (FF)
-   DATABYTE3 = enable/disable flags
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes to send
+    DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
+    DATABYTE2 = Channel (FF)
+    DATABYTE3 = enable/disable flags
                        Contents               Description
                      B’xxxxxxx0’              Disable sunrise related actions
                      B’xxxxxxx1’              Enable sunrise related actions
@@ -883,7 +901,7 @@ DATABYTE7 = Program step action
 
 
 
-                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1   16
+                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   16
 ‘Module status request’ command received:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
@@ -945,7 +963,7 @@ DATABYTE7 = Program step action
 
 
 
-                                VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                              17
+                                VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                              17
 ‘Update channel LEDs’ command received:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
@@ -1006,7 +1024,7 @@ DATABYTE7 = Program step action
 
 
 
-                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                      18
+                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                      18
 ‘Write memory block’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -1072,7 +1090,7 @@ DATABYTE7 = Program step action
 
 
 
-                               VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                 19
+                               VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                 19
 ‘Disable Channel Program’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -1134,7 +1152,7 @@ DATABYTE7 = Program step action
 
 
 
-                               VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                           20
+                               VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                           20
 ‘Set cooling mode’ command received:
      SID10-SID9 = 11 (lowest priority)
      SID8...SID1 = Module address
@@ -1202,7 +1220,7 @@ DATABYTE7 = Program step action
 
 
 
-                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1              21
+                                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2              21
                        26       Lower temperature range heat mode
                        27       Upper temperature range cool mode
                        28       Calibration gain factor
@@ -1259,7 +1277,7 @@ Wait at least 10ms for sending a next command on the velbus.
 
 
 
-                             VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1            22
+                             VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2            22
 ‘Switch to comfort mode’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -1314,7 +1332,7 @@ Wait at least 10ms for sending a next command on the velbus.
 
 
 
-                                VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                                         23
+                                VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                         23
 ‘Switch to safe temperature mode’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -1339,17 +1357,17 @@ Wait at least 10ms for sending a next command on the velbus.
    DLC3...DLC0 = 2 databytes to send
    DATABYTE1 = COMMAND_TIME_STATISTICS_REQUEST (H’C7’)
    DATABYTE2 = statistics mode index
-                       Contents     Time statistics request
-                       10000001     Heating antifreeze mode time statistics
-                       10000010     Heating night mode time statistics
-                       10000100     Heating day mode time statistics
-                       10001000     Heating comfort mode time statistics
-                       10010000     Heating global time statistics
-                       01000001     Cooling standby mode time statistics
-                       01000010     Cooling night mode time statistics
-                       01000100     Cooling day mode time statistics
-                       01001000     Cooling comfort mode time statistics
-                       01010000     Cooling global time statistics
+                        Contents    Time statistics request
+                        10000001    Heating antifreeze mode time statistics
+                        10000010    Heating night mode time statistics
+                        10000100    Heating day mode time statistics
+                        10001000    Heating comfort mode time statistics
+                        10010000    Heating global time statistics
+                        01000001    Cooling standby mode time statistics
+                        01000010    Cooling night mode time statistics
+                        01000100    Cooling day mode time statistics
+                        01001000    Cooling comfort mode time statistics
+                        01010000    Cooling global time statistics
 
 ‘Read program step’ command received:
     SID10-SID9 = 11 (lowest priority)
@@ -1382,7 +1400,7 @@ Wait at least 10ms for sending a next command on the velbus.
 
 
 
-                                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                                         24
+                                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                         24
                      xxx01111       Rel. time = 3h45min
                         …
                      xxx00001       Rel. time = 15min
@@ -1448,7 +1466,7 @@ DATABYTE6 = Program step minute & msb of day & every flag
 
 
 
-                            VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1             25
+                            VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2             25
                    xx111011       59min
 
                 Contents byte6     Contents byte4   Description
@@ -1514,7 +1532,7 @@ DATABYTE7 = Program step action
 
 
 
-                         VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1          26
+                         VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2          26
 DATABYTE8 = Channel
                  Contents     Channel
                      1        Channel 1 or temperature sensor
@@ -1526,8 +1544,8 @@ DATABYTE7 = Program step action
 
 
 
-                       VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1   27
- Memory map:
+                       VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   27
+ Memory map version 0 for build 1350 or lower:
 
 Address   Contents                                                 Address   Contents
 H’0000’   Channel 1 name character 1                               H’0001’   Channel 1 name character 2
@@ -1566,19 +1584,19 @@ H’00C0’   Sunrise 5 October – sunrise 21 September (-128’..127’)   H�
 H’00C2’   Sunrise 5 November – sunrise 21 October (-128’..127’)    H’00C3’   Sunrise 21 November – sunrise 5 November (-128’..127’)
 H’00C4’   Sunrise 5 December – sunrise 21 November (-128’..127’)   H’00C5’   Sunrise 21 December – sunrise 5 December (-128’..127’)
 H’00C6’   Sunrise 5 January – sunrise 21 December (-128’..127’)    H’00C7’   Sunset hour at 21 December (0…23)
-H’00C8’   Sunset minutes at 21 December (0…59)                     H’00C9’   Sunset 21 January – sunrise 5 January (-128’..127’)
-H’00CA’   Sunset 5 February – sunrise 21 January (-128’..127’)     H’00CB’   Sunset 21 February – sunrise 5 February (-128’..127’)
-H’00CC’   Sunset 5 March – sunrise 21 February (-128’..127’)       H’00CD’   Sunset 21 March – sunrise 5 March (-128’..127’)
-H’00CE’   Sunset 5 April – sunrise 21 March (-128’..127’)          H’00CF’   Sunset 21 April – sunrise 5 April (-128’..127’)
-H’00D0’   Sunset 5 May – sunrise 21 April (-128’..127’)            H’00D1’   Sunset 21 May – sunrise 5 May (-128’..127’)
-H’00D2’   Sunset 5 June – sunrise 21 May (-128’..127’)             H’00D3’   Sunset 21 June – sunrise 5 June (-128’..127’)
-H’00D4’   Sunset 5 July – sunrise 21 June (-128’..127’)            H’00D5’   Sunset 21 July – sunrise 5 July (-128’..127’)
-H’00D6’   Sunset 5 August – sunrise 21 July (-128’..127’)          H’00D7’   Sunset 21 August – sunrise 5 August (-128’..127’)
-H’00D8’   Sunset 5 September – sunrise 21 August (-128’..127’)     H’00D9’   Sunset 21 September – sunrise 5 September (-128’..127’)
-H’00DA’   Sunset 5 October – sunrise 21 September (-128’..127’)    H’00DB’   Sunset 21 October – sunrise 5 October (-128’..127’)
-H’00DC’   Sunset 5 November – sunrise 21 October (-128’..127’)     H’00DC’   Sunset 21 November – sunrise 5 November (-128’..127’)
-H’00DE’   Sunset 5 December – sunrise 21 November (-128’..127’)    H’00DF’   Sunset 21 December – sunrise 5 December (-128’..127’)
-H’00E0’   Sunset 5 January – sunrise 21 December (-128’..127’)     H’00E1’   Sensor name character 1
+H’00C8’   Sunset minutes at 21 December (0…59)                     H’00C9’   Sunset 21 January – sunset 5 January (-128’..127’)
+H’00CA’   Sunset 5 February – sunset 21 January (-128’..127’)      H’00CB’   Sunset 21 February – sunset 5 February (-128’..127’)
+H’00CC’   Sunset 5 March – sunset 21 February (-128’..127’)        H’00CD’   Sunset 21 March – sunset 5 March (-128’..127’)
+H’00CE’   Sunset 5 April – sunset 21 March (-128’..127’)           H’00CF’   Sunset 21 April – sunset 5 April (-128’..127’)
+H’00D0’   Sunset 5 May – sunset 21 April (-128’..127’)             H’00D1’   Sunset 21 May – sunset 5 May (-128’..127’)
+H’00D2’   Sunset 5 June – sunset 21 May (-128’..127’)              H’00D3’   Sunset 21 June – sunset 5 June (-128’..127’)
+H’00D4’   Sunset 5 July – sunset 21 June (-128’..127’)             H’00D5’   Sunset 21 July – sunset 5 July (-128’..127’)
+H’00D6’   Sunset 5 August – sunset 21 July (-128’..127’)           H’00D7’   Sunset 21 August – sunset 5 August (-128’..127’)
+H’00D8’   Sunset 5 September – sunset 21 August (-128’..127’)      H’00D9’   Sunset 21 September – sunset 5 September (-128’..127’)
+H’00DA’   Sunset 5 October – sunset 21 September (-128’..127’)     H’00DB’   Sunset 21 October – sunset 5 October (-128’..127’)
+H’00DC’   Sunset 5 November – sunset 21 October (-128’..127’)      H’00DC’   Sunset 21 November – sunset 5 November (-128’..127’)
+H’00DE’   Sunset 5 December – sunset 21 November (-128’..127’)     H’00DF’   Sunset 21 December – sunset 5 December (-128’..127’)
+H’00E0’   Sunset 5 January – sunset 21 December (-128’..127’)      H’00E1’   Sensor name character 1
 H’00E2’   Sensor name character 2                                  H’00E3’   Sensor name character 3
 ...       ...                                                      ...       ...
 H’00F0’   Sensor name character 16                                 H’00F1’   Temp. sensor: zone
@@ -1598,7 +1616,7 @@ H’0108’   Temp. sensor: alarm 1 temperature set                    H’0109�
 
 
 
-                                   VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                                             28
+                                   VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                             28
 H’010A’   Temp. sensor: alarm 3 temperature set                      H’010B’   Temp. sensor: alarm 4 temperature set
 H’010C’   Module settings                                            H’010D’   Not used
 H’010E’   Not used                                                   H’010F’   Not used
@@ -1616,11 +1634,11 @@ H’010E’   Not used                                                   H’010
 
                 Channel x start/end function
                          Contents            Function
-                             1               Channel 1 (default)
-                             2               Channel 2 (default)
+                              1              Channel 1 (default)
+                              2              Channel 2 (default)
                              ...             ...
-                             7               Channel 7 (default)
-                             8               Channel 8 (default)
+                              7              Channel 7 (default)
+                              8              Channel 8 (default)
                 Remark:
                 For a normal one function button, the start and end function channel are the same.
                 For a multi function button, the start function channel must be less than the end function. At every press the
@@ -1665,7 +1683,7 @@ H’010E’   Not used                                                   H’010
 
 
 
-                                    VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                                              29
+                                    VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                              29
 Led backlight intensity
         Contents             Led backlight intensity
           H’01’              Minimum
@@ -1682,20 +1700,20 @@ Led intensity
 
 Alarm clock configuration
         Contents        Channel locked/unlocked
-     B’xxxxxxx0’        Alarm 1 disabled (default)
-     B’xxxxxxx1’        Alarm 1 enabled
-     B’0xxxxx0x’        Local alarm 1 (default)
-     B’1xxxxx1x’        Global alarm 1
-     B’xxxxx0xx’        Alarm 2 disabled (default)
-     B’xxxxx1xx’        Alarm 2 enabled
-     B’xxxx0xxx’        Local alarm 2 (default)
-     B’xxxx1xxx’        Global alarm 2
-     B’xxx0xxxx’        Sunrise disabled
-     B’xxx1xxxx’        Sunrise enabled (default)
-     B’xx0xxxxx’        Sunset disabled
-     B’xx1xxxxx’        Sunset enabled (default)
-     B’x0xxxxxx’        Day light savings disabled
-     B’x1xxxxxx’        Day light savings enabled (default)
+      B’xxxxxxx0’       Alarm 1 disabled (default)
+      B’xxxxxxx1’       Alarm 1 enabled
+      B’0xxxxx0x’       Local alarm 1 (default)
+      B’1xxxxx1x’       Global alarm 1
+      B’xxxxx0xx’       Alarm 2 disabled (default)
+      B’xxxxx1xx’       Alarm 2 enabled
+      B’xxxx0xxx’       Local alarm 2 (default)
+      B’xxxx1xxx’       Global alarm 2
+      B’xxx0xxxx’       Sunrise disabled
+      B’xxx1xxxx’       Sunrise enabled (default)
+      B’xx0xxxxx’       Sunset disabled
+      B’xx1xxxxx’       Sunset enabled (default)
+      B’x0xxxxxx’       Day light savings disabled
+      B’x1xxxxxx’       Day light savings enabled (default)
 
 Module settings
        Contents              Description
@@ -1708,12 +1726,12 @@ Temp. sensor zone
            0’                No zone
            1.                Zone 1...
            ...               ...
-           7                 Zone 7
+            7                Zone 7
 
 
 
 
-                    VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1   30
+                    VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   30
 Temp. sensor flags
         Contents           Description
       B’xxxxxxx0’          Pump unjamming disabled (default)
@@ -1772,7 +1790,7 @@ Temp. sensor boost difference (resolution 0.5°):
 
 
 
-                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1              31
+                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2              31
 Temp. sensor pump delayed on, pump delayed off & valve minimum switching time:
        Contents    Time
        00000000    0
@@ -1801,7 +1819,7 @@ Temp. sensor lower, upper, safe, night, day, comfort or alarm set (resolution 0.
 
 
 
-                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                        32
+                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                        32
  Address     Contents                                    Address     Contents
  H’0110’     Linked Push button 1 module address         H’0111’     Linked Push button 1 bit number
  H’0112’     Linked Push button 1 action                 H’0113’     Linked Push button 1 time parameter
@@ -1863,9 +1881,9 @@ Remark: Unused locations contain H’FF’
              41           Enable/Disable Sunset                           -                        -
              42           Disable Sunset                                  -                        -
              43           Sensor: Comfort mode                            Short press sleep time   Long press sleep time
-             44           Sensor: Day mode                                Short press sleep time   Short press sleep time
-             45           Sensor: Night mode                              Short press sleep time   Short press sleep time
-             46           Sensor: Safe mode                               Short press sleep time   Short press sleep time
+             44           Sensor: Day mode                                Short press sleep time   Long press sleep time
+             45           Sensor: Night mode                              Short press sleep time   Long press sleep time
+             46           Sensor: Safe mode                               Short press sleep time   Long press sleep time
              47           Sensor: Heating mode                            -                        -
              48           Sensor: Cooling mode                            -                        -
              49           Sensor: Forced Safe mode at open switch         -                        0xFF
@@ -1873,7 +1891,7 @@ Remark: Unused locations contain H’FF’
 
 
 
-                              VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                                             33
+                              VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                             33
   50         Sensor: Forced Safe mode at closed switch        -                       0xFF
   51         Sensor: Forced Safe mode                         Timeout                 -
   52         Sensor: Forced or Cancel Forced Safe mode        Timeout                 -
@@ -1920,7 +1938,7 @@ Time parameter
 
 
 
-                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                                            34
+                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                            34
 Address    Contents                                     Address      Contents
 H’0200’    Program step 1 byte1                         H’0201’      Program step 1 byte2
 H’0202’    Program step 1 byte3                         H’0203’      Program step 1 byte4
@@ -1985,7 +2003,7 @@ H’03FE’    Not used                                     H’03FF’      Not
 
 
 
-                             VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                   35
+                             VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                   35
 Contents program byte4           Contents program byte2       Description
      B’00xxxxxx’                      B’0000xxxx’             Never
      B’00xxxxxx’                      B’0001xxxx’             Day 1of the month
@@ -2048,7 +2066,7 @@ Contents program byte5      Action
 
 
 
-              VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1                               36
+              VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                               36
 Contents program byte6      Channel
            1                Channel 1
            2                Channel 2
@@ -2060,5 +2078,627 @@ Contents program byte5      Action
 
 
 
-              VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 1   37
+              VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   37
+ Memory map version 1 for build 1415 or higher:
+
+Address   Contents                                                 Address   Contents
+H’0000’   Channel 1 name character 1                               H’0001’   Channel 1 name character 2
+...       ...                                                      ...       ...
+H’000E’   Channel 1 name character 15                              H’000F’   Channel 1 name character 16
+H’0010’   Channel 1 reaction time                                  H’0011’   Channel 1 start function
+H’0012’   Channel 1 end function                                   H’0013’   Channel 1 mode
+H’0014’   Channel 2 name character 1                               H’0015’   Channel 2 name character 2
+...       ...                                                      ...       ...
+H’0022’   Channel 2 name character 15                              H’0023’   Channel 2 name character 16
+H’0024’   Channel 2 reaction time                                  H’0025’   Channel 2 start function
+H’0026’   Channel 2 end function                                   H’0027’   Channel 2 mode
+...       ...                                                      ...       ...
+H’008C’   Channel 8 name character 1                               H’0089’   Channel 8 name character 2
+...       ...                                                      ...       ...
+H’009A’   Channel 8 name character 15                              H’009B’   Channel 8 name character 16
+H’009C’   Channel 8 reaction time                                  H’009D’   Channel 8 start function
+H’009E’   Channel 8 end function                                   H’009F’   Channel 8 mode
+H’00A0’   Long pressed delay                                       H’00A1’   Dual function long pressed time
+H’00A2’   Led backlight intensity                                  H’00A3’   Led intensity
+H’00A4’   Alarm clock configuration                                H’00A5’   Wake up 1 hour (0…23)
+H’00A6’   Wake up 1 minutes (0…59)                                 H’00A7’   Go to bed 1 hour (0…23)
+H’00A8’   Go to bed 1 minutes (0…59)                               H’00A9’   Wake up 2 hour (0…23)
+H’00AA’   Wake up 2 minutes (0…59)                                 H’00AB’   Go to bed 2 hour (0…23)
+H’00AC’   Go to bed 2 minutes (0…59)                               H’00AD’   Sunrise hour at 21 December (0…23)
+H’00AE’   Sunrise minutes at 21 December (0…59)                    H’00AF’   Sunrise 21 January – sunrise 5 January (-128’..127’)
+H’00B0’   Sunrise 5 February – sunrise 21 January (-128’..127’)    H’00B1’   Sunrise 21 February – sunrise 5 February (-128’..127’)
+H’00B2’   Sunrise 5 March – sunrise 21 February (-128’..127’)      H’00B3’   Sunrise 21 March – sunrise 5 March (-128’..127’)
+H’00B4’   Sunrise 5 April – sunrise 21 March (-128’..127’)         H’00B5’   Sunrise 21 April – sunrise 5 April (-128’..127’)
+H’00B6’   Sunrise 5 May – sunrise 21 April (-128’..127’)           H’00B7’   Sunrise 21 May – sunrise 5 May (-128’..127’)
+H’00B8’   Sunrise 5 June – sunrise 21 May (-128’..127’)            H’00B9’   Sunrise 21 June – sunrise 5 June (-128’..127’)
+H’00BA’   Sunrise 5 July – sunrise 21 June (-128’..127’)           H’00BB’   Sunrise 21 July – sunrise 5 July (-128’..127’)
+H’00BC’   Sunrise 5 August – sunrise 21 July (-128’..127’)         H’00BD’   Sunrise 21 August – sunrise 5 August (-128’..127’)
+H’00BE’   Sunrise 5 September – sunrise 21 August (-128’..127’)    H’00BF’   Sunrise 21 September – sunrise 5 September (-128..127’)
+H’00C0’   Sunrise 5 October – sunrise 21 September (-128’..127’)   H’00C1’   Sunrise 21 October – sunrise 5 October (-128’..127’)
+H’00C2’   Sunrise 5 November – sunrise 21 October (-128’..127’)    H’00C3’   Sunrise 21 November – sunrise 5 November (-128’..127’)
+H’00C4’   Sunrise 5 December – sunrise 21 November (-128’..127’)   H’00C5’   Sunrise 21 December – sunrise 5 December (-128’..127’)
+H’00C6’   Sunrise 5 January – sunrise 21 December (-128’..127’)    H’00C7’   Sunset hour at 21 December (0…23)
+H’00C8’   Sunset minutes at 21 December (0…59)                     H’00C9’   Sunset 21 January – sunset 5 January (-128’..127’)
+H’00CA’   Sunset 5 February – sunset 21 January (-128’..127’)      H’00CB’   Sunset 21 February – sunset 5 February (-128’..127’)
+H’00CC’   Sunset 5 March – sunset 21 February (-128’..127’)        H’00CD’   Sunset 21 March – sunset 5 March (-128’..127’)
+H’00CE’   Sunset 5 April – sunset 21 March (-128’..127’)           H’00CF’   Sunset 21 April – sunset 5 April (-128’..127’)
+H’00D0’   Sunset 5 May – sunset 21 April (-128’..127’)             H’00D1’   Sunset 21 May – sunset 5 May (-128’..127’)
+H’00D2’   Sunset 5 June – sunset 21 May (-128’..127’)              H’00D3’   Sunset 21 June – sunset 5 June (-128’..127’)
+H’00D4’   Sunset 5 July – sunset 21 June (-128’..127’)             H’00D5’   Sunset 21 July – sunset 5 July (-128’..127’)
+H’00D6’   Sunset 5 August – sunset 21 July (-128’..127’)           H’00D7’   Sunset 21 August – sunset 5 August (-128’..127’)
+H’00D8’   Sunset 5 September – sunset 21 August (-128’..127’)      H’00D9’   Sunset 21 September – sunset 5 September (-128’..127’)
+H’00DA’   Sunset 5 October – sunset 21 September (-128’..127’)     H’00DB’   Sunset 21 October – sunset 5 October (-128’..127’)
+H’00DC’   Sunset 5 November – sunset 21 October (-128’..127’)      H’00DC’   Sunset 21 November – sunset 5 November (-128’..127’)
+H’00DE’   Sunset 5 December – sunset 21 November (-128’..127’)     H’00DF’   Sunset 21 December – sunset 5 December (-128’..127’)
+H’00E0’   Sunset 5 January – sunset 21 December (-128’..127’)      H’00E1’   Sensor name character 1
+H’00E2’   Sensor name character 2                                  H’00E3’   Sensor name character 3
+...       ...                                                      ...       ...
+H’00F0’   Sensor name character 16                                 H’00F1’   Temp. sensor: zone
+H’00F2’   Temp. sensor: flags                                      H’00F3’   Temp. sensor: calibration offset
+H’00F4’   Temp. sensor: calibration gain                           H’00F5’   Temp. sensor: hysteresis
+H’00F6’   Temp. sensor: boost difference                           H’00F7’   Temp. sensor: Pump delayed on
+H’00F8’   Temp. sensor: pump delayed off                           H’00F9’   Temp. sensor: min switching time
+H’00FA’   Temp. sensor: default sleep time low byte                H’00FB’   Temp. sensor: default sleep time high byte
+H’00FC’   Temp. sensor: heater lower temperature range             H’00FD’   Temp. sensor: heater upper temperature range
+H’00FE’   Temp. sensor: heater safe temperature set                H’00FF’   Temp. sensor: heater night temperature set
+H’0100’   Temp. sensor: heater day temperature set                 H’0101’   Temp. sensor: heater comfort temperature set
+H’0102’   Temp. sensor: cooler lower temperature range             H’0103’   Temp. sensor: cooler upper temperature range
+H’0104’   Temp. sensor: cooler safe temperature set                H’0105’   Temp. sensor: cooler night temperature set
+H’0106’   Temp. sensor: cooler day temperature set                 H’0107’   Temp. sensor: cooler comfort temperature set
+H’0108’   Temp. sensor: alarm 1 temperature set                    H’0109’   Temp. sensor: alarm 2 temperature set
+
+
+
+
+                                   VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                             38
+H’010A’   Temp. sensor: alarm 3 temperature set                      H’010B’   Temp. sensor: alarm 4 temperature set
+H’010C’   Temp. sensor alarm1 & 2 modes                              H’010D’   Temp. sensor alarm3 & 4 modes
+H’010E’   Module settings                                            H’010F’   Module terminator
+
+     Remark:
+     Unused locations contain H’FF’
+
+                Valid reaction times
+                         Contents             Reaction time
+                          H’01’               immediatly (default)
+                          H’4C’               1s
+                          H’99’               2s
+                          H’E0’               3s
+                          H’FF’               Channel disabled
+
+                Channel x start/end function
+                         Contents            Function
+                              1              Channel 1 (default)
+                              2              Channel 2 (default)
+                             ...             ...
+                              7              Channel 7 (default)
+                              8              Channel 8 (default)
+                Remark:
+                For a normal one function button, the start and end function channel are the same.
+                For a multi function button, the start function channel must be less than the end function. At every press the
+                next channel will be send. When the end function channel is reached, the start channel will be send again at
+                the next press.
+                For a dual function button, the start function channel will be send at a short press or the end function will be
+                send at a long press.
+
+                Channels mode
+                         Contents            Description
+                       B’xxxxxxx0’           Dual function disabled (default)
+                       B’xxxxxxx1’           Dual function enabled
+                       B’xxxxxx0x’           Multi-function auto reset disabled (default)
+                       B’xxxxxx1x’           Multi-function auto reset enabled
+                       B’xxxxx0xx’           Led backlight off
+                       B’xxxxx1xx’           Led backlight on
+                       B’xxxx0xxx’           Led feedback off (default)
+                       B’xxxx1xxx’           Led feedback on (default)
+                       B’xxx0xxxx’           Slow blinking led feedback off
+                       B’xxx1xxxx’           Slow blinking led feedback on (default)
+                       B’xx0xxxxx’           Fast blinking led feedback off
+                       B’xx1xxxxx’           Fast blinking led feedback on (default)
+                       B’x0xxxxxx’           Very fast blinking led feedback off
+                       B’x1xxxxxx’           Very fast blinking led feedback on (default)
+                Remark:
+                When auto reset is enabled, the start function will be loaded again after 3 seconds inactivity of the channel.
+                For a dual function button, the start function channel will be send at a short press or the end function will be
+                send at a long press.
+                The dual function overwrites the multi-function mode.
+
+                Valid long pressed delay
+                         Contents             Reaction time
+                          H’40’               0.8s (default)
+                          H’80’               1.6s
+
+                Valid dual function long pressed times
+                        Contents             Long pressed time
+                         H’4C’               1s
+                          H’99’              2s (default)
+                         H’E0’               3s
+
+
+
+
+                                    VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                              39
+Led backlight intensity
+        Contents             Led backlight intensity
+          H’01’              Minimum
+           ...               ...
+          H’05’              default
+           ...               ...
+          H’0F’              Maximum
+
+Led intensity
+        Contents             Led intensity
+          H’10’              Minimum
+            ...              ...
+          H’29’              Maximum (default)
+
+Alarm clock configuration
+        Contents        Channel locked/unlocked
+      B’xxxxxxx0’       Alarm 1 disabled (default)
+      B’xxxxxxx1’       Alarm 1 enabled
+      B’0xxxxx0x’       Local alarm 1 (default)
+      B’1xxxxx1x’       Global alarm 1
+      B’xxxxx0xx’       Alarm 2 disabled (default)
+      B’xxxxx1xx’       Alarm 2 enabled
+      B’xxxx0xxx’       Local alarm 2 (default)
+      B’xxxx1xxx’       Global alarm 2
+      B’xxx0xxxx’       Sunrise disabled
+      B’xxx1xxxx’       Sunrise enabled (default)
+      B’xx0xxxxx’       Sunset disabled
+      B’xx1xxxxx’       Sunset enabled (default)
+      B’x0xxxxxx’       Day light savings disabled
+      B’x1xxxxxx’       Day light savings enabled (default)
+
+Module settings
+       Contents              Description
+     B’x0xxxxxx’          Keybeep off
+     B’x1xxxxxx’          Keybeep enabled (default)
+
+Module terminator
+        Contents            Description
+     B’xxxxxxx0’          Module terminator not placed
+     B’xxxxxxx1’          Module terminator placed
+
+Temp. sensor zone
+        Contents             Zone
+           0’                No zone
+           1.                Zone 1...
+           ...               ...
+            7                Zone 7
+
+
+
+
+                    VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   40
+Temp. sensor flags
+        Contents           Description
+      B’xxxxxxx0’          Pump unjamming disabled (default)
+      B’xxxxxxx1’          Pump unjamming enabled
+      B’xxxxxx0x’          Heater valve unjamming disabled (default)
+      B’xxxxxx1x’          Heater valve unjamming enabled
+      B’xxxxx0xx’          Not used (default)
+      B’xxxxx1xx’          Not used
+      B’xxxx0xxx’          Not used (default)
+      B’xxxx1xxx’          Not used
+      B’xxx0xxxx’          VMBGP4 local thermostat control starts sleep timer at long press( default)
+      B’xxx1xxxx’          VMBGP4 local thermostat control starts sleep timer at short press
+      B’xx0xxxxx’          Independent temperature alarms (default)
+      B’xx1xxxxx’          Dependent temperature alarms
+      B’x0xxxxxx’          Normal Led indication (default)
+      B’x1xxxxxx’          Thermostat Led indication for VMBGP4
+      B’0xxxxxxx’          Button 4 of VMBGP4 operates normal (default)
+      B’1xxxxxxx’          Button 4 of VMBGP4 as local thermostat control
+
+Temp. sensor calibration offset (resolution 0.5°):
+  Contents               Calibration offset
+  00001111               Calibration offset +7.5°C
+  …                      …
+  00000001               Calibration offset +0.5°C
+  00000000               Calibration offset +0°C (default)
+  11111111               Calibration offset -0.5°C
+  …                      …
+  11110000               Calibration offset -8°C
+
+Temp. sensor calibration gain:
+  Contents               Calibration gain
+  0                      Calibration gain
+  …                      …
+  128                    Calibration gain (default)
+  …                      …
+  255                    Calibration gain
+ Calibrated Temperature = (gain/128) * sensortemperature + offset
+
+Temp. sensor hysteresis (resolution 0.5°):
+  Contents               Hysteresis
+  00011111               15.5°C
+
+   00000001              0.5°C
+   00000000              0°C
+
+Temp. sensor boost difference (resolution 0.5°):
+  Contents               Temperature difference
+  00010100               +10°C
+
+   00000001              +0.5°C
+   00000000              0°C
+   11111111              -0.5°C
+
+   11101100              -10°C
+
+
+
+
+                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                         41
+Temp. sensor pump delayed on, pump delayed off & valve minimum switching time:
+       Contents    Time
+       00000000    0
+       00000001    1 sec
+       00000010    2 sec
+       …           …
+       11111110    254 sec
+       11111111    255 sec
+
+Temp. sensor default sleep time into minutes
+ valid range H’0001’ to H’FEFF’ or 1min to 65.279min
+
+Temp. sensor lower, upper, safe, night, day, comfort or alarm set (resolution 0.5°):
+       Contents      Temperature set
+       01111000      60°C
+
+       00101000       20°C
+
+       00000010       1°C
+       00000001       0.5°C
+       00000000       0°C
+       11111111       -0.5°C
+
+       11000000       -32°C
+
+Temp. sensor Alarm1 & 2 modes
+        Contents         Description
+      B’xxxxx000’        Low temperature alarm 1
+      B’xxxxx001’        High temperature alarm 1 (default)
+      B’xxxxx010’        Anti-frost mode alarm 1
+      B’xxxxx011’        Night mode alarm 1
+      B’xxxxx100’        Day mode alarm 1
+      B’xxxxx101’        Comfort mode alarm 1
+      B’xxxxx110’        Night, Day or Comfort mode alarm 1
+      B’xxxxx111’        Day or Comfort mode alarm 1
+      B’xxxx0xxx’        Temperature alarms 1 absolute (default)
+      B’xxxx1xxx’        Temperature alarms 1 relative
+      B’x000xxxx’        Low temperature alarm 2
+      B’x001xxxx’        High temperature alarm 2 (default)
+      B’x010xxxx’        Anti-frost mode alarm 2
+      B’x011xxxx’        Night mode alarm 2
+      B’x100xxxx’        Day mode alarm 2
+      B’x101xxxx’        Comfort mode alarm 2
+      B’x110xxxx’        Night, Day or Comfort mode alarm 2
+      B’x111xxxx’        Day or Comfort mode alarm 2
+      B’0xxxxxxx’        Temperature alarms 2 absolute (default)
+      B’1xxxxxxx’        Temperature alarms 2 relative
+
+
+Temp. sensor Alarm3 & 4 modes
+        Contents         Description
+      B’xxxxx000’        Low temperature alarm 3
+      B’xxxxx001’        High temperature alarm 3 (default)
+      B’xxxxx010’        Anti-frost mode alarm 3
+      B’xxxxx011’        Night mode alarm 3
+      B’xxxxx100’        Day mode alarm 3
+      B’xxxxx101’        Comfort mode alarm 3
+      B’xxxxx110’        Night, Day or Comfort mode alarm 3
+      B’xxxxx111’        Day or Comfort mode alarm 3
+      B’xxxx0xxx’        Temperature alarms 3 absolute (default)
+      B’xxxx1xxx’        Temperature alarms 3 relative
+      B’x000xxxx’        Low temperature alarm 4
+
+
+
+                  VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                        42
+B’x001xxxx’      High temperature alarm 4 (default)
+B’x010xxxx’      Anti-frost mode alarm 4
+B’x011xxxx’      Night mode alarm 4
+B’x100xxxx’      Day mode alarm 4
+B’x101xxxx’      Comfort mode alarm 4
+B’x110xxxx’      Night, Day or Comfort mode alarm 4
+B’x111xxxx’      Day or Comfort mode alarm 4
+B’0xxxxxxx’      Temperature alarms 4 absolute (default)
+B’1xxxxxxx’      Temperature alarms 4 relative
+
+
+
+
+          VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2    43
+ Address     Contents                                    Address      Contents
+ H’0110’     Linked Push button 1 module address         H’0111’      Linked Push button 1 bit number
+ H’0112’     Linked Push button 1 action                 H’0113’      Linked Push button 1 time parameter
+ H’0114’     Linked Push button 1 channel parameter      H’0115’      Linked Push button 2 module address
+ H’0116’     Linked Push button 2 bit number             H’0117’      Linked Push button 2 action
+ H’0118’     Linked Push button 2 time parameter         H’0119’      Linked Push button 2 channel parameter
+ H’011A’     …                                           H’011B’      …
+ ...         ...                                         ...          ...
+ H’01FA’     …                                           H’01FB’      Linked Push button 48 module address
+ H’01FC’     Linked Push button 48 bit number            H’01FD’      Linked Push button 48 action
+ H’01FE’     Linked Push button 48 time parameter        H’01FF’      Linked Push button 48 channel parameter
+
+Remark: Unused locations contain H’FF’
+
+           Action
+             Action       Action                                           Time parameter           Channel parameter
+             number
+             0            Switch status led indication                     -                        Channel number (1...8)
+             1            Lock channel at closed switch                    -                        Channel number (1...8)
+             2            Lock channel at opened switch                    -                        Channel number (1...8)
+             3            Lock channel                                     Timeout                  Channel number (1...8)
+             4            Lock/unlock channel                              Timeout                  Channel number (1...8)
+             5            Unlock channel                                   -                        Channel number (1...8)
+             6            Disable channel program at closed switch         -                        Channel number (1...8)
+             7            Disable channel program at opened switch         -                        Channel number (1...8)
+             8            Disable channel program channel                  Timeout                  Channel number (1...8)
+             9            Disable/enable channel program                   Timeout                  Channel number (1...8)
+             10           Enable channel program                           -                        Channel number (1...8)
+             11           Select no programs                               -                        -
+             12           Select program group 1 (eg. summer programs)     -                        -
+             13           Select program group 2 (eg. winter programs)     -                        -
+             14           Select program group 3 (eg. holiday programs)    -                        -
+             15           Enable Alarm 1 at closed switch                  -                        -
+             16           Enable Alarm 1 at open switch                    -                        -
+             17           Disable Alarm 1 at closed switch                 -                        -
+             18           Disable Alarm 1 at open switch                   -                        -
+             19           Enable Alarm 1                                   -                        -
+             20           Enable/Disable Alarm 1                           -                        -
+             21           Disable Alarm 1                                  -                        -
+             22           Enable Alarm 2 at closed switch                  -                        -
+             23           Enable Alarm 2 at open switch                    -                        -
+             24           Disable Alarm 2 at closed switch                 -                        -
+             25           Disable Alarm 2 at open switch                   -                        -
+             26           Enable Alarm 2                                   -                        -
+             27           Enable/Disable Alarm 2                           -                        -
+             28           Disable Alarm 2                                  -                        -
+             29           Enable Sunrise at closed switch                  -                        -
+             30           Enable Sunrise at open switch                    -                        -
+             31           Disable Sunrise at closed switch                 -                        -
+             32           Disable Sunrise at open switch                   -                        -
+             33           Enable Sunrise                                   -                        -
+             34           Enable/Disable Sunrise                           -                        -
+             35           Disable Sunrise                                  -                        -
+             36           Enable Sunset at closed switch                   -                        -
+             37           Enable Sunset at open switch                     -                        -
+             38           Disable Sunset at closed switch                  -                        -
+             39           Disable Sunset at open switch                    -                        -
+             40           Enable Sunset                                    -                        -
+             41           Enable/Disable Sunset                            -                        -
+             42           Disable Sunset                                   -                        -
+             43           Sensor: Comfort mode                             Short press sleep time   Long press sleep time
+             44           Sensor: Day mode                                 Short press sleep time   Short press sleep time
+             45           Sensor: Night mode                               Short press sleep time   Short press sleep time
+             46           Sensor: Safe mode                                Short press sleep time   Short press sleep time
+             47           Sensor: Heating mode                             -                        -
+             48           Sensor: Cooling mode                             -                        -
+             49           Sensor: Forced Safe mode at open switch          -                        0xFF
+
+
+
+
+                              VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                              44
+  50         Sensor: Forced Safe mode at closed switch        -                       0xFF
+  51         Sensor: Forced Safe mode                         Timeout                 -
+  52         Sensor: Forced or Cancel Forced Safe mode        Timeout                 -
+  53         Sensor: Cancel Forced Safe mode                  -                       -
+  54         Toggle program group 1 (eg. summer programs)     -                       -
+  55         Toggle program group 2 (eg. winter programs)     -                       -
+  56         Toggle program group 3 (eg. holiday programs)    -                       -
+
+Time parameter
+      Time       Timeout            Sleep time       action
+   parameter                        parameter
+         0       0s (no timer)      0                No action
+         1       1s                 1                Select until next program step execution
+         2       2s                 2                Select for default sleep time (see sensor config.)
+         3       3s                 3                Select for 15 min (auto return to program)
+        ...                         4                Select for 30 min (auto return to program)
+       119       1min59s            ...              ...
+       120       2min               17               Select for 3h45 min (auto return to program)
+       121       2min15s            18               Select for 4h min (auto return to program)
+        ...                         19               Select for 4h30 min (auto return to program)
+       131       4min45s            ...              ...
+       132       5min               33               Select for 11h30 min (auto return to program)
+       133       5min30s            34               Select for 12h (auto return to program)
+        ...                         35               Select for 13h (auto return to program)
+       181       29min30s           ...              ...
+       182       30min              45               Select for 23h (auto return to program)
+       183       31min              46               Select for 1 day (auto return to program)
+        ...                         47               Select for 1 day 12h (auto return to program)
+       211       59min              ...              ...
+       212       1h                 57               Select for 6 days 12h (auto return to program)
+       213       1h15min            58               Select for 7 days (auto return to program)
+        ...                         59               Select for 8 days (auto return to program)
+       227       4h45min            ...              ...
+       228       5h                 96               Select for 45 days (auto return to program)
+       229       5h30min            97               Select and ignore all program steps
+        ...      ...
+       237       9h30min
+       238       10h
+       239       11h
+        ...
+       251       23h
+       252       1d
+       253       2d
+       254       3d
+       255       Infinite
+
+
+
+
+                 VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                            45
+Address    Contents                                     Address      Contents
+H’0200’    Program step 1 byte1                         H’0201’      Program step 1 byte2
+H’0202’    Program step 1 byte3                         H’0203’      Program step 1 byte4
+H’0204’    Program step 1 byte5                         H’0205’      Program step 1 byte6
+…          ..                                           ..           ..
+H’03B6’    Program step 74 byte1                        H’03B7’      Program step 74 byte2
+H’03B8’    Program step 74 byte3                        H’03B9’      Program step 74 byte4
+H’03BA’    Program step 74 byte5                        H’03BB’      Program step 74 byte6
+
+            Contents program byte1             Description
+                 B’000xxxxx’                   Disable program step
+                 B’001xxxxx’                   Absolute time
+                 B’010xxxxx’                   Wake up time 1 + relative time
+                 B’011xxxxx’                   Go to bed time 1 + relative time
+                 B’100xxxxx’                   Wake up time 2 + relative time
+                 B’101xxxxx’                   Go to bed time 2 + relative time
+                 B’110xxxxx’                   Sunrise + relative time
+                 B’111xxxxx’                   Sunset + relative time
+                 B’xxx01111’                   Rel. time = 3h45min
+                      …
+                 B’xxx00001’                   Rel. time = 15min
+                 B’xxx00000’                   Rel. time = 0
+                 B’xxx11111’                   Rel. time = -15min
+                      …
+                 B’xxx10000’                   Rel. time = -4h
+  Remark: Wake up, Go to bed, sunrise & sunset time are only allowed for weekly programs
+
+            Contents program byte2             Description
+                 B’xxxx0000’                   Weekly program
+                 B’xxxx0001’                   January
+                 B’xxxx0010’                   February
+                 B’xxxx0011’                   March
+                 B’xxxx0100’                   April
+                 B’xxxx0101’                   May
+                 B’xxxx0110’                   June
+                 B’xxxx0111’                   July
+                 B’xxxx1000’                   August
+                 B’xxxx1001’                   September
+                 B’xxxx1010’                   October
+                 B’xxxx1011’                   November
+                 B’xxxx1100’                   December
+                 B’xxxx1101’                   Monthly program
+                 B’xxxx1110’                   Monthly program
+                 B’xxxx1111’                   Monthly program
+
+            Contents program byte3             Description
+                 B’xxx00000’                   0h
+                 B’xxx00001’                   1h
+                      …                        …
+                 B’xxx10111’                   23h
+                 B’xx1xxxxx’                   Program group 1 (Summer program)
+                 B’x1xxxxxx’                   Program group 2 (Winter program)
+                 B’1xxxxxxx’                   Program group 3 (Holiday program)
+
+            Contents program byte4             Description
+                 B’xx000000’                   0min
+                 B’xx000001’                   1min
+                      …                        …
+                 B’xx111011’                   59min
+
+
+
+
+                             VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                   46
+Contents program byte4           Contents program byte2       Description
+     B’00xxxxxx’                      B’0000xxxx’             Never
+     B’00xxxxxx’                      B’0001xxxx’             Day 1of the month
+     B’00xxxxxx’                      B’0010xxxx’             Day 2of the month
+          …                                …                  …
+     B’01xxxxxx’                      B’1111xxxx’             Day 31of the month
+     B’10xxxxxx’                      B’0000xxxx’             Never
+     B’10xxxxxx’                      B’0001xxxx’             Every Monday
+     B’10xxxxxx’                      B’0010xxxx’             Every Tuesday
+          …                                …                  …
+     B’10xxxxxx’                      B’0111xxxx’             Every Sunday
+     B’10xxxxxx’                      B’1000xxxx’             Every weekend (sa & su)
+     B’10xxxxxx’                      B’1001xxxx’             Every working day (mo…fr)
+     B’10xxxxxx’                      B’1010xxxx’             Every day except Sunday
+     B’10xxxxxx’                      B’1011xxxx’             Every day
+     B’10xxxxxx’                      B’1100xxxx’             Never
+          …                                …                  …
+     B’11xxxxxx’                      B’1111xxxx’             Never
+
+Contents program byte5      Action
+            0               0s25 Pulse
+            1               1s Pulse
+            2               2s Pulse
+           ...              ...
+          119               1min59s Pulse
+          120               2min Pulse
+          121               2min15s Pulse
+           ...              ...
+          131               4min45s Pulse
+          132               5min Pulse
+          133               5min30s Pulse
+           ...              ...
+          181               29min30s Pulse
+          182               30min Pulse
+          183               31min Pulse
+           ...              ...
+          211               59min Pulse
+          212               1h Pulse
+          213               1h15min Pulse
+           ...              ...
+          227               4h45min Pulse
+          228               5h Pulse
+          229               5h30min Pulse
+           ...              ...
+          237               9h30min Pulse
+          238               10h Pulse
+          239               11h Pulse
+           ...              …
+          246               18h Pulse
+          247               Press
+          248               Long Press
+          249               Release
+          250               Lock
+          251               Unlock
+          252               Sensor: Safe mode
+          253               Sensor: Night mode
+          254               Sensor: Day mode
+          255               Sensor: Comfort mode
+
+
+
+
+              VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                               47
+Contents program byte6      Channel
+           1                Channel 1
+           2                Channel 2
+           ..               …
+           7                Channel 7
+           8                Channel 8
+          128               Temperature sensor
+
+
+
+
+              VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2   48
+   Address   Contents                                 Address    Contents
+   H’03BC’   Location id low byte                     H’03BD’    Location id high byte
+   H’03BE’   Group id low byte                        H’03BF’    Group id high byte
+   H’03C0’   Module name character 1                  H’03C1’    Module name character 2
+   …         ..                                       ..         ..
+   H’03FE’   Module name character 63                 H’03FF’    Module name character 64
+
+EEprom memory map:
+   Address   Contents                                       Address   Contents
+   H0400’    Bank 1: Day of week                            H’0401’   Bank 1: Day of month
+   H’0402’   Bank 1: Month                                  H’0403’   Bank 1: Year low byte
+   H’0404’   Bank 1: Year high byte                         H’0405’   Bank 1: Program group number
+   H’0406’   Bank 1: Locked flags ch1…8                     H’0407’   Bank 1: Program disabled flags ch1…8
+   H’0408’   Bank 1: Sensor current mode low byte           H’0409’   Bank 1: Sensor current mode high byte
+   H’040A’   Bank 1: Sensor current program mode            H’040B’   Bank 1: Sensor target temperature low byte
+   H’040C’   Bank 1: Sensor target temperature high byte    H’040D’   Bank 1: Auto send sensor temperature
+   H’040E’   Bank 1: reserved                               H’040F’   Bank 1: current bank number
+             …                                                        …
+   H07F0’    Bank 64: Day of week                           H’07F1’   Bank 64: Day of month
+   H’07F2’   Bank 64: Month                                 H’07F3’   Bank 64: Year low byte
+   H’07F4’   Bank 64: Year high byte                        H’07F5’   Bank 64: Program group number
+   H’07F6’   Bank 64: Locked flags ch1…8                    H’07F7’   Bank 64: Program disabled flags ch1…8
+   H’07F8’   Bank 64: Sensor current mode low byte          H’07F9’   Bank 64: Sensor current mode high byte
+   H’07FA’   Bank 64: Sensor current program mode           H’07FB’   Bank 64: Sensor target temperature low byte
+   H’07FC’   Bank 64: Sensor target temperature high byte   H’07FD’   Bank 64: Auto send sensor temperature
+   H’07FE’   Bank 64: reserved                              H’07FF’   Bank 64: current bank number
+
+
+
+
+                             VMBGP1 / VMBGP2 / VMBGP4 PROTOCOL – edition 2                                      49
 
