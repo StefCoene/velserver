@@ -433,9 +433,9 @@ foreach my $ModuleTypeHex (sort keys %{$file{PerCommandHexLocal}}) {
 #print Dumper \%{$file{PerCommandHexBroadcast}} ;
 
 foreach my $CommandHex (sort keys %{$file{PerCommandHexBroadcast}}) {
-   my @Name = keys %{$file{PerCommandHexBroadcast}{$CommandHex}{CommandText}} ;
-   my @Info = keys %{$file{PerCommandHexBroadcast}{$CommandHex}{Info}} ;
-   my @Prio = keys %{$file{PerCommandHexBroadcast}{$CommandHex}{Prio}} ;
+   my @Name = sort keys %{$file{PerCommandHexBroadcast}{$CommandHex}{CommandText}} ;
+   my @Info = sort keys %{$file{PerCommandHexBroadcast}{$CommandHex}{Info}} ;
+   my @Prio = sort keys %{$file{PerCommandHexBroadcast}{$CommandHex}{Prio}} ;
 
    my $Name = join ";", @Name ;
    my $Info = join ";", @Info ;
