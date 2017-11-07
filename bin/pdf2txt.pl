@@ -146,11 +146,14 @@ foreach my $file (sort `ls protocol*.txt`) {
       }
 
       # Start of message, this is messy to detect :(
-      # May NOT start with a space!
-      if ( $line !~ /^ / and
-         ( $line =~ /^‘?\w.+ command received/ or
-            $line =~ /^‘?\w.+ received:?/  or
-            $line =~ /^Transmit/ ) ) {
+      # May NOT start with a space! But there is 1 case where the line starts with "   Transmit"
+      if ( $line =~ /^   Transmit/ or (
+            ( $line !~ /^ / and
+               ( $line =~ /^‘?\w.+ command received/ or
+               $line =~ /^‘?\w.+ received:?/  or
+               $line =~ /^Transmit/ ) ) 
+            ) 
+         ) {
          $counter ++ ; # Incrementing the message counter
          if ( defined $file{PerFile}{$file}{Messages}{$counter} ) {
             print "Error: $file, message counter $counter: already seen!\n" ;
