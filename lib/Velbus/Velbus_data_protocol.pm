@@ -15,7 +15,6 @@
 # 1-channel relay module: VMB1RY
 $global{Cons}{ModuleTypes}{'02'}{Channels}{"01"}{Name} = "Relay 1" ;
    $global{Cons}{ModuleTypes}{'02'}{Channels}{"01"}{Type} = "Relay" ;
-   $global{Cons}{ModuleTypes}{'02'}{Channels}{"02"}{Name} = "Relay 2" ;
 
 # 4-channel relay module: VMB4RY
 $global{Cons}{ModuleTypes}{'08'}{Channels}{"01"}{Name} = "Relay 1" ;
@@ -54,11 +53,11 @@ $global{Cons}{ModuleTypes}{'11'}{Channels}{"01"}{Name} = "Relay 1" ;
 ################### Dimmers: Channel names
 # 1-channel 0(1)-10V control: VMB1DM
 $global{Cons}{ModuleTypes}{'07'}{Channels}{"01"}{Name} = "Dimmer 1" ;
-   $global{Cons}{ModuleTypes}{'07'}{Channels}{"01"}{Type} = "Dimmer 1" ;
+   $global{Cons}{ModuleTypes}{'07'}{Channels}{"01"}{Type} = "Dimmer" ;
 
 # 1-channel LED: VMB1LED
 $global{Cons}{ModuleTypes}{'0F'}{Channels}{"01"}{Name} = "Dimmer 1" ;
-   $global{Cons}{ModuleTypes}{'0F'}{Channels}{"01"}{Type} = "Dimmer 1" ;
+   $global{Cons}{ModuleTypes}{'0F'}{Channels}{"01"}{Type} = "Dimmer" ;
 
 # 4-channel 0(1)-10V control: VMB4DC
 $global{Cons}{ModuleTypes}{'12'}{Channels}{"01"}{Name} = "Dimmer 1" ;
