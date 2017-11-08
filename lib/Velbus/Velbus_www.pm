@@ -239,10 +239,10 @@ sub www_service {
             $global{cgi}{params}{channel} = "0x03" ;
          }
          if ( $Moduletype eq "09" ) {
-	    if ( $global{cgi}{params}{channel} eq "01" ) {
+            if ( $global{cgi}{params}{channel} eq "01" ) {
                $global{cgi}{params}{channel} = "0x03" ;
             }
-	    if ( $global{cgi}{params}{channel} eq "02" ) {
+            if ( $global{cgi}{params}{channel} eq "02" ) {
                $global{cgi}{params}{channel} = "0x0C" ;
             }
          }
