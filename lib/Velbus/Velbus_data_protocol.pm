@@ -97,7 +97,6 @@ $global{Cons}{ModuleTypes}{'1D'}{Channels}{"01"}{Name} = "Blind 1" ;
 
 ################### Touch panels: Channel names
 # VMBGP1
-#$global{Cons}{ModuleTypes}{'1E'}{ChannelNaming} = "dec" ;
 $global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"02"}{Name} = "Virtual button" ;
@@ -118,8 +117,7 @@ $global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"09"}{Type} = "Temperature" ;
 
 # VMBGP2
-$global{Cons}{ModuleTypes}{'1F'}{ChannelNaming} = "dec" ;
-   $global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push button 1" ;
+$global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"02"}{Name} = "Push button 2" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"02"}{Type} = "Button" ;
@@ -138,8 +136,7 @@ $global{Cons}{ModuleTypes}{'1F'}{ChannelNaming} = "dec" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"09"}{Type} = "Temperature" ;
 
 # VMBGP4
-$global{Cons}{ModuleTypes}{'20'}{ChannelNaming} = "dec" ;
-   $global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push button 1" ;
+$global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"02"}{Name} = "Push button 2" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"02"}{Type} = "Button" ;
@@ -159,8 +156,7 @@ $global{Cons}{ModuleTypes}{'20'}{ChannelNaming} = "dec" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"09"}{Type} = "Temperature" ;
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
-$global{Cons}{ModuleTypes}{'2D'}{ChannelNaming} = "dec" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Channels}{"01"}{Name} = "Push button 1" ;
+$global{Cons}{ModuleTypes}{'2D'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"02"}{Name} = "Push button 2" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"02"}{Type} = "Button" ;
@@ -180,8 +176,7 @@ $global{Cons}{ModuleTypes}{'2D'}{ChannelNaming} = "dec" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"09"}{Type} = "Temperature" ;
 
 # Touch panel with Oled display: VMBGPOD
-$global{Cons}{ModuleTypes}{'28'}{ChannelNaming} = "dec" ;
-   $global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push button 1" ;
+$global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"02"}{Name} = "Push button 2" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"02"}{Type} = "Button" ;
@@ -332,7 +327,6 @@ $global{Cons}{ModuleTypes}{'0B'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'0B'}{Channels}{"07"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'0B'}{Channels}{"08"}{Name} = "Push button 8" ;
    $global{Cons}{ModuleTypes}{'0B'}{Channels}{"08"}{Type} = "Button" ;
-
 
 ################### PIR Sensors: Channel names
 # Mini PIR sensor: VMBPIRM
