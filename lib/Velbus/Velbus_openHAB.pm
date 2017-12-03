@@ -175,6 +175,10 @@ sub openHAB () {
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
+                  if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} and
+                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} ne 'NotUsed' ) {
+                        $openHAB .= "[\"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}\"] " ;
+                  }
                   $openHAB .= "{http=\"" ;
                   $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Set&value=%2\$s]" ;
@@ -209,6 +213,10 @@ sub openHAB () {
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
+                  }
+                  if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} and
+                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} ne 'NotUsed' ) {
+                        $openHAB .= "[\"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}\"] " ;
                   }
                   $openHAB .= "{http=\"" ;
                   $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;

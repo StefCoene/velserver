@@ -3,6 +3,7 @@ sub www_index {
    my $content ;
    $content .= "<p>\n" ;
    $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_modules>Modules on bus</a> || " ;
+   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_channeltags>Channel tags</a> || " ;
    $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_velbus_protocol>Velbus protocol</a> || " ;
    $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_velbus_messages>Velbus messages</a> || " ;
    $content .= "<a href=?key=$global{cgi}{params}{key}&appl=openHAB>openHAB config</a> || " ;
@@ -17,6 +18,9 @@ sub www_index {
          }
       }
       $content .= &www_print_modules ;
+   }
+   if ( $global{cgi}{params}{appl} eq "print_channeltags" ) {
+      $content .= &www_print_channeltags ;
    }
    if ( $global{cgi}{params}{appl} eq "print_velbus_protocol" ) {
       $content .= &www_print_velbus_protocol ;
@@ -493,8 +497,156 @@ sub www_print_modules () {
    return $html ;
 }
 
-sub www_print_velbus_messages () {
+sub www_print_channeltags () {
+   my $html ;
+   $html .= "<h1>All modules and channels on the bus</h1>\n" ;
 
+   my %data ;
+
+   # Processing the selected tags
+   foreach my $param (sort keys %{$global{cgi}{params}} ) {
+      if ( $param =~ /Tag::(\d+)::(\d+)/ ) {
+         my $Address  = $1 ;
+         my $Channel = $2 ;
+         &update_modules_channel_info ($Address, $Channel, "Tag", $global{cgi}{params}{$param}) ;
+      }
+   }
+
+   $html .= $global{cgi}{CGI}->start_form() ;
+   $html .= $global{cgi}{CGI}->submit() ;
+   $html .= $global{cgi}{CGI}->hidden(-name=>'appl',$global{cgi}{params}{appl}) ;
+
+   # Loop all module types
+   foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
+
+      # Loop all modules
+      foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$type}{ModuleList}}) ) {
+         foreach my $Key (keys (%{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}}) ) {
+            if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$Key} ne "" ) {
+               $global{Vars}{Modules}{PerType}{$type}{ModuleInfoKey}{$Key} = "" ; # To get a list of info per module
+            }
+         }
+
+         # If the module has sub addresses, take them in consideration
+         if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo} ) {
+            foreach my $Channel ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{Address}{$address}{ChannelInfo}}) ) {
+               foreach my $Key ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}}) ) {
+                  if ( $Channel eq "00" ) { # Channel 00 contains info about the module itself
+                     if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{value} ne "" ) {
+                        $global{Vars}{Modules}{PerType}{$type}{ModuleInfoKey}{$Key} = "" ; # To get a list of info per module
+                        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$Key} = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{value} ;
+                     }
+                  } else {
+                     $global{Vars}{Modules}{PerType}{$type}{ChannelInfoKey}{$Key} = "" ; # To get a list of info per channel
+                     $global{Vars}{Modules}{PerType}{$type}{ChannelList}{$Channel} = "" ; # To get a list of the channels
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   foreach my $status (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}})) {
+      next if $status eq "Start scan" ;
+
+      $html .= "<h2>Status: $status</h2>\n" ;
+
+      $html .= "<table border=1>\n" ;
+      $html .= "<thead>\n" ;
+      $html .= "  <tr>\n" ;
+      $html .= "    <th>Address</th>\n" ;
+      $html .= "    <th>Type</th>\n" ;
+      $html .= "    <th>Info</th>\n" ;
+      $html .= "    <th>Name</th>\n" ;
+      $html .= "    <th>Date</th>\n" ;
+      $html .= "  </tr>\n" ;
+      $html .= "</thead>\n" ;
+
+      $html .= "<tbody>\n" ;
+      my $html2 ;
+      foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}{$status}{ModuleList}}) ) {
+         my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'type'} ; # Handier var
+         my $MemoryKey = &module_find_MemoryKey ($address, $type) ; # Handier var
+         $html .= "  <tr>\n" ;
+         if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
+            $html .= "    <th>$address ($global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr})</th>\n" ;
+         } else {
+            $html .= "    <th>$address</th>\n" ;
+         }
+         $html .= "    <td>$global{Cons}{ModuleTypes}{$type}{Type} ($type)</td>\n" ;
+         $html .= "    <td>$global{Cons}{ModuleTypes}{$type}{Info}</td>\n" ;
+         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}</td>\n" ;
+         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'date'}</td>\n" ;
+         $html .= "  </tr>\n" ;
+      }
+      $html .= "</tbody>\n" ;
+      $html .= "</table>\n" ;
+   }
+
+   foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
+      $html .= "<h2>$global{Cons}{ModuleTypes}{$type}{Type} ($type) $global{Cons}{ModuleTypes}{$type}{Info}</h2>\n" ;
+      $html .= "<h3>Module info</h3>\n" ;
+
+      if ( %{$global{Vars}{Modules}{PerType}{$type}{ChannelInfoKey}} ) {
+         $html .= "<h3>Channel info</h3>\n" ;
+         $html .= "<table border=1>\n" ;
+         $html .= "<thead>\n" ;
+         $html .= "  <tr>\n" ;
+         $html .= "    <th>Address</th>\n" ;
+         $html .= "    <th>Module Name</th>\n" ;
+         $html .= "    <th>Channel</th>\n" ;
+         $html .= "    <th>Channel Name</th>\n" ;
+         $html .= "    <th>Tag</th>\n" ;
+         $html .= "  </tr>\n" ;
+         $html .= "</thead>\n" ;
+
+         $html .= "<tbody>\n" ;
+
+         foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$type}{ModuleList}}) ) {
+            $html .= "  <tr>\n" ;
+            $html .= "    <th rowspan=ROWSPAN>$address</th>\n" ;
+            $html .= "    <th rowspan=ROWSPAN>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}</th>\n" ;
+            $ROWSPAN = 0 ;
+            foreach my $Channel (sort keys %{$global{Vars}{Modules}{PerType}{$type}{ChannelList}} ) {
+               $html .= "  <tr>\n" if $ROWSPAN ne "0" ;
+               $html .= "    <td>$Channel</td>\n" ;
+               $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value}<br />$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{date}</td>\n" ;
+
+               $html .= "    <td>" ;
+               if ( $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Relay" or
+                    $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Dimmer" ) {
+                  if ( ! defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} or 
+                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} eq "" ) {
+                     $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} = 'NotUsed' ;
+                  }
+                  $html .= $global{cgi}{CGI}->scrolling_list(
+                        -name=>"Tag::$address::$Channel",
+                        -size=>1,
+                        -values=>['Lighting', 'Switchable', 'NotUsed'],
+                        -default=>[$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}]
+                     ) ;
+               } else {
+                  $html .= "&nbsp;" ;
+               }
+               $html .= "</td>\n" ;
+
+               $html .= "  </tr>\n" if $ROWSPAN ne "0" ;
+               $ROWSPAN ++ ;
+            }
+            $html .= "  </tr>\n" ;
+            $html =~ s/ROWSPAN/$ROWSPAN/g ;
+         }
+
+         $html .= "</tbody>\n" ;
+         $html .= "</table>\n" ;
+      }
+   }
+
+   $html .= $global{cgi}{CGI}->end_form() ;
+   return $html ;
+}
+
+sub www_print_velbus_messages () {
    my %data ;
 
    foreach my $Message (sort (keys %{$global{Cons}{MessagesBroadCast}}) ) {
@@ -627,6 +779,7 @@ sub www_print_velbus_protocol_print_modules () {
    $html .= "    <th>Module</th>\n" ;
    $html .= "    <th>Type</th>\n" ;
    $html .= "    <th>Info</th>\n" ;
+   $html .= "    <th>Version</th>\n" ;
    $html .= "  </tr>\n" ;
    $html .= "</thead>\n" ;
 
@@ -635,6 +788,7 @@ sub www_print_velbus_protocol_print_modules () {
       $html .= "    <th>$ModuleType</th>\n" ;
       $html .= "    <td><a href=$global{cgi}{url}&ModuleType=$ModuleType>$global{Cons}{ModuleTypes}{$ModuleType}{Type}</a></td>\n" ;
       $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Info}</td>\n" ;
+      $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Version}</td>\n" ;
       $html .= "  </tr>\n" ;
    }
 
