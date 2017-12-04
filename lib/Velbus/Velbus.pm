@@ -902,6 +902,24 @@ sub blind_pos {
    &send_message ($sock, $address, "1C", $channel, $position) ; # COMMAND_BLIND_POS
 }
 
+# Set the temperature target: heating or cooling
+# 1: socket
+# 2: address
+# 3: 0=heating, 1=cooling
+sub set_temperature_cohe_mode {
+   my $sock        = $_[0] ;
+   my $address     = $_[1] ;
+   my $temperature = $_[2] ;
+   if ( $temperature eq 1 ) {
+      &send_message ($sock, $address, "DF") ; # COMMAND_SET_COOLING_MODE
+   } else {
+      &send_message ($sock, $address, "E0") ; # COMMAND_SET_HEATING_MODE
+   }
+   # &send_message ($sock, $address, "E5", "10") ;
+   # &send_message ($sock, $address, "E7", "10") ;
+   # &send_message ($sock, $address, "EA") ;
+}
+
 # Set the target temperature for a glass planel
 # 1: socket
 # 2: address

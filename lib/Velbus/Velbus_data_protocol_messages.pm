@@ -315,18 +315,29 @@ $global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel jus
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%....0...'}{Info} = "Auto send sensor temperature disabled" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Info} = "Comfort mode" ;
-   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Info} = "Day mode" ;
-   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Info} = "Night mode" ;
-   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Info} = "Safe temp mode (anti frost)" ;
-   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:TemperatureMode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Info} = "Cooler mode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{openHAB} = "1:TemperatureCoHeMode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Info} = "Heater mode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{openHAB} = "0:TemperatureCoHeMode" ;
+
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{Info} = "Cooler mode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{openHAB} = "1:TemperatureCoHeMode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{Info} = "Heater mode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{openHAB} = "0:TemperatureCoHeMode" ;
 
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Name} = "Program step mode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.....0..'}{Info} = "No sensor program group 1" ;
@@ -366,7 +377,7 @@ $global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel jus
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'3'}{Match}{'%.'}{Convert} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'4'}{Name} = "Current temperature set" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
-   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "HeaterTemperature" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "TemperatureTarget" ;
 
 # One, two or four touch buttonsmodule: VMBGP2
 $global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
@@ -395,18 +406,29 @@ $global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel jus
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%....0...'}{Info} = "Auto send sensor temperature disabled" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Info} = "Comfort mode" ;
-   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Info} = "Day mode" ;
-   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Info} = "Night mode" ;
-   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Info} = "Safe temp mode (anti frost)" ;
-   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:TemperatureMode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Info} = "Cooler mode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{openHAB} = "1:TemperatureCoHeMode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Info} = "Heater mode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{openHAB} = "0:TemperatureCoHeMode" ;
+
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{Info} = "Cooler mode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{openHAB} = "1:TemperatureCoHeMode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{Info} = "Heater mode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{openHAB} = "0:TemperatureCoHeMode" ;
 
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Name} = "Program step mode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.....0..'}{Info} = "No sensor program group 1" ;
@@ -446,7 +468,7 @@ $global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel jus
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'3'}{Match}{'%.'}{Convert} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'4'}{Name} = "Current temperature set" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
-   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "HeaterTemperature" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "TemperatureTarget" ;
 
 # One, two or four touch buttonsmodule: VMBGP4
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
@@ -475,18 +497,29 @@ $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel jus
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%....0...'}{Info} = "Auto send sensor temperature disabled" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Info} = "Comfort mode" ;
-   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Info} = "Day mode" ;
-   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Info} = "Night mode" ;
-   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Info} = "Safe temp mode (anti frost)" ;
-   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:TemperatureMode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Info} = "Cooler mode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{openHAB} = "1:TemperatureCoHeMode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Info} = "Heater mode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{openHAB} = "0:TemperatureCoHeMode" ;
+
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'DF'}{Data}{'0'}{Name} = "Temperature CoHe mode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{Info} = "Cooler mode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{openHAB} = "1:TemperatureCoHeMode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'E0'}{Data}{'0'}{Name} = "Temperature CoHe mode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{Info} = "Heater mode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{openHAB} = "0:TemperatureCoHeMode" ;
 
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'1'}{Name} = "Program step mode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.....0..'}{Info} = "No sensor program group 1" ;
@@ -526,7 +559,7 @@ $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel jus
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'3'}{Match}{'%.'}{Convert} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Name} = "Current temperature set" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
-   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "HeaterTemperature" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "TemperatureTarget" ;
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
 $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
@@ -555,18 +588,29 @@ $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel jus
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%....0...'}{Info} = "Auto send sensor temperature disabled" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Info} = "Comfort mode" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Info} = "Day mode" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Info} = "Night mode" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Info} = "Safe temp mode (anti frost)" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:TemperatureMode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Info} = "Cooler mode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{openHAB} = "1:TemperatureCoHeMode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Info} = "Heater mode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{openHAB} = "0:TemperatureCoHeMode" ;
+
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{Info} = "Cooler mode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{openHAB} = "1:TemperatureCoHeMode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{Info} = "Heater mode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{openHAB} = "0:TemperatureCoHeMode" ;
 
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'1'}{Name} = "Program step mode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.....0..'}{Info} = "No sensor program group 1" ;
@@ -606,7 +650,7 @@ $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel jus
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'3'}{Match}{'%.'}{Convert} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'4'}{Name} = "Current temperature set" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "HeaterTemperature" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "TemperatureTarget" ;
 
 # Touch panel with Oled display: VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel just pressed" ;
@@ -635,18 +679,30 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel jus
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%....0...'}{Info} = "Auto send sensor temperature disabled" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{Info} = "Comfort mode" ;
-   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.100....'}{openHAB} = "1:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{Info} = "Day mode" ;
-   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.010....'}{openHAB} = "2:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{Info} = "Night mode" ;
-   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.001....'}{openHAB} = "3:TemperatureMode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Name} = "Temperature mode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{Info} = "Safe temp mode (anti frost)" ;
-   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:HeaterMode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.000....'}{openHAB} = "4:TemperatureMode" ;
+
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{Info} = "Cooler mode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%1.......'}{openHAB} = "1:TemperatureCoHeMode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{Info} = "Heater mode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%0.......'}{openHAB} = "0:TemperatureCoHeMode" ;
+
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{Info} = "Cooler mode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'DF'}{Data}{'0'}{Match}{'%........'}{openHAB} = "1:TemperatureCoHeMode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{Info} = "Heater mode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'E0'}{Data}{'0'}{Match}{'%........'}{openHAB} = "0:TemperatureCoHeMode" ;
 
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'1'}{Name} = "Program step mode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'1'}{Match}{'%.....0..'}{Info} = "No sensor program group 1" ;
@@ -686,7 +742,7 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{Data}{'0'}{Name} = "Channel jus
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'3'}{Match}{'%.'}{Convert} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'4'}{Name} = "Current temperature set" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
-   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "HeaterTemperature" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'4'}{Match}{'%.'}{openHAB} = "TemperatureTarget" ;
 
 ################### Input: messages
 # 8-channel Push button interface module: VMB8PB

@@ -67,7 +67,7 @@ sub www_service {
       $json = "" ;
    }
 
-   # Get the temperature: touch panels
+   # Get the current temperature: touch panels
    if ( $global{cgi}{params}{type} eq "Temperature" and $global{cgi}{params}{action} eq "Get" ) {
       if ( defined $Moduletype and (
                $Moduletype eq "1E" or # VMBGP1
@@ -79,11 +79,13 @@ sub www_service {
          my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
          $json{Name}        = $data{TempSensor}{value}  if defined $data{TempSensor} ;
          $json{Temperature} = $data{Temperature}{value} if defined $data{Temperature} ;
+
+         $json{Error} = "NO_INFO" if ! defined $json{Temperature} ;
       }
    }
 
-   # Get/Set the Heater temperature: touch panels
-   if ( $global{cgi}{params}{type} eq "HeaterTemperature" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+   # Get/Set the Cooler/Heater target temperature: touch panels
+   if ( $global{cgi}{params}{type} eq "TemperatureTarget" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
       if ( defined $Moduletype and (
                $Moduletype eq "1E" or # VMBGP1
                $Moduletype eq "1F" or # VMBGP2
@@ -95,18 +97,22 @@ sub www_service {
          $json{Name} = $data{TempSensor}{value}  if defined $data{TempSensor} ;
 
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
-         if ( defined $data{'Current temperature set'} ) {
-            $json{Temperature} = $data{'Current temperature set'}{value} ;
-            if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne $data{'Current temperature set'}{value} ) {
-               &set_temperature ($sock, $address, $global{cgi}{params}{value}) ;
-               $json{Action} = "$global{cgi}{params}{value}"  ;
+
+         if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} =~ /^\d+\.\d+$/ ) {
+            &set_temperature ($sock, $address, $global{cgi}{params}{value}) ;
+            $json{Action} = $global{cgi}{params}{value}  ;
+         } else {
+            if ( defined $data{'Current temperature set'} ) {
+               $json{Temperature} = $data{'Current temperature set'}{value} ;
             }
          }
+
+         $json{Error} = "NO_INFO" if ! defined $json{Temperature} ;
       }
    }
 
-   # Get/Set the Heater mode: touch panels
-   if ( $global{cgi}{params}{type} eq "HeaterMode" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+   # Get/Set heating or cooling: touch panels
+   if ( $global{cgi}{params}{type} eq "TemperatureCoHeMode" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
       if ( defined $Moduletype and (
                $Moduletype eq "1E" or # VMBGP1
                $Moduletype eq "1F" or # VMBGP2
@@ -128,54 +134,84 @@ sub www_service {
          $json{Name} = $data{Name}{value} if defined $data{Name} ;
 
          %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
-         if ( defined $data{'Temperature mode'} ) {
-            if ( $data{'Temperature mode'}{value} =~ /comfort/i ) {
-               $json{Status} = 1 ;
-               if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "1" ) {
-                  &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
-                  $json{Action} = "1" ;
-               }
-            } elsif ( $data{'Temperature mode'}{value} =~ /day/i ) {
-               $json{Status} = 2 ;
-               if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "2" ) {
-                  &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
-                  $json{Action} = "2" ;
-               }
-            } elsif ( $data{'Temperature mode'}{value} =~ /night/i ) {
-               $json{Status} = 3 ;
-               if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "3" ) {
-                  &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
-                  $json{Action} = "3" ;
-               }
-            } elsif ( $data{'Temperature mode'}{value} =~ /safe/i ) {
-               $json{Status} = 4 ;
-               if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "4" ) {
-                  &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
-                  $json{Action} = "4" ;
-               }
-            } else {
-               $json{Status} = 0 ;
-               $json{Action} = "NONE" ;
-            }
+         if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and
+               ( $global{cgi}{params}{value} eq "1" or
+                 $global{cgi}{params}{value} eq "0" ) ) {
+               &set_temperature_cohe_mode ($sock, $address, $global{cgi}{params}{value}) ;
+               $json{Action} = $global{cgi}{params}{value} ;
          } else {
-            $json{Error} = "NO_INFO" ;
-            if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "1" ) {
-               &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
-               $json{Action} = "1" ;
-            }
-            if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "2" ) {
-               &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
-               $json{Action} = "2" ;
-            }
-            if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "3" ) {
-               &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
-               $json{Action} = "3" ;
-            }
-            if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} ne "4" ) {
-               &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
-               $json{Action} = "4" ;
+            if ( defined $data{'Temperature CoHe mode'} ) {
+               if ( $data{'Temperature CoHe mode'}{value} =~ /cooler/i ) {
+                  $json{Status} = 1 ;
+               } elsif ( $data{'Temperature CoHe mode'}{value} =~ /heater/i ) {
+                  $json{Status} = 0 ;
+               }
             }
          }
+
+         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+
+         # When setting cooling or heating, we also have to commit the mode.
+         # When doing it with velbuslink, somehow, the correct mode is selected. But when doing from velserver, the default mnode = 4
+         if ( defined $data{'Temperature mode'} ) {
+            if ( $data{'Temperature mode'}{value} =~ /comfort/i ) {
+               &set_temperature_mode ($sock, $address, "1") ;
+            } elsif ( $data{'Temperature mode'}{value} =~ /day/i ) {
+               &set_temperature_mode ($sock, $address, "2") ;
+            } elsif ( $data{'Temperature mode'}{value} =~ /night/i ) {
+               &set_temperature_mode ($sock, $address, "3") ;
+            } elsif ( $data{'Temperature mode'}{value} =~ /safe/i ) {
+               &set_temperature_mode ($sock, $address, "4") ;
+            }
+         }
+      }
+   }
+
+   # Get/Set the Heater mode: touch panels
+   if ( $global{cgi}{params}{type} eq "TemperatureMode" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      if ( defined $Moduletype and (
+               $Moduletype eq "1E" or # VMBGP1
+               $Moduletype eq "1F" or # VMBGP2
+               $Moduletype eq "20" or # VMBGP4
+               $Moduletype eq "2D" or # VMBGP4PIR
+               $Moduletype eq "28"    # VMBGPOD
+            ) ) {
+         my %data ;
+         if ( $Moduletype eq "28" ) {
+            %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='33'","data") ;
+         }
+         if ( $Moduletype eq "1E" or # VMBGP1
+              $Moduletype eq "1F" or # VMBGP2
+              $Moduletype eq "20" or # VMBGP4
+              $Moduletype eq "2D" # VMBGP4PIR
+            ) {
+            %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='09'","data") ;
+         }
+         $json{Name} = $data{Name}{value} if defined $data{Name} ;
+
+         %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
+         if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and
+               ( $global{cgi}{params}{value} eq "1" or
+                 $global{cgi}{params}{value} eq "2" or
+                 $global{cgi}{params}{value} eq "3" or
+                 $global{cgi}{params}{value} eq "4" ) ) {
+               &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
+               $json{Action} = $global{cgi}{params}{value} ;
+         } else {
+            if ( defined $data{'Temperature mode'} ) {
+               if ( $data{'Temperature mode'}{value} =~ /comfort/i ) {
+                  $json{Status} = 1 ;
+               } elsif ( $data{'Temperature mode'}{value} =~ /day/i ) {
+                  $json{Status} = 2 ;
+               } elsif ( $data{'Temperature mode'}{value} =~ /night/i ) {
+                  $json{Status} = 3 ;
+               } elsif ( $data{'Temperature mode'}{value} =~ /safe/i ) {
+                  $json{Status} = 4 ;
+               }
+            }
+         }
+
+         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
       }
    }
 
@@ -195,16 +231,17 @@ sub www_service {
                $Moduletype eq "2A" or # VMBPIRM: Indoor sensor
                $Moduletype eq "2C"    # VMBPIRO: Outdoor sensor
             ) ) {
-         if ( $global{cgi}{params}{action} eq "Set" ) {
-            if ( defined $global{cgi}{params}{value} and $global{cgi}{params}{value} eq "ON" ) {
-               &button_pressed ($sock, $address, $global{cgi}{params}{channel}) ;
-            }
-         }
+
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
-         if ( %data ) {
-            $json{Name}   = $data{Name}{value} ;
-            $json{Status} = $data{Button}{value} ;
+         if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} eq "ON" ) {
+            &button_pressed ($sock, $address, $global{cgi}{params}{channel}) ;
+            $json{Action} = $global{cgi}{params}{value} ;
+         } else {
+            $json{Name}   = $data{Name}{value}   if defined $data{Name}{value} ;
+            $json{Status} = $data{Button}{value} if defined $data{Button}{value} ;
          }
+
+         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
       }
    }
 
@@ -217,18 +254,21 @@ sub www_service {
                $Moduletype eq "14" or # VMBDME
                $Moduletype eq "15"    # VMBDMI
             ) ) {
-         if ( $global{cgi}{params}{action} eq "Set" ) {
-            if ( defined $global{cgi}{params}{value} ) {
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
+         if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and
+               ( $global{cgi}{params}{value} eq "ON" or
+                 $global{cgi}{params}{value} eq "OFF" or
+                 $global{cgi}{params}{value} =~ /^\d+$/ ) ) {
                $global{cgi}{params}{value} = "100" if $global{cgi}{params}{value} eq "ON" ;
                $global{cgi}{params}{value} = "0"   if $global{cgi}{params}{value} eq "OFF" ;
                &dim_value ($sock, $address, $global{cgi}{params}{channel}, $global{cgi}{params}{value}) ;
-            }
+               $json{Action} = $global{cgi}{params}{value} ;
+         } else {
+            $json{Name}   = $data{Name}{value}   if defined $data{Name}{value} ;
+            $json{Status} = $data{Button}{value} if defined $data{Button}{value} ;
          }
-         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
-         if ( %data ) {
-            $json{Name}   = $data{Name}{value} ;
-            $json{Status} = $data{Dimmer}{value} ;
-         }
+
+         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
       }
    }
 
@@ -250,23 +290,27 @@ sub www_service {
                $global{cgi}{params}{channel} = "0x0C" ;
             }
          }
-         if ( $global{cgi}{params}{value} eq "UP" ) {
-            &blind_up ($sock, $address, $global{cgi}{params}{channel}) ;
-         }
-         if ( $global{cgi}{params}{value} eq "DOWN" ) {
-            &blind_down ($sock, $address, $global{cgi}{params}{channel}) ;
-         }
-         if ( $global{cgi}{params}{value} eq "STOP" ) {
-            &blind_stop ($sock, $address, $global{cgi}{params}{channel}) ;
-         }
-         if ( $global{cgi}{params}{value} =~ /(\d+)/ ) {
-            &blind_pos ($sock, $address, $global{cgi}{params}{channel}, $1) ;
-         }
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
-         if ( %data ) {
-            $json{Name}   = $data{Name}{value} ;
-            $json{Status} = $data{Position}{value} ;
+         if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and
+               ( $global{cgi}{params}{value} eq "UP" or
+                 $global{cgi}{params}{value} eq "DOWN" or
+                 $global{cgi}{params}{value} eq "STOP" or
+                 $global{cgi}{params}{value} =~ /^\d+$/ ) ) {
+            if ( $global{cgi}{params}{value} eq "UP" ) {
+               &blind_up ($sock, $address, $global{cgi}{params}{channel}) ;
+            } elsif ( $global{cgi}{params}{value} eq "DOWN" ) {
+               &blind_down ($sock, $address, $global{cgi}{params}{channel}) ;
+            } elsif ( $global{cgi}{params}{value} eq "STOP" ) {
+               &blind_stop ($sock, $address, $global{cgi}{params}{channel}) ;
+            } elsif ( $global{cgi}{params}{value} =~ /(\d+)/ ) {
+               &blind_pos ($sock, $address, $global{cgi}{params}{channel}, $1) ;
+            }
+         } else {
+            $json{Name}   = $data{Name}{value}   if defined $data{Name}{value} ;
+            $json{Status} = $data{Button}{value} if defined $data{Button}{value} ;
          }
+
+         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
       }
    }
 
@@ -281,34 +325,27 @@ sub www_service {
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
 
          $json{Name} = $data{Name}{value} if defined $data{Name} ;
-
-         if ( defined $data{'Relay status'} ) {
-            if ( $data{'Relay status'}{value} eq "Relay channel off" ) {
-               $json{Status} = "OFF" ;
-               if ( $global{cgi}{params}{action} eq "On" ) {
-                  &relay_on ($sock, $address, $global{cgi}{params}{channel}) ;
-                  $json{Action} = "On" ;
-               }
-
-            } elsif ( $data{'Relay status'}{value} eq "Relay channel on" ) {
-               $json{Status} = "ON" ;
-               if ( $global{cgi}{params}{action} eq "Off" ) {
-                  &relay_off ($sock, $address, $global{cgi}{params}{channel}) ;
-                  $json{Action} = "Off" ;
-               }
-            }
-
-         } else {
-            $json{Error} = "NO_INFO" ;
-            if ( $global{cgi}{params}{action} eq "On" ) {
+         if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and
+               ( $global{cgi}{params}{value} eq "ON" or
+                 $global{cgi}{params}{value} eq "OFF" ) ) {
+            if ( $global{cgi}{params}{value} eq "ON" ) {
                &relay_on ($sock, $address, $global{cgi}{params}{channel}) ;
                $json{Action} = "On" ;
-            }
-            if ( $global{cgi}{params}{action} eq "Off" ) {
+            } elsif ( $global{cgi}{params}{value} eq "OFF" ) {
                &relay_off ($sock, $address, $global{cgi}{params}{channel}) ;
                $json{Action} = "Off" ;
             }
+         } else {
+            if ( defined $data{'Relay status'} ) {
+               if ( $data{'Relay status'}{value} eq "Relay channel off" ) {
+                  $json{Status} = "OFF" ;
+               } elsif ( $data{'Relay status'}{value} eq "Relay channel on" ) {
+                  $json{Status} = "ON" ;
+               }
+            }
          }
+
+         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
       }
    }
 
@@ -326,6 +363,8 @@ sub www_service {
          } else {
             $json{Status} = $data{Divider}{value} if defined $data{Divider} ;
          }
+
+         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
       }
    }
 
@@ -617,12 +656,12 @@ sub www_print_channeltags () {
                     $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Dimmer" ) {
                   if ( ! defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} or 
                        $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} eq "" ) {
-                     $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} = 'NotUsed' ;
+                     $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} = '__NoTag__' ;
                   }
                   $html .= $global{cgi}{CGI}->scrolling_list(
                         -name=>"Tag::$address::$Channel",
                         -size=>1,
-                        -values=>['Lighting', 'Switchable', 'NotUsed'],
+                        -values=>['Lighting', 'Switchable', '__NoTag__'],
                         -default=>[$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}]
                      ) ;
                } else {

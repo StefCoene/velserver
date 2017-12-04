@@ -42,10 +42,10 @@ sub openHAB_match_item {
 }
 
 # Items defined in Velbus_data_protocol.pm, these items needs to be created in the .items config file
-#   HeaterMode
+#   TemperatureMode
 #   Blind
 #   Dimmer
-#   HeaterTemperature
+#   TemperatureTarget
 #   Relay
 #   Button
 sub openHAB () {
@@ -129,8 +129,24 @@ sub openHAB () {
                        ( $ModuleType eq "20" ) or
                        ( $ModuleType eq "28" ) ) {
 
+                     # Get/Set the heating or cooling
+                     my $item = "TemperatureCoHeMode_$address" ;
+
+                     my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
+                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                     $openHAB .= "Number $item \"$Name  Cool/Heat mode\" " ;
+                     $openHAB .= "<temperature> " ;
+                     my $Group = &openHAB_match_item($item) ;
+                     if ( defined $Group ) {
+                        $openHAB .= "($Group) " ;
+                     }
+                     $openHAB .= "{http=\"" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureCoHeMode&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
+                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureCoHeMode&action=Set&value=%2\$s]" ;
+                     $openHAB .= "\"}\n" ;
+
                      # Get/Set the heater mode
-                     my $item = "HeaterMode_$address" ;
+                     my $item = "TemperatureMode_$address" ;
 
                      my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
                      $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
@@ -141,12 +157,12 @@ sub openHAB () {
                         $openHAB .= "($Group) " ;
                      }
                      $openHAB .= "{http=\"" ;
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterMode&action=Set&value=%2\$s]" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureMode&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
+                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureMode&action=Set&value=%2\$s]" ;
                      $openHAB .= "\"}\n" ;
 
                      # Get/Set the target temperature
-                     my $item = "HeaterTemperature_$address" ;
+                     my $item = "TemperatureTarget_$address" ;
 
                      my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
                      $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
@@ -157,8 +173,8 @@ sub openHAB () {
                         $openHAB .= "($Group) " ;
                      }
                      $openHAB .= "{http=\"" ;
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=HeaterTemperature&action=Set&value=%2\$s]" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureTarget&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Temperature)]" ;
+                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureTarget&action=Set&value=%2\$s]" ;
                      $openHAB .= "\"}\n" ;
                   }
                }
@@ -176,7 +192,7 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} and
-                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} ne 'NotUsed' ) {
+                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} ne '__NoTag__' ) {
                         $openHAB .= "[\"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}\"] " ;
                   }
                   $openHAB .= "{http=\"" ;
@@ -215,7 +231,7 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} and
-                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} ne 'NotUsed' ) {
+                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} ne '__NoTag__' ) {
                         $openHAB .= "[\"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}\"] " ;
                   }
                   $openHAB .= "{http=\"" ;
