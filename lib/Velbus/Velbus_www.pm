@@ -98,9 +98,10 @@ sub www_service {
 
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
 
-         if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} =~ /^\d+\.\d+$/ ) {
+         if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and ( $global{cgi}{params}{value} =~ /^\d+\.\d+$/ or $global{cgi}{params}{value} =~ /^\d+$/ ) ) {
             &set_temperature ($sock, $address, $global{cgi}{params}{value}) ;
             $json{Action} = $global{cgi}{params}{value}  ;
+            $json{Temperature} = $global{cgi}{params}{value} ;
          } else {
             if ( defined $data{'Current temperature set'} ) {
                $json{Temperature} = $data{'Current temperature set'}{value} ;
@@ -108,6 +109,8 @@ sub www_service {
          }
 
          $json{Error} = "NO_INFO" if ! defined $json{Temperature} ;
+      } else {
+         $json{Error} = "NO_MODULE" ;
       }
    }
 
