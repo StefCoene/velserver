@@ -915,9 +915,6 @@ sub set_temperature_cohe_mode {
    } else {
       &send_message ($sock, $address, "E0") ; # COMMAND_SET_HEATING_MODE
    }
-   # &send_message ($sock, $address, "E5", "10") ;
-   # &send_message ($sock, $address, "E7", "10") ;
-   # &send_message ($sock, $address, "EA") ;
 }
 
 # Set the target temperature for a glass planel
@@ -930,6 +927,32 @@ sub set_temperature {
    my $temperature = $_[2] ;
    $temperature = &temperature_to_hex ($temperature) ;
    &send_message ($sock, $address, "E4", undef, "00", $temperature) ; # COMMAND_SET_TEMP
+}
+
+# Set the broadcast interval for the temperature of touch display
+# 1: socket
+# 2: address
+# 3: timeout in seconds
+sub set_temperature_interval {
+   my $sock     = $_[0] ;
+   my $address  = $_[1] ;
+   my $interval = $_[2] ;
+   $interval = &dec_to_hex ($interval) ;
+   &send_message ($sock, $address, "E5", undef, $interval) ;
+}
+
+# Set the broadcast interval for temperature of all touch displays
+# 1: socket
+# 2: timeout in seconds
+sub set_temperature_interval_all {
+   my $sock     = $_[0] ;
+   my $interval = $_[1] ;
+
+   foreach my $ModuleType ("1E","1F","20","2D","28") {
+      foreach my $address (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}})) {
+         &set_temperature_interval ($sock, $address, $interval) ;
+      }
+   }
 }
 
 # Set the temperature mode for a glass planel

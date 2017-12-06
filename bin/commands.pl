@@ -40,6 +40,8 @@ if ( $global{opts}{option} eq "scan" ) {
    &scan($sock) ;
 } elsif ( $global{opts}{option} eq "status" ) {
    &update_module_status($sock) ;
+} elsif ( $global{opts}{option} eq "tempinterval" ) {
+   &set_temperature_interval_all($sock,"60") ;
 } elsif ( $global{opts}{option} eq "date" ) {
    &broadcast_datetime($sock) ;
 } elsif ( $global{opts}{option} eq "openHAB" ) {
