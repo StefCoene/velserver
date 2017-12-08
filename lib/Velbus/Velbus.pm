@@ -911,9 +911,9 @@ sub set_temperature_cohe_mode {
    my $address     = $_[1] ;
    my $temperature = $_[2] ;
    if ( $temperature eq 1 ) {
-      &send_message ($sock, $address, "DF") ; # COMMAND_SET_COOLING_MODE
+      &send_message ($sock, $address, "DF","00") ; # COMMAND_SET_COOLING_MODE
    } else {
-      &send_message ($sock, $address, "E0") ; # COMMAND_SET_HEATING_MODE
+      &send_message ($sock, $address, "E0","00") ; # COMMAND_SET_HEATING_MODE
    }
 }
 
