@@ -158,13 +158,13 @@ sub www_service {
          # When doing it with velbuslink, somehow, the correct mode is selected. But when doing from velserver, the default mnode = 4
          if ( defined $data{'Temperature mode'} ) {
             if ( $data{'Temperature mode'}{value} =~ /comfort/i ) {
-               &set_temperature_mode ($sock, $address, "1") ;
+               #&set_temperature_mode ($sock, $address, "1") ;
             } elsif ( $data{'Temperature mode'}{value} =~ /day/i ) {
-               &set_temperature_mode ($sock, $address, "2") ;
+               #&set_temperature_mode ($sock, $address, "2") ;
             } elsif ( $data{'Temperature mode'}{value} =~ /night/i ) {
-               &set_temperature_mode ($sock, $address, "3") ;
+               #&set_temperature_mode ($sock, $address, "3") ;
             } elsif ( $data{'Temperature mode'}{value} =~ /safe/i ) {
-               &set_temperature_mode ($sock, $address, "4") ;
+               #&set_temperature_mode ($sock, $address, "4") ;
             }
          }
       }
