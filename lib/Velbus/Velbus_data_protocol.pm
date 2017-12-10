@@ -243,7 +243,7 @@ $global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"33"}{Type} = "Temperature" ;
 
 ################### Input: Channel names
-# 8-channel Push button interface module: VMB8PBU
+# 8-channel Push button interface module: VMB8PB
 $global{Cons}{ModuleTypes}{'01'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'01'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'01'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -275,7 +275,7 @@ $global{Cons}{ModuleTypes}{'05'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'05'}{Channels}{"06"}{Name} = "Push button 6" ;
    $global{Cons}{ModuleTypes}{'05'}{Channels}{"06"}{Type} = "Button" ;
 
-# 8-channel Push button interface module: VMB8PB
+# 8-channel Push button interface module: VMB8PBU
 $global{Cons}{ModuleTypes}{'16'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'16'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'16'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -292,6 +292,41 @@ $global{Cons}{ModuleTypes}{'16'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'16'}{Channels}{"07"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'16'}{Channels}{"08"}{Name} = "Push button 8" ;
    $global{Cons}{ModuleTypes}{'16'}{Channels}{"08"}{Type} = "Button" ;
+
+# Push button module for 1 or 2 NIKO push buttons : VMB2PBN
+$global{Cons}{ModuleTypes}{'18'}{Channels}{"01"}{Name} = "Push button 1" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"01"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"02"}{Name} = "Push button 2" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"02"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"03"}{Name} = "Virtual button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"03"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"04"}{Name} = "Virtual button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"04"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"05"}{Name} = "Virtual button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"05"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"06"}{Name} = "Virtual button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"06"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"07"}{Name} = "Virtual button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"07"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"08"}{Name} = "Virtual button" ;
+   $global{Cons}{ModuleTypes}{'18'}{Channels}{"08"}{Type} = "Button" ;
+
+# Push button interface module for 4 or 6 NIKO push buttons : VMB6PBN
+$global{Cons}{ModuleTypes}{'17'}{Channels}{"01"}{Name} = "Push button 1" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"01"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"02"}{Name} = "Push button 2" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"02"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"03"}{Name} = "Push button 3" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"03"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"04"}{Name} = "Push button 4" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"04"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"05"}{Name} = "Push button 5" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"05"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"06"}{Name} = "Push button 6" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"06"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"07"}{Name} = "Virtual button" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"08"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'17'}{Channels}{"08"}{Name} = "Virtual button" ;
 
 # 7-channel input: VMB7IN
 $global{Cons}{ModuleTypes}{'22'}{Channels}{"01"}{Name} = "Push button 1" ;
