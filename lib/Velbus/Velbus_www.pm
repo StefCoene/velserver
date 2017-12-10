@@ -218,7 +218,7 @@ sub www_service {
       }
    }
 
-   # Get/Set button: toch, input, sensors, ...
+   # Get/Set button: touch, input, sensors, ...
    if ( $global{cgi}{params}{type} eq "Switch" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
       if ( defined $Moduletype and (
                $Moduletype eq "1E" or # VMBGP1
@@ -226,9 +226,11 @@ sub www_service {
                $Moduletype eq "20" or # VMBGP4
                $Moduletype eq "2D" or # VMBGP4PIR
                $Moduletype eq "28" or # VMBGPOD
-               $Moduletype eq "01" or # VMB8PBU
+               $Moduletype eq "01" or # VMB8PB
                $Moduletype eq "05" or # VMB6IN
-               $Moduletype eq "16" or # VMB8PB
+               $Moduletype eq "16" or # VMB8PBU
+               $Moduletype eq "17" or # VMB6PBN
+               $Moduletype eq "18" or # VMB2PBN
                $Moduletype eq "22" or # VMB7IN
                $Moduletype eq "0B" or # VMB4PD: Push button and timer panel
                $Moduletype eq "2A" or # VMBPIRM: Indoor sensor
@@ -318,7 +320,7 @@ sub www_service {
    }
 
    # Get/Set Relay status
-   if ( $global{cgi}{params}{type} eq "Relay" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{value} eq "ON" or $global{cgi}{params}{value} eq "OFF" ) ) {
+   if ( $global{cgi}{params}{type} eq "Relay" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
       if ( defined $Moduletype and (
                $Moduletype eq "02" or # VMB1RY
                $Moduletype eq "08" or # VMB4RY
