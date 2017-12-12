@@ -61,8 +61,10 @@ sub process {
       my $path = $r->url->path ;
       if ( $path eq "/service" ) {
          my %json = &www_service ;
-         $response->header('type' => 'application/json') ;
-         $response->content(encode_json(\%json)) ;
+         if ( %json ) {
+            $response->header('type' => 'application/json') ;
+            $response->content(encode_json(\%json)) ;
+         }
       } else {
          &read_all_configs ; # Re-read the config files to pick up possible changes
          my $content = &www_index ;
