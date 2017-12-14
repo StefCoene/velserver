@@ -61,14 +61,19 @@ sub www_service {
       }
    }
 
+   # Set action to Unknown
+   $json{action} = "Unknown" ;
+
    # Put the time on the bus
    if ( defined $global{cgi}{params}{action} and $global{cgi}{params}{action} eq "TimeSync" ) {
+      $json{action} = $global{cgi}{params}{action} ;
       &broadcast_datetime($sock) ;
       $json = "" ;
    }
 
    # Get the current temperature: touch panels
    if ( $global{cgi}{params}{type} eq "Temperature" and $global{cgi}{params}{action} eq "Get" ) {
+      $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and (
                $Moduletype eq "1E" or # VMBGP1
                $Moduletype eq "1F" or # VMBGP2
@@ -86,6 +91,7 @@ sub www_service {
 
    # Get/Set the Cooler/Heater target temperature: touch panels
    if ( $global{cgi}{params}{type} eq "TemperatureTarget" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and (
                $Moduletype eq "1E" or # VMBGP1
                $Moduletype eq "1F" or # VMBGP2
@@ -116,6 +122,7 @@ sub www_service {
 
    # Get/Set heating or cooling: touch panels
    if ( $global{cgi}{params}{type} eq "TemperatureCoHeMode" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and (
                $Moduletype eq "1E" or # VMBGP1
                $Moduletype eq "1F" or # VMBGP2
@@ -172,6 +179,7 @@ sub www_service {
 
    # Get/Set the Heater mode: touch panels
    if ( $global{cgi}{params}{type} eq "TemperatureMode" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and (
                $Moduletype eq "1E" or # VMBGP1
                $Moduletype eq "1F" or # VMBGP2
@@ -220,6 +228,7 @@ sub www_service {
 
    # Get/Set button: touch, input, sensors, ...
    if ( $global{cgi}{params}{type} eq "Switch" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and (
                $Moduletype eq "1E" or # VMBGP1
                $Moduletype eq "1F" or # VMBGP2
@@ -252,6 +261,7 @@ sub www_service {
 
    # Get/Set Dimmer level
    if ( $global{cgi}{params}{type} eq "Dimmer" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and (
                $Moduletype eq "07" or # VMB1DM
                $Moduletype eq "0F" or # VMB1LED
@@ -279,6 +289,7 @@ sub www_service {
 
    # Get/Set Blind positoin
    if ( $global{cgi}{params}{type} eq "Blind" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and (
                $Moduletype eq "03" or # VMB1BL
                $Moduletype eq "09" or # VMB2BL
@@ -321,6 +332,7 @@ sub www_service {
 
    # Get/Set Relay status
    if ( $global{cgi}{params}{type} eq "Relay" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
+      $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and (
                $Moduletype eq "02" or # VMB1RY
                $Moduletype eq "08" or # VMB4RY
@@ -356,6 +368,7 @@ sub www_service {
 
    # Get Counter : only for VMB7IN
    if ( $global{cgi}{params}{type} eq "Counter" and ( $global{cgi}{params}{action} eq "GetCounter" or $global{cgi}{params}{action} eq "GetCounterCurrent" or $global{cgi}{params}{action} eq "GetDivider" ) ) {
+      $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and $Moduletype eq "22" ) {
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
 
