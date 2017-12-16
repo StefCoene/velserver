@@ -63,7 +63,10 @@ sub process {
          my %json = &www_service ;
          if ( %json ) {
             $response->header('type' => 'application/json') ;
-            $response->content(encode_json(\%json)) ;
+            my $encoder = JSON::XS->new();
+            $encoder->allow_nonref();
+            my $json = $encoder->encode(\%json);
+            $response->content($json) ;
          }
       } else {
          &read_all_configs ; # Re-read the config files to pick up possible changes
