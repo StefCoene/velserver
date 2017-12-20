@@ -4,6 +4,7 @@
 # TODO: document the possible options
 #   {type}
 #     "Blind"
+#     "Sensor"
 #     "Button"
 #     "ButtonCounter"
 #     "Dimmer
@@ -164,13 +165,13 @@ $global{Cons}{ModuleTypes}{'2D'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"04"}{Name} = "Push button 4" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"04"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"05"}{Name} = "Dark/Light output" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Channels}{"05"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Channels}{"05"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"06"}{Name} = "Motion output" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Channels}{"06"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Channels}{"06"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"07"}{Name} = "Light Depending motion" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Channels}{"07"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Channels}{"07"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"08"}{Name} = "Absence output" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Channels}{"08"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Channels}{"08"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"09"}{Type} = "Temperature" ;
 
@@ -365,37 +366,37 @@ $global{Cons}{ModuleTypes}{'0B'}{Channels}{"01"}{Name} = "Push button 1" ;
 ################### PIR Sensors: Channel names
 # Mini PIR sensor: VMBPIRM
 $global{Cons}{ModuleTypes}{'2A'}{Channels}{"01"}{Name} = "Dark output" ;
-   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"01"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"01"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"02"}{Name} = "Light output" ;
-   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"02"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"02"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"03"}{Name} = "Motion output 1" ;
-   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"03"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"03"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"04"}{Name} = "Motion output 1 (LD)" ;
-   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"04"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"04"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"05"}{Name} = "Motion output 2" ;
-   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"05"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"05"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"06"}{Name} = "Motion output 2 (LD)" ;
-   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"06"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"06"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"07"}{Name} = "Absence sensor" ;
-   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"07"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"07"}{Type} = "Sensor" ;
 
 # Outdoor PIR sensor: VMBPIRO
 $global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Name} = "Dark output" ;
-   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"02"}{Name} = "Light output" ;
-   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"02"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"02"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"03"}{Name} = "Motion output 1" ;
-   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"03"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"03"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"04"}{Name} = "Motion output 1 (LD)" ;
-   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"04"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"04"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"05"}{Name} = "Motion output 2" ;
-   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"05"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"05"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"06"}{Name} = "Motion output 2 (LD)" ;
-   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"06"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"06"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"07"}{Name} = "Low alarm" ;
-   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"07"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"07"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"08"}{Name} = "High alarm" ;
-   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"08"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"08"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Type} = "Temperature" ;
 

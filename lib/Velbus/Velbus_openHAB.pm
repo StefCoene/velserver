@@ -48,6 +48,7 @@ sub openHAB_match_item {
 #   TemperatureTarget
 #   Relay
 #   Button
+#   Sensor
 sub openHAB () {
    my $openHAB ;
 
@@ -113,6 +114,29 @@ sub openHAB () {
                      $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
                   }
                   $Name .= " (Long) " ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
+
+                  $openHAB .= "Switch $item \"$Name\" " ;
+                  my $Group = &openHAB_match_item($item) ;
+                  if ( defined $Group ) {
+                     $openHAB .= "($Group) " ;
+                  }
+                  $openHAB .= "{http=\"" ;
+                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
+                  $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
+                  $openHAB .= "\", autoupdate=\"false\"}\n" ;
+               }
+               if ( $Type eq "Sensor" ) {
+                  my $item = "Sensor_$itemBase" ;
+                  my $Name ;
+                  # Since the name of a sensor is fixed, we alwasyd the name of the module
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                               $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  $Name .= $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
                   if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
                      $Name .= " (" . $item . ")" ;
                   }
