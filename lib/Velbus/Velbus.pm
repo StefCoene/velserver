@@ -518,6 +518,7 @@ sub process_message {
    }
 
    print &timestamp . " $message{prio} $message{address}($message{addressMaster})=$message{ModuleType} $message{MessageType}=$message{MessageName} :: $message{text}\n" ;
+   &log("logger",&timestamp . " $message{prio} $message{address}($message{addressMaster})=$message{ModuleType} $message{MessageType}=$message{MessageName} :: $message{text}") ;
 
    if ( defined $global{Config}{velbus}{ENABLE_RAWMESSAGE_LOGGING} ) {
       &log("raw","$message{address} : $message{prio} : $message{MessageType} : $message{RTR_size} : $message{Raw}") ;
