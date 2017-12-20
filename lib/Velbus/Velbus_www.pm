@@ -81,11 +81,14 @@ sub www_service {
                $Moduletype eq "2D" or # VMBGP4PIR
                $Moduletype eq "28"    # VMBGPOD
             ) ) {
+
          my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
          $json{Name}        = $data{TempSensor}{value}  if defined $data{TempSensor} ;
          $json{Temperature} = $data{Temperature}{value} if defined $data{Temperature} ;
 
          $json{Error} = "NO_INFO" if ! defined $json{Temperature} ;
+      } else {
+         $json{Error} = "NO_MODULE" ;
       }
    }
 
@@ -99,16 +102,16 @@ sub www_service {
                $Moduletype eq "2D" or # VMBGP4PIR
                $Moduletype eq "28"    # VMBGPOD
             ) ) {
+
          my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
          $json{Name} = $data{TempSensor}{value}  if defined $data{TempSensor} ;
-
-         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
 
          if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and ( $global{cgi}{params}{value} =~ /^\d+\.\d+$/ or $global{cgi}{params}{value} =~ /^\d+$/ ) ) {
             &set_temperature ($sock, $address, $global{cgi}{params}{value}) ;
             $json{Action} = $global{cgi}{params}{value}  ;
             $json{Temperature} = $global{cgi}{params}{value} ;
          } else {
+            my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
             if ( defined $data{'Current temperature set'} ) {
                $json{Temperature} = $data{'Current temperature set'}{value} ;
             }
@@ -141,15 +144,16 @@ sub www_service {
             ) {
             %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='09'","data") ;
          }
+
          $json{Name} = $data{Name}{value} if defined $data{Name} ;
 
-         %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
          if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and
                ( $global{cgi}{params}{value} eq "1" or
                  $global{cgi}{params}{value} eq "0" ) ) {
                &set_temperature_cohe_mode ($sock, $address, $global{cgi}{params}{value}) ;
                $json{Action} = $global{cgi}{params}{value} ;
          } else {
+            %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
             if ( defined $data{'Temperature CoHe mode'} ) {
                if ( $data{'Temperature CoHe mode'}{value} =~ /cooler/i ) {
                   $json{Status} = 1 ;
@@ -160,20 +164,8 @@ sub www_service {
          }
 
          $json{Error} = "NO_INFO" if ! defined $json{Status} ;
-
-         # When setting cooling or heating, we also have to commit the mode.
-         # When doing it with velbuslink, somehow, the correct mode is selected. But when doing from velserver, the default mnode = 4
-         if ( defined $data{'Temperature mode'} ) {
-            if ( $data{'Temperature mode'}{value} =~ /comfort/i ) {
-               #&set_temperature_mode ($sock, $address, "1") ;
-            } elsif ( $data{'Temperature mode'}{value} =~ /day/i ) {
-               #&set_temperature_mode ($sock, $address, "2") ;
-            } elsif ( $data{'Temperature mode'}{value} =~ /night/i ) {
-               #&set_temperature_mode ($sock, $address, "3") ;
-            } elsif ( $data{'Temperature mode'}{value} =~ /safe/i ) {
-               #&set_temperature_mode ($sock, $address, "4") ;
-            }
-         }
+      } else {
+         $json{Error} = "NO_MODULE" ;
       }
    }
 
@@ -198,9 +190,9 @@ sub www_service {
             ) {
             %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='09'","data") ;
          }
+
          $json{Name} = $data{Name}{value} if defined $data{Name} ;
 
-         %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
          if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and
                ( $global{cgi}{params}{value} eq "1" or
                  $global{cgi}{params}{value} eq "2" or
@@ -209,6 +201,7 @@ sub www_service {
                &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
                $json{Action} = $global{cgi}{params}{value} ;
          } else {
+            %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
             if ( defined $data{'Temperature mode'} ) {
                if ( $data{'Temperature mode'}{value} =~ /comfort/i ) {
                   $json{Status} = 1 ;
@@ -223,6 +216,8 @@ sub www_service {
          }
 
          $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+      } else {
+         $json{Error} = "NO_MODULE" ;
       }
    }
 
@@ -247,15 +242,18 @@ sub www_service {
             ) ) {
 
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
+         $json{Name}   = $data{Name}{value}   if defined $data{Name};
+
          if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and $global{cgi}{params}{value} eq "ON" ) {
             &button_pressed ($sock, $address, $global{cgi}{params}{channel}) ;
             $json{Action} = $global{cgi}{params}{value} ;
          } else {
-            $json{Name}   = $data{Name}{value}   if defined $data{Name}{value} ;
-            $json{Status} = $data{Button}{value} if defined $data{Button}{value} ;
+            $json{Status} = $data{Button}{value} if defined $data{Button} ;
          }
 
          $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+      } else {
+         $json{Error} = "NO_MODULE" ;
       }
    }
 
@@ -269,7 +267,10 @@ sub www_service {
                $Moduletype eq "14" or # VMBDME
                $Moduletype eq "15"    # VMBDMI
             ) ) {
+
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
+         $json{Name}   = $data{Name}{value}   if defined $data{Name} ;
+
          if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and
                ( $global{cgi}{params}{value} eq "ON" or
                  $global{cgi}{params}{value} eq "OFF" or
@@ -279,11 +280,12 @@ sub www_service {
                &dim_value ($sock, $address, $global{cgi}{params}{channel}, $global{cgi}{params}{value}) ;
                $json{Action} = $global{cgi}{params}{value} ;
          } else {
-            $json{Name}   = $data{Name}{value}   if defined $data{Name}{value} ;
             $json{Status} = $data{Button}{value} if defined $data{Button}{value} ;
          }
 
          $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+      } else {
+         $json{Error} = "NO_MODULE" ;
       }
    }
 
@@ -306,7 +308,10 @@ sub www_service {
                $global{cgi}{params}{channel} = "0x0C" ;
             }
          }
+
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
+         $json{Name}   = $data{Name}{value}   if defined $data{Name}{value} ;
+
          if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and
                ( $global{cgi}{params}{value} eq "UP" or
                  $global{cgi}{params}{value} eq "DOWN" or
@@ -322,11 +327,12 @@ sub www_service {
                &blind_pos ($sock, $address, $global{cgi}{params}{channel}, $1) ;
             }
          } else {
-            $json{Name}   = $data{Name}{value}   if defined $data{Name}{value} ;
             $json{Status} = $data{Button}{value} if defined $data{Button}{value} ;
          }
 
          $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+      } else {
+         $json{Error} = "NO_MODULE" ;
       }
    }
 
@@ -339,9 +345,10 @@ sub www_service {
                $Moduletype eq "10" or # VMB4RYLD
                $Moduletype eq "11"    # VMB4RYNO
             ) ) {
-         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
 
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
          $json{Name} = $data{Name}{value} if defined $data{Name} ;
+
          if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and
                ( $global{cgi}{params}{value} eq "ON" or
                  $global{cgi}{params}{value} eq "OFF" ) ) {
@@ -363,6 +370,8 @@ sub www_service {
          }
 
          $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+      } else {
+         $json{Error} = "NO_MODULE" ;
       }
    }
 
@@ -383,6 +392,8 @@ sub www_service {
          }
 
          $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+      } else {
+         $json{Error} = "NO_MODULE" ;
       }
    }
 
