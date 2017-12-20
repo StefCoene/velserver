@@ -76,10 +76,20 @@ sub openHAB () {
                        $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
                   # Short pressed button
                   my $item = "Button_$itemBase" ;
-                  my $Name = $item ;
-                  $Name .= " (" . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} .")" if defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  }
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
+
                   $openHAB .= "Switch $item \"$Name\" " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -92,11 +102,21 @@ sub openHAB () {
 
                   # Long pressed button
                   my $item = "ButtonLong_$itemBase" ;
-                  my $Name = $item ;
-                  $Name .= " (" . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} .")" if defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  }
                   $Name .= " (Long) " ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
+
                   $openHAB .= "Switch $item \"$Name\" " ;
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
@@ -110,9 +130,20 @@ sub openHAB () {
                if ( $Type eq "Temperature" ) {
                   # Get the current temperature
                   my $item = "Temperature_$address" ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
+                  }
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
 
-                  my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                   $openHAB .= "Number $item \"$Name [%.1f °C]\" " ;
                   $openHAB .= "<temperature> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -131,9 +162,6 @@ sub openHAB () {
 
                      # Get/Set the heating or cooling
                      my $item = "TemperatureCoHeMode_$address" ;
-
-                     my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                      $openHAB .= "Number $item \"$Name  Cool/Heat mode\" " ;
                      $openHAB .= "<temperature> " ;
                      my $Group = &openHAB_match_item($item) ;
@@ -147,9 +175,6 @@ sub openHAB () {
 
                      # Get/Set the heater mode
                      my $item = "TemperatureMode_$address" ;
-
-                     my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
                      $openHAB .= "Number $item \"$Name  mode\" " ;
                      $openHAB .= "<temperature> " ;
                      my $Group = &openHAB_match_item($item) ;
@@ -165,7 +190,7 @@ sub openHAB () {
                      my $item = "TemperatureTarget_$address" ;
 
                      my $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{TempSensor} ;
-                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                     $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ;
                      $openHAB .= "Number $item \"$Name temperature target [%.1f °C]\" " ;
                      $openHAB .= "<temperature> " ;
                      my $Group = &openHAB_match_item($item) ;
@@ -180,10 +205,19 @@ sub openHAB () {
                }
                if ( $Type eq "Dimmer" ) {
                   my $item = "Dimmer_$itemBase" ;
-                  my $Name = $item ;
-                  $Name .= " (" . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} .")" if defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  }
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
                   $Name .= " [%s %%]" ;
                   $openHAB .= "Dimmer $item \"$Name\" " ;
                   $openHAB .= "<slider> " ;
@@ -202,10 +236,20 @@ sub openHAB () {
                }
                if ( $Type eq "Blind" ) {
                   my $item = "Blind_$itemBase" ;
-                  my $Name = $item ;
-                  $Name .= " (" . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} .")" if defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  }
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
+        
                   $Name .= " [%s %%]" ;
                   $openHAB .= "Rollershutter $item \"$Name\" " ;
                   $openHAB .= "<rollershutter> " ;
@@ -220,10 +264,19 @@ sub openHAB () {
                }
                if ( $Type eq "Relay" ) {
                   my $item = "Relay_$itemBase" ;
-                  my $Name = $item ;
-                  $Name .= " (" . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} .")" if defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  }
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
                   $openHAB .= "Switch $item \"$Name\" " ;
                   $openHAB .= "<switch> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -236,18 +289,26 @@ sub openHAB () {
                   }
                   $openHAB .= "{http=\"" ;
                   $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .=  " >[ON:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Set&value=ON] " ;
-                  $openHAB .= " >[OFF:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Set&value=OFF]" ;
+                  $openHAB .=  " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Set&value=%2\$s] " ;
                   $openHAB .= "\"}\n" ;
                }
                if ( $Type eq "ButtonCounter" and
                      defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} and
                      $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
                   my $item = "CounterRaw_$itemBase" ;
-                  my $Name = $item ;
-                  $Name .= " (" . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} .")" if defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  }
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
                   $openHAB .= "Number $item \"$Name (raw) [%.0f]\" " ;
                   $openHAB .= " <chart> " ;
                   my $Group = &openHAB_match_item($item) ;
@@ -259,10 +320,19 @@ sub openHAB () {
                   $openHAB .= "\"}\n" ;
 
                   my $item = "CounterCurrent_$itemBase" ;
-                  my $Name = $item ;
-                  $Name .= " (" . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} .")" if defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  }
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
                   $openHAB .= "Number $item \"$Name (current) [%.0f" ;
                   if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} ) {
                      if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
@@ -282,10 +352,19 @@ sub openHAB () {
                   $openHAB .= "\"}\n" ;
 
                   my $item = "Counter_$itemBase" ;
-                  my $Name = $item ;
-                  $Name .= " (" . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} .")" if defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  }
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
                   $openHAB .= "Number $item \"$Name [%.0f" ;
                   if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} ) {
                      if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
@@ -305,10 +384,19 @@ sub openHAB () {
                   $openHAB .= "\"}\n" ;
 
                   my $item = "Divider_$itemBase" ;
-                  my $Name = $item ;
-                  $Name .= " (" . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} .")" if defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-                  $Name = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} if defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ;
-                  $Name .= " :: ". $item if defined $global{Config}{openHAB}{INCLUDE_AC_IN_NAME} ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  }
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
                   $openHAB .= "Number $item \"$Name (divider) [%.0f]\" " ;
                   $openHAB .= " <chart> " ;
                   my $Group = &openHAB_match_item($item) ;
