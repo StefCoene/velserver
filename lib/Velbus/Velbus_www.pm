@@ -53,6 +53,11 @@ sub www_service {
 
    my %json ;
 
+   # Save the original request parameters
+   foreach (keys %{$global{cgi}{params}}) {
+      $json{"Req$_"} = $global{cgi}{params}{$_} ;
+   }
+
    # Parse options
    if ( defined $global{cgi}{params}{address} ) {
       $address = $global{cgi}{params}{address} ;
