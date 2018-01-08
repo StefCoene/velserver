@@ -175,7 +175,7 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Temperature&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Temperature)]" ;
+                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Temperature&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                   $openHAB .= "\"}\n" ;
 
                   # Touch + Input modules: heater control
@@ -222,7 +222,7 @@ sub openHAB () {
                         $openHAB .= "($Group) " ;
                      }
                      $openHAB .= "{http=\"" ;
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureTarget&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Temperature)]" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureTarget&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
                      $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureTarget&action=Set&value=%2\$s]" ;
                      $openHAB .= "\"}\n" ;
                   }

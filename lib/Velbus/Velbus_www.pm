@@ -89,12 +89,12 @@ sub www_service {
             ) ) {
 
          my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
-         $json{Name}        = $data{TempSensor}{value}  if defined $data{TempSensor} ;
-         $json{Temperature} = $data{Temperature}{value} if defined $data{Temperature} ;
+         $json{Name}   = $data{TempSensor}{value}  if defined $data{TempSensor} ;
+         $json{Status} = $data{Temperature}{value} if defined $data{Temperature} ;
 
-         $json{Error} = "NO_INFO" if ! defined $json{Temperature} ;
+         $json{Status} = "NO_INFO" if ! defined $json{Status} ;
       } else {
-         $json{Error} = "NO_MODULE" ;
+         $json{Status} = "NO_MODULE" ;
       }
    }
 
@@ -115,17 +115,17 @@ sub www_service {
          if ( $global{cgi}{params}{action} eq "Set" and defined $global{cgi}{params}{value} and ( $global{cgi}{params}{value} =~ /^\d+\.\d+$/ or $global{cgi}{params}{value} =~ /^\d+$/ ) ) {
             &set_temperature ($sock, $address, $global{cgi}{params}{value}) ;
             $json{Action} = $global{cgi}{params}{value}  ;
-            $json{Temperature} = $global{cgi}{params}{value} ;
+            $json{Status} = $global{cgi}{params}{value} ;
          } else {
             my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
             if ( defined $data{'Current temperature set'} ) {
-               $json{Temperature} = $data{'Current temperature set'}{value} ;
+               $json{Status} = $data{'Current temperature set'}{value} ;
             }
          }
 
-         $json{Error} = "NO_INFO" if ! defined $json{Temperature} ;
+         $json{Status} = "NO_INFO" if ! defined $json{Status} ;
       } else {
-         $json{Error} = "NO_MODULE" ;
+         $json{Status} = "NO_MODULE" ;
       }
    }
 
@@ -169,9 +169,9 @@ sub www_service {
             }
          }
 
-         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+         $json{Status} = "NO_INFO" if ! defined $json{Status} ;
       } else {
-         $json{Error} = "NO_MODULE" ;
+         $json{Status} = "NO_MODULE" ;
       }
    }
 
@@ -221,9 +221,9 @@ sub www_service {
             }
          }
 
-         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+         $json{Status} = "NO_INFO" if ! defined $json{Status} ;
       } else {
-         $json{Error} = "NO_MODULE" ;
+         $json{Status} = "NO_MODULE" ;
       }
    }
 
@@ -257,9 +257,9 @@ sub www_service {
             $json{Status} = $data{Button}{value} if defined $data{Button} ;
          }
 
-         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+         $json{Status} = "NO_INFO" if ! defined $json{Status} ;
       } else {
-         $json{Error} = "NO_MODULE" ;
+         $json{Status} = "NO_MODULE" ;
       }
    }
 
@@ -289,9 +289,9 @@ sub www_service {
             $json{Status} = $data{Dimmer}{value} if defined $data{Dimmer}{value} ;
          }
 
-         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+         $json{Status} = "NO_INFO" if ! defined $json{Status} ;
       } else {
-         $json{Error} = "NO_MODULE" ;
+         $json{Status} = "NO_MODULE" ;
       }
    }
 
@@ -336,9 +336,9 @@ sub www_service {
             $json{Status} = $data{Blind}{value} if defined $data{Blind}{value} ;
          }
 
-         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+         $json{Status} = "NO_INFO" if ! defined $json{Status} ;
       } else {
-         $json{Error} = "NO_MODULE" ;
+         $json{Status} = "NO_MODULE" ;
       }
    }
 
@@ -375,9 +375,9 @@ sub www_service {
             }
          }
 
-         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+         $json{Status} = "NO_INFO" if ! defined $json{Status} ;
       } else {
-         $json{Error} = "NO_MODULE" ;
+         $json{Status} = "NO_MODULE" ;
       }
    }
 
@@ -397,10 +397,17 @@ sub www_service {
             $json{Status} = $data{Divider}{value} if defined $data{Divider} ;
          }
 
-         $json{Error} = "NO_INFO" if ! defined $json{Status} ;
+         $json{Status} = "NO_INFO" if ! defined $json{Status} ;
       } else {
-         $json{Error} = "NO_MODULE" ;
+         $json{Status} = "NO_MODULE" ;
       }
+   }
+
+   # When there was an error, set the Error value in the json and set Status to NULL
+   if ( $json{Status} eq "NO_INFO" or
+        $json{Status} eq "NO_MODULE" ) {
+      $json{Error} = $json{Status} ;
+      $json{Status} = "NULL" ;
    }
 
    return %json ;
