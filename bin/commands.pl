@@ -17,6 +17,7 @@ sub print_help {
       status = get status off all modules
       date = broadcast date and time
       tempinterval = force interval updates for temperaure to 60 seconds
+      openHAB_push_status = push state of items to openHAB
       openHAB = create the openHAB items file
          it also prints the file
    
@@ -49,6 +50,9 @@ if ( $global{opts}{option} eq "scan" ) {
    &openHAB_config () ;
    my $openHAB = &openHAB () ;
    print $openHAB ;
+} elsif ( $global{opts}{option} eq "openHAB_push_status" ) {
+   use Velbus::Velbus_www ;
+   &openHAB_status_loop ;
 } else {
    &print_help ;
 }

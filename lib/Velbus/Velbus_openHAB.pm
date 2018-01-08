@@ -447,4 +447,128 @@ sub openHAB () {
    return $openHAB ;
 }
 
+# Loop all modules and channels and push the status to openHAB
+# The loop structure is the same as in &openHAB
+sub openHAB_status_loop () {
+   # Loop all module types
+   foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
+      # Loop all found modules for the type
+      foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}}) ) {
+         # All possible channels
+         foreach my $Channel ( sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}{$ModuleType}{Channels}}) ) {
+            if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} ) {
+               my $Type = $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} ;
+               $global{cgi}{params}{address} = $address;
+               $global{cgi}{params}{channel} = $Channel ;
+               $global{cgi}{params}{action} = "Get" ;
+
+               #next if $Channel eq "00" ; # Channel 00 is used to store data about the module, so this Channel does not exist
+               my $itemBase = $address."_".$Channel ;
+
+               # ButtonCounter is for VMB7IN, it's a Button when Divider = Disabled
+               if ( $Type eq "Button" or
+                    ( $Type eq "ButtonCounter" and
+                       defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} and
+                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
+                  # Short pressed button
+                  my $item = "Button_$itemBase" ;
+                  $global{cgi}{params}{type} = "Switch" ;
+                  &openHAB_status_push($item) ;
+
+                  # Long pressed button
+                  my $item = "ButtonLong_$itemBase" ;
+                  &openHAB_status_push($item) ;
+               }
+               if ( $Type eq "Sensor" ) {
+                  my $item = "Sensor_$itemBase" ;
+                  $global{cgi}{params}{type} = "Switch" ;
+                  &openHAB_status_push($item) ;
+               }
+               if ( $Type eq "Temperature" ) {
+                  # Get the current temperature
+                  my $item = "Temperature_$address" ;
+                  $global{cgi}{params}{type} = "Temperature" ;
+                  &openHAB_status_push($item) ;
+
+                  # Touch + Input modules: heater control
+                  if ( ( $ModuleType eq "1E" ) or
+                       ( $ModuleType eq "1F" ) or
+                       ( $ModuleType eq "20" ) or
+                       ( $ModuleType eq "28" ) ) {
+
+                     # Get/Set the heating or cooling
+                     my $item = "TemperatureCoHeMode_$address" ;
+                     $global{cgi}{params}{type} = "TemperatureCoHeMode" ;
+                  &openHAB_status_push($item) ;
+
+                     # Get/Set the heater mode
+                     my $item = "TemperatureMode_$address" ;
+                     $global{cgi}{params}{type} = "TemperatureMode" ;
+                  &openHAB_status_push($item) ;
+
+                     # Get/Set the target temperature
+                     my $item = "TemperatureTarget_$address" ;
+                     $global{cgi}{params}{type} = "TemperatureTarget" ;
+                  &openHAB_status_push($item) ;
+                  }
+               }
+               if ( $Type eq "Dimmer" ) {
+                  my $item = "Dimmer_$itemBase" ;
+                  $global{cgi}{params}{type} = "Dimmer" ;
+                  &openHAB_status_push($item) ;
+               }
+               if ( $Type eq "Blind" ) {
+                  my $item = "Blind_$itemBase" ;
+                  $global{cgi}{params}{type} = "Blind" ;
+                  &openHAB_status_push($item) ;
+               }
+               if ( $Type eq "Relay" ) {
+                  my $item = "Relay_$itemBase" ;
+                  $global{cgi}{params}{type} = "Relay" ;
+                  &openHAB_status_push($item) ;
+               }
+               if ( $Type eq "ButtonCounter" and
+                     defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} and
+                     $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
+                  my $item = "CounterRaw_$itemBase" ;
+                  $global{cgi}{params}{type} = "Counter" ;
+                  $global{cgi}{params}{action} = "GetCounterRaw" ;
+                  &openHAB_status_push($item) ;
+
+                  my $item = "CounterCurrent_$itemBase" ;
+                  $global{cgi}{params}{action} = "GetCounterCurrent" ;
+                  &openHAB_status_push($item) ;
+
+                  my $item = "Counter_$itemBase" ;
+                  $global{cgi}{params}{action} = "GetCounter" ;
+                  &openHAB_status_push($item) ;
+
+                  my $item = "Divider_$itemBase" ;
+                  $global{cgi}{params}{action} = "GetDivider" ;
+                  &openHAB_status_push($item) ;
+               }
+            }
+         }
+      }
+   }
+}
+
+# Push the status of a channel to openHAB
+sub openHAB_status_push {
+   my $item = $_[0] ;
+   my %return = &www_service ;
+
+   if ( defined $return{Status} ) {
+      # If we have no info, do nothing
+      if ( $return{Status} eq "NO_INFO" or
+           $return{Status} eq "NO_MODULE" ) {
+      } else {
+         # pressed and released -> ON and OFF
+         $return{Status} = "ON"  if $return{Status} eq "pressed" ;
+         $return{Status} = "OFF" if $return{Status} eq "released" ;
+         &openHAB_update_state ($item,$return{Status}) ;
+      }
+   }
+}
+
 return 1 ;
