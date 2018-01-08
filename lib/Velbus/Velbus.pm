@@ -959,7 +959,7 @@ sub set_temperature_interval_all {
    my $sock     = $_[0] ;
    my $interval = $_[1] ;
 
-   foreach my $ModuleType ("1E","1F","20","2D","28") {
+   foreach my $ModuleType ("1E","1F","20","2D","28","2C") {
       foreach my $address (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}})) {
          &set_temperature_interval ($sock, $address, $interval) ;
       }
