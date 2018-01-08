@@ -66,9 +66,6 @@ sub www_service {
       }
    }
 
-   # Set action to Unknown
-   $json{action} = "Unknown" ;
-
    # Put the time on the bus
    if ( defined $global{cgi}{params}{action} and $global{cgi}{params}{action} eq "TimeSync" ) {
       $json{action} = $global{cgi}{params}{action} ;
@@ -333,7 +330,7 @@ sub www_service {
                &blind_pos ($sock, $address, $global{cgi}{params}{channel}, $1) ;
             }
          } else {
-            $json{Status} = $data{Blind}{value} if defined $data{Blind}{value} ;
+            $json{Status} = $data{Position}{value} if defined $data{Position}{value} ;
          }
 
          $json{Status} = "NO_INFO" if ! defined $json{Status} ;
@@ -382,7 +379,7 @@ sub www_service {
    }
 
    # Get Counter : only for VMB7IN
-   if ( $global{cgi}{params}{type} eq "Counter" and ( $global{cgi}{params}{action} eq "GetCounter" or $global{cgi}{params}{action} eq "GetCounterCurrent" or $global{cgi}{params}{action} eq "GetDivider" ) ) {
+   if ( $global{cgi}{params}{type} eq "Counter" and ( $global{cgi}{params}{action} eq "GetCounter" or $global{cgi}{params}{action} eq "GetCounterRaw" or $global{cgi}{params}{action} eq "GetCounterCurrent" or $global{cgi}{params}{action} eq "GetDivider" ) ) {
       $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and $Moduletype eq "22" ) {
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
@@ -696,7 +693,7 @@ sub www_print_channeltags () {
                $html .= "    <td>" ;
                if ( $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Relay" or
                     $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Dimmer" ) {
-                  if ( ! defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} or 
+                  if ( ! defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} or
                        $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} eq "" ) {
                      $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} = '__NoTag__' ;
                   }

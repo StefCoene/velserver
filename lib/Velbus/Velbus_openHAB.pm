@@ -54,12 +54,10 @@ sub openHAB () {
 
    # Loop all module types
    foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
-
       $openHAB .= "// $global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)\n" ;
 
       # Loop all found modules for the type
       foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}}) ) {
-
          # All possible channels
          foreach my $Channel ( sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}{$ModuleType}{Channels}}) ) {
          # All found channels
@@ -97,8 +95,10 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                  }
+                  $openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
                   $openHAB .= "\", autoupdate=\"false\"}\n" ;
 
                   # Long pressed button
@@ -113,7 +113,7 @@ sub openHAB () {
                                $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
                      $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
                   }
-                  $Name .= " (Long) " ;
+                  $Name .= " (Long)" ;
                   if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
                      $Name .= " (" . $item . ")" ;
                   }
@@ -124,8 +124,10 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                  }
+                  $openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
                   $openHAB .= "\", autoupdate=\"false\"}\n" ;
                }
                if ( $Type eq "Sensor" ) {
@@ -147,8 +149,10 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                  }
+                  $openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
                   $openHAB .= "\", autoupdate=\"false\"}\n" ;
                }
                if ( $Type eq "Temperature" ) {
@@ -174,9 +178,13 @@ sub openHAB () {
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
-                  $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Temperature&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= "\"}\n" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .= "{http=\"" ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=Temperature&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     $openHAB .= "\"}\n" ;
+                  } else {
+                     $openHAB .= "\n" ;
+                  }
 
                   # Touch + Input modules: heater control
                   if ( ( $ModuleType eq "1E" ) or
@@ -193,8 +201,10 @@ sub openHAB () {
                         $openHAB .= "($Group) " ;
                      }
                      $openHAB .= "{http=\"" ;
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureCoHeMode&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureCoHeMode&action=Set&value=%2\$s]" ;
+                     if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                        $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureCoHeMode&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     }
+                     $openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureCoHeMode&action=Set&value=%2\$s]" ;
                      $openHAB .= "\"}\n" ;
 
                      # Get/Set the heater mode
@@ -206,8 +216,10 @@ sub openHAB () {
                         $openHAB .= "($Group) " ;
                      }
                      $openHAB .= "{http=\"" ;
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureMode&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureMode&action=Set&value=%2\$s]" ;
+                     if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                        $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureMode&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     }
+                     $openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureMode&action=Set&value=%2\$s]" ;
                      $openHAB .= "\"}\n" ;
 
                      # Get/Set the target temperature
@@ -222,8 +234,10 @@ sub openHAB () {
                         $openHAB .= "($Group) " ;
                      }
                      $openHAB .= "{http=\"" ;
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureTarget&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                     $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureTarget&action=Set&value=%2\$s]" ;
+                     if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                        $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureTarget&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     }
+                     $openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&type=TemperatureTarget&action=Set&value=%2\$s]" ;
                      $openHAB .= "\"}\n" ;
                   }
                }
@@ -254,8 +268,10 @@ sub openHAB () {
                         $openHAB .= "[\"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}\"] " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Set&value=%2\$s]" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                  }
+                  $openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Dimmer&action=Set&value=%2\$s]" ;
                   $openHAB .= "\"}\n" ;
                }
                if ( $Type eq "Blind" ) {
@@ -273,7 +289,7 @@ sub openHAB () {
                   if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
                      $Name .= " (" . $item . ")" ;
                   }
-        
+
                   $Name .= " [%s %%]" ;
                   $openHAB .= "Rollershutter $item \"$Name\" " ;
                   $openHAB .= "<rollershutter> " ;
@@ -282,8 +298,10 @@ sub openHAB () {
                      $openHAB .= "($Group) " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=       "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Blind&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Blind&action=Set&value=%2\$s]" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .=       "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Blind&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                  }
+                  $openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Blind&action=Set&value=%2\$s]" ;
                   $openHAB .= "\"}\n" ;
                }
                if ( $Type eq "Relay" ) {
@@ -312,8 +330,10 @@ sub openHAB () {
                         $openHAB .= "[\"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}\"] " ;
                   }
                   $openHAB .= "{http=\"" ;
-                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .=  " >[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Set&value=%2\$s] " ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                  }
+                  $openHAB .=  ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Relay&action=Set&value=%2\$s] " ;
                   $openHAB .= "\"}\n" ;
                }
                if ( $Type eq "ButtonCounter" and
@@ -339,9 +359,13 @@ sub openHAB () {
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
-                  $openHAB .= "{http=\"" ;
-                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterRaw:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= "\"}\n" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .= "{http=\"" ;
+                     $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterRaw:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     $openHAB .= "\"}\n" ;
+                  } else {
+                     $openHAB .= "\n" ;
+                  }
 
                   my $item = "CounterCurrent_$itemBase" ;
                   my $Name ;
@@ -371,9 +395,13 @@ sub openHAB () {
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
-                  $openHAB .= "{http=\"" ;
-                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterCurrent:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= "\"}\n" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .= "{http=\"" ;
+                     $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounterCurrent:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     $openHAB .= "\"}\n" ;
+                  } else {
+                     $openHAB .= "\n" ;
+                  }
 
                   my $item = "Counter_$itemBase" ;
                   my $Name ;
@@ -403,9 +431,13 @@ sub openHAB () {
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
-                  $openHAB .= "{http=\"" ;
-                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounter:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= "\"}\n" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .= "{http=\"" ;
+                     $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetCounter:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     $openHAB .= "\"}\n" ;
+                  } else {
+                     $openHAB .= "\n" ;
+                  }
 
                   my $item = "Divider_$itemBase" ;
                   my $Name ;
@@ -427,9 +459,13 @@ sub openHAB () {
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
-                  $openHAB .= "{http=\"" ;
-                  $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetDivider:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)]" ;
-                  $openHAB .= "\"}\n" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .= "{http=\"" ;
+                     $openHAB .=         "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Counter&action=GetDivider:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     $openHAB .= "\"}\n" ;
+                  } else {
+                     $openHAB .= "\n" ;
+                  }
                }
             }
          }

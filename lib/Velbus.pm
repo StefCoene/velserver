@@ -58,6 +58,11 @@ sub read_all_configs {
    $global{Config}{openHAB}{POLLING}   = 60000                                   if ! defined $global{Config}{openHAB}{POLLING} ;
    $global{Config}{openHAB}{BASE_URL}  = "http://localhost/velserver/service.pl" if ! defined $global{Config}{openHAB}{BASE_URL} ;
    $global{Config}{openHAB}{ITEM_FILE} = "/etc/openhab2/items/velbus.items"      if ! defined $global{Config}{openHAB}{ITEM_FILE} ;
+   # When POLLING = 0, we don't have to poll from openHAB
+   if ( $global{Config}{openHAB}{POLLING} eq "0" ) {
+   } else {
+      $global{Config}{openHAB}{POLL_STATUS} = "YES" ;
+   }
 }
 
 sub init {
