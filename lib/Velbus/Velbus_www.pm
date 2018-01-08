@@ -76,7 +76,7 @@ sub www_service {
       $json = "" ;
    }
 
-   # Get the current temperature: touch panels
+   # Get the current temperature: touch panels & outdoor sensor
    if ( $global{cgi}{params}{type} eq "Temperature" and $global{cgi}{params}{action} eq "Get" ) {
       $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and (
@@ -84,7 +84,8 @@ sub www_service {
                $Moduletype eq "1F" or # VMBGP2
                $Moduletype eq "20" or # VMBGP4
                $Moduletype eq "2D" or # VMBGP4PIR
-               $Moduletype eq "28"    # VMBGPOD
+               $Moduletype eq "28" or # VMBGPOD
+               $Moduletype eq "2C"    # VMBPIRO: Outdoor sensor
             ) ) {
 
          my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
