@@ -16,6 +16,7 @@ sub print_help {
       scan = scan all modules on the bus
       status = get status off all modules
       date = broadcast date and time
+      tempinterval = force interval updates for temperaure to 60 seconds
       openHAB = create the openHAB items file
          it also prints the file
    
