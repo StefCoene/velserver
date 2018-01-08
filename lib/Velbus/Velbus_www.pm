@@ -286,7 +286,7 @@ sub www_service {
                &dim_value ($sock, $address, $global{cgi}{params}{channel}, $global{cgi}{params}{value}) ;
                $json{Action} = $global{cgi}{params}{value} ;
          } else {
-            $json{Status} = $data{Button}{value} if defined $data{Button}{value} ;
+            $json{Status} = $data{Dimmer}{value} if defined $data{Dimmer}{value} ;
          }
 
          $json{Error} = "NO_INFO" if ! defined $json{Status} ;
@@ -333,7 +333,7 @@ sub www_service {
                &blind_pos ($sock, $address, $global{cgi}{params}{channel}, $1) ;
             }
          } else {
-            $json{Status} = $data{Button}{value} if defined $data{Button}{value} ;
+            $json{Status} = $data{Blind}{value} if defined $data{Blind}{value} ;
          }
 
          $json{Error} = "NO_INFO" if ! defined $json{Status} ;
