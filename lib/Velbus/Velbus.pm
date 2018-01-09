@@ -275,7 +275,11 @@ sub process_message {
                                  my $action = $1 ;
                                  my $Type = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Channels}{$Channel}{Type} ;
                                  # A Button is tricky: we have to do something on RELEASED, but we need to know if it was a short or a long press
-                                 if ( $Type eq "Button" ) {
+                                 # For a 7IN (=ButtonCounter) we also have to check the Divider value
+                                 if ( $Type eq "Button" or
+                                    ( $Type eq "ButtonCounter" and
+                                       defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} and
+                                               $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
                                     if ( $action eq "RELEASED" ) {
                                        if ( $global{openHAB}{ButtonState}{$message{addressMaster}}{$Channel} eq "PRESSED" ) {
                                           # PRESSED: send ON + OFF

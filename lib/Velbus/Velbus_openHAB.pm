@@ -72,7 +72,7 @@ sub openHAB () {
                if ( $Type eq "Button" or
                     ( $Type eq "ButtonCounter" and
                        defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} and
-                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
                   # Short pressed button
                   my $item = "Button_$itemBase" ;
                   my $Name ;
