@@ -140,6 +140,11 @@ sub process_message {
             my $hex = shift @hex ;
             my $Channel = &channel_id_to_number($hex,$message{address},"Name") ;
 
+            # For 2C = VMBPIRO, only the sensor name is returned as Channel 01. But this is in reality channel 09.
+            if ( $message{ModuleType} eq "2C" ) {
+               $Channel = "09" ;
+            }
+
             if ( $message{MessageType} eq "F0" ) {
                $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value} = "" ; # Reset the name
             }
@@ -152,10 +157,6 @@ sub process_message {
 
             if ( $message{MessageType} eq "F2" ) {
                if ( defined $message{ModuleType} ) {
-                  # For 2C = VMBPIRO, only the sensor name is returned as Channel 01. But this is in reality channel 09.
-                  if ( $message{ModuleType} eq "2C" ) {
-                     $Channel = "09" ;
-                  }
                   if ( $message{ModuleType} eq "2C" and $Channel eq "09" or # VMBPIRO
                        $message{ModuleType} eq "1E" and $Channel eq "09" or # VMBGP1D
                        $message{ModuleType} eq "1F" and $Channel eq "09" or # VMBGP2D
