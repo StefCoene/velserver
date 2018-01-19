@@ -583,7 +583,7 @@ sub www_print_channeltags () {
 
    # Processing the selected tags
    foreach my $param (sort keys %{$global{cgi}{params}} ) {
-      if ( $param =~ /Tag::(\d+)::(\d+)/ ) {
+      if ( $param =~ /Tag::(..)::(..)/ ) {
          my $Address  = $1 ;
          my $Channel = $2 ;
          &update_modules_channel_info ($Address, $Channel, "Tag", $global{cgi}{params}{$param}) ;
