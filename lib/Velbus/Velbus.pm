@@ -538,10 +538,6 @@ sub process_message {
    if ( defined $global{Config}{velbus}{ENABLE_RAWMESSAGE_LOGGING} ) {
       &log("raw","$message{address} : $message{prio} : $message{MessageType} : $message{RTR_size} : $message{Raw}") ;
    }
- 
-   if ( defined $global{Config}{mysql}{ENABLE_RAWMESSAGE_LOGGING} ) {
-      &do_query ($global{dbh},"insert into `messages` (`date`, `raw`, `address`, `prio`, `type`, `rtr_size`) VALUES (NOW(), ?, ?, ?, ?, ? )", $message{Raw}, $message{address}, $message{prio}, $message{MessageType}, $message{RTR_size}) ;
-   }
 }
 
 # Put a message on the bus
