@@ -29,8 +29,8 @@ $global{Cons}{ModuleTypes}{'12'}{MemoryMatch}{1}{Version} = "1" ;
 # VMBDMI
 $global{Cons}{ModuleTypes}{'15'}{MemoryMatch}{1}{Build}   = "< 1410" ;
 $global{Cons}{ModuleTypes}{'15'}{MemoryMatch}{1}{Version} = "0" ;
-$global{Cons}{ModuleTypes}{'15'}{MemoryMatch}{1}{Build}   = "=> 1410" ;
-$global{Cons}{ModuleTypes}{'15'}{MemoryMatch}{1}{Version} = "1" ;
+$global{Cons}{ModuleTypes}{'15'}{MemoryMatch}{2}{Build}   = "=> 1410" ;
+$global{Cons}{ModuleTypes}{'15'}{MemoryMatch}{2}{Version} = "1" ;
 # VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{MemoryMatch}{1}{Build}   = "=> 1640" ;
 $global{Cons}{ModuleTypes}{'28'}{MemoryMatch}{1}{Version} = "1" ;
@@ -104,7 +104,7 @@ $global{Cons}{ModuleTypes}{'11'}{Memory}{1}{ModuleName} = "00E3-00EF;01E3-01EF;0
 # VMB4DC
 $global{Cons}{ModuleTypes}{'12'}{Memory}{1}{ModuleName} = "00E0-00EF;01E0-01EF" ;
 # VMBDMI
-$global{Cons}{ModuleTypes}{'15'}{Memory}{1}{ModuleName} = "00B0-00EF" ;
+$global{Cons}{ModuleTypes}{'15'}{Memory}{2}{ModuleName} = "00B0-00EF" ;
 # VMBGP1D
 $global{Cons}{ModuleTypes}{'1E'}{Memory}{1}{ModuleName} = "03C0-03FF" ;
 # VMBGP2D
