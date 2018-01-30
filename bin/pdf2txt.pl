@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#i!/usr/bin/perl
 
 # Protocol pdf format:
 #   Every file has a footer with some extra information about the document.
@@ -130,6 +130,8 @@ foreach my $file (sort `ls protocol*.txt`) {
 
    my $counter = 0 ; #  Counter will be incremented per found message
 
+   my $previousline ;
+
    foreach my $line (@file) {
       chomp $line ;
       next if $line eq "" ; # Skip empty lines
@@ -145,49 +147,28 @@ foreach my $file (sort `ls protocol*.txt`) {
          next ;
       }
 
-      # Start of message, this is messy to detect :(
-      # May NOT start with a space! But there is 1 case where the line starts with "   Transmit"
-      if ( $line =~ /^   Transmit/ or (
-            ( $line !~ /^ / and
-               ( $line =~ /^‘?\w.+ command received/ or
-               $line =~ /^‘?\w.+ received:?/  or
-               $line =~ /^Transmit/ ) ) 
-            ) 
-         ) {
+      # Priority of the message
+      if ( $line =~ /SID10-SID9.+(highest priority)/ or
+           $line =~ /SID10-SID9.+(lowest priority)/ ) {
          $counter ++ ; # Incrementing the message counter
-         if ( defined $file{PerFile}{$file}{Messages}{$counter} ) {
-            print "Error: $file, message counter $counter: already seen!\n" ;
-         }
-         $file{PerFile}{$file}{Messages}{$counter}{Info} = &clean($line) ; # Store the raw text of the message
+         $file{PerFile}{$file}{Messages}{$counter}{Prio} = $1 ;
+         # The previous line is the tekst that belongs to this message
+         $file{PerFile}{$file}{Messages}{$counter}{Info} = &clean($previousline) ;
+
+      # Filtering out the address
+      } elsif ( $line =~ /SID8...SID1 = (.+)/ ) {
+         $file{PerFile}{$file}{Messages}{$counter}{MessageAddress} .= $1 ;
+
+      # Info about RTR in the message
+      } elsif ( $line =~ /RTR = (\d)/ ) {
+         $file{PerFile}{$file}{Messages}{$counter}{RTR} = $1 ;
+
+      # Info about the databytes in the message
+      } elsif ( $line =~ /DATABYTE\d =/ ) {
+         $file{PerFile}{$file}{Messages}{$counter}{DATABYTE} .= $line . "\n" ;
 
       } else {
-         # Skip if we are not processing a message
-         next if $counter eq "0" ;
-
-         # Filtering out the address
-         if ( $line =~ /SID8...SID1 = (.+)/ ) {
-            $file{PerFile}{$file}{Messages}{$counter}{MessageAddress} .= $1 ;
-
-         # Info about RTR in the message
-         } elsif ( $line =~ /RTR = (\d)/ ) {
-            $file{PerFile}{$file}{Messages}{$counter}{RTR} = $1 ;
-
-         # Info about the databytes in the message
-         } elsif ( $line =~ /DATABYTE\d =/ ) {
-            $file{PerFile}{$file}{Messages}{$counter}{DATABYTE} .= $line . "\n" ;
-
-         # Priority of the message
-         } elsif ( $line =~ /SID10-SID9.+(highest priority)/ or
-                   $line =~ /SID10-SID9.+(lowest priority)/ ) {
-            $file{PerFile}{$file}{Messages}{$counter}{Prio} = $1 ;
-
-         # This marks the end of the list of possible messages so we reset $counter to 0
-         } elsif ( $line =~ /^Memory map/ ) {
-            $counter = 0 ;
-
-         } else {
-            $file{PerFile}{$file}{Messages}{$counter}{Rest} .= $line . "\n" ; # Store the rest of the message, can be handy
-         }
+         $previousline = $line ;
       }
    }
 }
