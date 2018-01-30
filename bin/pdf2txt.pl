@@ -1,4 +1,4 @@
-#i!/usr/bin/perl
+#!/usr/bin/perl
 
 # Protocol pdf format:
 #   Every file has a footer with some extra information about the document.
