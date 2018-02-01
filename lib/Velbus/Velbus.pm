@@ -1045,4 +1045,29 @@ sub module_find_MemoryKey () {
    return $MemoryKey ;
 }
 
+# Show a memo text on the OLED of a VMBGPOD
+# To erase the text, just don't provide the third parameter
+sub send_memo () {
+   my $sock    = $_[0] ;
+   my $address = $_[1] ;
+   my $text    = $_[2] ;
+
+   if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
+      my @text = split "", $text ;
+   
+      # We can send 64 characters and it's 5 characters / message. So we need 13 messages.
+      foreach my $i (0..12) {
+         my @message = ('00', '00', '00', '00', '00', '00') ; # Pre-fill the message with 00
+         foreach my $j (1..5) { # Start from 1 because 0 is for the offsiet
+            my $place = $i * 5 + $j ;
+            next if $place > 64 ;
+            my $char = &dec_to_hex (ord $text[$place]) ;
+            $message[$j] = $char ;
+         }  
+         $message[0] = &dec_to_hex($i * 5) ; # First element is the offset of the character
+         &send_message ($sock, $address, 'AC', 'FF', @message) ;
+      }
+   }
+}
+
 return 1

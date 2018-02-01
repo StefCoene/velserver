@@ -6,6 +6,8 @@ $global{BaseDir} = "/home/velbus/velserver" ;
 
 use Getopt::Long ;
 &GetOptions ('option=s' => \$global{opts}{option} ,
+             'address=s' => \$global{opts}{address} ,
+             'text=s' => \$global{opts}{text} ,
              'help' => \$global{opts}{help} ) or &print_help ;
 
 # Print help en exit dan
@@ -16,6 +18,8 @@ sub print_help {
       scan = scan all modules on the bus
       status = get status off all modules
       date = broadcast date and time
+      memo = show memo text on OLED
+         optional parameter address for the address and text for the text
       tempinterval = force interval updates for temperaure to 60 seconds
       openHAB_push_status = push state of items to openHAB
       openHAB = create the openHAB items file
@@ -46,6 +50,11 @@ if ( $global{opts}{option} eq "scan" ) {
    &set_temperature_interval_all($sock,"60") ;
 } elsif ( $global{opts}{option} eq "date" ) {
    &broadcast_datetime($sock) ;
+} elsif ( $global{opts}{option} eq "memo" ) {
+   if ( defined $global{opts}{address} ) {
+      &send_memo ($sock,$global{opts}{address},$global{opts}{text}) ;
+   }
+
 } elsif ( $global{opts}{option} eq "openHAB" ) {
    &openHAB_config () ;
    my $openHAB = &openHAB () ;
