@@ -400,6 +400,21 @@ sub www_service {
       }
    }
 
+   # Set memo text: only for VMBGPOD
+   if ( $global{cgi}{params}{action} eq "Memo" ) {
+      $json{action} = $global{cgi}{params}{action} ;
+      if ( defined $Moduletype and $Moduletype eq "28" ) {
+         if ( defined $global{cgi}{params}{text} ) {
+            &send_memo ($sock, $address, $global{cgi}{params}{text}) ;
+            $json{Text} = $global{cgi}{params}{text} ;
+         } else {
+            $json{Status} = "NO_TEXT" ;
+         }
+      } else {
+         $json{Status} = "NO_MODULE" ;
+      }
+   }
+
    # When there was an error, set the Error value in the json and set Status to NULL
    if ( $json{Status} eq "NO_INFO" or
         $json{Status} eq "NO_MODULE" ) {
