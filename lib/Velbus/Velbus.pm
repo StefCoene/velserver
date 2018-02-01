@@ -1054,6 +1054,7 @@ sub send_memo () {
 
    if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
       my @text = split "", $text ;
+      unshift @text , "" ; # First element of tekst is lost due to $j starting a 1
    
       # We can send 64 characters and it's 5 characters / message. So we need 13 messages.
       foreach my $i (0..12) {
