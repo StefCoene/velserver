@@ -117,6 +117,55 @@ sub temperature_to_hex {
 
 # Convert a binary numer (8 bits) to a number
 # Used when reading temperature settings
+# From the docs, but this is not correct. The possitive numbers are ok (except for 63.5) , but the negative numbers:
+#    0 1111111  111 00000     63.5    = 1016 x 0.0625   1016 in bin = 01111111
+#    0 0000001  000 xxxxx      0.5    =    8 x 0.0625
+#    0 0000000  100 xxxxx      0.25   =    4 x 0.0625
+#    0 0000000  010 xxxxx      0.125  =    2 x 0.0625
+#    0 0000000  001 xxxxx      0.0625 =    1 x 0.0625
+#    0 0000000  000 xxxxx      0
+#    1 1111111  110 xxxxx     -0.0625 =   1 x 0.0625   1
+#    1 1111111  100 xxxxx     -0.125  =   2 x 0.0625   2 + 1 = 3
+#    1 1111111  010 xxxxx     -0.25   =   4 x 0.0625   4 + 0 + 1 = 5
+#    1 1111110  000 xxxxx     -0.5    =   8 x 0.0625   8 + 4 + 2 + 1 = 15
+#    1 0010010  000 xxxxx    -55      = 880 x 0.0625  512 + 256 + 0 + 64 + 32 + 0 + 8 + 4 + 2 + 1 = 879
+sub hex_to_temperature {
+   my @temperature = @_ ;
+
+   # If no second byte is given, use 0x00
+   if ( ! defined $temperature[1] ) {
+      $temperature[1] = "0x00" ;
+   }
+
+   $temperature[0] = &hex_to_bin ($temperature[0]) ;
+   $temperature[1] = &hex_to_bin ($temperature[1]) ;
+   $temperature = $temperature[0] . $temperature[1] ;
+
+   # Last 5 digits are not used if we get 2 bytes.
+   if ( $temperature =~ s/(...........)...../$1/ ) {
+   } else {
+      $temperature = $temperature . "000" ;
+   }
+
+   my $negative ;
+   # If first number is 1, this is a negative number
+   # Strip the first 1 and swap 0 and 1
+   if ( $temperature =~ s/^1//g ) {
+      $negative = 1 ;
+      $temperature =~ s/0/2/g ;
+      $temperature =~ s/1/0/g ;
+      $temperature =~ s/2/1/g ;
+   }  
+   $temperature = &bin_to_dec ($temperature) ;
+   $temperature = $temperature * 0.0625 ;
+   if ( $negative ) {
+      $temperature = 0 - $temperature ;
+   }  
+   return $temperature ; 
+}
+
+# Convert a binary numer (8 bits) to a number
+# Used when reading temperature settings
 #   01111111  63.5°C
 #   01101100    54°C
 #   00101000    20°C
@@ -126,7 +175,7 @@ sub temperature_to_hex {
 #   11111111  -0.5°C
 #   10010010   -55°C
 #   11000000   -32°C
-sub hex_to_temperature {
+sub hex_to_temperature_old1 {
    my $temperature = $_[0] ;
    my $negative ;
    if ( $temperature =~ s/^1/0/ ) {
@@ -142,7 +191,7 @@ sub hex_to_temperature {
 
 # Calculate temperature from the hex values from the bus
 # Used when sensor transmits the current temperature
-sub hex_to_temperature {
+sub hex_to_temperature_old2 {
    my @data = @_ ;
 
    @data = &message_hex_to_dec (@data) ;
