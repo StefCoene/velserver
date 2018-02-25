@@ -768,6 +768,10 @@ sub channel_id_to_number () {
          $channel += $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ;
       }
 
+      if ( defined $address and $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{address}) {
+         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{address} ;
+      }
+
       $channel = "0" . $channel if $channel < 10 ;
    }
    return $channel ;
