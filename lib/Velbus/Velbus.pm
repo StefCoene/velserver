@@ -1037,16 +1037,17 @@ sub module_find_MemoryKey () {
    my $MemoryKey ;
    if ( defined $global{Cons}{ModuleTypes}{$type} and
         defined $global{Cons}{ModuleTypes}{$type}{MemoryMatch} ) {
-      foreach my $key (sort (keys %{$global{Cons}{ModuleTypes}{$type}{MemoryMatch}} ) ) {
+      foreach my $key (sort {$a <=> $b} (keys %{$global{Cons}{ModuleTypes}{$type}{MemoryMatch}} ) ) {
          if ( defined $global{Cons}{ModuleTypes}{$type}{MemoryMatch}{$key}{Build} ) {
             my $code = "if ( $Build $global{Cons}{ModuleTypes}{$type}{MemoryMatch}{$key}{Build} ) {
                \$MemoryKey = '$global{Cons}{ModuleTypes}{$type}{MemoryMatch}{$key}{Version}' ;
             } ; " ;
             eval $code ;
+            return $MemoryKey if defined $MemoryKey ;;
          }
       }
    }
-   return $MemoryKey ;
+   return undef ;
 }
 
 # Show a memo text on the OLED of a VMBGPOD
