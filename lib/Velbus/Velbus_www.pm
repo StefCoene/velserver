@@ -707,6 +707,7 @@ sub www_print_channeltags () {
 
                $html .= "    <td>" ;
                if ( $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Relay" or
+                    $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Button" or
                     $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Dimmer" ) {
                   if ( ! defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} or
                        $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} eq "" ) {
