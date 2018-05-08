@@ -94,6 +94,10 @@ sub openHAB () {
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
+                  if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} and
+                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} ne '__NoTag__' ) {
+                        $openHAB .= "[\"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}\"] " ;
+                  }
                   $openHAB .= "{http=\"" ;
                   if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
                      $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
@@ -122,6 +126,10 @@ sub openHAB () {
                   my $Group = &openHAB_match_item($item) ;
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
+                  }
+                  if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} and
+                       $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} ne '__NoTag__' ) {
+                        $openHAB .= "[\"$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}\"] " ;
                   }
                   $openHAB .= "{http=\"" ;
                   if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
@@ -600,8 +608,14 @@ sub openHAB_status_push {
            $return{Status} eq "NO_MODULE" ) {
       } else {
          # pressed and released -> ON and OFF
-         $return{Status} = "ON"  if $return{Status} eq "pressed" ;
-         $return{Status} = "OFF" if $return{Status} eq "released" ;
+         if ( $return{Status} eq "longpressed" ) {
+            $item =~ s/^Button/^ButtonLong/g ;
+            $return{Status} = "ON" ;
+         } elsif ( $return{Status} eq "pressed" ) {
+            $return{Status} = "ON" ;
+         } elsif ( $return{Status} eq "released" ) {
+            $return{Status} = "OFF" 
+         }
          &openHAB_update_state ($item,$return{Status}) ;
       }
    }
