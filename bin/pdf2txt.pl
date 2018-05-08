@@ -138,6 +138,10 @@ foreach my $file (sort `ls protocol*.txt`) {
 
       $line =~ s///g ; # Removing new page marker
 
+      $line =~ s/^\s+//g ; # Remove spaces at start of line
+      $line =~ s/\s+$//g ; # Remove spaces at end of line
+      $line =~ s/\s+=\s+/=/g ; # Remove spaces around =
+
       # The page footer contains the text 'PROTOCOL –'.
       # The page footer contains some information about the version of the document
       if ( $line =~ /PROTOCOL –/ ) {
@@ -147,26 +151,33 @@ foreach my $file (sort `ls protocol*.txt`) {
          next ;
       }
 
+      my @split = split "=", $line ;
       # Priority of the message
-      if ( $line =~ /SID10-SID9.+(highest priority)/ or
-           $line =~ /SID10-SID9.+(lowest priority)/ ) {
-         $counter ++ ; # Incrementing the message counter
-         $file{PerFile}{$file}{Messages}{$counter}{Prio} = $1 ;
-         # The previous line is the tekst that belongs to this message
-         $file{PerFile}{$file}{Messages}{$counter}{Info} = &clean($previousline) ;
+      if ( $split[0] eq "SID10-SID9" ) {
+         if ( $split[1] =~ /\((.+ priority)\)/ ) {
+            $counter ++ ; # Incrementing the message counter
+            $file{PerFile}{$file}{Messages}{$counter}{Prio} = $1 ;
+            # The previous line is the tekst that belongs to this message
+            $file{PerFile}{$file}{Messages}{$counter}{Info} = &clean($previousline) ;
 
+         } else {
+            print "$file SID10-SID9 not correctly parsed: $line\n" ;
+         }
       # Filtering out the address
-      } elsif ( $line =~ /SID8...SID1 = (.+)/ ) {
-         $file{PerFile}{$file}{Messages}{$counter}{MessageAddress} .= $1 ;
+      } elsif ( $split[0] eq "SID8...SID1" ) {
+         $file{PerFile}{$file}{Messages}{$counter}{MessageAddress} .= $split[1] ;
 
       # Info about RTR in the message
-      } elsif ( $line =~ /RTR = (\d)/ ) {
-         $file{PerFile}{$file}{Messages}{$counter}{RTR} = $1 ;
+      } elsif ( $split[0] eq "RTR" ) {
+         $file{PerFile}{$file}{Messages}{$counter}{RTR} = $split[1] ;
 
       # Info about the databytes in the message
-      } elsif ( $line =~ /DATABYTE\d =/ ) {
+      } elsif ( $split[0] =~ /^DATABYTE/ ) {
          $file{PerFile}{$file}{Messages}{$counter}{DATABYTE} .= $line . "\n" ;
 
+      } elsif ( $line =~ /Memory map:/i or
+                $line =~ /Memory map build/i ) {
+         last ;
       } else {
          $previousline = $line ;
       }
@@ -247,8 +258,8 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
          foreach my $line (split "\n", $file{PerFile}{$file}{Messages}{$counter}{DATABYTE} ) {
             # First databyte contains the type of message
             if ( $line =~ /DATABYTE1/ ) {
-               if ( $line =~ /DATABYTE1 = (.+) \(H’(..)’\)/ or
-                    $line =~ /DATABYTE1 = (.+) \(0x(.+)\)/ ) {
+               if ( $line =~ /DATABYTE1=(.+) \(H’(..)’\)/ or
+                    $line =~ /DATABYTE1=(.+) \(0x(.+)\)/ ) {
                   my $CommandText = $1 ;
                   my $CommandHex  = $2 ;
                   # Some text corrections so we have the same text for the different modules
@@ -271,7 +282,7 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                   print "$file Error DATABYTE1 format: $line\n" ;
                }
             } else {
-               if ( $line =~ /DATABYTE(\d) = (.+)/ ) {
+               if ( $line =~ /DATABYTE(\d)=(.+)/ ) {
                   my $DATABYTE = $1 ;
                   $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} = $2 ;
                   if ( $line =~ /100%/ ) {
