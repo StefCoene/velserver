@@ -312,7 +312,8 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
          if ( defined $file{PerFile}{$file}{Messages}{$counter} ) {
             if ( $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /(.+)_TYPE.+\(H’(..)’\)/i or
                  $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /(.+) TYPE.+\(H’(..)’\)/i or
-                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /(.+).+\(H’(..)’\)/i ) {
+                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /(.+).+\(H’(..)’\)/i or
+                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /(.+) type \(0x(..)\)/i ) {
                my $name = $1 ; # This is useless :(
                $ModuleTypeHex = $2 ;
                if ( $ModuleType eq "VMBGPOD" ) { # In the pdf this is type 21, but this is wrong and should be type 28. I think...
@@ -341,7 +342,7 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                }
 
             } else {
-               print "Error $ModuleType: no FF command $file{PerType}{$ModuleType}{commands}{'FF'}{byte}{2}{text}\n" ;
+               print "Error $ModuleType: no mathcing FF command: $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text}\n" ;
             }
          } else {
             print "Error no DATABYTE2 found in $file for message counter $counter\n" ;
