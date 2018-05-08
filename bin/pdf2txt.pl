@@ -247,7 +247,8 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
          foreach my $line (split "\n", $file{PerFile}{$file}{Messages}{$counter}{DATABYTE} ) {
             # First databyte contains the type of message
             if ( $line =~ /DATABYTE1/ ) {
-               if ( $line =~ /DATABYTE1 = (.+) \(H’(..)’\)/ ) {
+               if ( $line =~ /DATABYTE1 = (.+) \(H’(..)’\)/ or
+                    $line =~ /DATABYTE1 = (.+) \(0x(.+)\)/ ) {
                   my $CommandText = $1 ;
                   my $CommandHex  = $2 ;
                   # Some text corrections so we have the same text for the different modules
@@ -267,7 +268,7 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                   # Ignore
                   #  DATABYTE1: <SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC14...CRC1-CRCDEL-ACK-ACKDEL-
                } else {
-                  print "Error DATABYTE1 format: $line\n" ;
+                  print "$file Error DATABYTE1 format: $line\n" ;
                }
             } else {
                if ( $line =~ /DATABYTE(\d) = (.+)/ ) {
