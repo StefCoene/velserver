@@ -164,7 +164,7 @@ sub openHAB () {
                   $openHAB .= "\", autoupdate=\"false\"}\n" ;
                }
                if ( $Type eq "SensorNumber" ) {
-                  my $item = "Sensor_$itemBase" ;
+                  my $item = "SensorNumber_$itemBase" ;
                   my $Name ;
                   if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
                      defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
@@ -179,7 +179,6 @@ sub openHAB () {
                      $Name .= " (" . $item . ")" ;
                   }
 
-                  $Name .= $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
                   if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
                      $Name .= " (" . $item . ")" ;
                   }
