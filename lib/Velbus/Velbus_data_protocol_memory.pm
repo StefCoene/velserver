@@ -39,18 +39,22 @@ $global{Cons}{ModuleTypes}{'22'}{MemoryMatch}{1}{Build}   = ">= 1424" ;
 $global{Cons}{ModuleTypes}{'22'}{MemoryMatch}{1}{Version} = "1" ;
 
 # VMB8PBU
-$global{Cons}{ModuleTypes}{'16'}{MemoryMatch}{1}{Build}   = ">= 1409 " ;
+$global{Cons}{ModuleTypes}{'16'}{MemoryMatch}{1}{Build}   = ">= 1409" ;
 $global{Cons}{ModuleTypes}{'16'}{MemoryMatch}{1}{Version} = "1" ;
 # VMB6PBN
-$global{Cons}{ModuleTypes}{'17'}{MemoryMatch}{1}{Build}   = ">= 1409 " ;
+$global{Cons}{ModuleTypes}{'17'}{MemoryMatch}{1}{Build}   = ">= 1409" ;
 $global{Cons}{ModuleTypes}{'17'}{MemoryMatch}{1}{Version} = "1" ;
 # VMB2PBN
-$global{Cons}{ModuleTypes}{'18'}{MemoryMatch}{1}{Build}   = ">= 1409 " ;
+$global{Cons}{ModuleTypes}{'18'}{MemoryMatch}{1}{Build}   = ">= 1409" ;
 $global{Cons}{ModuleTypes}{'18'}{MemoryMatch}{1}{Version} = "1" ;
 
 # VMBPIRO
-$global{Cons}{ModuleTypes}{'2C'}{MemoryMatch}{1}{Build}   = ">= 1519 " ;
+$global{Cons}{ModuleTypes}{'2C'}{MemoryMatch}{1}{Build}   = ">= 1519" ;
 $global{Cons}{ModuleTypes}{'2C'}{MemoryMatch}{1}{Version} = "1" ;
+
+# VMB4AN
+$global{Cons}{ModuleTypes}{'32'}{MemoryMatch}{1}{Build}   = "= 1818" ;
+$global{Cons}{ModuleTypes}{'32'}{MemoryMatch}{1}{Version} = "1" ;
 
 # VMB7IN
 $global{Cons}{ModuleTypes}{'22'}{Memory}{1}{Address}{'03FE'}{Match}{'1'}{'%......00'}{Value} = "reserved" ;
@@ -132,3 +136,5 @@ $global{Cons}{ModuleTypes}{'16'}{Memory}{1}{ModuleName} = "03C0-03FF" ;
 $global{Cons}{ModuleTypes}{'17'}{Memory}{1}{ModuleName} = "03C0-03FF" ;
 # VMB2PBN
 $global{Cons}{ModuleTypes}{'18'}{Memory}{1}{ModuleName} = "03C0-03FF" ;
+# VMB4AN
+$global{Cons}{ModuleTypes}{'32'}{Memory}{1}{ModuleName} = "0000-003F" ;
