@@ -53,7 +53,7 @@ $global{Cons}{ModuleTypes}{'2C'}{MemoryMatch}{1}{Build}   = ">= 1519" ;
 $global{Cons}{ModuleTypes}{'2C'}{MemoryMatch}{1}{Version} = "1" ;
 
 # VMB4AN
-$global{Cons}{ModuleTypes}{'32'}{MemoryMatch}{1}{Build}   = "= 1818" ;
+$global{Cons}{ModuleTypes}{'32'}{MemoryMatch}{1}{Build}   = "== 1818" ;
 $global{Cons}{ModuleTypes}{'32'}{MemoryMatch}{1}{Version} = "1" ;
 
 # VMB7IN
