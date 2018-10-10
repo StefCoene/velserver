@@ -157,6 +157,8 @@ sub process_message {
 
          } elsif ( $message{MessageType} eq "AC" ) { # Sensor value, transmitted as text
             my $Channel = &hex_to_dec (shift @hex ) ; # 9 -> sensor 1, 12 -> sensor 14
+            $Channel = "0" . $Channel if $channel < 10 ;
+
             my $start = shift @hex ; $start *= 1 ; # Start of text
 
             if ( $start eq "0" ) { # Begin of text so reset the data
