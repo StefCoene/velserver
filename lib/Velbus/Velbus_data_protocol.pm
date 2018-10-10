@@ -400,4 +400,14 @@ $global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Name} = "Dark output" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Type} = "Temperature" ;
 
+# VMB4AN: Analog I/O module
+$global{Cons}{ModuleTypes}{'32'}{Channels}{"09"}{Name} = "Sensor 1" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"09"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"10"}{Name} = "Sensor 2" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"10"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"11"}{Name} = "Sensor 3" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"11"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"12"}{Name} = "Sensor 4" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"12"}{Type} = "Sensor" ;
+
 return 1 ;
