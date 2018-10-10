@@ -141,7 +141,7 @@ sub openHAB () {
                if ( $Type eq "Sensor" ) {
                   my $item = "Sensor_$itemBase" ;
                   my $Name ;
-                  # Since the name of a sensor is fixed, we alwasyd the name of the module
+                  # Since the name of a sensor is fixed, we always use the name of the module
                   if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
                                $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
                      $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
@@ -161,6 +161,39 @@ sub openHAB () {
                      $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
                   }
                   $openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
+                  $openHAB .= "\", autoupdate=\"false\"}\n" ;
+               }
+               if ( $Type eq "SensorNumber" ) {
+                  my $item = "Sensor_$itemBase" ;
+                  my $Name ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                     defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} and
+                     $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} ne "" ) {
+                     $Name = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName} . " :: " ;
+                  }
+                  if ( defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} and
+                               $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+                     $Name .= $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value} ;
+                  }
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
+
+                  $Name .= $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
+                  if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+                     $Name .= " (" . $item . ")" ;
+                  }
+
+                  $openHAB .= "Number $item \"$Name\" " ;
+                  my $Group = &openHAB_match_item($item) ;
+                  if ( defined $Group ) {
+                     $openHAB .= "($Group) " ;
+                  }
+                  $openHAB .= "{http=\"" ;
+                  if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                  }
+                  #$openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
                   $openHAB .= "\", autoupdate=\"false\"}\n" ;
                }
                if ( $Type eq "Temperature" ) {
