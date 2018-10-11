@@ -191,9 +191,8 @@ sub openHAB () {
                   }
                   $openHAB .= "{http=\"" ;
                   if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
-                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=SensorNumber&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
                   }
-                  #$openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
                   $openHAB .= "\", autoupdate=\"false\"}\n" ;
                }
                if ( $Type eq "Temperature" ) {
