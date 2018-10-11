@@ -49,6 +49,7 @@ sub openHAB_match_item {
 #   Relay
 #   Button
 #   Sensor
+#   SensorNumber
 sub openHAB () {
    my $openHAB ;
 

@@ -146,18 +146,18 @@ sub process_message {
             push @{$message{text}}, "Temperature = $temperature" ;
             &openHAB_update_state ("Temperature_$message{addressMaster}", $temperature) ;
 
-            #} elsif ( $message{MessageType} eq "A9" ) {
-            #my $Channel = &hex_to_dec (shift @hex ) ; # 9 -> sensor 1, 12 -> sensor 14
-            #my $bin = &hex_to_bin (shift @hex) ; # We also need the message in binary format
-            #foreach my $hex (@hex) {
-               #$dec = &hex_to_dec($hex) ;
-               #print "$hex   $dec\n" ;
-               #}
-            #print "bin = $bin\n" ;
+         #} elsif ( $message{MessageType} eq "A9" ) {
+         #my $Channel = &hex_to_dec (shift @hex ) ; # 9 -> sensor 1, 12 -> sensor 14
+         #my $bin = &hex_to_bin (shift @hex) ; # We also need the message in binary format
+         #foreach my $hex (@hex) {
+            #$dec = &hex_to_dec($hex) ;
+            #print "$hex   $dec\n" ;
+            #}
+         #print "bin = $bin\n" ;
 
          } elsif ( $message{MessageType} eq "AC" ) { # Sensor value, transmitted as text
-            my $Channel = &hex_to_dec (shift @hex ) ; # 9 -> sensor 1, 12 -> sensor 14
-            $Channel = "0" . $Channel if $channel < 10 ;
+            my $hex = shift @hex ;
+            my $Channel = &channel_id_to_number($hex,$message{address},"Sensor") ;
 
             my $start = shift @hex ; $start *= 1 ; # Start of text
 
@@ -236,7 +236,7 @@ sub process_message {
                my %info ;
                my %openHAB_update_state ;
 
-               my $Channel = "00" ;
+               my $Channel = "00" ; # Default value
 
                foreach my $byte (0..8) { # Loop the 8 possible bytes
                   # Only process when there is information about this byte
@@ -301,10 +301,12 @@ sub process_message {
                                  $Divider = $1 ;
                                  $Channel = $2 ;
 
-                                 $Channel = &bin_to_hex($Channel) ; $Channel ++ ;
-                                 $Channel = "0" . $Channel if $Channel =~ /^.$/ ;
+                                 $Channel = &bin_to_dec($Channel) ; $Channel ++ ;
+                                 $Channel = "0" . $Channel if $Channel < 10 ; # This is always true since the channel is 1, 2, 3 or 4
+
                                  $Divider = &bin_to_dec($Divider) ;
                                  $Divider *= 100 ;
+
                                  $info{$Channel}{Divider} = $Divider ;
                                  $Name = "Counter" if ! defined $Name ;
                               }
@@ -318,7 +320,7 @@ sub process_message {
                               if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
                                  $Channel = $hex[$byte] ;
                                  next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-                                 $Channel = &channel_id_to_number($Channel,$message{address},"Convert Channel") ; # Convert it to a number
+                                 $Channel = &channel_id_to_number($Channel,$message{address},"ConvertChannel") ; # Convert it to a number
                                  $info{$Channel}{Button} = $Value ;
                               }
                            }
@@ -631,7 +633,7 @@ sub send_message () {
          if ( $channel =~ /^0x/ ) {
             push @message, "$channel" ;
          } else {
-            ($channel,$address) = &channel_number_to_id ($channel,$address,"make_message") ;
+            ($channel,$address) = &channel_number_to_id ($channel,$address,"MakeMessage") ;
             push @message, "0x$channel" ;
          }
       }
@@ -758,11 +760,14 @@ sub get_status_VMB7IN () {
 
 # Convert channel number and address to channel bit. 3 = 1000 -> 8 and sub address
 # Used by commands.pl & scripts
+# 1: channel
+# 2: address
+# 3: type -> wordt niet gebruikt
+#     - MakeMessage
+#     - ButtonPressed
 sub channel_number_to_id () {
    my $channel = $_[0] ;
    my $address = $_[1] ;
-# 1: channel
-# 2: address
 
    if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" or # VMBGP1D
         $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" or # VMBGP2D
@@ -791,6 +796,8 @@ sub channel_number_to_id () {
 # 1: channel
 # 2: address
 # 3: type: Name or nothing
+#     - Name
+#     - ConvertChannel
 sub channel_id_to_number () {
    my $channel = $_[0] ;
    my $address = $_[1] ; # Optional
@@ -810,6 +817,12 @@ sub channel_id_to_number () {
          $channel = ($1 =~ tr/0//); # Count last 0's
          $channel ++ ;
       }
+
+   # VMB4AN channel: 9 -> sensor 1, 12 -> sensor 14
+   } elsif ( $type eq "Sensor" ) {
+      $channel = &hex_to_dec ($channel) ;
+
+   # "ConvertChannel" -> Button pressed or Sensor triggered on touch or an other input
    } else {
       $channel = &hex_to_bin ($channel) ;
       $channel =~ /(0*)$/ ; # Filter out last 0's
@@ -880,7 +893,7 @@ sub button_pressed {
    my $address = $_[1] ;
    my $channel = $_[2] ;
    my $value   = $_[3] ;
-   ($channel,$address) = &channel_number_to_id($channel,$address,"button_pressed") ;
+   ($channel,$address) = &channel_number_to_id($channel,$address,"ButtonPressed") ;
    # DATABYTE2 = Channel just pressed
    # DATABYTE3 = Channel just released
    # DATABYTE4 = Channel long pressed

@@ -378,6 +378,20 @@ sub www_service {
       }
    }
 
+   # Get SensorNumber : only for VMB4AN
+   if ( $global{cgi}{params}{type} eq "SensorNum" and $global{cgi}{params}{action} eq "Get" ) {
+      $json{action} = $global{cgi}{params}{action} ;
+      if ( defined $Moduletype and $Moduletype eq "32" ) {
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
+
+         $json{Status} = $data{SensorNumber}{value} if defined $data{SensorNumber} ;
+
+         $json{Status} = "NO_INFO" if ! defined $json{Status} ;
+      } else {
+         $json{Status} = "NO_MODULE" ;
+      }
+   }
+  
    # Get Counter : only for VMB7IN
    if ( $global{cgi}{params}{type} eq "Counter" and ( $global{cgi}{params}{action} eq "GetCounter" or $global{cgi}{params}{action} eq "GetCounterRaw" or $global{cgi}{params}{action} eq "GetCounterCurrent" or $global{cgi}{params}{action} eq "GetDivider" ) ) {
       $json{action} = $global{cgi}{params}{action} ;
