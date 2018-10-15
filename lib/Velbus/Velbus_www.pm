@@ -1,14 +1,43 @@
+# Make an url based on the parameters supplied in the url and extra input parameters
+sub www_make_url {
+   my %input ;
+   foreach (@_) {
+      my @split = split "=" ;
+      next if $split[0] eq "" ;
+      $input{$split[0]} = $split[1] if @split ;
+   }
+
+   my @url ;
+   # Loop all CGI params
+   foreach my $key (sort keys %{$global{cgi}{params}}) {
+      next if $key eq "" ;
+      # Overrule parameter if needed
+      if ( defined $input{$key} ) {
+         push @url, "$key=$input{$key}" ;
+         delete $input{$key} ;
+      } else {
+         push @url, "$key=$global{cgi}{params}{$key}" ;
+      }
+   }
+   foreach my $key (sort keys %input) {
+      next if $key eq "" ;
+      push @url, "$key=$input{$key}"  ;
+   }
+   my $url = join "&", @url ;
+   return $url ;
+}
+
 # Website with some basic menus
 sub www_index {
    my $content ;
    $content .= "<p>\n" ;
-   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_modules>Modules on bus</a> || " ;
-   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_channeltags>Channel tags</a> || " ;
-   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_velbus_protocol>Velbus protocol</a> || " ;
-   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=print_velbus_messages>Velbus messages</a> || " ;
-   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=openHAB>openHAB config</a> || " ;
-   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=scan>Scan the bus</a> || " ;
-   $content .= "<a href=?key=$global{cgi}{params}{key}&appl=clear_database>Clear the database</a> " ;
+   $content .= "<a href=?".&www_make_url("appl=print_modules").">Modules on bus</a> || " ;
+   $content .= "<a href=?".&www_make_url("appl=print_channeltags").">Channel tags</a> || " ;
+   $content .= "<a href=?".&www_make_url("appl=print_velbus_protocol").">Velbus protocol</a> || " ;
+   $content .= "<a href=?".&www_make_url("appl=print_velbus_messages").">Velbus messages</a> || " ;
+   $content .= "<a href=?".&www_make_url("appl=openHAB").">openHAB config</a> || " ;
+   $content .= "<a href=?".&www_make_url("appl=scan").">Scan the bus</a> || " ;
+   $content .= "<a href=?".&www_make_url("appl=clear_database").">Clear the database</a> " ;
    $content .= "</p>\n" ;
 
    if ( $global{cgi}{params}{appl} eq "print_modules" ) {
@@ -441,7 +470,7 @@ sub www_service {
 
 sub www_print_modules () {
    my $html ;
-   $html .= "<h1>All modules on bus (<a href=\"?appl=print_modules&action=status\">refresh status</a>)</h1>\n" ;
+   $html .= "<h1>All modules on bus (<a href=\"?".&www_make_url("action=status")."\">refresh status</a>)</h1>\n" ;
 
    my %data ;
 
@@ -516,7 +545,7 @@ sub www_print_modules () {
             $html .= "    <td>No MemoryKey found!</td>\n" ;
          }
          $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'date'}</td>\n" ;
-         $html .= "    <td><a href=\"?appl=print_modules&action=status&address=$address\">refresh status</a></td>\n" ;
+         $html .= "    <td><a href=\"?".&www_make_url("action=status","address=$address")."\">refresh status</a></td>\n" ;
          $html .= "  </tr>\n" ;
       }
       $html .= "</tbody>\n" ;
@@ -547,7 +576,7 @@ sub www_print_modules () {
             $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$Key}</td>\n" ;
             #$html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{value}<br />$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{data}</td>\n" ;
          }
-         $html .= "    <td><a href=\"?appl=print_modules&action=status&address=$address\">refresh status</a></td>\n" ;
+         $html .= "    <td><a href=\"?".&www_make_url("action=status","address=$address")."\">refresh status</a></td>\n" ;
 
          $html .= "  </tr>\n" ;
       }
@@ -582,7 +611,7 @@ sub www_print_modules () {
                   $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{value} =~ s/;/<br \/>/g ;
                   $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{value}<br />$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{date}</td>\n" ;
                }
-               $html .= "    <td><a href=\"?appl=print_modules&action=status&address=$address&channel=$Channel\">refresh status</a></td>\n" ;
+               $html .= "    <td><a href=\"?".&www_make_url("action=status","address=$address","channel=$Channel")."\">refresh status</a></td>\n" ;
 
                $html .= "  </tr>\n" if $ROWSPAN ne "0" ;
                $ROWSPAN ++ ;
@@ -894,7 +923,7 @@ sub www_print_velbus_protocol_print_modules () {
    foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}})) {
       $html .= "  <tr>\n" ;
       $html .= "    <th>$ModuleType</th>\n" ;
-      $html .= "    <td><a href=$global{cgi}{url}&ModuleType=$ModuleType>$global{Cons}{ModuleTypes}{$ModuleType}{Type}</a></td>\n" ;
+      $html .= "    <td><a href=?".&www_make_url("ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type}</a></td>\n" ;
       $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Info}</td>\n" ;
       $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Version}</td>\n" ;
       $html .= "  </tr>\n" ;
