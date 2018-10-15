@@ -4,6 +4,8 @@ $Data::Dumper::Sortkeys = 1 ; # Sort the keys in the output
 $Data::Dumper::Deepcopy = 1 ; # Enable deep copies of structures
 $Data::Dumper::Indent = 1 ;   # Output in a reasonable style (but no array indexes)
 
+use Hash::Merge qw( merge );
+
 # To be able to open a socket to the Velbus server
 use IO::Socket ;
 

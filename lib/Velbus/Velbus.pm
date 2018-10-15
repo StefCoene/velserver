@@ -96,7 +96,6 @@ sub process_message {
             &update_modules_info ($message{address}, "BuildWeek", $hex[4]) ;
 
          } elsif ( $message{MessageType} eq "B0" ) { # Module subtype: answer to a Scan
-
             if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ) {
                push @{$message{text}}, "address $message{address}, module type: $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type}" ;
                # The touch modules have a special address for the temperature sensor
@@ -228,11 +227,24 @@ sub process_message {
             }
 
          } else {
-            # If we have process information for this module type and message, process the message
+            my %Process ; # Info needed to process the message
+
+            if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}} and
+                 defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{General} ) {
+               foreach my $GeneralType (split " ", $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{General} ) {
+                  if ( defined $global{Cons}{ModuleGeneral}{Messages}{$GeneralType} ) {
+                     %Process = %{ merge( \%Process, \%{$global{Cons}{ModuleGeneral}{Messages}{$GeneralType}} ) };
+                  }
+               }
+            }
+            # If we have process information for this module type and message, process the message.
             if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}} and
                  defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}} and
                  defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data} ) {
+               %Process = %{ merge( \%Process, \%{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}} ) };
+            }
 
+            if ( %Process ) {
                my %info ;
                my %openHAB_update_state ;
 
@@ -240,17 +252,17 @@ sub process_message {
 
                foreach my $byte (0..8) { # Loop the 8 possible bytes
                   # Only process when there is information about this byte
-                  if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte} ) {
+                  if ( defined $Process{Data}{$byte} ) {
                      my $bin  = &hex_to_bin ($hex[$byte]) ; # We also need the message in binary format
 
                      # Search for a name
                      my $Name ;
-                     if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Name} ) {
-                        $Name = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Name} ;
+                     if ( defined $Process{Data}{$byte}{Name} ) {
+                        $Name = $Process{Data}{$byte}{Name} ;
                      }
 
                      # Loop the possbile values for the byte
-                     foreach my $key (sort keys(%{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}})) {
+                     foreach my $key (sort keys(%{$Process{Data}{$byte}{Match}})) {
                         my $Match ; # We set this variable if we have a match
 
                         # Regular exression is always binary based match
@@ -271,32 +283,32 @@ sub process_message {
                            my $Value ; # To store the value of the message. This can be data found in the message or stored in {Info}
                            my $SubName ;
 
-                           if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Info} ) {
-                              $Value =  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Info} ;
+                           if ( defined $Process{Data}{$byte}{Match}{$key}{Info} ) {
+                              $Value =  $Process{Data}{$byte}{Match}{$key}{Info} ;
                            }
-                           if ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Channel} ) {
-                              $Channel = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Channel} ;
+                           if ( defined  $Process{Data}{$byte}{Match}{$key}{Channel} ) {
+                              $Channel = $Process{Data}{$byte}{Match}{$key}{Channel} ;
                            }
-                           if ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Name} ) {
-                              $SubName = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Name} ;
+                           if ( defined  $Process{Data}{$byte}{Match}{$key}{Name} ) {
+                              $SubName = $Process{Data}{$byte}{Match}{$key}{Name} ;
                            }
 
                            # Do we have to convert the message
-                           if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} ) {
+                           if ( defined $Process{Data}{$byte}{Match}{$key}{Convert} ) {
                               # Calculate the procent
-                              if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Procent" ) {
+                              if ( $Process{Data}{$byte}{Match}{$key}{Convert} eq "Procent" ) {
                                  $Name = "Procent" if ! defined $Name ;
                                  $Value = hex $hex[$byte] ;
                               }
 
                               # Calculate the temperature from the message
-                              if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Temperature" ) {
+                              if ( $Process{Data}{$byte}{Match}{$key}{Convert} eq "Temperature" ) {
                                  $Name = "Temperature" if ! defined $Name ;
                                  $Value = &hex_to_temperature ($hex[$byte]) ;
                               }
 
                               # Simple Counter: first byte is divider + Channel
-                              if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Divider" ) {
+                              if ( $Process{Data}{$byte}{Match}{$key}{Convert} eq "Divider" ) {
                                  $bin =~ /(......)(..)/ ;
                                  $Divider = $1 ;
                                  $Channel = $2 ;
@@ -312,12 +324,12 @@ sub process_message {
                               }
 
                               # Simple Counter
-                              if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
+                              if ( $Process{Data}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
                                  $info{$Channel}{Counter} .= $hex[$byte] ;
                               }
 
                               # Button pressed or Sensor triggered on touch or an other input
-                              if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
+                              if ( $Process{Data}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
                                  $Channel = $hex[$byte] ;
                                  next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
                                  $Channel = &channel_id_to_number($Channel,$message{address},"ConvertChannel") ; # Convert it to a number
@@ -326,8 +338,8 @@ sub process_message {
                            }
 
                            # Do we have to update the state in openHAB
-                           if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{openHAB} ) {
-                              my $openHAB = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data}{$byte}{Match}{$key}{openHAB} ; # Handier var
+                           if ( defined $Process{Data}{$byte}{Match}{$key}{openHAB} ) {
+                              my $openHAB = $Process{Data}{$byte}{Match}{$key}{openHAB} ; # Handier var
 
                               if ( $openHAB =~ "(.+):Button" ) {
                                  my $action = $1 ;
