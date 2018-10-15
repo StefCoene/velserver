@@ -682,49 +682,11 @@ sub www_print_channeltags () {
       }
    }
 
-   foreach my $status (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}})) {
-      next if $status eq "Start scan" ;
-
-      $html .= "<h2>Status: $status</h2>\n" ;
-
-      $html .= "<table border=1>\n" ;
-      $html .= "<thead>\n" ;
-      $html .= "  <tr>\n" ;
-      $html .= "    <th>Address</th>\n" ;
-      $html .= "    <th>Type</th>\n" ;
-      $html .= "    <th>Info</th>\n" ;
-      $html .= "    <th>Name</th>\n" ;
-      $html .= "    <th>Date</th>\n" ;
-      $html .= "  </tr>\n" ;
-      $html .= "</thead>\n" ;
-
-      $html .= "<tbody>\n" ;
-      my $html2 ;
-      foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}{$status}{ModuleList}}) ) {
-         my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'type'} ; # Handier var
-         my $MemoryKey = &module_find_MemoryKey ($address, $type) ; # Handier var
-         $html .= "  <tr>\n" ;
-         if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
-            $html .= "    <th>$address ($global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr})</th>\n" ;
-         } else {
-            $html .= "    <th>$address</th>\n" ;
-         }
-         $html .= "    <td>$global{Cons}{ModuleTypes}{$type}{Type} ($type)</td>\n" ;
-         $html .= "    <td>$global{Cons}{ModuleTypes}{$type}{Info}</td>\n" ;
-         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}</td>\n" ;
-         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'date'}</td>\n" ;
-         $html .= "  </tr>\n" ;
-      }
-      $html .= "</tbody>\n" ;
-      $html .= "</table>\n" ;
-   }
-
    foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
       $html .= "<h2>$global{Cons}{ModuleTypes}{$type}{Type} ($type) $global{Cons}{ModuleTypes}{$type}{Info}</h2>\n" ;
-      $html .= "<h3>Module info</h3>\n" ;
 
       if ( %{$global{Vars}{Modules}{PerType}{$type}{ChannelInfoKey}} ) {
-         $html .= "<h3>Channel info</h3>\n" ;
+         $html .= "<h3>Channel tags</h3>\n" ;
          $html .= "<table border=1>\n" ;
          $html .= "<thead>\n" ;
          $html .= "  <tr>\n" ;
@@ -784,33 +746,97 @@ sub www_print_channeltags () {
 }
 
 sub www_print_velbus_messages () {
+   my $html ;
    my %data ;
 
+   $html .= "<h3>Broadcast messages</h3>\n" ;
+   $html .= "<table border=1 class=\"datatable oggle1\">\n" ;
+   $html .= "<thead>\n" ;
+   $html .= "  <tr>\n" ;
+   $html .= "    <th>Command</th>\n" ;
+   $html .= "    <th>Name</th>\n" ;
+   $html .= "    <th>Info</th>\n" ;
+   $html .= "    <th>Prio</th>\n" ;
+   $html .= "  </tr>\n" ;
+   $html .= "</thead>\n" ;
+
+   $html .= "<tbody>\n" ;
    foreach my $Message (sort (keys %{$global{Cons}{MessagesBroadCast}}) ) {
       my $Name = $global{Cons}{MessagesBroadCast}{$Message}{Name} ; # Handier var
       my $Info = $global{Cons}{MessagesBroadCast}{$Message}{Info} ; # Handier var
       my $Prio = $global{Cons}{MessagesBroadCast}{$Message}{Prio} ; # Handier var
-      $data{$Name}{ModuleType} = "BroadCast" ;
-      $data{$Name}{Message} = $Message ;
-      $data{$Name}{Info} = $Info ;
-      $data{$Name}{Prio} = $Prio ;
+      $data{BroadCast}{$Name}{Message} = $Message ;
+      $data{BroadCast}{$Name}{Info} = $Info ;
+      $data{BroadCast}{$Name}{Prio} = $Prio ;
+      $html .= "  <tr>\n" ;
+      $html .= "    <th>$Message</th>\n" ;
+      $html .= "    <td>$Name</td>\n" ;
+      $Info =~ s/;/<br \/>/g ;
+      $html .= "    <td>$Info</td>\n" ;
+      $html .= "    <td>$Prio</td>\n" ;
+      $html .= "  </tr>\n" ;
    }
+   $html .= "</tbody>\n" ;
+   $html .= "</table>\n" ;
 
    foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}})) {
       foreach my $Message ( sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}}) ) {
-         my $Name = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Name} ; # Handier var
+         foreach my $Name (split ";", $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Name}) {
+            $data{Module}{$Message}{Name}{$Name} = "yes" ;
+         }
          my $Info = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Info} ; # Handier var
          my $Prio = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Prio} ; # Handier var
-         $data{$Name}{ModuleType} .= $ModuleType. " " ;
-         $data{$Name}{Message} = $Message ;
-         $data{$Name}{Info} = $Info ;
-         $data{$Name}{Prio} = $Prio ;
+         $data{Module}{$Message}{ModuleType}{$ModuleType} = "yes" ;
+         $data{Module}{$Message}{Info}{$Info} = "yes";
+         $data{Module}{$Message}{Prio}{$Prio} = "yes";
       }
    }
-   my $html ;
-   $html .= "<pre>\n" ;
-   $html .= Dumper {%data} ;
-   $html .= "</pre>\n" ;
+   my %table ;
+   foreach my $Message (sort {$a cmp $b} keys %{$data{Module}}) {
+      my $type = "rest" ;
+      my $ModuleType = join " ", sort keys %{$data{Module}{$Message}{ModuleType}} ;
+      my $Name = join ";", sort keys %{$data{Module}{$Message}{Name}} ;
+      if ( $Name =~ /_STATUS/ ) {
+         $type = "Status" ;
+      } elsif ( $Name =~ /_PROGRAM/ ) {
+         $type = "Program" ;
+      } elsif ( $Name =~ /_MEMORY/ ) {
+         $type = "Memory" ;
+      } elsif ( $Name =~ /_NAME_/ ) {
+         $type = "Name" ;
+      }
+      $Name =~ s/;/<br \/>/g ;
+      my $Info = join ";", sort keys %{$data{Module}{$Message}{Info}} ;
+      $Info =~ s/;/<br \/>/g ;
+      my $Prio = join ";", sort keys %{$data{Module}{$Message}{Prio}} ;
+
+      $table{$type} .= "  <tr>\n" ;
+      $table{$type} .= "    <th>$Message</th>\n" ;
+      $table{$type} .= "    <td>$Name</td>\n" ;
+      $table{$type} .= "    <td>$ModuleType</td>\n" ;
+      $table{$type} .= "    <td>$Info</td>\n" ;
+      $table{$type} .= "    <td>$Prio</td>\n" ;
+      $table{$type} .= "  </tr>\n" ;
+   }
+   foreach my $type (sort keys %table) {
+   $html .= "<h3>Module messages, type $type</h3>\n" ;
+   $html .= "<table border=1 class=\"datatable oggle1\">\n" ;
+   $html .= "<thead>\n" ;
+   $html .= "  <tr>\n" ;
+   $html .= "    <th>Command</th>\n" ;
+   $html .= "    <th>Name</th>\n" ;
+   $html .= "    <th>Module</th>\n" ;
+   $html .= "    <th>Info</th>\n" ;
+   $html .= "    <th>Prio</th>\n" ;
+   $html .= "  </tr>\n" ;
+   $html .= "</thead>\n" ;
+
+   $html .= "<tbody>\n" ;
+   $html .= $table{$type}  ;
+   $html .= "</tbody>\n" ;
+   $html .= "</table>\n" ;
+   }
+
    return $html ;
 }
 
