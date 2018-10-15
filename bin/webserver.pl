@@ -18,6 +18,10 @@ use HTTP::Daemon;
 use threads;
 use JSON ;
 
+use CGI ;
+
+$global{cgi}{CGI} = CGI->new;
+
 # Ignore SIGPIPE otherwise when you overload this script it will terminate with error code 141
 $SIG{PIPE} = "IGNORE";
 
