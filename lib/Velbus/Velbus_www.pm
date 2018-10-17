@@ -30,6 +30,24 @@ sub www_make_url {
 # Website with some basic menus
 sub www_index {
    my $content ;
+
+   # Starten van html output
+   # includen van de nodige files: css en javascript
+   $content .= $global{cgi}{CGI}->start_html (
+      -title=>"Velbus",
+      -style=>[
+         {'src'=>"https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"},
+      ],
+      -script=>[
+         { -type=>'text/javascript',
+           -src=>'https://code.jquery.com/jquery-3.3.1.min.js'},
+         { -type=>'text/javascript',
+           -src=>'include/script.js'},
+         { -type=>'text/javascript',
+           -src=>'https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'},
+      ]
+   ) ;
+
    $content .= "<p>\n" ;
    $content .= "<a href=?".&www_make_url("appl=print_modules").">Modules on bus</a> || " ;
    $content .= "<a href=?".&www_make_url("appl=print_channeltags").">Channel tags</a> || " ;
@@ -71,6 +89,7 @@ sub www_index {
       $content .= Dumper {%global} ;
       $content .= "</pre>\n" ;
    }
+   $content .= $global{cgi}{CGI}->end_html() ;
    return $content ;
 }
 

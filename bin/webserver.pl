@@ -19,8 +19,9 @@ use threads;
 use JSON ;
 
 use CGI ;
+use CGI::Session ;
 
-$global{cgi}{CGI} = CGI->new;
+$global{cgi}{CGI} = new CGI ;
 
 # Ignore SIGPIPE otherwise when you overload this script it will terminate with error code 141
 $SIG{PIPE} = "IGNORE";
@@ -71,6 +72,18 @@ sub process {
             $encoder->allow_nonref();
             my $json = $encoder->encode(\%json);
             $response->content($json) ;
+         }
+      } elsif ( $path =~ /include\/(.+)/ ) {
+         my $file = $global{BaseDir} . "/www/include/$1" ;
+         $response->header('type' => 'application/javascript') ;
+         if ( -f $file ) {
+            my $content ;
+            open (FILE, '<', $file) ;
+	    while (<FILE>) {
+               $content .= $_ ;
+	    }
+            close FILE ;
+            $response->content($content)  ;
          }
       } else {
          &read_all_configs ; # Re-read the config files to pick up possible changes
