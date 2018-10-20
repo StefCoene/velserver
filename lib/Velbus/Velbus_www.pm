@@ -789,6 +789,7 @@ sub www_print_velbus_messages () {
       $data{BroadCast}{$Name}{Prio} = $Prio ;
       $html .= "  <tr>\n" ;
       $html .= "    <th>$Message</th>\n" ;
+      $Name =~ s/COMMAND_//g ;
       $html .= "    <td>$Name</td>\n" ;
       $Info =~ s/;/<br \/>/g ;
       $html .= "    <td>$Info</td>\n" ;
@@ -798,6 +799,7 @@ sub www_print_velbus_messages () {
    $html .= "</tbody>\n" ;
    $html .= "</table>\n" ;
 
+   # Loop all Modules and Message
    foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}})) {
       foreach my $Message ( sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}}) ) {
          foreach my $Name (split ";", $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Name}) {
@@ -810,6 +812,8 @@ sub www_print_velbus_messages () {
          $data{Module}{$Message}{Prio}{$Prio} = "yes";
       }
    }
+   
+   # Determine a type to classify the messages
    my %table ;
    foreach my $Message (sort {$a cmp $b} keys %{$data{Module}}) {
       my $type = "rest" ;
@@ -821,6 +825,12 @@ sub www_print_velbus_messages () {
          $type = "Program" ;
       } elsif ( $Name =~ /_MEMORY/ ) {
          $type = "Memory" ;
+      } elsif ( $Name =~ /DIM/ ) {
+         $type = "Dimmer" ;
+      } elsif ( $Name =~ /RELAY_/ ) {
+         $type = "Relay" ;
+      } elsif ( $Name =~ /BLIND_/ ) {
+         $type = "Blind" ;
       } elsif ( $Name =~ /_NAME_/ ) {
          $type = "Name" ;
       }
@@ -831,29 +841,31 @@ sub www_print_velbus_messages () {
 
       $table{$type} .= "  <tr>\n" ;
       $table{$type} .= "    <th>$Message</th>\n" ;
+      $Name =~ s/COMMAND_//g ;
       $table{$type} .= "    <td>$Name</td>\n" ;
       $table{$type} .= "    <td>$ModuleType</td>\n" ;
       $table{$type} .= "    <td>$Info</td>\n" ;
       $table{$type} .= "    <td>$Prio</td>\n" ;
       $table{$type} .= "  </tr>\n" ;
    }
-   foreach my $type (sort keys %table) {
-   $html .= "<h3>Module messages, type $type</h3>\n" ;
-   $html .= "<table border=1 class=\"datatable oggle1\">\n" ;
-   $html .= "<thead>\n" ;
-   $html .= "  <tr>\n" ;
-   $html .= "    <th>Command</th>\n" ;
-   $html .= "    <th>Name</th>\n" ;
-   $html .= "    <th>Module</th>\n" ;
-   $html .= "    <th>Info</th>\n" ;
-   $html .= "    <th>Prio</th>\n" ;
-   $html .= "  </tr>\n" ;
-   $html .= "</thead>\n" ;
 
-   $html .= "<tbody>\n" ;
-   $html .= $table{$type}  ;
-   $html .= "</tbody>\n" ;
-   $html .= "</table>\n" ;
+   foreach my $type (sort keys %table) {
+      $html .= "<h3>Module messages, type $type</h3>\n" ;
+      $html .= "<table border=1 class=\"datatable oggle1\">\n" ;
+      $html .= "<thead>\n" ;
+      $html .= "  <tr>\n" ;
+      $html .= "    <th>Command</th>\n" ;
+      $html .= "    <th>Name</th>\n" ;
+      $html .= "    <th>Module</th>\n" ;
+      $html .= "    <th>Info</th>\n" ;
+      $html .= "    <th>Prio</th>\n" ;
+      $html .= "  </tr>\n" ;
+      $html .= "</thead>\n" ;
+
+      $html .= "<tbody>\n" ;
+      $html .= $table{$type}  ;
+      $html .= "</tbody>\n" ;
+      $html .= "</table>\n" ;
    }
 
    return $html ;
