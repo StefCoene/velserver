@@ -157,12 +157,13 @@ sub openHAB () {
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
-                  $openHAB .= "{http=\"" ;
                   if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .= "{http=\"" ;
                      $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     $openHAB .= "\", autoupdate=\"false\"}\n" ;
+                  } else {
+                     $openHAB .= "\n" ;
                   }
-                  $openHAB .= ">[*:GET:$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=Switch&action=Set&value=%2\$s]" ;
-                  $openHAB .= "\", autoupdate=\"false\"}\n" ;
                }
                if ( $Type eq "SensorNumber" ) {
                   my $item = "SensorNumber_$itemBase" ;
@@ -189,11 +190,13 @@ sub openHAB () {
                   if ( defined $Group ) {
                      $openHAB .= "($Group) " ;
                   }
-                  $openHAB .= "{http=\"" ;
                   if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                     $openHAB .= "{http=\"" ;
                      $openHAB .=        "<[$global{Config}{openHAB}{BASE_URL}?address=$address&channel=$Channel&type=SensorNumber&action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+                     $openHAB .= "\", autoupdate=\"false\"}\n" ;
+                  } else {
+                     $openHAB .= "\n" ;
                   }
-                  $openHAB .= "\", autoupdate=\"false\"}\n" ;
                }
                if ( $Type eq "Temperature" ) {
                   # Get the current temperature
