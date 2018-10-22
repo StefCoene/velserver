@@ -51,6 +51,18 @@ $global{Cons}{ModuleTypes}{'11'}{Channels}{"01"}{Name} = "Relay 1" ;
    $global{Cons}{ModuleTypes}{'11'}{Channels}{"05"}{Name} = "Virtual relay" ;
    $global{Cons}{ModuleTypes}{'11'}{Channels}{"05"}{Type} = "Relay" ;
 
+# 1-channel relay module: VMB1RYNO
+$global{Cons}{ModuleTypes}{'1B'}{Channels}{"01"}{Name} = "Relay" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Channels}{"01"}{Type} = "Relay" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Channels}{"02"}{Name} = "Virtual relay 1" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Channels}{"02"}{Type} = "Relay" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Channels}{"03"}{Name} = "Virtual relay 2" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Channels}{"03"}{Type} = "Relay" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Channels}{"04"}{Name} = "Virtual relay 3" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Channels}{"04"}{Type} = "Relay" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Channels}{"05"}{Name} = "Virtual relay 4" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Channels}{"05"}{Type} = "Relay" ;
+
 ################### Dimmers: Channel names
 # 1-channel 0(1)-10V control: VMB1DM
 $global{Cons}{ModuleTypes}{'07'}{Channels}{"01"}{Name} = "Dimmer 1" ;

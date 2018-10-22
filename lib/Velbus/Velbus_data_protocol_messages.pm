@@ -140,6 +140,27 @@ $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{Data}{'0'}{Name} = "Channel" ;
 
    $global{Cons}{ModuleTypes}{'11'}{Messages}{'FB'}{General} = "Byte3LedStatus" ;
 
+# 4 channel relay module with normalopen contacts: VMB1RYNO
+# FB = COMMAND_RELAY_STATUS
+$global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'0'}{Name} = "Channel" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000001'}{Channel} = "01" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000010'}{Channel} = "02" ; # Virtual channel
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000100'}{Channel} = "03" ; # Virtual channel
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'0'}{Match}{'00001000'}{Channel} = "04" ; # Virtual channel
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'0'}{Match}{'00010000'}{Channel} = "05" ; # Virtual channel
+
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{General} = "Byte1ChannelStatus" ;
+
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'2'}{Name} = "Relay status" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......00'}{Info} = "Relay channel off" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......00'}{openHAB} = "OFF:Relay" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......01'}{Info} = "Relay channel on" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......01'}{openHAB} = "ON:Relay" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......11'}{Info} = "Relay channel interval timer on" ;
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'2'}{Match}{'%......11'}{openHAB} = "ON:Relay" ;
+
+   $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{General} = "Byte3LedStatus" ;
+
 ################### Dimmers: messages
 # Dimmer module: VMB1DM
 # 0F = COMMAND_SLIDER_STATUS
