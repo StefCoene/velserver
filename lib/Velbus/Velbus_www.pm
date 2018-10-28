@@ -13,15 +13,21 @@ sub www_make_url {
       next if $key eq "" ;
       # Overrule parameter if needed
       if ( defined $input{$key} ) {
-         push @url, "$key=$input{$key}" ;
-         delete $input{$key} ;
+         if ( $input{$key} eq '-' ) {
+         } else {
+            push @url, "$key=$input{$key}" ;
+            delete $input{$key} ;
+         }
       } else {
          push @url, "$key=$global{cgi}{params}{$key}" ;
       }
    }
    foreach my $key (sort keys %input) {
       next if $key eq "" ;
-      push @url, "$key=$input{$key}"  ;
+      if ( $input{$key} eq '-' ) {
+      } else {
+         push @url, "$key=$input{$key}"  ;
+      }
    }
    my $url = join "&", @url ;
    return $url ;
@@ -51,8 +57,8 @@ sub www_index {
    $content .= "<p>\n" ;
    $content .= "<a href=?".&www_make_url("appl=print_modules").">Modules on bus</a> || " ;
    $content .= "<a href=?".&www_make_url("appl=print_channeltags").">Channel tags</a> || " ;
-   $content .= "<a href=?".&www_make_url("appl=print_velbus_protocol").">Velbus protocol</a> || " ;
-   $content .= "<a href=?".&www_make_url("appl=print_velbus_messages").">Velbus messages</a> || " ;
+   $content .= "<a href=?".&www_make_url("ModuleType=-","appl=print_velbus_protocol").">Velbus protocol</a> || " ;
+   $content .= "<a href=?".&www_make_url("Message=-","appl=print_velbus_messages").">Velbus messages</a> || " ;
    $content .= "<a href=?".&www_make_url("appl=openHAB").">openHAB config</a> || " ;
    $content .= "<a href=?".&www_make_url("appl=scan").">Scan the bus</a> || " ;
    $content .= "<a href=?".&www_make_url("appl=clear_database").">Clear the database</a> " ;
@@ -150,8 +156,8 @@ sub www_service {
                $Moduletype eq "1E" or # VMBGP1
                $Moduletype eq "1F" or # VMBGP2
                $Moduletype eq "20" or # VMBGP4
-               $Moduletype eq "2D" or # VMBGP4PIR
-               $Moduletype eq "28"    # VMBGPOD
+               $Moduletype eq "28" or # VMBGPOD
+               $Moduletype eq "2D"    # VMBGP4PIR
             ) ) {
 
          my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
@@ -276,20 +282,20 @@ sub www_service {
    if ( $global{cgi}{params}{type} eq "Switch" and ( $global{cgi}{params}{action} eq "Get" or $global{cgi}{params}{action} eq "Set" ) ) {
       $json{action} = $global{cgi}{params}{action} ;
       if ( defined $Moduletype and (
-               $Moduletype eq "1E" or # VMBGP1
-               $Moduletype eq "1F" or # VMBGP2
-               $Moduletype eq "20" or # VMBGP4
-               $Moduletype eq "2D" or # VMBGP4PIR
-               $Moduletype eq "28" or # VMBGPOD
                $Moduletype eq "01" or # VMB8PB
                $Moduletype eq "05" or # VMB6IN
+               $Moduletype eq "0B" or # VMB4PD: Push button and timer panel
                $Moduletype eq "16" or # VMB8PBU
                $Moduletype eq "17" or # VMB6PBN
                $Moduletype eq "18" or # VMB2PBN
+               $Moduletype eq "1E" or # VMBGP1
+               $Moduletype eq "1F" or # VMBGP2
+               $Moduletype eq "20" or # VMBGP4
                $Moduletype eq "22" or # VMB7IN
-               $Moduletype eq "0B" or # VMB4PD: Push button and timer panel
+               $Moduletype eq "28" or # VMBGPOD
                $Moduletype eq "2A" or # VMBPIRM: Indoor sensor
-               $Moduletype eq "2C"    # VMBPIRO: Outdoor sensor
+               $Moduletype eq "2C" or # VMBPIRO: Outdoor sensor
+               $Moduletype eq "2D"    # VMBGP4PIR
             ) ) {
 
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
@@ -346,7 +352,8 @@ sub www_service {
       if ( defined $Moduletype and (
                $Moduletype eq "03" or # VMB1BL
                $Moduletype eq "09" or # VMB2BL
-               $Moduletype eq "1D"    # VMB2BLE
+               $Moduletype eq "1D" or # VMB2BLE
+               $Moduletype eq "2E"    # VMB1BLS
             ) ) {
          if ( $Moduletype eq "03" ) {
             $global{cgi}{params}{channel} = "0x03" ;
@@ -375,7 +382,11 @@ sub www_service {
             } elsif ( $global{cgi}{params}{value} eq "STOP" ) {
                &blind_stop ($sock, $address, $global{cgi}{params}{channel}) ;
             } elsif ( $global{cgi}{params}{value} =~ /(\d+)/ ) {
-               &blind_pos ($sock, $address, $global{cgi}{params}{channel}, $1) ;
+               if ( defined $global{Cons}{ModuleTypes}{$Moduletype}{Messages}{'1C'}{Name} ) { # Not supported on all blind modules
+                  &blind_pos ($sock, $address, $global{cgi}{params}{channel}, $1) ;
+               } else {
+                  $json{Status} = "COMMAND_NOT_SUPPORTED" ;
+               }
             }
          } else {
             $json{Status} = $data{Position}{value} if defined $data{Position}{value} ;
@@ -394,7 +405,9 @@ sub www_service {
                $Moduletype eq "02" or # VMB1RY
                $Moduletype eq "08" or # VMB4RY
                $Moduletype eq "10" or # VMB4RYLD
-               $Moduletype eq "11"    # VMB4RYNO
+               $Moduletype eq "11" or # VMB4RYNO
+               $Moduletype eq "1B" or # VMB1RYNO
+               $Moduletype eq "29"    # VMB1RYNOS
             ) ) {
 
          my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
@@ -765,14 +778,128 @@ sub www_print_channeltags () {
 }
 
 sub www_print_velbus_messages () {
-   my $html ;
-   my %data ;
+   $html .= "<h1>Velbus messages</h1>\n" ;
+   if ( defined $global{cgi}{params}{Message} ) {
+      $html .= &www_print_velbus_messages_print_message($global{cgi}{params}{Message}) ;
+   } else {
+      $html .= &www_print_velbus_messages_print_messages ;
+   }
+   return $html ;
+}
 
-   $html .= "<h3>Broadcast messages</h3>\n" ;
-   $html .= "<table border=1 class=\"datatable oggle1\">\n" ;
+sub www_print_velbus_messages_print_message () {
+   my $Message = $_[0] ;
+   my $html ;
+   my %data =&www_process_messages ;
+   if ( defined $data{BroadCast}{$Message} ) {
+      $html .= "<h2>Broadcast message: $Message</h2>\n" ;
+      $Info = $data{BroadCast}{$Message}{Info} ;
+      $Info =~ s/;/<br \/>/g ;
+      $Name = $data{BroadCast}{$Message}{Name} ;
+      $Name =~ s/;/<br \/>/g ;
+      $Prio = $data{BroadCast}{$Message}{Prio} ;
+
+      $html .= "<table border=1 class=\"\">\n" ;
+      $html .= "<thead>\n" ;
+      $html .= "  <tr>\n" ;
+      $html .= "    <th>Message</th>\n" ;
+      $html .= "    <th>Name</th>\n" ;
+      $html .= "    <th>Info</th>\n" ;
+      $html .= "    <th>Prio</th>\n" ;
+      $html .= "  </tr>\n" ;
+      $html .= "</thead>\n" ;
+
+      $html .= "<tbody>\n" ;
+      $html .= "  <tr>\n" ;
+      $html .= "    <td>$Message</td>\n" ;
+      $html .= "    <td>$Name</td>\n" ;
+      $html .= "    <td>$Info</td>\n" ;
+      $html .= "    <td>$Prio</td>\n" ;
+      $html .= "  </tr>\n" ;
+      $html .= "</thead>\n" ;
+      $html .= "</table>\n" ;
+
+   } elsif ( defined $data{Module}{$Message} ) {
+      $html .= "<h2>Non-broadcast message: $Message</h2>\n" ;
+      my $Name = join ";", sort keys %{$data{Module}{$Message}{Name}} ;
+      $Name =~ s/;/<br \/>/g ;
+      my $Info = join ";", sort keys %{$data{Module}{$Message}{Info}} ;
+      $Info =~ s/;/<br \/>/g ;
+      my $Prio = join ";", sort keys %{$data{Module}{$Message}{Prio}} ;
+
+      $html .= "<table border=1 class=\"\">\n" ;
+      $html .= "<thead>\n" ;
+      $html .= "  <tr>\n" ;
+      $html .= "    <th>Message</th>\n" ;
+      $html .= "    <th>Modules</th>\n" ;
+      $html .= "    <th>Name</th>\n" ;
+      $html .= "    <th>Info</th>\n" ;
+      $html .= "    <th>Prio</th>\n" ;
+      $html .= "  </tr>\n" ;
+      $html .= "</thead>\n" ;
+
+      $html .= "<tbody>\n" ;
+      $html .= "  <tr>\n" ;
+      $html .= "    <td>$Message</td>\n" ;
+      $html .= "    <td>" ;
+      foreach my $ModuleType (sort keys %{$data{Module}{$Message}{ModuleType}} ) {
+         $html .= "<a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</a><br />" ;
+      }
+      $html .= "</td>\n" ;
+      $html .= "    <td>$Name</td>\n" ;
+      $html .= "    <td>$Info</td>\n" ;
+      $html .= "    <td>$Prio</td>\n" ;
+      $html .= "  </tr>\n" ;
+      $html .= "</thead>\n" ;
+      $html .= "</table>\n" ;
+
+      foreach my $ModuleType (sort keys %{$data{Module}{$Message}{ModuleType}} ) {
+         if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data} ) {
+            $html .= "<h3><a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType) = $global{Cons}{ModuleTypes}{$ModuleType}{Info}</a></h3>\n" ;
+            foreach my $byte (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}}) {
+               if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$byte}{Name} ) {
+                  $html .= "<h4>byte: $byte = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$byte}{Name}</h4>\n" ;
+               } else {
+                  $html .= "<h4>byte: $byte</h4>\n" ;
+               }
+               if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$byte}{Match} ) {
+                  foreach my $Match (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$byte}{Match}}) {
+                     $html .= "Match: $Match\n" ;
+                     foreach my $Key (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$byte}{Match}{$Match}}) {
+                        $html .= " -> $Key: $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$byte}{Match}{$Match}{$Key}\n" ;
+                     }
+                     $html .= "<br />\n" ;
+                  }
+               }
+               #$html .= "<pre>\n" ;
+               #$html .= Dumper \%{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$byte}} ;
+               #$html .= "</pre>\n" ;
+            }
+         } else {
+            $html .= "<h3><a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType) = $global{Cons}{ModuleTypes}{$ModuleType}{Info}</a>: not supported</h3>\n" ;
+         }
+      }
+   } elsif ( defined $Message ) {
+      $html .= "<h2>No info found for: $Message</h2>\n" ;
+   }
+
+   $html .= "<pre>\n" ;
+   #$html .= Dumper \%global ;
+   #$html .= Dumper \%{$data{Module}{$Message}} ;
+   $html .= "</pre>\n" ;
+   return $html ;
+}
+
+sub www_print_velbus_messages_print_messages () {
+   my $html ;
+
+   my %data =&www_process_messages ;
+
+   $html .= "<h2>Broadcast messages</h2>\n" ;
+   $html .= "<table border=1 class=\"datatable\">\n" ;
    $html .= "<thead>\n" ;
    $html .= "  <tr>\n" ;
-   $html .= "    <th>Command</th>\n" ;
+   $html .= "    <th>Message</th>\n" ;
    $html .= "    <th>Name</th>\n" ;
    $html .= "    <th>Info</th>\n" ;
    $html .= "    <th>Prio</th>\n" ;
@@ -780,15 +907,12 @@ sub www_print_velbus_messages () {
    $html .= "</thead>\n" ;
 
    $html .= "<tbody>\n" ;
-   foreach my $Message (sort (keys %{$global{Cons}{MessagesBroadCast}}) ) {
-      my $Name = $global{Cons}{MessagesBroadCast}{$Message}{Name} ; # Handier var
-      my $Info = $global{Cons}{MessagesBroadCast}{$Message}{Info} ; # Handier var
-      my $Prio = $global{Cons}{MessagesBroadCast}{$Message}{Prio} ; # Handier var
-      $data{BroadCast}{$Name}{Message} = $Message ;
-      $data{BroadCast}{$Name}{Info} = $Info ;
-      $data{BroadCast}{$Name}{Prio} = $Prio ;
+   foreach my $Message (sort  {$a cmp $b} keys %{$data{BroadCast}}) {
+      my $Name = $data{BroadCast}{$Message}{Name} ; # Handier var
+      my $Info = $data{BroadCast}{$Message}{Info} ; # Handier var
+      my $Prio = $data{BroadCast}{$Message}{Prio} ; # Handier var
       $html .= "  <tr>\n" ;
-      $html .= "    <th>$Message</th>\n" ;
+      $html .= "    <th><a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a></th>\n" ;
       $Name =~ s/COMMAND_//g ;
       $html .= "    <td>$Name</td>\n" ;
       $Info =~ s/;/<br \/>/g ;
@@ -799,62 +923,12 @@ sub www_print_velbus_messages () {
    $html .= "</tbody>\n" ;
    $html .= "</table>\n" ;
 
-   # Loop all Modules and Message
-   foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}})) {
-      foreach my $Message ( sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}}) ) {
-         foreach my $Name (split ";", $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Name}) {
-            $data{Module}{$Message}{Name}{$Name} = "yes" ;
-         }
-         my $Info = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Info} ; # Handier var
-         my $Prio = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Prio} ; # Handier var
-         $data{Module}{$Message}{ModuleType}{$ModuleType} = "yes" ;
-         $data{Module}{$Message}{Info}{$Info} = "yes";
-         $data{Module}{$Message}{Prio}{$Prio} = "yes";
-      }
-   }
-   
-   # Determine a type to classify the messages
-   my %table ;
-   foreach my $Message (sort {$a cmp $b} keys %{$data{Module}}) {
-      my $type = "rest" ;
-      my $ModuleType = join " ", sort keys %{$data{Module}{$Message}{ModuleType}} ;
-      my $Name = join ";", sort keys %{$data{Module}{$Message}{Name}} ;
-      if ( $Name =~ /_STATUS/ ) {
-         $type = "Status" ;
-      } elsif ( $Name =~ /_PROGRAM/ ) {
-         $type = "Program" ;
-      } elsif ( $Name =~ /_MEMORY/ ) {
-         $type = "Memory" ;
-      } elsif ( $Name =~ /DIM/ ) {
-         $type = "Dimmer" ;
-      } elsif ( $Name =~ /RELAY_/ ) {
-         $type = "Relay" ;
-      } elsif ( $Name =~ /BLIND_/ ) {
-         $type = "Blind" ;
-      } elsif ( $Name =~ /_NAME_/ ) {
-         $type = "Name" ;
-      }
-      $Name =~ s/;/<br \/>/g ;
-      my $Info = join ";", sort keys %{$data{Module}{$Message}{Info}} ;
-      $Info =~ s/;/<br \/>/g ;
-      my $Prio = join ";", sort keys %{$data{Module}{$Message}{Prio}} ;
-
-      $table{$type} .= "  <tr>\n" ;
-      $table{$type} .= "    <th>$Message</th>\n" ;
-      $Name =~ s/COMMAND_//g ;
-      $table{$type} .= "    <td>$Name</td>\n" ;
-      $table{$type} .= "    <td>$ModuleType</td>\n" ;
-      $table{$type} .= "    <td>$Info</td>\n" ;
-      $table{$type} .= "    <td>$Prio</td>\n" ;
-      $table{$type} .= "  </tr>\n" ;
-   }
-
-   foreach my $type (sort keys %table) {
-      $html .= "<h3>Module messages, type $type</h3>\n" ;
-      $html .= "<table border=1 class=\"datatable oggle1\">\n" ;
+   foreach my $type (sort keys %{$data{PerType}}) {
+      $html .= "<h2>Module messages: type $type</h2>\n" ;
+      $html .= "<table border=1 class=\"datatable\">\n" ;
       $html .= "<thead>\n" ;
       $html .= "  <tr>\n" ;
-      $html .= "    <th>Command</th>\n" ;
+      $html .= "    <th>Message</th>\n" ;
       $html .= "    <th>Name</th>\n" ;
       $html .= "    <th>Module</th>\n" ;
       $html .= "    <th>Info</th>\n" ;
@@ -863,7 +937,26 @@ sub www_print_velbus_messages () {
       $html .= "</thead>\n" ;
 
       $html .= "<tbody>\n" ;
-      $html .= $table{$type}  ;
+      foreach my $Message (sort @{$data{PerType}{$type}}) {
+         my $Name = join ";", sort keys %{$data{Module}{$Message}{Name}} ;
+         $Name =~ s/;/<br \/>/g ;
+         my $Info = join ";", sort keys %{$data{Module}{$Message}{Info}} ;
+         $Info =~ s/;/<br \/>/g ;
+         my $Prio = join ";", sort keys %{$data{Module}{$Message}{Prio}} ;
+
+         $html         .= "  <tr>\n" ;
+         $html         .= "    <th><a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a></th>\n" ;
+         $Name =~ s/COMMAND_//g ;
+         $html         .= "    <td>$Name</td>\n" ;
+         $html         .= "    <td>\n" ;
+         foreach my $ModuleType (sort keys %{$data{Module}{$Message}{ModuleType}} ) {
+            $html .= "<a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</a><br />" ;
+         }
+         $html         .= "    </td>\n" ;
+         $html         .= "    <td>$Info</td>\n" ;
+         $html         .= "    <td>$Prio</td>\n" ;
+         $html         .= "  </tr>\n" ;
+      }
       $html .= "</tbody>\n" ;
       $html .= "</table>\n" ;
    }
@@ -872,11 +965,14 @@ sub www_print_velbus_messages () {
 }
 
 sub www_print_velbus_protocol () {
+   my $html ;
+   $html .= "<h1>Velbus protocol</h1>\n" ;
    if ( defined $global{cgi}{params}{ModuleType} ) {
-      &www_print_velbus_protocol_print_moduleType($global{cgi}{params}{ModuleType}) ;
+      $html .= &www_print_velbus_protocol_print_moduleType($global{cgi}{params}{ModuleType}) ;
    } else {
-      &www_print_velbus_protocol_print_modules ;
+      $html .= &www_print_velbus_protocol_print_modules ;
    }
+   return $html ;
 }
 
 sub www_print_velbus_protocol_print_moduleType () {
@@ -885,7 +981,7 @@ sub www_print_velbus_protocol_print_moduleType () {
 
    if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels} ) {
       $html .= "<h3>Available channels on module</h3>\n" ;
-      $html .= "<table border=1 class=\"datatable oggle1\">\n" ;
+      $html .= "<table border=1 class=\"datatable\">\n" ;
       $html .= "<thead>\n" ;
       $html .= "  <tr>\n" ;
       $html .= "    <th>Channel</th>\n" ;
@@ -906,13 +1002,13 @@ sub www_print_velbus_protocol_print_moduleType () {
 
    if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages} ) {
       $html .= "<h3>Possible messages</h3>\n" ;
-      $html .= "<table border=1 class=\"datatable oggle1\">\n" ;
+      $html .= "<table border=1 class=\"datatable\">\n" ;
       $html .= "<thead>\n" ;
       $html .= "  <tr>\n" ;
       $html .= "    <th>Message</th>\n" ;
       $html .= "    <th>Name</th>\n" ;
       $html .= "    <th>Info</th>\n" ;
-      $html .= "    <th>MessageType</th>\n" ;
+      $html .= "    <th>Prio</th>\n" ;
       $html .= "  </tr>\n" ;
       $html .= "</thead>\n" ;
 
@@ -925,12 +1021,12 @@ sub www_print_velbus_protocol_print_moduleType () {
          $html .= "    <th>$Message</th>\n" ;
          $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Name}</td>\n" ;
          $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Info}</td>\n" ;
-         $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{MessageType}</td>\n" ;
+         $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Prio}</td>\n" ;
          $html .= "  </tr>\n" ;
 
          if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data} ) {
             $html2 .= "<h4>Databytes for message $Message ($global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Name}: $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Info})</h4>\n" ;
-            $html2 .= "<table border=1 class=\"datatable oggle1\">\n" ;
+            $html2 .= "<table border=1 class=\"datatable\">\n" ;
             $html2 .= "<thead>\n" ;
             $html2 .= "  <tr>\n" ;
             $html2 .= "    <th>DataByte</th>\n" ;
@@ -966,8 +1062,7 @@ sub www_print_velbus_protocol_print_moduleType () {
 
 sub www_print_velbus_protocol_print_modules () {
    my $html ;
-   $html .= "<h1 class=\"\">All known modules</h1>\n" ;
-   $html .= "<table border=1 class=\"datatable oggle1\">\n" ;
+   $html .= "<table border=1 data-paging=false class=\"datatable\">\n" ;
    $html .= "<thead>\n" ;
    $html .= "  <tr>\n" ;
    $html .= "    <th>Module</th>\n" ;
@@ -1024,6 +1119,59 @@ sub www_update_module_status () {
    my $sock = &open_socket ;
    my $temp = &update_module_status($sock) ;
    return $temp ;
+}
+
+# Loop all modules and messages and sort the info per message
+sub www_process_messages () { 
+   my %data ;
+
+   # Loop all broadcast messages
+   foreach my $Message (sort (keys %{$global{Cons}{MessagesBroadCast}}) ) {
+      my $Name = $global{Cons}{MessagesBroadCast}{$Message}{Name} ; # Handier var
+      my $Info = $global{Cons}{MessagesBroadCast}{$Message}{Info} ; # Handier var
+      my $Prio = $global{Cons}{MessagesBroadCast}{$Message}{Prio} ; # Handier var
+      $data{BroadCast}{$Message}{Name} = $Name ;
+      $data{BroadCast}{$Message}{Info} = $Info ;
+      $data{BroadCast}{$Message}{Prio} = $Prio ;
+   }
+
+   # Loop all Modules and Message
+   foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}})) {
+      foreach my $Message ( sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}}) ) {
+         foreach my $Name (split ";", $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Name}) {
+            $data{Module}{$Message}{Name}{$Name} = "yes" ;
+         }
+         my $Info = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Info} ; # Handier var
+         my $Prio = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Prio} ; # Handier var
+         $data{Module}{$Message}{ModuleType}{$ModuleType} = "yes" ;
+         $data{Module}{$Message}{Info}{$Info} = "yes";
+         $data{Module}{$Message}{Prio}{$Prio} = "yes";
+      }
+   }
+
+   # Loop the messages and try to find a type to sort the messages
+   foreach my $Message (sort {$a cmp $b} keys %{$data{Module}}) {
+      my $type = "rest" ;
+      my $Name = join ";", sort keys %{$data{Module}{$Message}{Name}} ;
+      if ( $Name =~ /_STATUS/ ) {
+         $type = "Status" ;
+      } elsif ( $Name =~ /_PROGRAM/ ) {
+         $type = "Program" ;
+      } elsif ( $Name =~ /_MEMORY/ ) {
+         $type = "Memory" ;
+      } elsif ( $Name =~ /_NAME_/ ) {
+         $type = "Name" ;
+      } elsif ( $Name =~ /DIM/ ) {
+         $type = "Dimmer" ;
+      } elsif ( $Name =~ /RELAY_/ ) {
+         $type = "Relay" ;
+      } elsif ( $Name =~ /BLIND_/ ) {
+         $type = "Blind" ;
+      }
+      push @{$data{PerType}{$type}}, $Message ;
+   }
+
+   return %data ;
 }
 
 return 1 ;
