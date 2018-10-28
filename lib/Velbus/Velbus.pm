@@ -770,11 +770,12 @@ sub get_status_VMB7IN () {
    &send_message ($sock, $address, 'FD', undef, '00', 'F3') ; # Channel 4
 }
 
-# Convert channel number and address to channel bit. 3 = 1000 -> 8 and sub address
+# Convert channel number and address to channel bit. 
+#   Channel 3 = 1000 -> 8
 # Used by commands.pl & scripts
 # 1: channel
 # 2: address
-# 3: type -> wordt niet gebruikt
+# 3: type -> not used, informational
 #     - MakeMessage
 #     - ButtonPressed
 sub channel_number_to_id () {
@@ -803,7 +804,8 @@ sub channel_number_to_id () {
    return ($channel,$address) ;
 }
 
-# Convert channnel bit to channel number. 8 -> 1000 = 3
+# Convert channnel bit to channel number. 
+#  8 -> 1000 = 3
 # Used by logger.pl for the touch screens & channel names
 # 1: channel
 # 2: address
@@ -822,7 +824,7 @@ sub channel_id_to_number () {
            ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "2D" ) or # VMBGP4PIR
            ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) or # VMBGPOD
            ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "32" ) ) { # VMB4AN
-         $channel = &hex_to_dec ($channel) ; # Only usefull for VMBGPOD
+         $channel = &hex_to_dec ($channel) ;
       } else {
          $channel = &hex_to_bin ($channel) ;
          $channel =~ /(0*)$/ ; # Filter out last 0's
@@ -1075,6 +1077,32 @@ sub set_temperature_mode {
    &send_message ($sock, $address, $mode, undef, "00", "00") ; # COMMAND_SET_TEMP
 }
 
+# Show a memo text on the OLED of a VMBGPOD
+# To erase the text, just don't provide the third parameter
+sub send_memo () {
+   my $sock    = $_[0] ;
+   my $address = $_[1] ;
+   my $text    = $_[2] ;
+
+   if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
+      my @text = split "", $text ;
+      unshift @text , "" ; # First element of tekst is lost due to $j starting a 1
+   
+      # We can send 64 characters and it's 5 characters / message. So we need 13 messages.
+      foreach my $i (0..12) {
+         my @message = ('00', '00', '00', '00', '00', '00') ; # Pre-fill the message with 00
+         foreach my $j (1..5) { # Start from 1 because 0 is for the offset
+            my $place = $i * 5 + $j ;
+            next if $place > 64 ;
+            my $char = &dec_to_hex (ord $text[$place]) ;
+            $message[$j] = $char ;
+         }  
+         $message[0] = &dec_to_hex($i * 5) ; # First element is the offset of the character
+         &send_message ($sock, $address, 'AC', 'FF', @message) ;
+      }
+   }
+}
+
 # Scan all the address. The result is a message from the module with the type.
 sub scan () {
    my $sock = $_[0] ;
@@ -1103,56 +1131,6 @@ sub broadcast_datetime () {
    $year_hex =~ /(.?.)(..)/ ; # Separating year in 2 parts
    my @message = ("$global{Tijd}{mday}","$global{Tijd}{mon}","0x$1", "0x$2") ;
    &print_sock ($sock,"0xFB","0x00","0x00","0xB7", @message) ;
-}
-
-# This is a bit tricky. Find the MemoryKey based on the Buld and the module type.
-# MemoryKey is used to specify the memory address that has to be used. These addresses can differ between Build versions.
-sub module_find_MemoryKey () {
-   my $address = $_[0] ;
-   my $type    = $_[1] ;
-
-   my $Build = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildYear} . $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildWeek} ;
-
-   my $MemoryKey ;
-   if ( defined $global{Cons}{ModuleTypes}{$type} and
-        defined $global{Cons}{ModuleTypes}{$type}{MemoryMatch} ) {
-      foreach my $key (sort {$a <=> $b} (keys %{$global{Cons}{ModuleTypes}{$type}{MemoryMatch}} ) ) {
-         if ( defined $global{Cons}{ModuleTypes}{$type}{MemoryMatch}{$key}{Build} ) {
-            my $code = "if ( $Build $global{Cons}{ModuleTypes}{$type}{MemoryMatch}{$key}{Build} ) {
-               \$MemoryKey = '$global{Cons}{ModuleTypes}{$type}{MemoryMatch}{$key}{Version}' ;
-            } ; " ;
-            eval $code ;
-            return $MemoryKey if defined $MemoryKey ;;
-         }
-      }
-   }
-   return undef ;
-}
-
-# Show a memo text on the OLED of a VMBGPOD
-# To erase the text, just don't provide the third parameter
-sub send_memo () {
-   my $sock    = $_[0] ;
-   my $address = $_[1] ;
-   my $text    = $_[2] ;
-
-   if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
-      my @text = split "", $text ;
-      unshift @text , "" ; # First element of tekst is lost due to $j starting a 1
-   
-      # We can send 64 characters and it's 5 characters / message. So we need 13 messages.
-      foreach my $i (0..12) {
-         my @message = ('00', '00', '00', '00', '00', '00') ; # Pre-fill the message with 00
-         foreach my $j (1..5) { # Start from 1 because 0 is for the offset
-            my $place = $i * 5 + $j ;
-            next if $place > 64 ;
-            my $char = &dec_to_hex (ord $text[$place]) ;
-            $message[$j] = $char ;
-         }  
-         $message[0] = &dec_to_hex($i * 5) ; # First element is the offset of the character
-         &send_message ($sock, $address, 'AC', 'FF', @message) ;
-      }
-   }
 }
 
 return 1

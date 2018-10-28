@@ -457,4 +457,28 @@ sub find_memory_addresses {
    }
 }
 
+# This is a bit tricky. Find the MemoryKey based on the Buld and the module type.
+# MemoryKey is used to specify the memory address that has to be used. These addresses can differ between Build versions.
+sub module_find_MemoryKey () {
+   my $address = $_[0] ;
+   my $type    = $_[1] ;
+
+   my $Build = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildYear} . $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildWeek} ;
+
+   my $MemoryKey ;
+   if ( defined $global{Cons}{ModuleTypes}{$type} and
+        defined $global{Cons}{ModuleTypes}{$type}{MemoryMatch} ) {
+      foreach my $key (sort {$a <=> $b} (keys %{$global{Cons}{ModuleTypes}{$type}{MemoryMatch}} ) ) {
+         if ( defined $global{Cons}{ModuleTypes}{$type}{MemoryMatch}{$key}{Build} ) {
+            my $code = "if ( $Build $global{Cons}{ModuleTypes}{$type}{MemoryMatch}{$key}{Build} ) {
+               \$MemoryKey = '$global{Cons}{ModuleTypes}{$type}{MemoryMatch}{$key}{Version}' ;
+            } ; " ;
+            eval $code ;
+            return $MemoryKey if defined $MemoryKey ;;
+         }
+      }
+   }
+   return undef ;
+}
+
 return 1
