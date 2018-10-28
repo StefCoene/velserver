@@ -27,7 +27,7 @@
 # Temperature Sensor Module : VMB1TS
 # 00 = COMMAND_OUTPUT_STATUS
 #   This is in 2 blocks in the protocol file, the second blocks starts with x but since the first block starts with 0, this has to be 1.
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'FB'}{Data}{'0'}{Name} = "Heater" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{'0'}{Name} = "Heater" ;
 $global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{'0'}{Match}{'%0..1...1'}{Info} = "Heater just activated" ;
 $global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{'0'}{Match}{'%0.....1.'}{Info} = "Turbo heater/cooler just activated" ;
 $global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{'0'}{Match}{'%0....1..'}{Info} = "Comfort or day mode just activated" ;
@@ -161,6 +161,21 @@ $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{Data}{'0'}{Name} = "Channel" ;
 
    $global{Cons}{ModuleTypes}{'1B'}{Messages}{'FB'}{General} = "Byte3LedStatus" ;
 
+# 1 channel relay module: VMB1RYNOS
+$global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'0'}{Name} = "Channel" ;
+   $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000001'}{Channel} = "01" ;
+   $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000010'}{Channel} = "02" ; # Virtual channel
+   $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'0'}{Match}{'00000100'}{Channel} = "03" ; # Virtual channel
+   $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'0'}{Match}{'00001000'}{Channel} = "04" ; # Virtual channel
+   $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'0'}{Match}{'00010000'}{Channel} = "05" ; # Virtual channel
+
+   $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'2'}{Name} = "Relay status" ;
+   $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'2'}{Match}{'00000000'}{Info} = "Relay channel off" ;
+   $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'2'}{Match}{'00000000'}{openHAB} = "OFF:Relay" ;
+   $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'2'}{Match}{'00000001'}{Info} = "Relay channel on" ;
+   $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{'2'}{Match}{'00000001'}{openHAB} = "ON:Relay" ;
+
+
 ################### Dimmers: messages
 # Dimmer module: VMB1DM
 # 0F = COMMAND_SLIDER_STATUS
@@ -257,6 +272,17 @@ $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
    $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'2'}{Match}{'00'}{Info} = "Off" ;
    $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'2'}{Match}{'01'}{Info} = "Up" ;
    $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'2'}{Match}{'02'}{Info} = "Down" ;
+
+# Blind Control Module: VMB1BLS
+# EC = COMMAND_BLIND_STATUS
+$global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
+
+   # Blind status
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Name} = "Blind status" ;
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Match}{'00'}{Info} = "Off" ;
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Match}{'01'}{Info} = "Up" ;
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Match}{'02'}{Info} = "Down" ;
 
 # 2-channel Blind Control Module: VMB2BL
 # EC = COMMAND_BLIND_STATUS
