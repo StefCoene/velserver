@@ -193,10 +193,10 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
 
    # Make sure we see each Module type only once
    if ( defined $file{PerType}{$ModuleType} ) {
-      print "Error: file $file: We already had type $ModuleType in file $file{PerType}{$ModuleType}{File}\n" ;
+      print "Error: file $file: We already had type $ModuleType in file $file{PerType}{$ModuleType}{'$ModuleTypeHex'}{File}\n" ;
       next ;
    } else {
-      $file{PerType}{$ModuleType}{File} = $file ; # Remember that we have seen the module
+      $file{PerType}{$ModuleType}{'$ModuleTypeHex'}{File} = $file ; # Remember that we have seen the module
    }
 
    # Loop all the messages
@@ -352,8 +352,30 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
                }
 
+               if ( defined $file{PerFile}{$file}{Messages}{$counter}{byte} ) {
+                  foreach my $DATABYTE (sort keys %{$file{PerFile}{$file}{Messages}{$counter}{byte}}) {
+                     next if $DATABYTE eq "2" ;
+                     if ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Memorymap version/ or
+                          $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Memory map version/ ) {
+                        $file{ModuleType}{$ModuleTypeHex}{MemoryMap} = $DATABYTE ;
+                     } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /High byte of serial number/ or
+                               $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Serial number high/ ) {
+                        $file{ModuleType}{$ModuleTypeHex}{SerialHigh} = $DATABYTE ;
+                     } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Low byte of serial number/ or
+                               $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Serial number low/ ) {
+                        $file{ModuleType}{$ModuleTypeHex}{SerialLow} = $DATABYTE ;
+                     } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Build year/i ) {
+                        $file{ModuleType}{$ModuleTypeHex}{Buildyear} = $DATABYTE ;
+                     } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Build week/i ) {
+                        $file{ModuleType}{$ModuleTypeHex}{BuildWeek} = $DATABYTE ;
+                     } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /don’t care/i ) {
+                     } else {
+                        #print "Warning: DATABYTE=$DATABYTE = \"$file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text}\" in $file\n" ;
+                     }
+                  }
+               }
             } else {
-               print "Error $ModuleType: no mathcing FF command: $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text}\n" ;
+               print "Error $ModuleType: no matching FF command: $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text}\n" ;
             }
          } else {
             print "Error no DATABYTE2 found in $file for message counter $counter\n" ;
@@ -428,6 +450,7 @@ foreach my $ModuleTypeHex (sort keys %{$file{PerCommandHexLocal}}) {
 }
 
 #print Dumper \%{$file{PerCommandHexBroadcast}} ;
+print OUTPUT "\n" ;
 
 foreach my $CommandHex (sort keys %{$file{PerCommandHexBroadcast}}) {
    my @Name = sort keys %{$file{PerCommandHexBroadcast}{$CommandHex}{CommandText}} ;
@@ -442,6 +465,20 @@ foreach my $CommandHex (sort keys %{$file{PerCommandHexBroadcast}}) {
    print OUTPUT "\$global{Cons}{MessagesBroadCast}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
    print OUTPUT "\$global{Cons}{MessagesBroadCast}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
 }
+
+print OUTPUT "\n" ;
+
+foreach my $ModuleTypeHex (sort keys %{$file{ModuleType}}) {
+   foreach my $info (sort keys %{$file{ModuleType}{$ModuleTypeHex}}) {
+      print OUTPUT "\$file{Cons}{ModuleType}{'$ModuleTypeHex'}{$info} = $file{ModuleType}{$ModuleTypeHex}{$info} ;\n" ;
+      if ( $ModuleTypeHex eq "1E" ) {
+         print OUTPUT "\$file{Cons}{ModuleType}{'1F'}{$info} = $file{ModuleType}{$ModuleTypeHex}{$info} ;\n" ;
+         print OUTPUT "\$file{Cons}{ModuleType}{'20'}{$info} = $file{ModuleType}{$ModuleTypeHex}{$info} ;\n" ;
+      }
+   }
+}
+
+#$file{ModuleType}{$ModuleTypeHex}{$ModuleTypeHex}{MemoryMap} = $DATABYTE ;
 
 close OUTPUT ;
 
