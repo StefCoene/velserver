@@ -87,13 +87,29 @@ sub process_message {
             } else {
                push @{$message{text}}, "address $message{address}, type = unknown $ModuleType" ;
             }
+
             &do_query ($global{dbh},"replace into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", $message{addressMaster}, $ModuleType, "Found") ;
             $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $ModuleType ;
-            &update_modules_info ($message{address}, "Serial1",   $hex[0]) ;
-            &update_modules_info ($message{address}, "Serial2",   $hex[1]) ;
-            &update_modules_info ($message{address}, "MemoryMap", $hex[2]) ;
-            &update_modules_info ($message{address}, "BuildYear", $hex[3]) ;
-            &update_modules_info ($message{address}, "BuildWeek", $hex[4]) ;
+
+            # The numbers in $file{Cons}{ModuleType}{$ModuleType}{SerialLow} are in DATABYTE numbers, so we have to unshift hex untill they match
+            unshift @hex ,"" ; unshift @hex ,"" ; unshift @hex ,"" ; 
+
+            if ( defined $file{Cons}{ModuleType}{$ModuleType}{SerialLow} ) {
+               &update_modules_info ($message{address}, "Serial1",   $hex[$file{Cons}{ModuleType}{$ModuleType}{SerialLow}]) ;
+            }
+            if ( defined $file{Cons}{ModuleType}{$ModuleType}{SerialHigh} ) {
+               &update_modules_info ($message{address}, "Serial2",   $hex[$file{Cons}{ModuleType}{$ModuleType}{SerialHigh}]) ;
+            }
+            if ( defined $file{Cons}{ModuleType}{$ModuleType}{MemoryMap} ) {
+               &update_modules_info ($message{address}, "MemoryMap", $hex[$file{Cons}{ModuleType}{$ModuleType}{MemoryMap}]) ;
+               $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} = $hex[$file{Cons}{ModuleType}{$ModuleType}{MemoryMap}] ;
+            }
+            if ( defined $file{Cons}{ModuleType}{$ModuleType}{Buildyear} ) {
+               &update_modules_info ($message{address}, "BuildYear", $hex[$file{Cons}{ModuleType}{$ModuleType}{Buildyear}]) ;
+            }
+            if ( defined $file{Cons}{ModuleType}{$ModuleType}{BuildWeek} ) {
+               &update_modules_info ($message{address}, "BuildWeek", $hex[$file{Cons}{ModuleType}{$ModuleType}{BuildWeek}]) ;
+            }
 
          } elsif ( $message{MessageType} eq "B0" ) { # Module subtype: answer to a Scan
             if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ) {
@@ -473,7 +489,13 @@ sub process_message {
                   my $dec = &hex_to_dec ($hex) ; # Memory content in decimal
                   my $char = chr hex $hex ;     # Memory content in char
 
-                  my $MemoryKey = &module_find_MemoryKey ($message{address}, $message{ModuleType}) ;
+                  # MemoryMap: reported by the module, MemoryKey: configured based on the build of the module.
+                  my $MemoryKey ;
+                  if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} ) {
+                     $MemoryKey = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} ;
+                  } else {
+                     $MemoryKey = &module_find_MemoryKey ($message{address}, $message{ModuleType}) ;
+                  }
 
                   if ( defined $MemoryKey ) {
                      # See if we have a Type defined for the memory
@@ -689,7 +711,14 @@ sub get_status () {
 
    # Get module name if no channel name is requested
    if ( ! defined $channel ) {
-      my $MemoryKey = &module_find_MemoryKey ($address, $type) ;
+      # MemoryMap: reported by the module, MemoryKey: configured based on the build of the module.
+      my $MemoryKey ;
+      if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ) {
+         $MemoryKey = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ;
+      } else {
+         $MemoryKey = &module_find_MemoryKey ($address, $message{ModuleType}) ;
+      }
+
       if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{SensorNameAddress} ) {
          my @memory = split ";", $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{SensorNameAddress} ;
          foreach my $memory (@memory) {

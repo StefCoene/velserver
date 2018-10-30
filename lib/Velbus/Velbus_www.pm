@@ -551,6 +551,7 @@ sub www_print_modules () {
       $html .= "    <th>Name</th>\n" ;
       $html .= "    <th>Build</th>\n" ;
       $html .= "    <th>MemoryKey</th>\n" ;
+      $html .= "    <th>MemoryMap</th>\n" ;
       $html .= "    <th>Date</th>\n" ;
       $html .= "    <th>Action</th>\n" ;
       $html .= "  </tr>\n" ;
@@ -561,6 +562,7 @@ sub www_print_modules () {
       foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}{$status}{ModuleList}}) ) {
          my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'type'} ; # Handier var
          my $MemoryKey = &module_find_MemoryKey ($address, $type) ; # Handier var
+         my $MemoryMap = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ;
          $html .= "  <tr>\n" ;
          if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
             $html .= "    <th>$address ($global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr})</th>\n" ;
@@ -574,7 +576,16 @@ sub www_print_modules () {
          if ( defined $MemoryKey ) {
             $html .= "    <td>$MemoryKey</td>\n" ;
          } else {
-            $html .= "    <td>No MemoryKey found!</td>\n" ;
+            $html .= "    <td>-</td>\n" ;
+         }
+         if ( defined $MemoryMap ) {
+            if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryMap}{ModuleName}) {
+               $html .= "    <td>$MemoryMap</td>\n" ;
+            } else {
+               $html .= "    <td>$MemoryMap: not found?</td>\n" ;
+            }
+         } else {
+            $html .= "    <td>No MemoryMap found!</td>\n" ;
          }
          $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'date'}</td>\n" ;
          $html .= "    <td><a href=\"?".&www_make_url("action=status","address=$address")."\">refresh status</a></td>\n" ;
@@ -1069,6 +1080,7 @@ sub www_print_velbus_protocol_print_modules () {
    $html .= "    <th>Type</th>\n" ;
    $html .= "    <th>Info</th>\n" ;
    $html .= "    <th>Version</th>\n" ;
+   $html .= "    <th>Memory</th>\n" ;
    $html .= "  </tr>\n" ;
    $html .= "</thead>\n" ;
 
@@ -1078,6 +1090,13 @@ sub www_print_velbus_protocol_print_modules () {
       $html .= "    <td><a href=?".&www_make_url("ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type}</a></td>\n" ;
       $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Info}</td>\n" ;
       $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Version}</td>\n" ;
+      $html .= "    <td>" ;
+      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{MemoryMatch} ) {
+         foreach my $Key (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{MemoryMatch}}) {
+            $html .= "$global{Cons}{ModuleTypes}{$ModuleType}{MemoryMatch}{$Key}{Build}: $global{Cons}{ModuleTypes}{$ModuleType}{MemoryMatch}{$Key}{Version}<br>\n" ;
+         }
+      }
+      $html .= "    </td>" ;
       $html .= "  </tr>\n" ;
    }
 
