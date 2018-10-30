@@ -386,19 +386,17 @@ sub SubAddr_Channel {
    return $Channel ;
 }
 
-# Find memory address for the Module Name
+# Parse and rewrite the memory addresses for ModuleName and SensorName so we now for each possible adresse what it contains.
 sub find_memory_addresses {
    foreach my $Type (sort keys %{$global{Cons}{ModuleTypes}}) {
       if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory} ) {
          foreach my $MemoryKey (sort keys %{$global{Cons}{ModuleTypes}{$Type}{Memory}}) {
             if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{ModuleName} ) {
-
                my $counter = 0 ; # Number of address
                my $AddressHex ; # The address in hex
 
                my @ModuleNameAddress ; # To store all addresses
                foreach my $loop (split ";", $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{ModuleName}) {
-                  #print "loop $loop\n" ;
                   my ($start,$end) = split "-", $loop ;
                   $start = &hex_to_dec ($start) ;
                   $end   = &hex_to_dec ($end) ;
@@ -423,7 +421,6 @@ sub find_memory_addresses {
             }
 
             if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{SensorName} ) {
-
                my $counter = 0 ; # Number of address
                my $AddressHex ; # The address in hex
 
