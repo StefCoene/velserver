@@ -1,5 +1,5 @@
 # Make an url based on the parameters supplied in the url and extra input parameters
-sub www_make_url {
+sub www_make_url () {
    my %input ;
    foreach (@_) {
       my @split = split "=" ;
@@ -12,7 +12,12 @@ sub www_make_url {
    foreach my $key (sort keys %{$global{cgi}{params}}) {
       next if $key eq "" ;
       # Overrule parameter if needed
-      if ( defined $input{$key} ) {
+      if ( defined $input{'*'} ) {
+         if ( $input{'*'} eq '-' ) {
+         } else {
+            delete $input{$key} ;
+         }
+      } elsif ( defined $input{$key} ) {
          if ( $input{$key} eq '-' ) {
          } else {
             push @url, "$key=$input{$key}" ;
@@ -34,7 +39,7 @@ sub www_make_url {
 }
 
 # Website with some basic menus
-sub www_index {
+sub www_index () {
    my $content ;
 
    # Starten van html output
@@ -55,13 +60,13 @@ sub www_index {
    ) ;
 
    $content .= "<p>\n" ;
-   $content .= "<a href=?".&www_make_url("appl=print_modules").">Modules on bus</a> || " ;
-   $content .= "<a href=?".&www_make_url("appl=print_channeltags").">Channel tags</a> || " ;
-   $content .= "<a href=?".&www_make_url("ModuleType=-","appl=print_velbus_protocol").">Velbus protocol</a> || " ;
-   $content .= "<a href=?".&www_make_url("Message=-","appl=print_velbus_messages").">Velbus messages</a> || " ;
-   $content .= "<a href=?".&www_make_url("appl=openHAB").">openHAB config</a> || " ;
-   $content .= "<a href=?".&www_make_url("appl=scan").">Scan the bus</a> || " ;
-   $content .= "<a href=?".&www_make_url("appl=clear_database").">Clear the database</a> " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=print_modules").">Modules on bus</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=print_channeltags").">Channel tags</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_protocol").">Velbus protocol</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_messages").">Velbus messages</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=openHAB").">openHAB config</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=scan").">Scan the bus</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=clear_database").">Clear the database</a> " ;
    $content .= "</p>\n" ;
 
    if ( $global{cgi}{params}{appl} eq "print_modules" ) {
@@ -100,7 +105,7 @@ sub www_index {
 }
 
 # Webservice for remote access
-sub www_service {
+sub www_service () {
    my $sock = &open_socket ;
    my $address ;
    my $Moduletype ; # Type of the module, based on $address
