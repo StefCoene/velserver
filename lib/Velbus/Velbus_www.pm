@@ -42,15 +42,15 @@ sub www_index {
    $content .= $global{cgi}{CGI}->start_html (
       -title=>"Velbus",
       -style=>[
-         {'src'=>"https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css"},
+         {'src'=>"include/jquery.dataTables.min.css"},
       ],
       -script=>[
          { -type=>'text/javascript',
-           -src=>'https://code.jquery.com/jquery-3.3.1.min.js'},
+           -src=>'include/jquery-3.3.1.min.js'},
          { -type=>'text/javascript',
            -src=>'include/script.js'},
          { -type=>'text/javascript',
-           -src=>'https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js'},
+           -src=>'include/jquery.dataTables.min.js'},
       ]
    ) ;
 
