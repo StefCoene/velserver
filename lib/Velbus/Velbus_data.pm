@@ -19,5 +19,4 @@ $global{Cons}{ConvertButton}{'11'} = "06" ;
 $global{Cons}{ConvertButton}{'12'} = "07" ;
 $global{Cons}{ConvertButton}{'14'} = "08" ;
 
-
 return 1 ;
