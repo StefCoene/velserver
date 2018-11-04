@@ -453,57 +453,86 @@ sub www_print_modules () {
 
       $html .= "<h2>Status: $status</h2>\n" ;
 
-      $html .= "<table border=1>\n" ;
-      $html .= "<thead>\n" ;
-      $html .= "  <tr>\n" ;
-      $html .= "    <th>Address</th>\n" ;
-      $html .= "    <th>Type</th>\n" ;
-      $html .= "    <th>Info</th>\n" ;
-      $html .= "    <th>Name</th>\n" ;
-      $html .= "    <th>Build</th>\n" ;
-      $html .= "    <th>MemoryKey</th>\n" ;
-      $html .= "    <th>MemoryMap</th>\n" ;
-      $html .= "    <th>Date</th>\n" ;
-      $html .= "    <th>Action</th>\n" ;
-      $html .= "  </tr>\n" ;
-      $html .= "</thead>\n" ;
+      my $table ;
+      $table .= "<table border=1>\n" ;
+      $table .= "<thead>\n" ;
+      $table .= "  <tr>\n" ;
+      $table .= "    <th>Address</th>\n" ;
+      $table .= "    <th>Type</th>\n" ;
+      $table .= "    <th>Info</th>\n" ;
+      $table .= "    <th>Name</th>\n" ;
+      $table .= "    <th>Build</th>\n" ;
+      $table .= "    <th>MemoryKey</th>\n" ;
+      $table .= "    <th>MemoryMap</th>\n" ;
+      $table .= "    <th>Date</th>\n" ;
+      $table .= "    <th>Action</th>\n" ;
+      $table .= "  </tr>\n" ;
+      $table .= "</thead>\n" ;
 
-      $html .= "<tbody>\n" ;
-      my $html2 ;
+      $table .= "<tbody>\n" ;
+
+      my $mail_body ;
+      $mail_body .= "Hi,\n" ;
+      $mail_body .= "\n" ;
+      $mail_body .= "This information will be used to further improve the velserver scripts. See https://github.com/StefCoene/velserver.\n" ;
+      $mail_body .= "\n" ;
+      $mail_body .= "If something is not working and/or everything is working fine, you can specify it in this email.\n" ;
+      $mail_body .= "I don't have all modules so for some modules I have to rely on the protocol files to get them supported.\n" ;
+      $mail_body .= "\n" ;
+      $mail_body .= "\n" ;
+      $mail_body .= "Stef Coene\n" ;
+      $mail_body .= "\n" ;
+      $mail_body .= "address;type;ModuleName;Build;MemoryKey;MemoryMap;\n" ;
+
       foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}{$status}{ModuleList}}) ) {
          my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'type'} ; # Handier var
          my $MemoryKey = &module_find_MemoryKey ($address, $type) ; # Handier var
          my $MemoryMap = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ;
-         $html .= "  <tr>\n" ;
+         $table .= "  <tr>\n" ;
          if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
-            $html .= "    <th>$address ($global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr})</th>\n" ;
+            $table .= "    <th>$address ($global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr})</th>\n" ;
          } else {
-            $html .= "    <th>$address</th>\n" ;
+            $table .= "    <th>$address</th>\n" ;
          }
-         $html .= "    <td>$global{Cons}{ModuleTypes}{$type}{Type} ($type)</td>\n" ;
-         $html .= "    <td>$global{Cons}{ModuleTypes}{$type}{Info}</td>\n" ;
-         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}</td>\n" ;
-         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildYear}$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildWeek}</td>\n" ;
+         $mail_body .= "$address;" ;
+         $table .= "    <td>$global{Cons}{ModuleTypes}{$type}{Type} ($type)</td>\n" ;
+         $mail_body .= "$type;" ;
+         $table .= "    <td>$global{Cons}{ModuleTypes}{$type}{Info}</td>\n" ;
+         $table .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}</td>\n" ;
+         $mail_body .= "$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName};" ;
+         $table .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildYear}$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildWeek}</td>\n" ;
+         $mail_body .= "$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildYear}$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildWeek};" ;
+
          if ( defined $MemoryKey ) {
-            $html .= "    <td>$MemoryKey</td>\n" ;
+            $table .= "    <td>$MemoryKey</td>\n" ;
+            $mail_body .= "$MemoryKey;" ;
          } else {
-            $html .= "    <td>-</td>\n" ;
+            $table .= "    <td>-</td>\n" ;
+            $mail_body .= ";" ;
          }
          if ( defined $MemoryMap ) {
             if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryMap}{ModuleName}) {
-               $html .= "    <td>$MemoryMap</td>\n" ;
+               $table .= "    <td>$MemoryMap</td>\n" ;
+               $mail_body .= "$MemoryMap;" ;
             } else {
-               $html .= "    <td>$MemoryMap: not found?</td>\n" ;
+               $table .= "    <td>$MemoryMap: not found?</td>\n" ;
+               $mail_body .= "$MemoryMap not found;" ;
             }
          } else {
-            $html .= "    <td>No MemoryMap found!</td>\n" ;
+            $table .= "    <td>No MemoryMap found!</td>\n" ;
+            $mail_body .= ";" ;
          }
-         $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'date'}</td>\n" ;
-         $html .= "    <td><a href=\"?".&www_make_url("action=status","address=$address")."\">refresh status</a></td>\n" ;
-         $html .= "  </tr>\n" ;
+         $table .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'date'}</td>\n" ;
+         $table .= "    <td><a href=\"?".&www_make_url("action=status","address=$address")."\">refresh status</a></td>\n" ;
+         $table .= "  </tr>\n" ;
+         $mail_body .= "\n" ;
       }
-      $html .= "</tbody>\n" ;
-      $html .= "</table>\n" ;
+      $table .= "</tbody>\n" ;
+      $table .= "</table>\n" ;
+
+      $mail_body =~ s/\n/%0D%0A/g ;
+      $html .= "<p>Do you want to help? Send me <a href=\"mailto:velserver\@docum.org?subject=velserver detected modules&body=$mail_body\">an email</a> with the content of this table. Especially if there is an issue with the MemoryKey and MemoryMap column</p>\n" ;
+      $html .= $table ;
    }
 
    foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
@@ -889,6 +918,7 @@ sub www_print_velbus_messages_print_messages () {
 sub www_print_velbus_protocol () {
    my $html ;
    $html .= "<h1>Velbus protocol</h1>\n" ;
+   $html .= "<p>This is a list of all modules based on the published protocol files. For each module, the protocol pdf file is converted to txt and parsed. The script can found in bin/pdf2txt.pl and the result is lib/Velbus/Velbus_data_protocol_auto.pm.<br />.</p>\n" ;
    if ( defined $global{cgi}{params}{ModuleType} ) {
       $html .= &www_print_velbus_protocol_print_moduleType($global{cgi}{params}{ModuleType}) ;
    } else {
@@ -902,7 +932,7 @@ sub www_print_velbus_protocol_print_moduleType () {
    $html .= "<h2>$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType): $global{Cons}{ModuleTypes}{$ModuleType}{Info}</h2>\n" ;
 
    if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels} ) {
-      $html .= "<h3>Available channels on module</h3>\n" ;
+      $html .= "<h3>Available channels on module (manual defined in lib/Velbus/Velbus_data_protocol.pm)</h3>\n" ;
       $html .= "<table border=1 class=\"datatable\">\n" ;
       $html .= "<thead>\n" ;
       $html .= "  <tr>\n" ;
@@ -923,7 +953,7 @@ sub www_print_velbus_protocol_print_moduleType () {
    }
 
    if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages} ) {
-      $html .= "<h3>Possible messages</h3>\n" ;
+      $html .= "<h3>Possible messages (read from lib/Velbus/Velbus_data_protocol_auto.pm)</h3>\n" ;
       $html .= "<table border=1 class=\"datatable\">\n" ;
       $html .= "<thead>\n" ;
       $html .= "  <tr>\n" ;
@@ -992,6 +1022,8 @@ sub www_print_velbus_protocol_print_modules () {
    $html .= "    <th>Info</th>\n" ;
    $html .= "    <th>Version</th>\n" ;
    $html .= "    <th>Memory</th>\n" ;
+   $html .= "    <th>Module name</th>\n" ;
+   $html .= "    <th>Channels</th>\n" ;
    $html .= "  </tr>\n" ;
    $html .= "</thead>\n" ;
 
@@ -1008,6 +1040,22 @@ sub www_print_velbus_protocol_print_modules () {
          }
       }
       $html .= "    </td>" ;
+      my $ModuleName ;
+      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Memory} ) {
+         foreach my $Key (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{Memory}}) {
+            $ModuleName .= $Key . " " ;
+         }
+      }
+      if ( defined $ModuleName ) {
+         $html .= "    <td>$ModuleName</td>\n" ;
+      } else {
+         $html .= "    <td>-</td>\n" ;
+      }
+      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels} ) {
+         $html .= "    <td>Yes</td>\n" ;
+      } else {
+         $html .= "    <td>-</td>\n" ;
+      }
       $html .= "  </tr>\n" ;
    }
 
