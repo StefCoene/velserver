@@ -56,7 +56,7 @@ sub process_message {
                push @{$message{text}}, "address $message{address}, type = unknown $message{ModuleType}" ;
             }
 
-            &do_query ($global{dbh},"replace into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", $message{addressMaster}, $message{ModuleType}, "Found") ;
+            &do_query ($global{dbh},"replace into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", $message{address}, $message{ModuleType}, "Found") ;
             $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $message{ModuleType} ;
 
             # The numbers in $file{Cons}{ModuleType}{$message{ModuleType}}{SerialLow} are in DATABYTE numbers, so we have to unshift hex untill they match
