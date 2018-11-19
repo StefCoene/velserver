@@ -79,9 +79,9 @@ sub process {
          if ( -f $file ) {
             my $content ;
             open (FILE, '<', $file) ;
-	    while (<FILE>) {
+	         while (<FILE>) {
                $content .= $_ ;
-	    }
+	         }
             close FILE ;
             $response->content($content)  ;
          }
