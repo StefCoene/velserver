@@ -264,8 +264,8 @@ sub process_message {
 
                   if ( defined $MemoryKey ) {
                      # See if we have a Type defined for the memory
-                     if ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{ModuleName} ) {
-                        my $number = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{ModuleName} ;
+                     if ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{ModuleName} ) {
+                        my $number = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{ModuleName} ;
                         my $command ;
                         if ( $number =~ /(\d+):(.+)/ ) {
                            $number = $1 ;
@@ -284,8 +284,8 @@ sub process_message {
                            &update_modules_info ($message{address}, "ModuleName", $ModuleName) ;
                            push @{$message{text}}, "ModuleName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}" ;
                         }
-                     } elsif ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{SensorName} ) {
-                        my $number = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{SensorName} ;
+                     } elsif ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{SensorName} ) {
+                        my $number = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{SensorName} ;
                         my $command ;
                         if ( $number =~ /(\d+):(.+)/ ) {
                            $number = $1 ;
@@ -304,14 +304,14 @@ sub process_message {
                            &update_modules_info ($message{address}, "TempSensor", $SensorName) ;
                            push @{$message{text}}, "SensorName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorName}" ;
                         }
-                     #} elsif ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} ) {
-                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} eq "ModuleNameStart" ) {
+                     #} elsif ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Type} ) {
+                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Type} eq "ModuleNameStart" ) {
                      #      $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} = $char if $hex ne "FF" ;
                      #   }
-                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} eq "ModuleName" ) {
+                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Type} eq "ModuleName" ) {
                      #      $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
                      #   }
-                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{$memory}{Type} eq "ModuleNameSave" ) {
+                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Type} eq "ModuleNameSave" ) {
                      #      $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
                      #      &update_modules_info ($message{address}, "ModuleName", $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}) ;
                      #      $message{text} .= "  ModuleName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}\n" ;
@@ -319,10 +319,10 @@ sub process_message {
                      } else {
                         # No type: loop possible Match keys
                         my %info ;
-                        foreach my $key (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{"$memory"}{Match}}) {
+                        foreach my $key (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{"$memory"}{Match}}) {
                            my $Value ; my $Channel ; my $SubName ;
 
-                           foreach my $Matchkey (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{"$memory"}{Match}{$key}}) {
+                           foreach my $Matchkey (keys %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{"$memory"}{Match}{$key}}) {
                               my $Match ; # We set this variable if we have a match
 
                               # Regular exression is always binary based match
@@ -340,8 +340,8 @@ sub process_message {
 
                               # If we have match, process the information
                               if ( $Match ) {
-                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Value} ) {
-                                    $Value = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Value} ;
+                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Value} ) {
+                                    $Value = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Value} ;
                                     if ( $Value eq "PulsePerUnits" ) {
                                        if ( $bin eq "00000000" ) {
                                           $Value = "Disabled" ;
@@ -351,11 +351,11 @@ sub process_message {
                                        }
                                     }
                                  }
-                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Channel} ) {
-                                    $Channel = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Channel} ;
+                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Channel} ) {
+                                    $Channel = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{"$memory"}{Match}{$key}{$Matchkey}{Channel} ;
                                  }
-                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{SubName} ) {
-                                    $SubName = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{"$MemoryKey"}{Address}{"$memory"}{Match}{$key}{$Matchkey}{SubName} ;
+                                 if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{"$memory"}{Match}{$key}{$Matchkey}{SubName} ) {
+                                    $SubName = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{"$memory"}{Match}{$key}{$Matchkey}{SubName} ;
                                  }
                               }
                            }
