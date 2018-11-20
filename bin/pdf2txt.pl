@@ -233,19 +233,22 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
 
          # Parse the Info to determine if the message is a message or a command and is it receive or transmit
          # "... command received:" The blind module can receive the following commands
-         if (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(.+) command received:/$1/g ) {
-            $MessageType = "ReceiveCommand" ;
-         # "... received:" The blind module can transmit the following messages
-         } elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(.+) received:/$1/g ) {
-            $MessageType = "ReceiveMessage" ;
-         # "Transmit: ... :" The blind module can transmit the following commands
-         } elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/Transmit: (.+):?/$1/g )  {
-            $MessageType = "TransmitCommand" ;
-         # "Transmits ... :" The blind module can transmit the following messages
-         } elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(Transmits? .+):/$1/g )  {
-            $MessageType = "TransmitMessage" ;
-         }
-         $file{PerFile}{$file}{Messages}{$counter}{MessageType} = $MessageType if defined $MessageType ; # Remember MessageType
+         $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/://g ;
+         #if (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(.+) command received/$1/g ) {
+         #   $MessageType = "ReceiveCommand" ;
+         ## "... received:" The blind module can transmit the following messages
+         #} elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(.+) received/$1/g ) {
+         #   $MessageType = "ReceiveMessage" ;
+         ## "Transmit: ... :" The blind module can transmit the following commands
+         #} elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/Transmit (.+)/$1/g )  {
+         #   $MessageType = "TransmitCommand" ;
+         ## "Transmits ... :" The blind module can transmit the following messages
+         #} elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(Transmits .+)/$1/g )  {
+         #   $MessageType = "TransmitMessage" ;
+         #} else {
+         #   print "REST $file{PerFile}{$file}{Messages}{$counter}{Info}\n" ;
+         #}
+         #$file{PerFile}{$file}{Messages}{$counter}{MessageType} = $MessageType if defined $MessageType ; # Remember MessageType
 
          # Priority....
          if ( $file{PerFile}{$file}{Messages}{$counter}{Prio} =~ /high/i ) {
@@ -392,6 +395,7 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
       if (  $file{PerFile}{$file}{Messages}{$counter}{RTR} eq "1" ) {
       } else {
          my $MessageAddressType  = $file{PerFile}{$file}{Messages}{$counter}{MessageAddressType} ; # Handier var
+         #my $MessageType         = $file{PerFile}{$file}{Messages}{$counter}{MessageType} ;        # Handier var
          my $CommandHex          = $file{PerFile}{$file}{Messages}{$counter}{CommandHex} ;         # Handier var
          my $CommandText         = $file{PerFile}{$file}{Messages}{$counter}{CommandText} ;        # Handier var
          my $Info                = $file{PerFile}{$file}{Messages}{$counter}{Info} ;               # Handier var
@@ -408,6 +412,7 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
             $file{PerCommandHexRemote}{$ModuleTypeHex}{$CommandHex}{Info}{$Info} .= "" ; # . $file . ":" . $counter  . " " ;
             $file{PerCommandHexRemote}{$ModuleTypeHex}{$CommandHex}{Prio}{$Prio} .= "" ; # . $file . ":" . $counter  . " " ;
          } elsif ( $MessageAddressType eq "local" ) {
+            #$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{MessageType}{$MessageType} .= "" ; # . $file . ":" . $counter  . " " ;
             $file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{CommandText}{$CommandText} .= "" ; # . $file . ":" . $counter  . " " ;
             $file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{Info}{$Info} .= "" ; # . $file . ":" . $counter  . " " ;
             $file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{Prio}{$Prio} .= "" ; # . $file . ":" . $counter  . " " ;
@@ -423,14 +428,17 @@ foreach my $ModuleTypeHex (sort keys %{$file{PerCommandHexLocal}}) {
       if ( defined $file{PerCommandHexBroadcast}{$CommandHex} ) {
       } else {
          my @Name = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{CommandText}} ;
+         #my @Type = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{MessageType}} ;
          my @Info = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{Info}} ;
          my @Prio = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{Prio}} ;
 
          my $Name = join ";", @Name ;
+         #my $Type = join ";", @Type ;
          my $Info = join ";", @Info ;
          my $Prio = join ";", @Prio    ;
 
          print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
+         #print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Messages}{'$CommandHex'}{Type} = \"$Type\" ;\n" ;
          print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
          print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
 
@@ -449,6 +457,7 @@ foreach my $ModuleTypeHex (sort keys %{$file{PerCommandHexLocal}}) {
    }
 }
 
+#print Dumper \%{$file{PerCommandHexRemote}} ;
 #print Dumper \%{$file{PerCommandHexBroadcast}} ;
 print OUTPUT "\n" ;
 
