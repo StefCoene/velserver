@@ -395,7 +395,6 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
       if (  $file{PerFile}{$file}{Messages}{$counter}{RTR} eq "1" ) {
       } else {
          my $MessageAddressType  = $file{PerFile}{$file}{Messages}{$counter}{MessageAddressType} ; # Handier var
-         #my $MessageType         = $file{PerFile}{$file}{Messages}{$counter}{MessageType} ;        # Handier var
          my $CommandHex          = $file{PerFile}{$file}{Messages}{$counter}{CommandHex} ;         # Handier var
          my $CommandText         = $file{PerFile}{$file}{Messages}{$counter}{CommandText} ;        # Handier var
          my $Info                = $file{PerFile}{$file}{Messages}{$counter}{Info} ;               # Handier var
@@ -412,7 +411,6 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
             $file{PerCommandHexRemote}{$ModuleTypeHex}{$CommandHex}{Info}{$Info} .= "" ; # . $file . ":" . $counter  . " " ;
             $file{PerCommandHexRemote}{$ModuleTypeHex}{$CommandHex}{Prio}{$Prio} .= "" ; # . $file . ":" . $counter  . " " ;
          } elsif ( $MessageAddressType eq "local" ) {
-            #$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{MessageType}{$MessageType} .= "" ; # . $file . ":" . $counter  . " " ;
             $file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{CommandText}{$CommandText} .= "" ; # . $file . ":" . $counter  . " " ;
             $file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{Info}{$Info} .= "" ; # . $file . ":" . $counter  . " " ;
             $file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{Prio}{$Prio} .= "" ; # . $file . ":" . $counter  . " " ;
@@ -428,17 +426,14 @@ foreach my $ModuleTypeHex (sort keys %{$file{PerCommandHexLocal}}) {
       if ( defined $file{PerCommandHexBroadcast}{$CommandHex} ) {
       } else {
          my @Name = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{CommandText}} ;
-         #my @Type = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{MessageType}} ;
          my @Info = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{Info}} ;
          my @Prio = sort keys %{$file{PerCommandHexLocal}{$ModuleTypeHex}{$CommandHex}{Prio}} ;
 
          my $Name = join ";", @Name ;
-         #my $Type = join ";", @Type ;
          my $Info = join ";", @Info ;
          my $Prio = join ";", @Prio    ;
 
          print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
-         #print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Messages}{'$CommandHex'}{Type} = \"$Type\" ;\n" ;
          print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
          print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
 
@@ -457,7 +452,6 @@ foreach my $ModuleTypeHex (sort keys %{$file{PerCommandHexLocal}}) {
    }
 }
 
-#print Dumper \%{$file{PerCommandHexRemote}} ;
 #print Dumper \%{$file{PerCommandHexBroadcast}} ;
 print OUTPUT "\n" ;
 
