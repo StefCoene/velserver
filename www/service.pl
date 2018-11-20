@@ -32,9 +32,17 @@ use JSON ;
 $global{cgi}{CGI} = new CGI ;
 my $session  = CGI::Session->load() ;
 
-print $session->header(-type=>'application/json') ;
-
 %{$global{cgi}{params}} = $global{cgi}{CGI}->Vars; # Get all supplied parameters in a hash
- 
+
 my %json = &www_service ;
-print encode_json(\%json) ;
+
+if ( defined $global{cgi}{params}{html} ) {
+   print $session->header() ;
+   foreach my $key (sort keys %json) {
+      print "$key: $json{$key}<br />\n" ;
+   }
+} else {
+   print $session->header(-type=>'application/json') ;
+   print encode_json(\%json) ;
+}
+ 
