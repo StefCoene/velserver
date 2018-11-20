@@ -1,7 +1,7 @@
 # Parse the options in etc/openHAB.cfg and find the GROUP_ options.
 # These options are a list of regular expressions of items.
 # Store the result in $global{openHAB}{config}: items matched to group(s)
-sub openHAB_config {
+sub openHAB_parse_config {
    if ( defined $global{Config}{openHAB} ) {
       foreach my $key (sort keys (%{$global{Config}{openHAB}}) ) {
          if ( $key =~ /^GROUP_(.+)$/ ) {
@@ -50,7 +50,7 @@ sub openHAB_match_item {
 #   Button
 #   Sensor
 #   SensorNumber
-sub openHAB () {
+sub openHAB_config () {
    my $openHAB ;
 
    # Loop all module types
@@ -528,7 +528,7 @@ sub openHAB () {
 
 # Loop all modules and channels and push the status to openHAB
 # The loop structure is the same as in &openHAB
-sub openHAB_status_loop () {
+sub openHAB_status () {
    # Loop all module types
    foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
       # Loop all found modules for the type

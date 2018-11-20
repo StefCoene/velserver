@@ -1066,8 +1066,8 @@ sub www_print_velbus_protocol_print_modules () {
 }
 
 sub www_openHAB () {
-   &openHAB_config () ;
-   my $openHAB = &openHAB () ;
+   &openHAB_parse_config () ;
+   my $openHAB = &openHAB_config () ;
    $openHAB =~ s/</&lt;/g ;    # Prepare for html output
    $openHAB =~ s/>/&gt;/g ;    # Prepare for html output
    $openHAB =~ s/\n/<br>\n/g ; # Prepare for html output
