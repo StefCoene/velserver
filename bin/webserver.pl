@@ -79,15 +79,9 @@ sub process {
          if ( -f $file ) {
             my $content ;
             open (FILE, '<', $file) ;
-<<<<<<< HEAD
 	         while (<FILE>) {
                $content .= $_ ;
 	         }
-=======
-            while (<FILE>) {
-               $content .= $_ ;
-            }
->>>>>>> 81b584a78dfb36c5fa1de722df88308c64b99bab
             close FILE ;
             $response->content($content)  ;
          }
