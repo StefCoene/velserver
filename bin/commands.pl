@@ -56,12 +56,12 @@ if ( $global{opts}{option} eq "scan" ) {
    }
 
 } elsif ( $global{opts}{option} eq "openHAB" ) {
-   &openHAB_config () ;
-   my $openHAB = &openHAB () ;
+   &openHAB_parse_config () ;
+   my $openHAB = &openHAB_config () ;
    print $openHAB ;
 } elsif ( $global{opts}{option} eq "openHAB_push_status" ) {
    use Velbus::Velbus_www ;
-   &openHAB_status_loop ;
+   &openHAB_status ;
 } else {
    &print_help ;
 }

@@ -454,6 +454,40 @@ sub find_memory_addresses {
    }
 }
 
+sub process_ActionType () {
+   foreach my $ActionType (sort keys %{$global{Cons}{ActionType}}) {
+      foreach my $Moduletype (sort split ",", $global{Cons}{ActionType}{$ActionType}{Modules}) {
+         if ( defined $global{Cons}{ActionType}{$ActionType}{Action} ) {
+            foreach my $Action (sort keys %{$global{Cons}{ActionType}{$ActionType}{Action}}) {
+               if ( $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command} eq "" ) {
+                  $global{Cons}{ActionType}{$ActionType}{Module}{$Moduletype}{Action}{$Action} = $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command} ;
+               } else {
+                  foreach my $Command (split ",", $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command}) {
+                     if ( defined $global{Cons}{ModuleTypes}{$Moduletype}{Messages}{$Command} ) {
+                        $global{Cons}{ModuleTypes}{$Moduletype}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
+                        $global{Cons}{ActionType}{$ActionType}{Module}{$Moduletype}{Action}{$Action} = $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command} ;
+                     }
+                  }
+               }
+            }
+         }
+
+         if ( defined $global{Cons}{ActionType}{$ActionType}{SetAction} ) {
+            foreach my $SetAction (sort keys %{$global{Cons}{ActionType}{$ActionType}{SetAction}}) {
+               foreach my $Command (split ",", $global{Cons}{ActionType}{$ActionType}{SetAction}{$SetAction}{Command}) {
+                  if ( defined $global{Cons}{ModuleTypes}{$Moduletype}{Messages}{$Command} ) {
+                     $global{Cons}{ActionType}{$ActionType}{Module}{$Moduletype}{SetAction}{$SetAction} = $global{Cons}{ActionType}{$ActionType}{SetAction}{$SetAction}{Command} ;
+                  }
+               }
+            }
+         }
+      }
+      #delete $global{Cons}{ActionType}{$ActionType}{Action} ;
+      #delete $global{Cons}{ActionType}{$ActionType}{SetAction} ;
+      #delete $global{Cons}{ActionType}{$ActionType}{Modules} ;
+   }
+}
+
 # This is a bit tricky. Find the MemoryKey based on the Buld and the module type.
 # MemoryKey is used to specify the memory address that has to be used. These addresses can differ between Build versions.
 sub module_find_MemoryKey () {

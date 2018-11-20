@@ -265,7 +265,7 @@ $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{'0'}{Name} = "Channel" ;
 # Blind Control Module: VMB1BL
 # EC = COMMAND_BLIND_STATUS
 $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
-   $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
+   $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'0'}{Match}{'03'}{Channel} = "01" ;
 
    # Blind status
    $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'2'}{Name} = "Blind status" ;
@@ -273,22 +273,11 @@ $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
    $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'2'}{Match}{'01'}{Info} = "Up" ;
    $global{Cons}{ModuleTypes}{'03'}{Messages}{'EC'}{Data}{'2'}{Match}{'02'}{Info} = "Down" ;
 
-# Blind Control Module: VMB1BLS
-# EC = COMMAND_BLIND_STATUS
-$global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
-   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
-
-   # Blind status
-   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Name} = "Blind status" ;
-   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Match}{'00'}{Info} = "Off" ;
-   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Match}{'01'}{Info} = "Up" ;
-   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Match}{'02'}{Info} = "Down" ;
-
 # 2-channel Blind Control Module: VMB2BL
 # EC = COMMAND_BLIND_STATUS
 $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
-   $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
-   $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'0'}{Match}{'02'}{Channel} = "02" ;
+   $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'0'}{Match}{'03'}{Channel} = "01" ;
+   $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'0'}{Match}{'0C'}{Channel} = "02" ;
 
    # Blind status
    $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'2'}{Name} = "Blind status" ;
@@ -300,6 +289,17 @@ $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
 
    # LED status
    $global{Cons}{ModuleTypes}{'09'}{Messages}{'EC'}{General} = "LedStatusBlind" ;
+
+# Blind Control Module: VMB1BLS
+# EC = COMMAND_BLIND_STATUS
+$global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'0'}{Match}{'01'}{Channel} = "01" ;
+
+   # Blind status
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Name} = "Blind status" ;
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Match}{'00'}{Info} = "Off" ;
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Match}{'01'}{Info} = "Up" ;
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{'2'}{Match}{'02'}{Info} = "Down" ;
 
 # 2 channel blind module: VMB2BLE
 # EC = COMMAND_BLIND_STATUS
@@ -353,30 +353,35 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{'0'}{Name} = "Channel" ;
 ################### Touch panels: messages
 # One, two or four touch buttonsmodule: VMBGP1
 $global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{General} = "ButtonPress" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
 
 # One, two or four touch buttonsmodule: VMBGP2
 $global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{General} = "ButtonPress" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
 
 # One, two or four touch buttonsmodule: VMBGP4
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{General} = "ButtonPress" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
 $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{General} = "ButtonPress" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
 
 # Touch panel with Oled display: VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.'}{Channel} = "33" ; # Temperature sensor is CH33
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;

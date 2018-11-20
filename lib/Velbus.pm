@@ -80,6 +80,8 @@ sub init {
  
    # Find memory addresses for module name
    &find_memory_addresses ;
+
+   &process_ActionType ;
 }
 
 return 1

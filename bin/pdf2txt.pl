@@ -233,19 +233,22 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
 
          # Parse the Info to determine if the message is a message or a command and is it receive or transmit
          # "... command received:" The blind module can receive the following commands
-         if (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(.+) command received:/$1/g ) {
-            $MessageType = "ReceiveCommand" ;
-         # "... received:" The blind module can transmit the following messages
-         } elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(.+) received:/$1/g ) {
-            $MessageType = "ReceiveMessage" ;
-         # "Transmit: ... :" The blind module can transmit the following commands
-         } elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/Transmit: (.+):?/$1/g )  {
-            $MessageType = "TransmitCommand" ;
-         # "Transmits ... :" The blind module can transmit the following messages
-         } elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(Transmits? .+):/$1/g )  {
-            $MessageType = "TransmitMessage" ;
-         }
-         $file{PerFile}{$file}{Messages}{$counter}{MessageType} = $MessageType if defined $MessageType ; # Remember MessageType
+         $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/://g ;
+         #if (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(.+) command received/$1/g ) {
+         #   $MessageType = "ReceiveCommand" ;
+         ## "... received:" The blind module can transmit the following messages
+         #} elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(.+) received/$1/g ) {
+         #   $MessageType = "ReceiveMessage" ;
+         ## "Transmit: ... :" The blind module can transmit the following commands
+         #} elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/Transmit (.+)/$1/g )  {
+         #   $MessageType = "TransmitCommand" ;
+         ## "Transmits ... :" The blind module can transmit the following messages
+         #} elsif (  $file{PerFile}{$file}{Messages}{$counter}{Info} =~ s/(Transmits .+)/$1/g )  {
+         #   $MessageType = "TransmitMessage" ;
+         #} else {
+         #   print "REST $file{PerFile}{$file}{Messages}{$counter}{Info}\n" ;
+         #}
+         #$file{PerFile}{$file}{Messages}{$counter}{MessageType} = $MessageType if defined $MessageType ; # Remember MessageType
 
          # Priority....
          if ( $file{PerFile}{$file}{Messages}{$counter}{Prio} =~ /high/i ) {

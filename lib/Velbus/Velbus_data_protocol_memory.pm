@@ -126,6 +126,7 @@ $global{Cons}{ModuleTypes}{'2B'}{Memory}{1}{ModuleName} = "00B0-00EF" ;
 # VMBPIRO
 $global{Cons}{ModuleTypes}{'2C'}{Memory}{'00'}{ModuleName} = "00B0-00EF" ;
 $global{Cons}{ModuleTypes}{'2C'}{Memory}{'00'}{SensorName} = "0080-008F" ;
+$global{Cons}{ModuleTypes}{'2C'}{Memory}{'00'}{SensorChannel} = "09" ; # Temperature sensor is CH9
 
 # VMB1BLS
 $global{Cons}{ModuleTypes}{'2E'}{MemoryMatch}{1}{Build}   = ">= 1" ;
