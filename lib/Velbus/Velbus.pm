@@ -158,9 +158,13 @@ sub process_message {
 
             } elsif ( $message{MessageType} eq "E6" ) { # Temperature status
                my $temperature = sprintf ("%.2f",&hex_to_temperature($hex[0], $hex[1])) ;
-               &update_modules_info ($message{address}, "Temperature", $temperature) ;
+
+               my $ModuleType = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ;
+               my $TemperatureChannel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ;
+               &update_modules_channel_info ($message{address}, $TemperatureChannel, "Temperature", $temperature) ;
+
                push @{$message{text}}, "Temperature = $temperature" ;
-               &openHAB_update_state ("Temperature_$message{addressMaster}", $temperature) ;
+               &openHAB_update_state ("Temperature_$message{addressMaster}_$TemperatureChannel", $temperature) ;
 
             #} elsif ( $message{MessageType} eq "A9" ) {
             #my $Channel = &hex_to_dec (shift @hex ) ; # 9 -> sensor 1, 12 -> sensor 14
@@ -227,15 +231,6 @@ sub process_message {
                # Save the name
                if ( $message{MessageType} eq "F2" ) {
                   if ( defined $message{ModuleType} ) {
-                     if ( $message{ModuleType} eq "2C" and $Channel eq "09" or  # VMBPIRO
-                          $message{ModuleType} eq "1E" and $Channel eq "09" or  # VMBGP1D
-                          $message{ModuleType} eq "1F" and $Channel eq "09" or  # VMBGP2D
-                          $message{ModuleType} eq "20" and $Channel eq "09" or  # VMBGP2D
-                          $message{ModuleType} eq "2D" and $Channel eq "09" or  # VMBGP4PIR
-                          $message{ModuleType} eq "28" and $Channel eq "33" ) { # VMBGPOD
-                        # Channel 21 and channel 09 (VMBGP1D/VMBGP2D/VMBGP4D/VMBPIRO) are virtual channels whose name is the temperature sensor name of the touch display.
-                        &update_modules_info ($message{address}, "TempSensor", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
-                     }
                      push @{$message{text}}, "Channel $Channel, Name = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}" ;
                      &update_modules_channel_info ($message{address}, $Channel, "Name", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Name}{value}) ;
                   }
@@ -301,21 +296,10 @@ sub process_message {
 
                         if ( $command eq "Save" ) {
                            my $SensorName = join '', @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}} ;
-                           &update_modules_info ($message{address}, "TempSensor", $SensorName) ;
+                           my $SensorChannel = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{SensorChannel} ;
+                           &update_modules_channel_info ($message{address}, $SensorChannel, "Name", $SensorName) ;
                            push @{$message{text}}, "SensorName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorName}" ;
                         }
-                     #} elsif ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Type} ) {
-                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Type} eq "ModuleNameStart" ) {
-                     #      $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} = $char if $hex ne "FF" ;
-                     #   }
-                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Type} eq "ModuleName" ) {
-                     #      $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
-                     #   }
-                     #   if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Type} eq "ModuleNameSave" ) {
-                     #      $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName} .= $char if $hex ne "FF" ;
-                     #      &update_modules_info ($message{address}, "ModuleName", $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}) ;
-                     #      $message{text} .= "  ModuleName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}\n" ;
-                     #   }
                      } else {
                         # No type: loop possible Match keys
                         my %info ;

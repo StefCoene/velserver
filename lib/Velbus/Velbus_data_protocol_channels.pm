@@ -1,16 +1,14 @@
 # This is a list of channels
 # The format is easy to understand
 
-# TODO: document the possible options
-#   {type}
-#     "Blind"
-#     "Sensor"
-#     "Button"
-#     "ButtonCounter"
-#     "Dimmer
-#     "Dimmer"
-#     "Relay"
-#     "Temperature"
+# Possible '{Type}' options:
+#   Button
+#   ButtonCounter
+#   Dimmer
+#   Relay
+#   Sensor
+#   SensorNumber
+#   Temperature
 
 ################### Relays: Channel names
 # 1-channel relay module: VMB1RY
@@ -127,6 +125,7 @@ $global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"08"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'1E'}{TemperatureChannel} = "09" ;
 
 # VMBGP2
 $global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push button 1" ;
@@ -146,6 +145,7 @@ $global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"08"}{Name} = "Virtual button 8" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'1F'}{TemperatureChannel} = "09" ;
 
 # VMBGP4
 $global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push button 1" ;
@@ -166,6 +166,7 @@ $global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"08"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'20'}{TemperatureChannel} = "09" ;
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
 $global{Cons}{ModuleTypes}{'2D'}{Channels}{"01"}{Name} = "Push button 1" ;
@@ -186,6 +187,7 @@ $global{Cons}{ModuleTypes}{'2D'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"08"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'2D'}{TemperatureChannel} = "09" ; 
 
 # Touch panel with Oled display: VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push button 1" ;
@@ -254,6 +256,7 @@ $global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"32"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"33"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"33"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'28'}{TemperatureChannel} = "33" ;
 
 ################### Input: Channel names
 # 8-channel Push button interface module: VMB8PB
@@ -411,6 +414,7 @@ $global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Name} = "Dark output" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"08"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'2C'}{TemperatureChannel} = "09" ;
 
 # VMB4AN: Analog I/O module
 $global{Cons}{ModuleTypes}{'32'}{Channels}{"09"}{Name} = "Sensor 1" ;

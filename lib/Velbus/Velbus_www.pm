@@ -31,7 +31,7 @@ sub www_make_url () {
       next if $key eq "" ;
       if ( $input{$key} eq '-' ) {
       } else {
-         push @url, "$key=$input{$key}"  ;
+         push @url, "$key=$input{$key}" ;
       }
    }
    my $url = join "&", @url ;
@@ -64,6 +64,7 @@ sub www_index () {
    $content .= "<a href=?".&www_make_url("*=-","appl=print_channeltags").">Channel tags</a> || " ;
    $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_protocol").">Velbus protocol</a> || " ;
    $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_messages").">Velbus messages</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_actions").">Velbus actions</a> || " ;
    $content .= "<a href=?".&www_make_url("*=-","appl=openHAB").">openHAB config</a> || " ;
    $content .= "<a href=?".&www_make_url("*=-","appl=scan").">Scan the bus</a> || " ;
    $content .= "<a href=?".&www_make_url("*=-","appl=clear_database").">Clear the database</a> " ;
@@ -86,6 +87,9 @@ sub www_index () {
    if ( $global{cgi}{params}{appl} eq "print_velbus_messages" ) {
       $content .= &www_print_velbus_messages ;
    }
+   if ( $global{cgi}{params}{appl} eq "print_velbus_actions" ) {
+      $content .= &www_print_velbus_actions ;
+   }
    if ( $global{cgi}{params}{appl} eq "openHAB" ) {
       $content .= &www_openHAB ;
    }
@@ -107,8 +111,6 @@ sub www_index () {
 # Webservice for remote access
 sub www_service () {
    my $sock = &open_socket ;
-   my $address ;
-   my $Moduletype ; # Type of the module, based on $address
 
    my %json ;
 
@@ -117,42 +119,58 @@ sub www_service () {
       $json{"Req$_"} = $global{cgi}{params}{$_} ;
    }
 
-   # Parse options
+   my $address ;
+   my $ModuleType ; # Type of the module, based on $address
+   # Parse options: find the moduletype based on the supplied address
    if ( defined $global{cgi}{params}{address} ) {
       $address = $global{cgi}{params}{address} ;
       if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} and $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ne '' ) {
-         $Moduletype = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
+         $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
+         $json{ModuleType} = $ModuleType ;
       }
+   }
+
+   my $action ;
+   if ( defined $global{cgi}{params}{action} ) {
+      $action = $global{cgi}{params}{action} ;
+   }
+
+   my $value ;
+   if ( defined $global{cgi}{params}{value} ) {
+      $value = $global{cgi}{params}{value} ;
    }
 
    # Put the time on the bus
-   if ( defined $global{cgi}{params}{action} and $global{cgi}{params}{action} eq "TimeSync" ) {
-      $json{action} = $global{cgi}{params}{action} ;
+   if ( defined $action and $action eq "TimeSync" ) {
       &broadcast_datetime($sock) ;
-      $json = "" ;
-   }
 
    # Set memo text: only for VMBGPOD
-   if ( defined $global{cgi}{params}{action} and $global{cgi}{params}{action} eq "Memo" ) {
-      $json{action} = $global{cgi}{params}{action} ;
-      if ( defined $Moduletype and $Moduletype eq "28" ) {
-         if ( defined $global{cgi}{params}{text} ) {
-            &send_memo ($sock, $address, $global{cgi}{params}{text}) ;
-            $json{Text} = $global{cgi}{params}{text} ;
+   } elsif ( defined $action and $action eq "Memo" ) {
+      # We need an address
+      if ( ! defined $address ) {
+         $json{Error} = "NO_ADDRESS" ;
+
+      } elsif ( defined $ModuleType and $ModuleType eq "28" ) {
+         if ( defined $value ) {
+            &send_memo ($sock, $address, $value) ;
+            $json{Text} = $value ;
          } else {
-            $json{Error} = "NO_TEXT" ;
+            $json{Error} = "NO_VALUE" ;
          }
+
+      } elsif ( defined $ModuleType ) {
+         $json{Error} = "WRONG_MODULETYPE" ;
+
       } else {
          $json{Error} = "NO_MODULETYPE" ;
       }
-   }
 
    # The rest is for getting and setting.
-   if ( defined $global{cgi}{params}{type} ) {
-      my $type = $global{cgi}{params}{type} ;
+   } elsif ( defined $global{cgi}{params}{type} ) {
+      my $ActionType = $global{cgi}{params}{type} ;
 
-      # 1: if we have a type, it should be defined in $global{ActionType}
-      if ( ! defined $global{ActionType}{$type} ) {
+      # 1: if we have a type, it should be defined in $global{Cons}{ActionType}
+      if ( ! defined $global{Cons}{ActionType}{$ActionType} ) {
          $json{Error} = "UNSUPPORTED_TYPE" ;
 
       # 2: we need an address
@@ -160,91 +178,229 @@ sub www_service () {
          $json{Error} = "NO_ADDRESS" ;
 
       # 3: we need a module type (based on parameter address)
-      } elsif ( ! defined $Moduletype ) {
+      } elsif ( ! defined $ModuleType ) {
          $json{Error} = "NO_MODULETYPE" ;
 
       # 4: the module type should be supported for the type
-      } elsif ( ! defined $global{ActionType}{$type}{Module}{$Moduletype} ) {
+      } elsif ( ! defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType} ) {
          $json{Error} = "MODULETYPE_NOT_SUPPORTED" ;
 
       # 5: we also need an action
-      } elsif ( ! defined $global{cgi}{params}{action} ) {
+      } elsif ( ! defined $action ) {
          $json{Error} = "NO_ACTION" ;
 
       # 6: If action = Set we need a value
-      } elsif ( $global{cgi}{params}{action} eq "Set" and ! defined $global{cgi}{params}{value} ) {
+      } elsif ( $action eq "Set" and ! defined $value ) {
          $json{Error} = "NO_VALUE_FOR_SET" ;
 
       } else {
-         my $action = $global{cgi}{params}{action} ;
+         my $Setaction ;
 
-         # For blinds, we need to set action based on value
-         if ( $type eq "Blind" ) {
-            if ( $global{cgi}{params}{value} eq "UP" ) {
-               $action = "Up" ;
-            } elsif ( $global{cgi}{params}{value} eq "DOWN" ) {
-               $action = "Down" ;
-            } elsif ( $global{cgi}{params}{value} eq "STOP" ) {
-               $action = "Stop" ;
-            } elsif ( $global{cgi}{params}{value} =~ /(\d+)/ ) {
-               $action = "Pos" ;
+         # For blinds, the value is used to set Setacion
+         if ( $ActionType eq "Blind" and $action eq "Set" ) {
+            if ( $value eq "UP" ) {
+               $Setaction = "Up" ;
+            } elsif ( $value eq "DOWN" ) {
+               $Setaction = "Down" ;
+            } elsif ( $value eq "STOP" ) {
+               $Setaction = "Stop" ;
+            } elsif ( $value =~ /(\d+)/ ) {
+               $value = $1 ;
+               if ( $value >= 0 and $value <= 100 ) {
+                  $Setaction = "Position" ;
+               } else {
+                  undef $value ;
+               }
             }
          }
 
-         # 7: the action should be supported for the type (Get is always valid)
-         if ( ! ( $action =~ /^Get/ or defined $global{ActionType}{$type}{Command}{$action} ) ) {
-            $json{Error} = "ACTION_NOT_SUPPORTED" ;
+         # 7: the action should be supported for the type
+         if ( ! defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$action} ) {
+            $json{Error} = "ACTION_NOT_SUPPORTED:$ActionType:$action" ;
+
+         # If there is a SetAction, it should be supported for the type
+         } elsif ( defined $Setaction and ! $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction} ) {
+            $json{Error} = "SETACTION_NOT_SUPPORTED:$ActionType:$action:$SetAction" ;
 
          } else {
-            # 8: the command used in the action should exist for the module type
-            my $command = $global{ActionType}{$type}{Command}{$action} ;
-            if ( ! ( $action =~ /^Get/ or defined $global{Cons}{ModuleTypes}{$Moduletype}{Messages}{$command}{Name} ) ) {
-               $json{Error} = "COMMAND_NOT_SUPPORTED" ;
+            # If we need something regarding the temperature, we set the channel ourself
+            my $Channel ;
+            if ( $ActionType eq "Temperature" or
+                 $ActionType eq "TemperatureCoHeMode" or
+                 $ActionType eq "TemperatureMode" or
+                 $ActionType eq "TemperatureTarget" ) {
+               $Channel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ;
+            } elsif ( defined $global{cgi}{params}{channel} ) {
+               $Channel = $global{cgi}{params}{channel} ;
+            }
+
+            if ( ! defined $Channel ) {
+               $json{Error} = "NO_CHANNEL" ;
 
             } else {
-               $json{action} = $action ;
+               my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`=? and `channel`=?","data",$address,$Channel) ;
+               $json{Name} = $data{Name}{value} if defined $data{Name} ;
 
-               # Get the current temperature: touch panels & outdoor sensor
-               if ( $type eq "Temperature" ) {
-                  my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
-                  $json{Name}   = $data{TempSensor}{value}  if defined $data{TempSensor} ;
-                  $json{Status} = $data{Temperature}{value} if defined $data{Temperature} ;
-               }
-
-               # Get/Set the Cooler/Heater target temperature: touch panels
-               if ( $type eq "TemperatureTarget" ) {
-                  my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
-                  $json{Name} = $data{TempSensor}{value}  if defined $data{TempSensor} ;
-
-                  if ( $action eq "Set" ) {
-                     if ( $global{cgi}{params}{value} =~ /^\d+\.\d+$/ or $global{cgi}{params}{value} =~ /^\d+$/ ) {
-                        &set_temperature ($sock, $address, $global{cgi}{params}{value}) ;
-                        $json{Status} = $global{cgi}{params}{value} ;
-                     } else {
-                        $json{Error} = "INCORRECT_VALUE" ;
+               # We don't bother in setting the blind channels by some alghorithm, but just set them in the code
+               # For the 2 other blind modules, the channel numbering is normal.
+               if ( $ActionType eq "Blind" and $action eq "Set" ) {
+                  if ( $ModuleType eq "03" ) {
+                     $Channel = "0x03" ; # B‘00000011’
+                  }
+                  if ( $ModuleType eq "09" ) {
+                     if ( $Channel eq "01" ) {
+                        $Channel = "0x03" ; # B’00000011’
                      }
-                  } else {
-                     my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
-                     if ( defined $data{'Current temperature set'} ) {
-                        $json{Status} = $data{'Current temperature set'}{value} ;
+                     if ( $Channel eq "02" ) {
+                        $Channel = "0x0C" ; # B’00001100’
                      }
                   }
                }
 
-               # Get/Set heating or cooling: touch panels
-               if ( $type eq "TemperatureCoHeMode" ) {
-                  my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
-                  $json{Name}   = $data{TempSensor}{value}  if defined $data{TempSensor} ;
-
-                  if ( $action eq "Set" ) {
-                     if ( $global{cgi}{params}{value} eq "1" or $global{cgi}{params}{value} eq "0" ) {
-                        &set_temperature_cohe_mode ($sock, $address, $global{cgi}{params}{value}) ;
-                        $json{Status} = $global{cgi}{params}{value} ;
+               # Parse the value
+               if ( $action eq "Set" ) {
+                  # Parse the value for the Dimmer type
+                  if ( $ActionType eq "Dimmer" ) {
+                     if ( $value eq "ON" ) {
+                        $value = "100" ;
+                     } elsif ( $value eq "OFF" ) {
+                        $value = "0" ;
+                     } elsif ( $value =~ /(\d+)/ ) {
+                        $value = $1 ;
+                        if ( $value >= 0 and $value <= 100 ) {
+                        } else {
+                           undef $value ;
+                        }
                      } else {
-                        $json{Error} = "INCORRECT_VALUE" ;
+                        undef $value ;
+                     }
+                  }
+
+                  # Parse the value for the TemperatureCoHeMode type
+                  if ( $ActionType eq "TemperatureCoHeMode" ) {
+                     if ( $value eq "1" or $value eq "0" ) {
+                     } else {
+                        undef $value ;
+                     }
+                  }
+
+                  # Parse the value for the TemperatureMode type
+                  if ( $ActionType eq "TemperatureMode" ) {
+                     if ( $value eq "1" or $value eq "2" or $value eq "3" or $value eq "4" ) {
+                     } else {
+                        undef $value ;
+                     }
+                  }
+
+                  # Parse the value for the TemperatureTarget type
+                  if ( $ActionType eq "TemperatureTarget" ) {
+                     if ( $value =~ /(\d+\.\d+)/ or $value =~ /(\d+)/ ) {
+                        $value = $1 ;
+                     } else {
+                        undef $value ;
+                     }
+                  }
+               }
+
+               ###################################################
+               # Get/Set Blind positoin
+               if ( $ActionType eq "Blind" ) {
+                  if (      $Setaction eq "Up" ) {
+                     &blind_up   ($sock, $address, $Channel) ;
+                     $json{Status} = $Setaction ;
+                  } elsif ( $Setaction eq "Down" ) {
+                     &blind_down ($sock, $address, $Channel) ;
+                     $json{Status} = $Setaction ;
+                  } elsif ( $Setaction eq "Stop" ) {
+                     &blind_stop ($sock, $address, $Channel) ;
+                     $json{Status} = $Setaction ;
+                  } elsif ( $Setaction eq "Position" and defined $value ) {
+                     &blind_pos  ($sock, $address, $Channel, $value) ;
+                     $json{Status} = $value ;
+                  } elsif ( $action eq "Get" ) {
+                     $json{Status} = $data{Position}{value} if defined $data{Position} ;
+                  } else {
+                     $json{Error} = "INCORRECT_VALUE" ;
+                  }
+
+               # Get Counter : only for VMB7IN
+               } elsif ( $ActionType eq "Counter" ) {
+                  if ( $action eq "Get" ) {
+                     $json{Status} = $data{Counter}{value}        if defined $data{Counter} ;
+                  } elsif ( $action eq "GetCurrent" ) {
+                     $json{Status} = $data{CounterCurrent}{value} if defined $data{CounterCurrent} ;
+                  } elsif ( $action eq "GetDivider" ) {
+                     $json{Status} = $data{Divider}{value}        if defined $data{Divider} ;
+                  } elsif ( $action eq "GetRaw" ) {
+                     $json{Status} = $data{CounterRaw}{value}     if defined $data{CounterRaw} ;
+                  }
+
+               # Get/Set Dimmer level
+               } elsif ( $ActionType eq "Dimmer" ) {
+                  if ( $action eq "Set" and defined $value ) {
+                     &dim_value ($sock, $address, $Channel, $value) ;
+                     $json{Status} = $value ;
+                  } elsif ( $action eq "Get" ) {
+                     $json{Status} = $data{Dimmer}{value} if defined $data{Dimmer}{value} ;
+                  } else {
+                     $json{Error} = "INCORRECT_VALUE" ;
+                  }
+
+               # Get/Set Relay status
+               } elsif ( $ActionType eq "Relay" ) {
+                  if ( $action eq "Set" and defined $value ) {
+                     if ( $value eq "ON" ) {
+                        &relay_on ($sock, $address, $Channel) ;
+                        $json{Status} = "ON" ;
+                     } elsif ( $value eq "OFF" ) {
+                        &relay_off ($sock, $address, $Channel) ;
+                        $json{Status} = "OFF" ;
+                     }
+                  } elsif ( $action eq "Get" ) {
+                     if ( defined $data{'Relay status'} ) {
+                        if ( $data{'Relay status'}{value}      eq "Relay channel off" ) {
+                           $json{Status} = "OFF" ;
+                        } elsif ( $data{'Relay status'}{value} eq "Relay channel on" ) {
+                           $json{Status} = "ON" ;
+                        }
                      }
                   } else {
-                     %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
+                     $json{Error} = "INCORRECT_VALUE" ;
+                  }
+
+               # Get SensorNumber: only for VMB4AN
+               } elsif ( $ActionType eq "SensorNumber" ) {
+                  $json{Status} = $data{SensorNumber}{value} if defined $data{SensorNumber} ;
+
+               # Sensor
+               } elsif ( $ActionType eq "Sensor" ) {
+                  if ( $action eq "Get" ) {
+                     $json{Status} = $data{Button}{value} if defined $data{Button} ;
+                  } else {
+                     $json{Error} = "INCORRECT_VALUE" ;
+                  }
+
+               # Get/Set button: touch, input, sensors, ...
+               } elsif ( $ActionType eq "Button" ) {
+                  if ( $action eq "Set" and defined $value and $value eq "ON" ) {
+                     &button_pressed ($sock, $address, $Channel) ;
+                     $json{Status} = $value ;
+                  } elsif ( $action eq "Get" ) {
+                     $json{Status} = $data{Button}{value} if defined $data{Button} ;
+                  } else {
+                     $json{Error} = "INCORRECT_VALUE" ;
+                  }
+
+               # Get the current temperature: touch panels & outdoor sensor
+               } elsif ( $ActionType eq "Temperature" ) {
+                  $json{Status} = $data{Temperature}{value} if defined $data{Temperature} ;
+
+               # Get/Set heating or cooling: touch panels
+               } elsif ( $ActionType eq "TemperatureCoHeMode" ) {
+                  if ( $action eq "Set" and defined $value ) {
+                     &set_temperature_cohe_mode ($sock, $address, $value) ;
+                     $json{Status} = $value ;
+                  } elsif ( $action eq "Get" ) {
                      if ( defined $data{'Temperature CoHe mode'} ) {
                         if ( $data{'Temperature CoHe mode'}{value} =~ /cooler/i ) {
                            $json{Status} = 1 ;
@@ -252,23 +408,16 @@ sub www_service () {
                            $json{Status} = 0 ;
                         }
                      }
+                  } else {
+                     $json{Error} = "INCORRECT_VALUE" ;
                   }
-               }
 
                # Get/Set the Heater mode: touch panels
-               if ( $type eq "TemperatureMode" ) {
-                  my %data = &fetch_data ($global{dbh},"select * from modules_info where `address`='$address'","data") ;
-                  $json{Name}   = $data{TempSensor}{value}  if defined $data{TempSensor} ;
-
-                  if ( $action eq "Set" ) {
-                     if ( $global{cgi}{params}{value} eq "1" or $global{cgi}{params}{value} eq "2" or $global{cgi}{params}{value} eq "3" or $global{cgi}{params}{value} eq "4" ) {
-                        &set_temperature_mode ($sock, $address, $global{cgi}{params}{value}) ;
-                        $json{Status} = $global{cgi}{params}{value} ;
-                     } else {
-                        $json{Error} = "INCORRECT_VALUE" ;
-                     }
-                  } else {
-                     %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='00'","data") ;
+               } elsif ( $ActionType eq "TemperatureMode" ) {
+                  if ( $action eq "Set" and defined $value ) {
+                     &set_temperature_mode ($sock, $address, $value) ;
+                     $json{Status} = $value ;
+                  } elsif ( $action eq "Get" ) {
                      if ( defined $data{'Temperature mode'} ) {
                         if (      $data{'Temperature mode'}{value} =~ /comfort/i ) {
                            $json{Status} = 1 ;
@@ -280,125 +429,21 @@ sub www_service () {
                            $json{Status} = 4 ;
                         }
                      }
+                  } else {
+                     $json{Error} = "INCORRECT_VALUE" ;
                   }
-               }
 
-               # Get/Set button: touch, input, sensors, ...
-               if ( $type eq "Switch" ) {
-                  my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
-                  $json{Name}   = $data{Name}{value}   if defined $data{Name};
-
-                  if ( $action eq "Set" ) {
-                     if ( $global{cgi}{params}{value} eq "ON" ) {
-                        &button_pressed ($sock, $address, $global{cgi}{params}{channel}) ;
-                        $json{Status} = $global{cgi}{params}{value} ;
-                     } else {
-                        $json{Error} = "INCORRECT_VALUE" ;
+               # Get/Set the Cooler/Heater target temperature: touch panels
+               } elsif ( $ActionType eq "TemperatureTarget" ) {
+                  if ( $action eq "Set" and defined $value ) {
+                     &set_temperature ($sock, $address, $value) ;
+                     $json{Status} = $value ;
+                  } elsif ( $action eq "Get" ) {
+                     if ( defined $data{'Current temperature set'} ) {
+                        $json{Status} = $data{'Current temperature set'}{value} ;
                      }
                   } else {
-                     $json{Status} = $data{Button}{value} if defined $data{Button} ;
-                  }
-               }
-
-               # Get/Set Dimmer level
-               if ( $type eq "Dimmer" ) {
-                  my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
-                  $json{Name}   = $data{Name}{value}   if defined $data{Name} ;
-
-                  if ( $action eq "Set" ) {
-                     if ( $global{cgi}{params}{value} eq "ON" or $global{cgi}{params}{value} eq "OFF" or $global{cgi}{params}{value} =~ /^\d+$/ ) {
-                        $global{cgi}{params}{value} = "100" if $global{cgi}{params}{value} eq "ON" ;
-                        $global{cgi}{params}{value} = "0"   if $global{cgi}{params}{value} eq "OFF" ;
-                        &dim_value ($sock, $address, $global{cgi}{params}{channel}, $global{cgi}{params}{value}) ;
-                        $json{Status} = $global{cgi}{params}{value} ;
-                     } else {
-                        $json{Error} = "INCORRECT_VALUE" ;
-                     }
-                  } else {
-                     $json{Status} = $data{Dimmer}{value} if defined $data{Dimmer}{value} ;
-                  }
-               }
-
-               # Get/Set Blind positoin
-               if ( $type eq "Blind" ) {
-                  if ( $Moduletype eq "03" ) {
-                     $global{cgi}{params}{channel} = "0x03" ;
-                  }
-                  if ( $Moduletype eq "09" ) {
-                     if ( $global{cgi}{params}{channel} eq "01" ) {
-                        $global{cgi}{params}{channel} = "0x03" ;
-                     }
-                     if ( $global{cgi}{params}{channel} eq "02" ) {
-                        $global{cgi}{params}{channel} = "0x0C" ;
-                     }
-                  }
-
-                  my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
-                  $json{Name}   = $data{Name}{value}   if defined $data{Name}{value} ;
-
-                  # For blinds, we use {params}{action} and not $action because we filled in $action based on the {params}{value}
-                  # This is needed because not all commands are supported by all blind modules.
-                  if ( $global{cgi}{params}{action} eq "Set" ) {
-                     if ( $global{cgi}{params}{value} eq "UP" ) {
-                        &blind_up ($sock, $address, $global{cgi}{params}{channel}) ;
-                     } elsif ( $global{cgi}{params}{value} eq "DOWN" ) {
-                        &blind_down ($sock, $address, $global{cgi}{params}{channel}) ;
-                     } elsif ( $global{cgi}{params}{value} eq "STOP" ) {
-                        &blind_stop ($sock, $address, $global{cgi}{params}{channel}) ;
-                     } elsif ( $global{cgi}{params}{value} =~ /(\d+)/ ) {
-                        &blind_pos ($sock, $address, $global{cgi}{params}{channel}, $1) ;
-                     } else {
-                        $json{Error} = "INCORRECT_VALUE" ;
-                     }
-                  } else {
-                     $json{Status} = $data{Position}{value} if defined $data{Position}{value} ;
-                  }
-               }
-
-               # Get/Set Relay status
-               if ( $type eq "Relay" ) {
-                  my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
-                  $json{Name} = $data{Name}{value} if defined $data{Name} ;
-
-                  if ( $action eq "Set" ) {
-                     if ( $global{cgi}{params}{value} eq "ON" ) {
-                        &relay_on ($sock, $address, $global{cgi}{params}{channel}) ;
-                        $json{Status} = "ON" ;
-                     } elsif ( $global{cgi}{params}{value} eq "OFF" ) {
-                        &relay_off ($sock, $address, $global{cgi}{params}{channel}) ;
-                        $json{Status} = "OFF" ;
-                     } else {
-                        $json{Error} = "INCORRECT_VALUE" ;
-                     }
-                  } else {
-                     if ( defined $data{'Relay status'} ) {
-                        if ( $data{'Relay status'}{value}      eq "Relay channel off" ) {
-                           $json{Status} = "OFF" ;
-                        } elsif ( $data{'Relay status'}{value} eq "Relay channel on" ) {
-                           $json{Status} = "ON" ;
-                        }
-                     }
-                  }
-               }
-
-               # Get SensorNumber : only for VMB4AN
-               if ( $type eq "SensorNum" ) {
-                  my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
-                  $json{Status} = $data{SensorNumber}{value} if defined $data{SensorNumber} ;
-               }
-
-               # Get Counter : only for VMB7IN
-               if ( $type eq "Counter" and ( $action eq "GetCounter" or $action eq "GetCounterRaw" or $action eq "GetCounterCurrent" or $action eq "GetDivider" ) ) {
-                  my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`='$address' and `channel`='$global{cgi}{params}{channel}'","data") ;
-
-                  if ( $action eq "GetCounter" ) {
-                     $json{Status} = $data{Counter}{value}        if defined $data{Counter} ;
-                  } elsif ( $action eq "GetCounterCurrent" ) {
-                     $json{Status} = $data{CounterCurrent}{value} if defined $data{CounterCurrent} ;
-                  } elsif ( $action eq "GetCounterRaw" ) {
-                     $json{Status} = $data{CounterRaw}{value}     if defined $data{CounterRaw} ;
-                  } else {
-                     $json{Status} = $data{Divider}{value}        if defined $data{Divider} ;
+                     $json{Error} = "INCORRECT_VALUE" ;
                   }
                }
 
@@ -411,21 +456,15 @@ sub www_service () {
    return %json ;
 }
 
-sub www_print_modules () {
-   my $html ;
-   $html .= "<h1>All modules on bus (<a href=\"?".&www_make_url("action=status")."\">refresh status</a>)</h1>\n" ;
-
-   my %data ;
-
+sub process_modules () {
    # Loop all module types
-   foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
-#next if $type ne '28' ;
+   foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
 
       # Loop all modules
-      foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$type}{ModuleList}}) ) {
+      foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}}) ) {
          foreach my $Key (keys (%{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}}) ) {
             if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$Key} ne "" ) {
-               $global{Vars}{Modules}{PerType}{$type}{ModuleInfoKey}{$Key} = "" ; # To get a list of info per module
+               $global{Vars}{Modules}{PerType}{$ModuleType}{ModuleInfoKey}{$Key} = "" ; # To get a list of info per module
             }
          }
 
@@ -435,18 +474,27 @@ sub www_print_modules () {
                foreach my $Key ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}}) ) {
                   if ( $Channel eq "00" ) { # Channel 00 contains info about the module itself
                      if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{value} ne "" ) {
-                        $global{Vars}{Modules}{PerType}{$type}{ModuleInfoKey}{$Key} = "" ; # To get a list of info per module
+                        $global{Vars}{Modules}{PerType}{$ModuleType}{ModuleInfoKey}{$Key} = "" ; # To get a list of info per module
                         $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$Key} = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{value} ;
                      }
                   } else {
-                     $global{Vars}{Modules}{PerType}{$type}{ChannelInfoKey}{$Key} = "" ; # To get a list of info per channel
-                     $global{Vars}{Modules}{PerType}{$type}{ChannelList}{$Channel} = "" ; # To get a list of the channels
+                     $global{Vars}{Modules}{PerType}{$ModuleType}{ChannelInfoKey}{$Key} = "" ; # To get a list of info per channel
+                     $global{Vars}{Modules}{PerType}{$ModuleType}{ChannelList}{$Channel} = "" ; # To get a list of the channels
                   }
                }
             }
          }
       }
    }
+}
+
+sub www_print_modules () {
+   my $html ;
+   $html .= "<h1>All modules on bus (<a href=\"?".&www_make_url("action=status")."\">refresh status</a>)</h1>\n" ;
+
+   my %data ;
+
+   &process_modules ;
 
    foreach my $status (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}})) {
       next if $status eq "Start scan" ;
@@ -485,8 +533,8 @@ sub www_print_modules () {
       $mail_body .= "address;type;ModuleName;Build;MemoryKey;MemoryMap;\n" ;
 
       foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}{$status}{ModuleList}}) ) {
-         my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'type'} ; # Handier var
-         my $MemoryKey = &module_find_MemoryKey ($address, $type) ; # Handier var
+         my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ; # Handier var
+         my $MemoryKey = &module_find_MemoryKey ($address, $ModuleType) ; # Handier var
          my $MemoryMap = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ;
          $table .= "  <tr>\n" ;
          if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
@@ -495,9 +543,9 @@ sub www_print_modules () {
             $table .= "    <th>$address</th>\n" ;
          }
          $mail_body .= "$address;" ;
-         $table .= "    <td>$global{Cons}{ModuleTypes}{$type}{Type} ($type)</td>\n" ;
-         $mail_body .= "$type;" ;
-         $table .= "    <td>$global{Cons}{ModuleTypes}{$type}{Info}</td>\n" ;
+         $table .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</td>\n" ;
+         $mail_body .= "$ModuleType;" ;
+         $table .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Info}</td>\n" ;
          $table .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}</td>\n" ;
          $mail_body .= "$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName};" ;
          $table .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildYear}$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildWeek}</td>\n" ;
@@ -511,7 +559,7 @@ sub www_print_modules () {
             $mail_body .= ";" ;
          }
          if ( defined $MemoryMap ) {
-            if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryMap}{ModuleName}) {
+            if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Memory}{$MemoryMap}{ModuleName}) {
                $table .= "    <td>$MemoryMap</td>\n" ;
                $mail_body .= "$MemoryMap;" ;
             } else {
@@ -531,19 +579,21 @@ sub www_print_modules () {
       $table .= "</table>\n" ;
 
       $mail_body =~ s/\n/%0D%0A/g ;
-      $html .= "<p>Do you want to help? Send me <a href=\"mailto:velserver\@docum.org?subject=velserver detected modules&body=$mail_body\">an email</a> with the content of this table. Especially if there is an issue with the MemoryKey and MemoryMap column</p>\n" ;
+      if ( $status eq "Found" ) {
+         $html .= "<p>Do you want to help? Send me <a href=\"mailto:velserver\@docum.org?subject=velserver detected modules&body=$mail_body\">an email</a> with the content of this table. Especially if there is an issue with the MemoryKey and MemoryMap column</p>\n" ;
+      }
       $html .= $table ;
    }
 
-   foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
-      $html .= "<h2>$global{Cons}{ModuleTypes}{$type}{Type} ($type) $global{Cons}{ModuleTypes}{$type}{Info}</h2>\n" ;
+   foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
+      $html .= "<h2>$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType) $global{Cons}{ModuleTypes}{$ModuleType}{Info}</h2>\n" ;
       $html .= "<h3>Module info</h3>\n" ;
 
       $html .= "<table border=1>\n" ;
       $html .= "<thead>\n" ;
       $html .= "  <tr>\n" ;
       $html .= "    <th>Address</th>\n" ;
-      foreach my $Key (sort keys %{$global{Vars}{Modules}{PerType}{$type}{ModuleInfoKey}} ) {
+      foreach my $Key (sort keys %{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleInfoKey}} ) {
          $html .= "    <th>$Key</th>\n" ;
       }
       $html .= "    <th>Action</th>\n" ;
@@ -552,10 +602,10 @@ sub www_print_modules () {
 
       $html .= "<tbody>\n" ;
 
-      foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$type}{ModuleList}}) ) {
+      foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}}) ) {
          $html .= "  <tr>\n" ;
          $html .= "    <th>$address</th>\n" ;
-         foreach my $Key (sort keys %{$global{Vars}{Modules}{PerType}{$type}{ModuleInfoKey}} ) {
+         foreach my $Key (sort keys %{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleInfoKey}} ) {
             $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$Key}</td>\n" ;
             #$html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{value}<br />$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{data}</td>\n" ;
          }
@@ -567,14 +617,14 @@ sub www_print_modules () {
       $html .= "</tbody>\n" ;
       $html .= "</table>\n" ;
 
-      if ( %{$global{Vars}{Modules}{PerType}{$type}{ChannelInfoKey}} ) {
+      if ( %{$global{Vars}{Modules}{PerType}{$ModuleType}{ChannelInfoKey}} ) {
          $html .= "<h3>Channel info</h3>\n" ;
          $html .= "<table border=1>\n" ;
          $html .= "<thead>\n" ;
          $html .= "  <tr>\n" ;
          $html .= "    <th>Address</th>\n" ;
          $html .= "    <th>Channel</th>\n" ;
-         foreach my $Key (sort keys %{$global{Vars}{Modules}{PerType}{$type}{ChannelInfoKey}} ) {
+         foreach my $Key (sort keys %{$global{Vars}{Modules}{PerType}{$ModuleType}{ChannelInfoKey}} ) {
             $html .= "    <th>$Key</th>\n" ;
          }
          $html .= "    <th>Action</th>\n" ;
@@ -583,14 +633,14 @@ sub www_print_modules () {
 
          $html .= "<tbody>\n" ;
 
-         foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$type}{ModuleList}}) ) {
+         foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}}) ) {
             $html .= "  <tr>\n" ;
             $html .= "    <th rowspan=ROWSPAN>$address</th>\n" ;
             $ROWSPAN = 0 ;
-            foreach my $Channel (sort keys %{$global{Vars}{Modules}{PerType}{$type}{ChannelList}} ) {
+            foreach my $Channel (sort keys %{$global{Vars}{Modules}{PerType}{$ModuleType}{ChannelList}} ) {
                $html .= "  <tr>\n" if $ROWSPAN ne "0" ;
                $html .= "    <td>$Channel</td>\n" ;
-               foreach my $Key (sort keys %{$global{Vars}{Modules}{PerType}{$type}{ChannelInfoKey}} ) {
+               foreach my $Key (sort keys %{$global{Vars}{Modules}{PerType}{$ModuleType}{ChannelInfoKey}} ) {
                   $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{value} =~ s/;/<br \/>/g ;
                   $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{value}<br />$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{date}</td>\n" ;
                }
@@ -636,13 +686,13 @@ sub www_print_channeltags () {
    $html .= $global{cgi}{CGI}->hidden(-name=>'appl',$global{cgi}{params}{appl}) ;
 
    # Loop all module types
-   foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
+   foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
 
       # Loop all modules
-      foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$type}{ModuleList}}) ) {
+      foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}}) ) {
          foreach my $Key (keys (%{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}}) ) {
             if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$Key} ne "" ) {
-               $global{Vars}{Modules}{PerType}{$type}{ModuleInfoKey}{$Key} = "" ; # To get a list of info per module
+               $global{Vars}{Modules}{PerType}{$ModuleType}{ModuleInfoKey}{$Key} = "" ; # To get a list of info per module
             }
          }
 
@@ -652,12 +702,12 @@ sub www_print_channeltags () {
                foreach my $Key ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}}) ) {
                   if ( $Channel eq "00" ) { # Channel 00 contains info about the module itself
                      if ( $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{value} ne "" ) {
-                        $global{Vars}{Modules}{PerType}{$type}{ModuleInfoKey}{$Key} = "" ; # To get a list of info per module
+                        $global{Vars}{Modules}{PerType}{$ModuleType}{ModuleInfoKey}{$Key} = "" ; # To get a list of info per module
                         $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$Key} = $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{$Key}{value} ;
                      }
                   } else {
-                     $global{Vars}{Modules}{PerType}{$type}{ChannelInfoKey}{$Key} = "" ; # To get a list of info per channel
-                     $global{Vars}{Modules}{PerType}{$type}{ChannelList}{$Channel} = "" ; # To get a list of the channels
+                     $global{Vars}{Modules}{PerType}{$ModuleType}{ChannelInfoKey}{$Key} = "" ; # To get a list of info per channel
+                     $global{Vars}{Modules}{PerType}{$ModuleType}{ChannelList}{$Channel} = "" ; # To get a list of the channels
                   }
                }
             }
@@ -665,10 +715,10 @@ sub www_print_channeltags () {
       }
    }
 
-   foreach my $type (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
-      $html .= "<h2>$global{Cons}{ModuleTypes}{$type}{Type} ($type) $global{Cons}{ModuleTypes}{$type}{Info}</h2>\n" ;
+   foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
+      $html .= "<h2>$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType) $global{Cons}{ModuleTypes}{$ModuleType}{Info}</h2>\n" ;
 
-      if ( %{$global{Vars}{Modules}{PerType}{$type}{ChannelInfoKey}} ) {
+      if ( %{$global{Vars}{Modules}{PerType}{$ModuleType}{ChannelInfoKey}} ) {
          $html .= "<h3>Channel tags</h3>\n" ;
          $html .= "<table border=1>\n" ;
          $html .= "<thead>\n" ;
@@ -683,20 +733,20 @@ sub www_print_channeltags () {
 
          $html .= "<tbody>\n" ;
 
-         foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$type}{ModuleList}}) ) {
+         foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}}) ) {
             $html .= "  <tr>\n" ;
             $html .= "    <th rowspan=ROWSPAN>$address</th>\n" ;
             $html .= "    <th rowspan=ROWSPAN>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{ModuleName}</th>\n" ;
             $ROWSPAN = 0 ;
-            foreach my $Channel (sort keys %{$global{Vars}{Modules}{PerType}{$type}{ChannelList}} ) {
+            foreach my $Channel (sort keys %{$global{Vars}{Modules}{PerType}{$ModuleType}{ChannelList}} ) {
                $html .= "  <tr>\n" if $ROWSPAN ne "0" ;
                $html .= "    <td>$Channel</td>\n" ;
                $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value}<br />$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{date}</td>\n" ;
 
                $html .= "    <td>" ;
-               if ( $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Relay" or
-                    $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Button" or
-                    $global{Cons}{ModuleTypes}{$type}{Channels}{$Channel}{Type} eq "Dimmer" ) {
+               if ( $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} eq "Relay" or
+                    $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} eq "Button" or
+                    $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} eq "Dimmer" ) {
                   if ( ! defined $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} or
                        $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} eq "" ) {
                      $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} = '__NoTag__' ;
@@ -734,6 +784,64 @@ sub www_print_velbus_messages () {
       $html .= &www_print_velbus_messages_print_message($global{cgi}{params}{Message}) ;
    } else {
       $html .= &www_print_velbus_messages_print_messages ;
+   }
+   return $html ;
+}
+
+sub www_print_velbus_actions () {
+   $html .= "<h1>Velbus actions</h1>\n" ;
+
+   foreach my $ActionType (sort keys %{$global{Cons}{ActionType}} ) {
+      $html .= "<h2>Action: $ActionType</h2>\n" ;
+      if ( defined $global{Cons}{ActionType}{$ActionType}{Info} ) {
+         $html .= $global{Cons}{ActionType}{$ActionType}{Info} ;
+      }
+      $html .= "<table border=\"1\">\n" ;
+      $html .= "<thead>\n" ;
+      $html .= "<tr>\n" ;
+      $html .= "<th>Module</th>\n" ;
+      $html .= "<th>Info</th>\n" ;
+      $html .= "<th>Action</th>\n" ;
+      $html .= "<th>SetAction</th>\n" ;
+      $html .= "</tr>\n" ;
+      $html .= "</thead>\n" ;
+      $html .= "<tbody>\n" ;
+      foreach my $ModuleType (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}} ) {
+         $html .= "<tr>\n" ;
+         $html .= "<th><a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</a></th>" ;
+         $html .= "<td>$global{Cons}{ModuleTypes}{$ModuleType}{Info}</td>\n" ;
+         $html .= "<td>\n" ;
+
+         foreach my $Action (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}} ) {
+            $html .= "$Action" ;
+            my $MessageTxt ;
+            foreach my $Message (sort split " ", $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action}) {
+              $MessageTxt .= "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a>" ;
+            }
+            if ( defined $MessageTxt ) {
+               $html .= " ($MessageTxt)" ;
+            }
+            $html .= "<br />" ;
+         }
+         $html .= "</td>\n" ;
+         $html .= "<td>\n" ;
+         if ( defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction} ) {
+            foreach my $SetAction (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}} ) {
+               $html .= "$SetAction (" ;
+               foreach my $Message (sort split " ", $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction}) {
+                  $html .= "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a>" ;
+               }
+               $html .= ")<br />" ;
+            }
+         }
+         $html .= "</td>\n" ;
+         $html .= "</tr>\n" ;
+      }
+      $html .= "</tbody>\n" ;
+      $html .= "</table>\n" ;
+      #$html .= "<pre>\n" ;
+      #$html .= Dumper \%{$global{Cons}{ActionType}{$ActionType}} ;
+      #$html .= "</pre>\n" ;
    }
    return $html ;
 }
@@ -794,7 +902,7 @@ sub www_print_velbus_messages_print_message () {
       $html .= "    <td>$Message</td>\n" ;
       $html .= "    <td>" ;
       foreach my $ModuleType (sort keys %{$data{Module}{$Message}{ModuleType}} ) {
-         $html .= "<a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</a><br />" ;
+         $html .= "<a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</a>: $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Type}<br />" ;
       }
       $html .= "</td>\n" ;
       $html .= "    <td>$Name</td>\n" ;
@@ -844,7 +952,7 @@ sub www_print_velbus_messages_print_message () {
 sub www_print_velbus_messages_print_messages () {
    my $html ;
 
-   my %data =&www_process_messages ;
+   my %data = &www_process_messages ;
 
    $html .= "<h2>Broadcast messages</h2>\n" ;
    $html .= "<table border=1 class=\"datatable\">\n" ;
@@ -874,8 +982,8 @@ sub www_print_velbus_messages_print_messages () {
    $html .= "</tbody>\n" ;
    $html .= "</table>\n" ;
 
-   foreach my $type (sort keys %{$data{PerType}}) {
-      $html .= "<h2>Module messages: type $type</h2>\n" ;
+   foreach my $MessageType (sort keys %{$data{PerType}}) {
+      $html .= "<h2>Module messages: type $MessageType</h2>\n" ;
       $html .= "<table border=1 class=\"datatable\">\n" ;
       $html .= "<thead>\n" ;
       $html .= "  <tr>\n" ;
@@ -888,7 +996,7 @@ sub www_print_velbus_messages_print_messages () {
       $html .= "</thead>\n" ;
 
       $html .= "<tbody>\n" ;
-      foreach my $Message (sort @{$data{PerType}{$type}}) {
+      foreach my $Message (sort @{$data{PerType}{$MessageType}}) {
          my $Name = join ";", sort keys %{$data{Module}{$Message}{Name}} ;
          $Name =~ s/;/<br \/>/g ;
          my $Info = join ";", sort keys %{$data{Module}{$Message}{Info}} ;
@@ -1129,24 +1237,24 @@ sub www_process_messages () {
 
    # Loop the messages and try to find a type to sort the messages
    foreach my $Message (sort {$a cmp $b} keys %{$data{Module}}) {
-      my $type = "rest" ;
+      my $MessageType = "rest" ;
       my $Name = join ";", sort keys %{$data{Module}{$Message}{Name}} ;
       if ( $Name =~ /_STATUS/ ) {
-         $type = "Status" ;
+         $MessageType = "Status" ;
       } elsif ( $Name =~ /_PROGRAM/ ) {
-         $type = "Program" ;
+         $MessageType = "Program" ;
       } elsif ( $Name =~ /_MEMORY/ ) {
-         $type = "Memory" ;
+         $MessageType = "Memory" ;
       } elsif ( $Name =~ /_NAME_/ ) {
-         $type = "Name" ;
+         $MessageType = "Name" ;
       } elsif ( $Name =~ /DIM/ ) {
-         $type = "Dimmer" ;
+         $MessageType = "Dimmer" ;
       } elsif ( $Name =~ /RELAY_/ ) {
-         $type = "Relay" ;
+         $MessageType = "Relay" ;
       } elsif ( $Name =~ /BLIND_/ ) {
-         $type = "Blind" ;
+         $MessageType = "Blind" ;
       }
-      push @{$data{PerType}{$type}}, $Message ;
+      push @{$data{PerType}{$MessageType}}, $Message ;
    }
 
    return %data ;
