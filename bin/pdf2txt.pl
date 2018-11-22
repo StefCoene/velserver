@@ -21,61 +21,6 @@
 #   {$CommandHex}{$CommandText}{$MessageType}
 
 our %global ;
-   # List of modules found on the internet
-   $global{Cons}{ModuleTypes}{'01'}{Type} = "VMB8PB" ;
-   $global{Cons}{ModuleTypes}{'01'}{Info} = "8-channel push button" ;
-   $global{Cons}{ModuleTypes}{'02'}{Type} = "VMB1RY" ;
-   $global{Cons}{ModuleTypes}{'02'}{Info} = "1-channel relay" ;
-   $global{Cons}{ModuleTypes}{'03'}{Type} = "VMB1BL" ;
-   $global{Cons}{ModuleTypes}{'03'}{Info} = "1 channel blind" ;
-   $global{Cons}{ModuleTypes}{'05'}{Type} = "VMB6IN" ;
-   $global{Cons}{ModuleTypes}{'05'}{Info} = "6-channel input" ;
-   $global{Cons}{ModuleTypes}{'07'}{Type} = "VMB1DM" ;
-   $global{Cons}{ModuleTypes}{'07'}{Info} = "1-Channel 300W dimmer" ;
-   $global{Cons}{ModuleTypes}{'08'}{Type} = "VMB4RY" ;
-   $global{Cons}{ModuleTypes}{'08'}{Info} = "4-channel relay" ;
-   $global{Cons}{ModuleTypes}{'09'}{Type} = "VMB2BL" ;
-   $global{Cons}{ModuleTypes}{'09'}{Info} = "2-channel blind" ;
-   $global{Cons}{ModuleTypes}{'0A'}{Type} = "VMB8IR" ;
-   $global{Cons}{ModuleTypes}{'0A'}{Info} = "Infrared receiver with 8-channel LED feedback" ;
-   $global{Cons}{ModuleTypes}{'0B'}{Type} = "VMB4PD" ;
-   $global{Cons}{ModuleTypes}{'0B'}{Info} = "8-Channel pushbutton and timer module " ;
-   $global{Cons}{ModuleTypes}{'0C'}{Type} = "VMB1TS" ;
-   $global{Cons}{ModuleTypes}{'0C'}{Info} = "Temperature sensor" ;
-   $global{Cons}{ModuleTypes}{'0E'}{Type} = "VMB1TC" ;
-   $global{Cons}{ModuleTypes}{'0E'}{Info} = "Temperature controller " ;
-   $global{Cons}{ModuleTypes}{'0F'}{Type} = "VMB1LED" ;
-   $global{Cons}{ModuleTypes}{'0F'}{Info} = "1-channel 5A-12V/24V LED dimmer " ;
-   $global{Cons}{ModuleTypes}{'10'}{Type} = "VMB4RYLD" ;
-   $global{Cons}{ModuleTypes}{'10'}{Info} = "4-channel voltage-out relay module." ;
-   $global{Cons}{ModuleTypes}{'11'}{Type} = "VMB4RYNO" ;
-   $global{Cons}{ModuleTypes}{'11'}{Info} = "4-channel relay module" ;
-   $global{Cons}{ModuleTypes}{'12'}{Type} = "VMB4DC" ;
-   $global{Cons}{ModuleTypes}{'12'}{Info} = "4-channel 0(1)-10V control" ;
-   $global{Cons}{ModuleTypes}{'14'}{Type} = "VMBDME" ;
-   $global{Cons}{ModuleTypes}{'14'}{Info} = "1-channel 200W dimmer" ;
-   $global{Cons}{ModuleTypes}{'15'}{Type} = "VMBDMI" ;
-   $global{Cons}{ModuleTypes}{'15'}{Info} = "1-channel 400W dimmer" ;
-   $global{Cons}{ModuleTypes}{'16'}{Type} = "VMB8PBU" ;
-   $global{Cons}{ModuleTypes}{'16'}{Info} = "8-channel push-button" ;
-   $global{Cons}{ModuleTypes}{'17'}{Type} = "VMB6PBN" ;
-   $global{Cons}{ModuleTypes}{'1D'}{Type} = "VMB2BLE" ;
-   $global{Cons}{ModuleTypes}{'1D'}{Info} = "2-channel blind control module" ;
-   $global{Cons}{ModuleTypes}{'17'}{Info} = "Push-button interface for 6-/4-fold niko® push-buttons" ;
-
-   $global{Cons}{ModuleTypes}{'1E'}{Type} = "VMBGPx" ;
-   $global{Cons}{ModuleTypes}{'1E'}{Info} = "4 touch button" ;
-   $global{Cons}{ModuleTypes}{'1F'}{Type} = "VMBGPx" ;
-   $global{Cons}{ModuleTypes}{'1F'}{Info} = "4 touch button" ;
-   $global{Cons}{ModuleTypes}{'20'}{Type} = "VMBGPx" ;
-   $global{Cons}{ModuleTypes}{'20'}{Info} = "4 touch button" ;
-
-   $global{Cons}{ModuleTypes}{'22'}{Type} = "VMB7IN" ;
-   $global{Cons}{ModuleTypes}{'22'}{Info} = "7-channel input module" ;
-   $global{Cons}{ModuleTypes}{'28'}{Type} = "VMBGPOD" ;
-   $global{Cons}{ModuleTypes}{'28'}{Info} = "OLED touch" ;
-   $global{Cons}{ModuleTypes}{'2A'}{Type} = "VMBPIRM" ;
-   $global{Cons}{ModuleTypes}{'2A'}{Info} = "Mini pir motion detector" ;
 
 use Data::Dumper ;
 $Data::Dumper::Sortkeys = 1 ; # Sort the keys in the output
@@ -340,16 +285,20 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                # VMBGP2 = 1F: ??
                # VMBGP4 = 20: from my bus
                if ( $ModuleTypeHex eq "1E" ) {
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{File} = \"$file\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Type} = \"VMBGP1\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{File} = \"$file\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Type} = \"VMBGP2\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{File} = \"$file\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Type} = \"VMBGP4\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
                } else {
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{File} = \"$file\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Type} = \"$ModuleType\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
@@ -481,16 +430,14 @@ foreach my $ModuleTypeHex (sort keys %{$file{ModuleType}}) {
    }
 }
 
-#$file{ModuleType}{$ModuleTypeHex}{$ModuleTypeHex}{MemoryMap} = $DATABYTE ;
-
 close OUTPUT ;
 
 sub clean () {
-  my $text = $_[0] ;
-  chomp $text ;
-  $text =~ s/^ +//g ;
-  $text =~ s/ +$//g ;
-  $text =~ s/‘//g ;
-  $text =~ s/’//g ;
-  return $text ;
+   my $text = $_[0] ;
+   chomp $text ;
+   $text =~ s/^ +//g ;
+   $text =~ s/ +$//g ;
+   $text =~ s/‘//g ;
+   $text =~ s/’//g ;
+   return $text ;
 }
