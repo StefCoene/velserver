@@ -319,6 +319,22 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Type} = \"VMBEL4\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+               # VMBGP1-2 = 3A
+               # VMBGP2-2 = 3B
+               # VMBGP4-2 = 3C
+               } elsif ( $ModuleTypeHex eq "3C" ) {
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{File} = \"$file\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Type} = \"VMBGP1-2\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{File} = \"$file\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Type} = \"VMBGP2-2\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{File} = \"$file\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Type} = \"VMBGP4-2\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
                } else {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{File} = \"$file\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Type} = \"$ModuleType\" ;\n" ;
