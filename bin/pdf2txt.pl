@@ -51,10 +51,13 @@ foreach my $file (sort `ls protocol*.txt`) {
       $ModuleType = "VMBGPx" ;
       shift @file ; # VMBGP2
       shift @file ; # VMBGP4
-   } elsif ( $ModuleType eq "VMBGP1-2" ) { # For VMBGP1, VMBGP2 and VMBGP4: the text is split on 3 lines
+   } elsif ( $ModuleType eq "VMBGP1-2" ) { # For VMBGPx-2: the text is split on 3 lines
       $ModuleType = "VMBGPx-2" ;
       shift @file ; # VMBGP2-2
       shift @file ; # VMBGP4-2
+   } elsif ( $ModuleType eq "VMBGPO" ) { # For VMBGPO: the text is split on 3 lines
+      shift @file ;
+      shift @file ;
    }
    $file{PerFile}{$file}{Info}{ModuleType} = $ModuleType ;
 
