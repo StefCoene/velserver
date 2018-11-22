@@ -51,15 +51,21 @@ foreach my $file (sort `ls protocol*.txt`) {
       $ModuleType = "VMBGPx" ;
       shift @file ; # VMBGP2
       shift @file ; # VMBGP4
+   } elsif ( $ModuleType eq "VMBGP1-2" ) { # For VMBGP1, VMBGP2 and VMBGP4: the text is split on 3 lines
+      $ModuleType = "VMBGPx-2" ;
+      shift @file ; # VMBGP2-2
+      shift @file ; # VMBGP4-2
    }
    $file{PerFile}{$file}{Info}{ModuleType} = $ModuleType ;
 
    # Second last line can be used to filter out the edition of the file
    &clean (pop @file) ;
    $file{PerFile}{$file}{Info}{Edition} = &clean (pop @file) ;
-   if ( $file{PerFile}{$file}{Info}{Edition} =~ /– (edition \d+ _ rev\d+)/ ) {
+   if ( $file{PerFile}{$file}{Info}{Edition} =~ /(edition \d+ _ rev\d+)/ ) {
       $file{PerFile}{$file}{Info}{Edition} = $1 ;
-   } elsif ( $file{PerFile}{$file}{Info}{Edition} =~ /– (edition \d+)/ ) {
+   } elsif ( $file{PerFile}{$file}{Info}{Edition} =~ /(edition \d+)/ ) {
+      $file{PerFile}{$file}{Info}{Edition} = $1 ;
+   } elsif ( $file{PerFile}{$file}{Info}{Edition} =~ /(version \d+)/ ) {
       $file{PerFile}{$file}{Info}{Edition} = $1 ;
    } else {
       $file{PerFile}{$file}{Info}{Edition} = "" ;
@@ -269,12 +275,12 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
    if ( defined $file{PerCommandHex}{$file}{'FF'} ) {
       foreach my $counter (split " ", $file{PerCommandHex}{$file}{'FF'}) {
          if ( defined $file{PerFile}{$file}{Messages}{$counter} ) {
-            if ( $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /(.+)_TYPE.+\(H’(..)’\)/i or
-                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /(.+) TYPE.+\(H’(..)’\)/i or
-                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /(.+).+\(H’(..)’\)/i or
-                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /(.+) type \(0x(..)\)/i ) {
-               my $name = $1 ; # This is useless :(
-               $ModuleTypeHex = $2 ;
+            if ( $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+_TYPE.+\(H’(..)’\)/i or
+                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+ TYPE.+\(H’(..)’\)/i or
+                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+.+\(H’(..)’\)/i or
+                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+ type \(0x(..)\)/i or
+                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /type \(0x(..)/i ) {
+               $ModuleTypeHex = $1 ;
                if ( $ModuleType eq "VMBGPOD" ) { # In the pdf this is type 21, but this is wrong and should be type 28. I think...
                   $ModuleTypeHex = "28" ;
                }
@@ -297,6 +303,22 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Type} = \"VMBGP4\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+               # VMBEL1 = 34
+               # VMBEL2 = 35
+               # VMBEL4 = 36
+               } elsif ( $ModuleTypeHex eq "34" ) {
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{File} = \"$file\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{Type} = \"VMBEL1\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{File} = \"$file\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Type} = \"VMBEL2\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{File} = \"$file\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Type} = \"VMBEL4\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+                  print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
                } else {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{File} = \"$file\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Type} = \"$ModuleType\" ;\n" ;

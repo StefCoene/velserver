@@ -5,7 +5,7 @@
 
 
 
-      VMB7IN PROTOCOL – edition 1   1
+      VMB7IN PROTOCOL – edition 5   1
 Binairy format:
 
 <SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-ACK-ACKDEL-
@@ -70,11 +70,12 @@ The module can receive the following commands:
 
 
 
-                                              VMB7IN PROTOCOL – edition 1                        2
+                                              VMB7IN PROTOCOL – edition 5                        2
    Memory dump request
    Write memory data
    Write memory data block (4 bytes)
-   Reset kWh counter
+   Reset counter
+   Load counter (Build 1426 or higher)
    kWh counter status request
    Bus error counter status request
    Real-time clock status request
@@ -94,7 +95,7 @@ The module can receive the following commands:
 
 
 
-                                               VMB7IN PROTOCOL – edition 1   3
+                                               VMB7IN PROTOCOL – edition 5   3
 Transmits real time clock status request:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = H’00’
@@ -163,7 +164,7 @@ Transmits the module type:
     DATABYTE7 = Build week
 
 
-                                VMB7IN PROTOCOL – edition 1     4
+                                VMB7IN PROTOCOL – edition 5     4
 Transmits the module status:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -194,42 +195,43 @@ Transmits the module type:
                   B’0xxxxxxx’         Sunset disabled
                   B’1xxxxxxx’         Sunset enabled
 
-Transmits the kWh status:
+Transmits the counter status:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
     RTR = 0
     DLC3...DLC0 = 8 databytes to send
-    DATABYTE1 = COMMAND_ENERGY_COUNTER_STATUS (H’BE’)
-    DATABYTE2 = energy counter channel 1 to 4 & number of pulses/kWh divide by 100
-                      Contents        Description
-                  B’xxxxxx00’         Channel 1
-                  B’xxxxxx01’         Channel 2
-                  B’xxxxxx10’         Channel 3
-                  B’xxxxxx11’         Channel 4
-                  B’000001xx’         100 pulses/kWh
-                  B’000010xx’         200 pulses/kWh
-                       …              …
-                  B’001000xx’         800 pulses/kWh
-                       …              …
-                  B’001010xx’         1000 pulses/kWh
-                       …              …
-                  B’010100xx’         2000 pulses/kWh
-                       …              …
-    DATABYTE3 = most significant byte of energy pulse counter
-    DATABYTE4 = upper byte of energy pulse counter
-    DATABYTE5 = high byte of energy pulse counter
-    DATABYTE6 = low byte of energy pulse counter
-    DATABYTE7 = high byte of period in ms between 2 energy pulses
-    DATABYTE8 = low byte of period in ms between 2 energy pulses
+    DATABYTE1 = COMMAND_COUNTER_STATUS (H’BE’)
+    DATABYTE2 = counter channel 1 to 4 & number of pulses/Units divide by 100
+                       Contents       Description
+                   B’xxxxxx00’        Channel 1
+                   B’xxxxxx01’        Channel 2
+                   B’xxxxxx10’        Channel 3
+                   B’xxxxxx11’        Channel 4
+                   B’000001xx’        100 pulses/Unit
+                   B’000010xx’        200 pulses/Unit
+                         …            …
+                   B’001000xx’        800 pulses/Unit
+                         …            …
+                   B’001010xx’        1000 pulses/Unit
+                         …            …
+                   B’010100xx’        2000 pulses/Unit
+                         …            …
+    DATABYTE3 = most significant byte of pulse counter
+    DATABYTE4 = upper byte of pulse counter
+    DATABYTE5 = high byte of pulse counter
+    DATABYTE6 = low byte of pulse counter
+    DATABYTE7 = high byte of period in ms between 2 pulses
+    DATABYTE8 = low byte of period in ms between 2 pulses
 
-    Remark: a period counter contents of 0xFFFF means overflow
-            Energy in kWh = DATABYTE[3…6] / DATABYTE2[pulses/kWH factor]
-            Power in W = 1000 * 1000 * 3600 / (DATABYTE[7..8] * DATABYTE2[pulses/kWH factor])
+    Remark: a period contents of 0xFFFF means overflow
+            Counter value in Units = DATABYTE[3…6] / (DATABYTE2[pulses_per_Units]*Multiplier)
+            Power in W = 1000 * 1000 * 3600 / (DATABYTE[7..8] * DATABYTE2[pulses_per_kWH]*Multiplier)
+            Flow in m3/h = 1000 * 3600 / (DATABYTE[7..8] * DATABYTE2[pulses_per_m3]*Multiplier)
+            Flow in l/h = 1000 * 3600 / (DATABYTE[7..8] * DATABYTE2[pulses_per_l]*Multiplier)
 
 
 
-
-                                           VMB7IN PROTOCOL – edition 1                          5
+                                          VMB7IN PROTOCOL – edition 5                                   5
 Transmit: Bus error counter status
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -293,7 +295,7 @@ Transmits the first part of channel name:
 
 
 
-                                         VMB7IN PROTOCOL – edition 1   6
+                                         VMB7IN PROTOCOL – edition 5   6
 Transmits the second part of the channel name:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -301,15 +303,15 @@ Transmits the first part of channel name:
     DLC3...DLC0 = 8 databytes to send
     DATABYTE1 = COMMAND_CHANNEL_NAME_PART2 (H’F1’)
     DATABYTE2 = Channel bit
-                      Contents         Channel
-                  B’00000001’          channel 1
-                  B’00000010’          channel 2
-                  B’00000100’          channel 3
-                  B’00001000’          channel 4
-                  B’00010000’          channel 5
-                  B’00100000’          channel 6
-                  B’01000000’          channel 7
-                  B’10000000’          channel 8
+                      Contents          Channel
+                  B’00000001’           channel 1
+                  B’00000010’           channel 2
+                  B’00000100’           channel 3
+                  B’00001000’           channel 4
+                  B’00010000’           channel 5
+                  B’00100000’           channel 6
+                  B’01000000’           channel 7
+                  B’10000000’           channel 8
     DATABYTE3 = Character 7 of the channel name
     DATABYTE4 = Character 8 of the channel name
     DATABYTE5 = Character 9 of the channel name
@@ -360,7 +362,7 @@ Transmit: Sets LEDs on a linked push button module:
 
 
 
-                                            VMB7IN PROTOCOL – edition 1          7
+                                            VMB7IN PROTOCOL – edition 5          7
 Transmit: Blinks LEDs slowly on a linked push button module:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address of the linked push button module for slowly blinking LEDs
@@ -380,7 +382,7 @@ Transmit: Blinks LEDs fast on a linked push button module:
 
 
 
-                                            VMB7IN PROTOCOL – edition 1               8
+                                            VMB7IN PROTOCOL – edition 5               8
 ‘Linked push button status’ received:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Address of the linked push button module
@@ -438,15 +440,15 @@ Transmit: Blinks LEDs fast on a linked push button module:
 
 
 
-                                           VMB7IN PROTOCOL – edition 1             9
+                                           VMB7IN PROTOCOL – edition 5             9
 ‘Enable/disable global sunrise/sunset related actions’ command received (Build1235 or higher):
-   SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = H’00’
-   RTR = 0
-   DLC3...DLC0 = 3 databytes to send
-   DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
-   DATABYTE2 = Channel (FF)
-   DATABYTE3 = enable/disable flags
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = H’00’
+    RTR = 0
+    DLC3...DLC0 = 3 databytes to send
+    DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
+    DATABYTE2 = Channel (FF)
+    DATABYTE3 = enable/disable flags
                        Contents              Description
                     B’xxxxxxx0’              Disable sunrise related actions
                     B’xxxxxxx1’              Enable sunrise related actions
@@ -454,13 +456,13 @@ Transmit: Blinks LEDs fast on a linked push button module:
                     B’xxxxxx1x’              Enable sunset related actions
 
 ‘Enable/disable local sunrise/sunset related actions’ command received:
-   SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
-   RTR = 0
-   DLC3...DLC0 = 3 databytes to send
-   DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
-   DATABYTE2 = Channel (FF)
-   DATABYTE3 = enable/disable flags
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes to send
+    DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
+    DATABYTE2 = Channel (FF)
+    DATABYTE3 = enable/disable flags
                        Contents               Description
                      B’xxxxxxx0’              Disable sunrise related actions
                      B’xxxxxxx1’              Enable sunrise related actions
@@ -502,7 +504,7 @@ Transmit: Blinks LEDs fast on a linked push button module:
 
 
 
-                                              VMB7IN PROTOCOL – edition 1                        10
+                                              VMB7IN PROTOCOL – edition 5                        10
 ‘Module status request’ command received:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
@@ -511,23 +513,23 @@ Transmit: Blinks LEDs fast on a linked push button module:
    DATABYTE1 = COMMAND_MODULE_STATUS_REQUEST (H’FA’)
    DATABYTE2 = don’t care
 
-‘kWh counter status request’ command received:
-   SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
-   RTR = 0
-   DLC3...DLC0 = 3 databytes received
-   DATABYTE1 = COMMAND_ENERGY_COUNTER_STATUS_RQ (H’BD’)
-   DATABYTE2 = energy counter channel 1 to 4
-                       Contents        Description
-                  B’xxxxxxx1’          Channel 1
-                  B’xxxxxx1x’          Channel 2
-                  B’xxxxx1xx’          Channel 3
-                  B’xxxx1xxx’          Channel 4
-   DATABYTE3 = auto send interval
-                       10…255s fixed interval
-                       5…9 = auto send on change with 5s as minimum interval
-                       1…4 = auto send on change disabled
-                       0 = no change on auto send interval
+‘Counter status request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_COUNTER_STATUS_RQ (H’BD’)
+    DATABYTE2 = counter channel 1 to 4
+                        Contents        Description
+                   B’xxxxxxx1’          Channel 1
+                   B’xxxxxx1x’          Channel 2
+                   B’xxxxx1xx’          Channel 3
+                   B’xxxx1xxx’          Channel 4
+    DATABYTE3 = auto send interval
+                        10…255s fixed interval
+                        5…9 = auto send on change with 5s as minimum interval
+                        1…4 = auto send on change disabled
+                        0 = no change on auto send interval
 
     Remark: the auto send interval is common for all channels
 
@@ -567,7 +569,7 @@ Transmit: Blinks LEDs fast on a linked push button module:
 
 
 
-                                             VMB7IN PROTOCOL – edition 1               11
+                                             VMB7IN PROTOCOL – edition 5               11
 ‘Slow blink channel LED’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -636,7 +638,7 @@ Transmit: Blinks LEDs fast on a linked push button module:
     Remark: address range: H’0000’ to H’03FC’
 
 
-                                             VMB7IN PROTOCOL – edition 1                                   12
+                                             VMB7IN PROTOCOL – edition 5                                   12
 ‘Write data to memory’ command received:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
@@ -667,20 +669,42 @@ Transmit: Blinks LEDs fast on a linked push button module:
    Wait for ‘memory data block’ feedback before sending a next command on the velbus.
    Address range: H’0000’ to H’03FC’
 
-‘Reset kWh counter’ command received:
+‘Reset counter’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
     RTR = 0
     DLC3...DLC0 = 2 databytes received
-    DATABYTE1 = COMMAND_RESET_ENERGY_COUNTER (H’AD’)
-    DATABYTE2 = energy counter channel 1 to 4
+    DATABYTE1 = COMMAND_RESET_COUNTER (H’AD’)
+    DATABYTE2 = counter channel 1 to 4
                       Contents        Description
-                  B’xxxxxx00’         Channel 1
-                  B’xxxxxx01’         Channel 2
-                  B’xxxxxx10’         Channel 3
-                  B’xxxxxx11’         Channel 4
+                   B’xxxxxx00’        Channel 1
+                   B’xxxxxx01’        Channel 2
+                   B’xxxxxx10’        Channel 3
+                   B’xxxxxx11’        Channel 4
 
-‘Bus error counter status request’ command received:
+‘Load counter’ command received (Build 1426 or higher):
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the module
+    RTR = 0
+    DLC3...DLC0 = 7 databytes received
+    DATABYTE1 = COMMAND_RESET_COUNTER (H’AD’)
+    DATABYTE2 = counter channel 1 to 4
+                      Contents         Description
+                     H’00’             Counter 1
+                     H’01’             Counter 2
+                     H’02’             Counter 3
+                     H’03’             Counter 4
+    DATABYTE3 = don’t care
+    DATABYTE4 = highest byte of 32-bit counter value
+    DATABYTE5 = third byte of 32-bit counter value
+    DATABYTE6 = second byte of 32-bit counter value
+    DATABYTE7 = lowest byte of 32-bit counter value
+
+
+
+
+                                           VMB7IN PROTOCOL – edition 5                  13
+‘Bus error counter status request’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
     RTR = 0
@@ -700,11 +724,7 @@ Transmit: Blinks LEDs fast on a linked push button module:
                   ...                 ...
                   B’10000000’         Channel 8
 
-
-
-
-                                           VMB7IN PROTOCOL – edition 1                  13
-‘Lock channel’ command received:
+‘Lock channel’ command received:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Module address
     RTR = 0
@@ -749,21 +769,20 @@ Transmit: Blinks LEDs fast on a linked push button module:
                  B’00000001’          Channel 1
                  B’00000010’          Channel 2
                  ...                  ...
-                 B’10000000’          Channel 8
-    DATABYTE3 = high byte of delay time
-    DATABYTE4 = mid byte of delay time
-    DATABYTE5 = low byte of delay time
+
+
+                                          VMB7IN PROTOCOL – edition 5                       14
+            B’10000000’             Channel 8
+   DATABYTE3 = high byte of delay time
+   DATABYTE4 = mid byte of delay time
+   DATABYTE5 = low byte of delay time
 
    Remark:
    [DATABYTE3][DATABYTE4][DATABYTE5] contain a 24-bit time in seconds
    The command will be skipped when the time parameter contains zero.
    When the time parameter contains H’FFFFFF’ then the channel program will be permanently disabled.
 
-
-
-
-                                          VMB7IN PROTOCOL – edition 1                                  14
-‘Select Program’ command received:
+‘Select Program’ command received:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
    RTR = 0
@@ -779,13 +798,13 @@ Transmit: Blinks LEDs fast on a linked push button module:
 
 
 
-                                     VMB7IN PROTOCOL – edition 1   15
- Memory map:
+                                          VMB7IN PROTOCOL – edition 5                                  15
+ Memory map for build 1247 or lower:
 
 Address   Contents                                                  Address   Contents
 H’0000’   Channel name character 1                                  H’0001’   Channel 1 name character 2
 ...       ...                                                       ...       ...
-H’000E’   Channel 1name character 15                                H’000F’   Channel 1 name character 16
+H’000E’   Channel 1 name character 15                               H’000F’   Channel 1 name character 16
 H’0010’   Channel 2 name character 1                                H’0011’   Channel 2 name character 2
 ...       ...                                                       ...       ...
 H’001E’   Channel 2name character 15                                H’001F’   Channel 2 name character 16
@@ -811,7 +830,7 @@ H’0080’   Channel 1 reaction time                                   H’0081
 ...       …                                                         ...       ...
 H’0086’   Channel 7 reaction time                                   H’0087’   Channel 8 reaction time
 H’0088’   Channels inverted/non inverted                            H’0089’   Led backlight on/off
-H’008A’   Led backlight intensity                                   H’008C’   Led feedback on/off
+H’008A’   Led backlight intensity                                   H’008B’   Led feedback on/off
 H’008C’   Enable/disable slow blinking led feedback                 H’008D’   Enable/disable fast blinking led feedback
 H’008E’   Enable/disable very fast blinking led feedback            H’008F’   Led intensity
 H’0090’   Program selection (none/summer/winter/holiday)            H’0091’   Channel 8…1 prog disable/enable flags
@@ -842,7 +861,7 @@ H’00C8’   Sunrise 21 December – sunrise 5 December (-128’..127’)    H�
 
 
 
-                                                VMB7IN PROTOCOL – edition 1                                                  16
+                                                VMB7IN PROTOCOL – edition 5                                                  16
 Address   Contents                                                  Address   Contents
 H’00CA’   Sunset hour at 21 December (0…23)                         H’00CB’   Sunset minutes at 21 December (0…59)
 H’00CC’   Sunset 21 January – sunrise 5 January (-128’..127’)       H’00CD’   Sunset 5 February – sunrise 21 January (-128’..127’)
@@ -906,7 +925,7 @@ H’00FE’   Serial number high                                        H’00FF
 
 
 
-                                                 VMB7IN PROTOCOL – edition 1                                                 17
+                                                 VMB7IN PROTOCOL – edition 5                                                 17
 Channels inverted
        Contents               Led feedback
      B’xxxxxxx0’              Channel 1 inverted
@@ -916,7 +935,7 @@ H’00FE’   Serial number high                                        H’00FF
      B’1xxxxxxx’              Channel 8 non inverted
 
 Led Backlight on/off
-        Contents              Led backlight
+       Contents               Led backlight
       B’xxxxxxx0’             Channel 1 off
       B’xxxxxxx1’             Channel 1 on
            ...                ...
@@ -953,11 +972,11 @@ Slow blinking Led feedback on/off
 
 Fast blinking Led feedback on/off
          Contents        Fast blinking Led feedback
-       B’xxxxxxx0’          Channel 1 off
-       B’xxxxxxx1’          Channel 1 on
-            ...             ...
-       B’0xxxxxxx’          Channel 8 off
-       B’1xxxxxxx’          Channel 8 on
+       B’xxxxxxx0’           Channel 1 off
+       B’xxxxxxx1’           Channel 1 on
+            ...              ...
+       B’0xxxxxxx’           Channel 8 off
+       B’1xxxxxxx’           Channel 8 on
 
 Very fast blinking Led feedback on/off
          Contents         Very Fast blinking Led feedback
@@ -970,7 +989,7 @@ Very fast blinking Led feedback on/off
 
 
 
-                              VMB7IN PROTOCOL – edition 1   18
+                              VMB7IN PROTOCOL – edition 5   18
 Program selection
        Contents            Selected program
            0                   None
@@ -996,20 +1015,20 @@ Channel locked
 
 Alarm clock configuration
         Contents        Channel locked/unlocked
-     B’xxxxxxx0’           Alarm 1 disabled
-     B’xxxxxxx1’           Alarm 1 enabled
-     B’0xxxxx0x’           Local alarm 1
-     B’1xxxxx1x’           Global alarm 1
-     B’xxxxx0xx’           Alarm 2 disabled
-     B’xxxxx1xx’           Alarm 2 enabled
-     B’xxxx0xxx’           Local alarm 2
-     B’xxxx1xxx’           Global alarm 2
-     B’xxx0xxxx’           Sunrise disabled
-     B’xxx1xxxx’           Sunrise enabled
-     B’xx0xxxxx’           Sunset disabled
-     B’xx1xxxxx’           Sunset enabled
-     B’x0xxxxxx’           Summer time disabled
-     B’x1xxxxxx’           Summer time enabled
+      B’xxxxxxx0’          Alarm 1 disabled
+      B’xxxxxxx1’          Alarm 1 enabled
+      B’0xxxxx0x’          Local alarm 1
+      B’1xxxxx1x’          Global alarm 1
+      B’xxxxx0xx’          Alarm 2 disabled
+      B’xxxxx1xx’          Alarm 2 enabled
+      B’xxxx0xxx’          Local alarm 2
+      B’xxxx1xxx’          Global alarm 2
+      B’xxx0xxxx’          Sunrise disabled
+      B’xxx1xxxx’          Sunrise enabled
+      B’xx0xxxxx’          Sunset disabled
+      B’xx1xxxxx’          Sunset enabled
+      B’x0xxxxxx’          Summer time disabled
+      B’x1xxxxxx’          Summer time enabled
 
 Channel x start/end function
          Contents              Function
@@ -1029,7 +1048,7 @@ send at a long press.
 
 
 
-                                VMB7IN PROTOCOL – edition 1                                                    19
+                                VMB7IN PROTOCOL – edition 5                                                    19
 Multi function auto reset
          Contents         Multi function auto reset
        B’xxxxxxx0’           Channel 1 auto reset disabled
@@ -1058,9 +1077,13 @@ Valid dual function long pressed times
           H’99’              2s
          H’E0’               3s
 
-Pulse per kWh divide by 100 Wh counter autosend time interval into seconds
-valid range: 1…63 (100 … 6300 pulses/kWh)
-             0 = kWh counter input disabled
+Pulse per kWh divide by 100
+valid range: bits 5…0: 1…63 (100 … 6300 pulses/kWh)
+                         0 = kWh counter input disabled
+             Bits 7&6: 00 = x1
+                         01 = x10
+                         10 = x0.1
+                         11 = x0.01
 
  kWh counter autosend time interval into seconds
 valid range: 10…255s
@@ -1069,7 +1092,7 @@ valid range: 10…255s
 
 
 
-                                VMB7IN PROTOCOL – edition 1                                                    20
+                                VMB7IN PROTOCOL – edition 5                                                    20
  Address     Contents                                     Address         Contents
  H’0100’     Linked Push button 1 module address          H’0101’         Linked Push button 1 bit number
  H’0102’     Linked Push button 1 action                  H’0103’         Linked Push button 1 time parameter
@@ -1114,7 +1137,7 @@ Remark: Unused locations contain H’FF’
              21           Disable Alarm/Sunrise/Sunset                         -              Alarm/sunrise/sunset bit
 
            Bit Number
-                   Contents                     Bit number
+                  Contents                      Bit number
                  B’00000001’              Channel 1 or Alarm1
                  B’00000010’              Channel 2
                  B’00000100’              Channel 3 or Alarm2
@@ -1127,12 +1150,12 @@ Remark: Unused locations contain H’FF’
 
 
 
-                                          VMB7IN PROTOCOL – edition 1                                                    21
+                                          VMB7IN PROTOCOL – edition 5                                                    21
 Time parameter
    Time parameter   Timeout
-           0        0s (No timer)
-           1        1s
-           2        2s
+            0       0s (No timer)
+            1       1s
+            2       2s
            ...
           119       1min59s
           120       2min
@@ -1167,7 +1190,7 @@ Remark: Unused locations contain H’FF’
 
 
 
-                         VMB7IN PROTOCOL – edition 1   22
+                         VMB7IN PROTOCOL – edition 5   22
 Address    Contents                                     Address      Contents
 H’0200’    Program step 1 byte1                         H’0201’      Program step 1 byte2
 H’0202’    Program step 1 byte3                         H’0203’      Program step 1 byte4
@@ -1176,7 +1199,7 @@ H’0204’    Program step 1 byte5                         H’0205’      Pro
 H’03F8’    Program step 85 byte1                        H’03F9’      Program step 85 byte2
 H’03FA’    Program step 85 byte3                        H’03FB’      Program step 85 byte4
 H’03FC’    Program step 85 byte5                        H’03FD’      Program step 85 byte6
-H’03FE’    Not used                                     H’03FF’      Not used
+H’03FE’    Not used                                     H’03FF’      Not used’
 
 
             Contents program byte1             Description
@@ -1232,7 +1255,7 @@ H’03FE’    Not used                                     H’03FF’      Not
 
 
 
-                                         VMB7IN PROTOCOL – edition 1                         23
+                                         VMB7IN PROTOCOL – edition 5                         23
 Contents program byte4             Contents program byte2   Description
      B’00xxxxxx’                        B’0000xxxx’         Never
      B’00xxxxxx’                        B’0001xxxx’         Day 1of the month
@@ -1294,7 +1317,7 @@ Contents program byte5       Action
 
 
 
-                         VMB7IN PROTOCOL – edition 1                                    24
+                         VMB7IN PROTOCOL – edition 5                                    24
 Contents program byte6       Channel
      B’00000001’             Channel 1
      B’00000010’             Channel 2
@@ -1308,5 +1331,1863 @@ Contents program byte5       Action
 
 
 
-                         VMB7IN PROTOCOL – edition 1   25
+                         VMB7IN PROTOCOL – edition 5   25
+Address     Contents                                Address      Contents
+H’03EC’     kWh 1 ‘On Alarm value’ low byte         H’03ED’      kWh 1 ‘On Alarm value’ high byte
+H’03EE’     kWh 1 ‘Off Alarm value’ low byte        H’03EF’      kWh 1 ‘Off Alarm value’ high byte
+H’03F0’     kWh 2 ‘On Alarm value’ low byte         H’03F1’      kWh 2 ‘On Alarm value’ high byte
+H’03F2’     kWh 2 ‘Off Alarm value’ low byte        H’03F3’      kWh 2 ‘Off Alarm value’ high byte.
+H’03F4’     kWh 3 ‘On Alarm value’ low byte         H’03F5’      kWh 3 ‘On Alarm value’ high byte
+H’03F6’     kWh 3 ‘Off Alarm value’ low byte        H’03F7’      kWh 3 ‘Off Alarm value’ high byte
+H’03F8’     kWh 4 ‘On Alarm value’ low byte         H’03F9’      kWh 4 ‘On Alarm value’ high byte
+H’03FA’     kWh 4 ‘Off Alarm value’ low byte        H’03FB’      kWh 4 ‘Off Alarm value’ high byte
+H’03FC’     Inverted alarm channels                 H’03FD’      Enabled alarm channels
+H’03FE’     Not used                                H’03FF’      Not used
+
+
+          kWh x ‘On alarm’ : 0x0000…0xFFFF
+          The alarm will be set if the instant power is greater than the ‘on alarm’ power setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          On_Alarm_value = 1000 * 1000 * 3600 / (On_Alarm_ Power_in_Watt) * Pulses_per_kWh _factor)
+
+          kWh x ‘Off alarm’ : 0x0000…0xFFFF
+          The alarm will be cleared if the instant power is less than the ‘off alarm’ power setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          Off_Alarm_value = 1000 * 1000 * 3600 / (Off_Alarm_ Power_in_Watt) * Pulses_per_kWh _factor)
+
+          Remark: ‘On alarm power’ must be greater than ‘Off alarm power’
+
+          Inverted alarm channels
+                   Contents                 Bit number
+                 B’0000xxx0’          kWh 1 alarm not inverted
+                 B’0000xxx1’          kWh 1 alarm inverted
+                 B’0000xx0x’          kWh 2 alarm not inverted
+                 B’0000xx1x’          kWh 2 alarm inverted
+                 B’0000x0xx’          kWh 3 alarm not inverted
+                 B’0000x1xx’          kWh 3 alarm inverted
+                 B’00000xxx’          kWh 4 alarm not inverted
+                 B’00001xxx’          kWh 4 alarm inverted
+
+          Enabled alarm channels
+                  Contents                  Bit number
+                B’0000xxx0’           kWh 1 alarm disabled
+                B’0000xxx1’           kWh 1 alarm enabled
+                B’0000xx0x’           kWh 2 alarm disabled
+                B’0000xx1x’           kWh 2 alarm enabled
+                B’0000x0xx’           kWh 3 alarm disabled
+                B’0000x1xx’           kWh 3 alarm enabled
+                B’00000xxx’           kWh 4 alarm disabled
+                B’00001xxx’           kWh 4 alarm enabled
+
+
+
+
+                                       VMB7IN PROTOCOL – edition 5                                      26
+ Memory map for build 1324 or higher:
+
+Address   Contents                                                  Address   Contents
+H’0000’   Channel name character 1                                  H’0001’   Channel 1 name character 2
+...       ...                                                       ...       ...
+H’000E’   Channel 1name character 15                                H’000F’   Channel 1 name character 16
+H’0010’   Channel 2 name character 1                                H’0011’   Channel 2 name character 2
+...       ...                                                       ...       ...
+H’001E’   Channel 2name character 15                                H’001F’   Channel 2 name character 16
+H’0020’   Channel 3 name character 1                                H’0021’   Channel 3 name character 2
+...       ...                                                       ...       ...
+H’002E’   Channel 3name character 15                                H’002F’   Channel 3 name character 16
+H’0030’   Channel 4 name character 1                                H’0031’   Channel 4 name character 2
+...       ...                                                       ...       ...
+H’003E’   Channel 4name character 15                                H’003F’   Channel 4 name character 16
+H’0040’   Channel 5 name character 1                                H’0041’   Channel 5 name character 2
+...       ...                                                       ...       ...
+H’004E’   Channel 5name character 15                                H’004F’   Channel 5 name character 16
+H’0050’   Channel 6 name character 1                                H’0051’   Channel 6 name character 2
+...       ...                                                       ...       ...
+H’005E’   Channel 6name character 15                                H’005F’   Channel 6 name character 16
+H’0060’   Channel 7 name character 1                                H’0061’   Channel 7 name character 2
+...       ...                                                       ...       ...
+H’006E’   Channel 7name character 15                                H’006F’   Channel 7 name character 16
+H’0070’   Channel 8 name character 1                                H’0071’   Channel 8 name character 2
+...       ...                                                       ...       ...
+H’007E’   Channel 8name character 15                                H’007F’   Channel 8 name character 16
+H’0080’   Channel 1 reaction time                                   H’0081’   Channel 2 reaction time
+...       …                                                         ...       ...
+H’0086’   Channel 7 reaction time                                   H’0087’   Channel 8 reaction time
+H’0088’   Channels inverted/non inverted                            H’0089’   Led backlight on/off
+H’008A’   Led backlight intensity                                   H’008C’   Led feedback on/off
+H’008C’   Enable/disable slow blinking led feedback                 H’008D’   Enable/disable fast blinking led feedback
+H’008E’   Enable/disable very fast blinking led feedback            H’008F’   Led intensity
+H’0090’   Program selection (none/summer/winter/holiday)            H’0091’   Channel 8…1 prog disable/enable flags
+H’0092’   Channel 8…1 locked/unlocked flags                         H’0093’   Alarm clock configuration
+H’0094’   Wake up 1 hour (0…23)                                     H’0095’   Wake up 1 minutes (0…59)
+H’0096’   Go to bed 1 hour (0…23)                                   H’0097’   Go to bed 1 minutes (0…59)
+H’0098’   Wake up 2 hour (0…23)                                     H’0099’   Wake up 2 minutes (0…59)
+H’009A’   Go to bed 2 hour (0…23)                                   H’009B’   Go to bed 2 minutes (0…59)
+H’009C’   Channel 1 start function                                  H’009D’   Channel 1 end function
+...       …                                                         ...       ...
+H’00AA’   Channel 8 start function                                  H’00AB’   Channel 8 end function
+H’00AC’   Multi function channels 8…1 auto reset enable             H’00AD’   Dual function channels 8…1 enable
+H’00AE’   Dual function long pressed time                           H’00AF’   Long pressed delay
+H’00B0’   Sunrise hour at 21 December (0…23)                        H’00B1’   Sunrise minutes at 21 December (0…59)
+H’00B2’   Sunrise 21 January – sunrise 5 January (-128’..127’)      H’00B3’   Sunrise 5 February – sunrise 21 January (-128’..127’)
+H’00B4’   Sunrise 21 February – sunrise 5 February (-128’..127’)    H’00B5’   Sunrise 5 March – sunrise 21 February (-128’..127’)
+H’00B6’   Sunrise 21 March – sunrise 5 March (-128’..127’)          H’00B7’   Sunrise 5 April – sunrise 21 March (-128’..127’)
+H’00B8’   Sunrise 21 April – sunrise 5 April (-128’..127’)          H’00B9’   Sunrise 5 May – sunrise 21 April (-128’..127’)
+H’00BA’   Sunrise 21 May – sunrise 5 May (-128’..127’)              H’00BB’   Sunrise 5 June – sunrise 21 May (-128’..127’)
+H’00BC’   Sunrise 21 June – sunrise 5 June (-128’..127’)            H’00BD’   Sunrise 5 July – sunrise 21 June (-128’..127’)
+H’00BE’   Sunrise 21 July – sunrise 5 July (-128’..127’)            H’00BF’   Sunrise 5 August – sunrise 21 July (-128’..127’)
+H’00C0’   Sunrise 21 August – sunrise 5 August (-128’..127’)        H’00C1’   Sunrise 5 September – sunrise 21 August (-128’..127’)
+H’00C2’   Sunrise 21 September – sunrise 5 September (-128..127’)   H’00C3’   Sunrise 5 October – sunrise 21 September (-128’..127’)
+H’00C4’   Sunrise 21 October – sunrise 5 October (-128’..127’)      H’00C5’   Sunrise 5 November – sunrise 21 October (-128’..127’)
+H’00C6’   Sunrise 21 November – sunrise 5 November (-128’..127’)    H’00C7’   Sunrise 5 December – sunrise 21 November (-128’..127’)
+H’00C8’   Sunrise 21 December – sunrise 5 December (-128’..127’)    H’00C9’   Sunrise 5 January – sunrise 21 December (-128’..127’)
+
+
+
+
+                                                VMB7IN PROTOCOL – edition 5                                                  27
+Address   Contents                                                  Address   Contents
+H’00CA’   Sunset hour at 21 December (0…23)                         H’00CB’   Sunset minutes at 21 December (0…59)
+H’00CC’   Sunset 21 January – sunrise 5 January (-128’..127’)       H’00CD’   Sunset 5 February – sunrise 21 January (-128’..127’)
+H’00CE’   Sunset 21 February – sunrise 5 February (-128’..127’)     H’00CF’   Sunset 5 March – sunrise 21 February (-128’..127’)
+H’00D0’   Sunset 21 March – sunrise 5 March (-128’..127’)           H’00D1’   Sunset 5 April – sunrise 21 March (-128’..127’)
+H’00D2’   Sunset 21 April – sunrise 5 April (-128’..127’)           H’00D3’   Sunset 5 May – sunrise 21 April (-128’..127’)
+H’00D4’   Sunset 21 May – sunrise 5 May (-128’..127’)               H’00D5’   Sunset 5 June – sunrise 21 May (-128’..127’)
+H’00D6’   Sunset 21 June – sunrise 5 June (-128’..127’)             H’00D7’   Sunset 5 July – sunrise 21 June (-128’..127’)
+H’00D8’   Sunset 21 July – sunrise 5 July (-128’..127’)             H’00D9’   Sunset 5 August – sunrise 21 July (-128’..127’)
+H’00DA’   Sunset 21 August – sunrise 5 August (-128’..127’)         H’00DA’   Sunset 5 September – sunrise 21 August (-128’..127’)
+H’00DC’   Sunset 21 September – sunrise 5 September (-128’..127’)   H’00DC’   Sunset 5 October – sunrise 21 September (-128’..127’)
+H’00DE’   Sunset 21 October – sunrise 5 October (-128’..127’)       H’00DF’   Sunset 5 November – sunrise 21 October (-128’..127’)
+H’00E0’   Sunset 21 November – sunrise 5 November (-128’..127’)     H’00E1’   Sunset 5 December – sunrise 21 November (-128’..127’)
+H’00E2’   Sunset 21 December – sunrise 5 December (-128’..127’)     H’00E3’   Sunset 5 January – sunrise 21 December (-128’..127’)
+H’00E4’   Pulse per kWh divide by 100 for KWh Counter 1             H’00E5’   Most significant byte of 32bit kWh counter 1
+H’00E6’   Upper byte of 32bit kWh counter 1                         H’00E7’   High byte of 32bit kWh counter 1
+H’00E8’   Low byte of 32bit kWh counter 1                           H’00E9’   Pulse per kWh divide by 100 for KWh Counter 2
+H’00EA’   Most significant byte of 32bit kWh counter 2              H’00EB’   Upper byte of 32bit kWh counter 2
+H’00EC’   High byte of 32bit kWh counter 2                          H’00ED’   Low byte of 32bit kWh counter 2
+H’00EE’   Pulse per kWh divide by 100 for KWh Counter 3             H’00EF’   Most significant byte of 32bit kWh counter 3
+H’00F0’   Upper byte of 32bit kWh counter 3                         H’00F1’   High byte of 32bit kWh counter 3
+H’00F2’   Low byte of 32bit kWh counter 3                           H’00F3’   Pulse per kWh divide by 100 for KWh Counter 4
+H’00F4’   Most significant byte of 32bit kWh counter 4              H’00F5’   Upper byte of 32bit kWh counter 4
+H’00F6’   High byte of 32bit kWh counter 4                          H’00F7’   Low byte of 32bit kWh counter 4
+H’00F8’   kWh counter auto send time interval                       H’00F9’   Current day (1…31)
+H’00FA’   Current month (1…12)                                      H’00FB’   Current year high byte
+H’00FC’   Current year low byte                                     H’00FD’   Module Address
+H’00FE’   Serial number high                                        H’00FF’   Serial number low
+
+     Remark:
+     Unused locations contain H’FF’
+     Do not overwrite the following address location:
+               H’00E5’…H’00E8’                32-bit kWh counter 1
+               H’00EA’…H’00ED’                32-bit kWh counter 2
+               H’00EF’…H’00F2’                32-bit kWh counter 3
+               H’00F4’…H’00F7’                32-bit kWh counter 4
+               H’0090’                        program selection
+               H’0091’                        channel program enable/disable
+               H’0092’                        channel locked/unlocked
+               H’00F9’                        current day of month
+               H’00FA’                        current month
+               H’00FB’ & H’00FC’              current year
+               H’00FD’                        module address
+               H’00FE’ & H’00FF’              module serial number
+     kWh counter input disabled if ‘Pulse per kWh divide by 100’ factor equal to zero
+
+                Valid reaction times
+                         Contents               Reaction time
+                          H’05’                 0.065s
+                          H’4C’                 1s
+                          H’99’                 2s
+                          H’E0’                 3s
+                          H’FF’                 Channel disabled
+
+                Valid long pressed delay (Build 1204 or higher)
+                         Contents             Reaction time
+                          H’40’               0.8s
+                          H’80’               1.6s
+                          H’FF’               Default 0.8s
+
+
+
+
+                                                 VMB7IN PROTOCOL – edition 5                                                 28
+Channels inverted
+       Contents               Led feedback
+     B’xxxxxxx0’              Channel 1 inverted
+     B’xxxxxxx1’              Channel 1 not inverted
+           ...                ...
+     B’0xxxxxxx’              Channel 8 inverted
+     B’1xxxxxxx’              Channel 8 non inverted
+
+Led Backlight on/off
+       Contents               Led backlight
+      B’xxxxxxx0’             Channel 1 off
+      B’xxxxxxx1’             Channel 1 on
+           ...                ...
+      B’0xxxxxxx’             Channel 8 off
+      B’1xxxxxxx’             Channel 8 on
+
+Led backlight intensity
+        Contents              Led backlight intensity
+          H’01’               Minimum
+           ...                ...
+         H’FF’                Maximum
+
+Led feedback on/off
+        Contents              Led feedback
+      B’xxxxxxx0’             Channel 1 off
+      B’xxxxxxx1’             Channel 1 on
+           ...                ...
+      B’0xxxxxxx’             Channel 8 off
+      B’1xxxxxxx’             Channel 8 on
+
+Led intensity (Build 1204 or higher)
+        Contents              Led intensity
+          H’01’               Minimum
+            ...               ...
+          H’40’               Maximum
+
+Slow blinking Led feedback on/off
+        Contents        Slow blinking Led feedback
+      B’xxxxxxx0’           Channel 1 off
+      B’xxxxxxx1’           Channel 1 on
+            ...             ...
+      B’0xxxxxxx’           Channel 8 off
+      B’1xxxxxxx’           Channel 8 on
+
+Fast blinking Led feedback on/off
+         Contents        Fast blinking Led feedback
+       B’xxxxxxx0’           Channel 1 off
+       B’xxxxxxx1’           Channel 1 on
+            ...              ...
+       B’0xxxxxxx’           Channel 8 off
+       B’1xxxxxxx’           Channel 8 on
+
+Very fast blinking Led feedback on/off
+         Contents         Very Fast blinking Led feedback
+      B’xxxxxxx0’            Channel 1 off
+      B’xxxxxxx1’            Channel 1 on
+             ...             ...
+      B’0xxxxxxx’            Channel 8 off
+      B’1xxxxxxx’            Channel 8 on
+
+
+
+
+                              VMB7IN PROTOCOL – edition 5   29
+Program selection
+       Contents            Selected program
+           0                   None
+           1                   Summer
+           2                   Winter
+           3                   Holiday
+
+Channel program disabled
+       Contents        Channel program enabled/disabled
+     B’xxxxxxx0’          Channel 1 programs enabled
+     B’xxxxxxx1’          Channel 1 programs disabled
+           ...            ...
+     B’0xxxxxxx’          Channel 8 programs enabled
+     B’1xxxxxxx’          Channel 8 programs disabled
+
+Channel locked
+       Contents            Channel locked/unlocked
+     B’xxxxxxx0’              Channel 1 unlocked
+     B’xxxxxxx1’              Channel 1 locked
+           ...                ...
+     B’0xxxxxxx’              Channel 8 unlocked
+     B’1xxxxxxx’              Channel 8 locked
+
+Alarm clock configuration
+        Contents        Channel locked/unlocked
+      B’xxxxxxx0’          Alarm 1 disabled
+      B’xxxxxxx1’          Alarm 1 enabled
+      B’0xxxxx0x’          Local alarm 1
+      B’1xxxxx1x’          Global alarm 1
+      B’xxxxx0xx’          Alarm 2 disabled
+      B’xxxxx1xx’          Alarm 2 enabled
+      B’xxxx0xxx’          Local alarm 2
+      B’xxxx1xxx’          Global alarm 2
+      B’xxx0xxxx’          Sunrise disabled
+      B’xxx1xxxx’          Sunrise enabled
+      B’xx0xxxxx’          Sunset disabled
+      B’xx1xxxxx’          Sunset enabled
+      B’x0xxxxxx’          Summer time disabled
+      B’x1xxxxxx’          Summer time enabled
+
+Channel x start/end function
+         Contents              Function
+       B’00000001’             Channel 1
+       B’00000010’             Channel 2
+             ...               ...
+       B’01000000’             Channel 7
+       B’10000000’             Channel 8
+Remark:
+For a normal one function button, the start and end function channel are the same.
+For a multi-function button, the start function channel must be less than the end function. At every press the
+next channel will be send. When the end function channel is reached, the start channel will be send again at
+the next press.
+For a dual function button, the start function channel will be send at a short press or the end function will be
+send at a long press.
+
+
+
+
+                                VMB7IN PROTOCOL – edition 5                                                    30
+Multi function auto reset
+         Contents         Multi function auto reset
+       B’xxxxxxx0’           Channel 1 auto reset disabled
+       B’xxxxxxx1’           Channel 1 auto reset enabled
+            ...              ...
+       B’0xxxxxxx’           Channel 8 auto reset disabled
+       B’1xxxxxxx’           Channel 8 auto reset enabled
+Remark: When auto reset is enabled, the start function will be loaded again after 3 seconds inactivity of the
+channel.
+
+Dual function enable
+         Contents          Dual function
+       B’xxxxxxx0’         Channel 1 dual function disabled
+       B’xxxxxxx1’         Channel 1 dual function enabled
+             ...           ...
+       B’0xxxxxxx’         Channel 8 dual function disabled
+       B’1xxxxxxx’         Channel 8 dual function enabled
+Remark:
+For a dual function button, the start function channel will be send at a short press or the end function will be
+send at a long press.
+The dual function overwrites the multi-function mode.
+
+Valid dual function long pressed times
+        Contents             Long pressed time
+         H’4C’               1s
+          H’99’              2s
+         H’E0’               3s
+
+Pulse per kWh divide by 100
+valid range: 1…63 (100 … 6300 pulses/kWh)
+             0 = kWh counter input disabled
+
+ kWh counter autosend time interval into seconds
+valid range: 10…255s
+             0…9 = auto send disabled
+
+
+
+
+                                VMB7IN PROTOCOL – edition 5                                                    31
+ Address     Contents                                     Address         Contents
+ H’0100’     Linked Push button 1 module address          H’0101’         Linked Push button 1 bit number
+ H’0102’     Linked Push button 1 action                  H’0103’         Linked Push button 1 time parameter
+ H’0104’     Linked Push button 1 channel parameter       H’0105’         Linked Push button 2 module address
+ H’0106’     Linked Push button 2 bit number              H’0107’         Linked Push button 2 action
+ H’0108’     Linked Push button 2 time parameter          H’0109’         Linked Push button 2 channel parameter
+ H’010A’     …                                            H’010B’         …
+ ...         ...                                          ...             ...
+ ...         …                                            H’01F5’         Linked Push button 50 module address
+ H’01F6’     Linked Push button 50 bit number             H’01F7’         Linked Push button 50 action
+ H’01F8’     Linked Push button 50 time parameter         H’01F9’         Linked Push button 50 channel parameter
+ H’01FA’     Linked Push button 51 module address         H’01FB’         Linked Push button 51 bit number
+ H’01FC’     Linked Push button 51 action                 H’01FD’         Linked Push button 51 time parameter
+ H’01FE’     Linked Push button 51 channel parameter      H’01FF’         Not used
+
+Remark: Unused locations contain H’FF’
+
+           Action
+             Action       Action                                               Time           Bit number
+             number                                                            parameter
+             0            No action                                            -              -
+             1            Lock channel at closed switch                        -              Channel bit
+             2            Lock channel at opened switch                        -              Channel bit
+             3            Lock channel                                         Timeout        Channel bit
+             4            Lock/unlock channel                                  Timeout        Channel bit
+             5            Unlock channel                                       -              Channel bit
+             6            Disable channel program at closed switch             -              Channel bit
+             7            Disable channel program at opened switch             -              Channel bit
+             8            Disable channel program channel                      Timeout        Channel bit
+             9            Disable/enable channel program                       Timeout        Channel bit
+             10           Enable channel program                               -              Channel bit
+             11           Select no programs                                   -              -
+             12           Select summer programs                               -              -
+             13           Select winter programs                               -              -
+             14           Select holiday programs                              -              -
+             15           Enable Alarm/Sunrise/Sunset at closed switch         -              Alarm/sunrise/sunset bit
+             16           Enable Alarm/Sunrise/Sunset at open switch           -              Alarm/sunrise/sunset bit
+             17           Disable Alarm/Sunrise/Sunset at closed switch        -              Alarm/sunrise/sunset bit
+             18           Disable Alarm/Sunrise/Sunset at open switch          -              Alarm/sunrise/sunset bit
+             19           Enable Alarm/Sunrise/Sunset                          -              Alarm/sunrise/sunset bit
+             20           Enable/Disable Alarm/Sunrise/Sunset                  -              Alarm/sunrise/sunset bit
+             21           Disable Alarm/Sunrise/Sunset                         -              Alarm/sunrise/sunset bit
+
+           Bit Number
+                  Contents                      Bit number
+                 B’00000001’              Channel 1 or Alarm1
+                 B’00000010’              Channel 2
+                 B’00000100’              Channel 3 or Alarm2
+                 B’00001000’              Channel 4
+                 B’00010000’              Channel 5 or Sunrise
+                 B’00100000’              Channel 6 or Sunset
+                 B’01000000’              Channel 7
+                 B’10000000’              Channel 8
+
+
+
+
+                                          VMB7IN PROTOCOL – edition 5                                                    32
+Time parameter
+   Time parameter   Timeout
+            0       0s (No timer)
+            1       1s
+            2       2s
+           ...
+          119       1min59s
+          120       2min
+          121       2min15s
+           ...
+          131       4min45s
+          132       5min
+          133       5min30s
+           ...
+          181       29min30s
+          182       30min
+          183       31min
+           ...
+          211       59min
+          212       1h
+          213       1h15min
+           ...
+          227       4h45min
+          228       5h
+          229       5h30min
+           ...
+          237       9h30min
+          238       10h
+          239       11h
+           ...
+          251       23h
+          252       1d
+          253       2d
+          254       3d
+          255       infinite
+
+
+
+
+                         VMB7IN PROTOCOL – edition 5   33
+Address    Contents                                     Address      Contents
+H’0200’    Program step 1 byte1                         H’0201’      Program step 1 byte2
+H’0202’    Program step 1 byte3                         H’0203’      Program step 1 byte4
+H’0204’    Program step 1 byte5                         H’0205’      Program step 1 byte6
+…          ..                                           ..           ..
+H’03E6’    Program step 82 byte1                        H’03E7’      Program step 82 byte2
+H’03E8’    Program step 82 byte3                        H’03E9’      Program step 82 byte4
+H’03EA’    Program step 82 byte5                        H’03EB’      Program step 82 byte6
+
+
+            Contents program byte1             Description
+                 B’000xxxxx’                   Disable program step
+                 B’001xxxxx’                   Absolute time
+                 B’010xxxxx’                   Wake up time 1 + relative time
+                 B’011xxxxx’                   Go to bed time 1 + relative time
+                 B’100xxxxx’                   Wake up time 2 + relative time
+                 B’101xxxxx’                   Go to bed time 2 + relative time
+                 B’110xxxxx’                   Sunrise + relative time
+                 B’111xxxxx’                   Sunset + relative time
+                 B’xxx01111’                   Rel. time = 3h45min
+                      …
+                 B’xxx00001’                   Rel. time = 15min
+                 B’xxx00000’                   Rel. time = 0
+                 B’xxx11111’                   Rel. time = -15min
+                      …
+                 B’xxx10000’                   Rel. time = -4h
+  Remark: Wake up, Go to bed, sunrise & sunset time are only allowed for weekly programs
+
+            Contents program byte2             Description
+                 B’xxxx0000’                   Weekly program
+                 B’xxxx0001’                   January
+                 B’xxxx0010’                   February
+                 B’xxxx0011’                   March
+                 B’xxxx0100’                   April
+                 B’xxxx0101’                   May
+                 B’xxxx0110’                   June
+                 B’xxxx0111’                   July
+                 B’xxxx1000’                   August
+                 B’xxxx1001’                   September
+                 B’xxxx1010’                   October
+                 B’xxxx1011’                   November
+                 B’xxxx1100’                   December
+                 B’xxxx1101’                   Monthly program
+                 B’xxxx1110’                   Monthly program
+                 B’xxxx1111’                   Monthly program
+
+            Contents program byte3             Description
+                 B’xxx00000’                   0h
+                 B’xxx00001’                   1h
+                      …                        …
+                 B’xxx10111’                   23h
+                 B’xx1xxxxx’                   Summer program
+                 B’x1xxxxxx’                   Winter program
+                 B’1xxxxxxx’                   Holiday program
+
+            Contents program byte4             Description
+                 B’xx000000’                   0min
+                 B’xx000001’                   1min
+                      …                        …
+                 B’xx111011’                   59min
+
+
+
+
+                                         VMB7IN PROTOCOL – edition 5                         34
+Contents program byte4             Contents program byte2   Description
+     B’00xxxxxx’                        B’0000xxxx’         Never
+     B’00xxxxxx’                        B’0001xxxx’         Day 1of the month
+     B’00xxxxxx’                        B’0010xxxx’         Day 2of the month
+          …                                  …              …
+     B’01xxxxxx’                        B’1111xxxx’         Day 31of the month
+     B’10xxxxxx’                        B’0000xxxx’         Never
+     B’10xxxxxx’                        B’0001xxxx’         Every Monday
+     B’10xxxxxx’                        B’0010xxxx’         Every Tuesday
+          …                                  …              …
+     B’10xxxxxx’                        B’0111xxxx’         Every Sunday
+     B’10xxxxxx’                        B’1000xxxx’         Every weekend (sa & su)
+     B’10xxxxxx’                        B’1001xxxx’         Every working day (mo…fr)
+     B’10xxxxxx’                        B’1010xxxx’         Every day except Sunday
+     B’10xxxxxx’                        B’1011xxxx’         Every day
+     B’10xxxxxx’                        B’1100xxxx’         Never
+          …                                  …              …
+     B’11xxxxxx’                        B’1111xxxx’         Never
+
+Contents program byte5       Action
+            0                0s25 Pulse
+            1                1s Pulse
+            2                2s Pulse
+           ...               ...
+          119                1min59s Pulse
+          120                2min Pulse
+          121                2min15s Pulse
+           ...               ...
+          131                4min45s Pulse
+          132                5min Pulse
+          133                5min30s Pulse
+           ...               ...
+          181                29min30s Pulse
+          182                30min Pulse
+          183                31min Pulse
+           ...               ...
+          211                59min Pulse
+          212                1h Pulse
+          213                1h15min Pulse
+           ...               ...
+          227                4h45min Pulse
+          228                5h Pulse
+          229                5h30min Pulse
+           ...               ...
+          237                9h30min Pulse
+          238                10h Pulse
+          239                11h Pulse
+           ...               …
+          246                18h Pulse
+          247                Press
+          248                Long Press
+          249                Release
+          250                Lock
+          251                Unlock
+          252                No action
+           …                 …
+          255                No action
+
+
+
+
+                         VMB7IN PROTOCOL – edition 5                                    35
+Contents program byte6       Channel
+     B’00000001’             Channel 1
+     B’00000010’             Channel 2
+     B’00000100’             Channel 3
+     B’00001000’             Channel 4
+     B’00010000’             Channel 5
+     B’00100000’             Channel 6
+     B’01000000’             Channel 7
+     B’10000000’             Channel 8
+
+
+
+
+                         VMB7IN PROTOCOL – edition 5   36
+Address     Contents                                Address      Contents
+H’03EC’     kWh 1 ‘On Alarm value’ low byte         H’03ED’      kWh 1 ‘On Alarm value’ high byte
+H’03EE’     kWh 1 ‘Off Alarm value’ low byte        H’03EF’      kWh 1 ‘Off Alarm value’ high byte
+H’03F0’     kWh 2 ‘On Alarm value’ low byte         H’03F1’      kWh 2 ‘On Alarm value’ high byte
+H’03F2’     kWh 2 ‘Off Alarm value’ low byte        H’03F3’      kWh 2 ‘Off Alarm value’ high byte.
+H’03F4’     kWh 3 ‘On Alarm value’ low byte         H’03F5’      kWh 3 ‘On Alarm value’ high byte
+H’03F6’     kWh 3 ‘Off Alarm value’ low byte        H’03F7’      kWh 3 ‘Off Alarm value’ high byte
+H’03F8’     kWh 4 ‘On Alarm value’ low byte         H’03F9’      kWh 4 ‘On Alarm value’ high byte
+H’03FA’     kWh 4 ‘Off Alarm value’ low byte        H’03FB’      kWh 4 ‘Off Alarm value’ high byte
+H’03FC’     Inverted alarm channels                 H’03FD’      Enabled alarm channels
+H’03FE’     Not used                                H’03FF’      Not used
+
+
+          kWh x ‘On alarm’ : 0x0000…0xFFFF
+          The alarm will be set if the instant power is greater than the ‘on alarm’ power setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          On_Alarm_value = 128*1000*1000*3600 / (On_Alarm_ Power_in_Watt) * Pulses_per_kWh _factor * 210)
+
+          kWh x ‘Off alarm’ : 0x0000…0xFFFF
+          The alarm will be cleared if the instant power is less than the ‘off alarm’ power setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          Off_Alarm_value = 128*1000*1000*3600 / (Off_Alarm_ Power_in_Watt) * Pulses_per_kWh _factor * 210)
+
+          Remark: ‘On alarm power’ must be greater than ‘Off alarm power’
+
+          Inverted alarm channels
+                   Contents                 Bit number
+                 B’0000xxx0’          kWh 1 alarm not inverted
+                 B’0000xxx1’          kWh 1 alarm inverted
+                 B’0000xx0x’          kWh 2 alarm not inverted
+                 B’0000xx1x’          kWh 2 alarm inverted
+                 B’0000x0xx’          kWh 3 alarm not inverted
+                 B’0000x1xx’          kWh 3 alarm inverted
+                 B’00000xxx’          kWh 4 alarm not inverted
+                 B’00001xxx’          kWh 4 alarm inverted
+
+          Enabled alarm channels
+                  Contents                  Bit number
+                B’0000xxx0’           kWh 1 alarm disabled
+                B’0000xxx1’           kWh 1 alarm enabled
+                B’0000xx0x’           kWh 2 alarm disabled
+                B’0000xx1x’           kWh 2 alarm enabled
+                B’0000x0xx’           kWh 3 alarm disabled
+                B’0000x1xx’           kWh 3 alarm enabled
+                B’00000xxx’           kWh 4 alarm disabled
+                B’00001xxx’           kWh 4 alarm enabled
+
+
+
+
+                                       VMB7IN PROTOCOL – edition 5                                       37
+ Memory map for build 1350 or higher:
+
+Address   Contents                                                  Address   Contents
+H’0000’   Channel name character 1                                  H’0001’   Channel 1 name character 2
+...       ...                                                       ...       ...
+H’000E’   Channel 1name character 15                                H’000F’   Channel 1 name character 16
+H’0010’   Channel 2 name character 1                                H’0011’   Channel 2 name character 2
+...       ...                                                       ...       ...
+H’001E’   Channel 2name character 15                                H’001F’   Channel 2 name character 16
+H’0020’   Channel 3 name character 1                                H’0021’   Channel 3 name character 2
+...       ...                                                       ...       ...
+H’002E’   Channel 3name character 15                                H’002F’   Channel 3 name character 16
+H’0030’   Channel 4 name character 1                                H’0031’   Channel 4 name character 2
+...       ...                                                       ...       ...
+H’003E’   Channel 4name character 15                                H’003F’   Channel 4 name character 16
+H’0040’   Channel 5 name character 1                                H’0041’   Channel 5 name character 2
+...       ...                                                       ...       ...
+H’004E’   Channel 5name character 15                                H’004F’   Channel 5 name character 16
+H’0050’   Channel 6 name character 1                                H’0051’   Channel 6 name character 2
+...       ...                                                       ...       ...
+H’005E’   Channel 6name character 15                                H’005F’   Channel 6 name character 16
+H’0060’   Channel 7 name character 1                                H’0061’   Channel 7 name character 2
+...       ...                                                       ...       ...
+H’006E’   Channel 7name character 15                                H’006F’   Channel 7 name character 16
+H’0070’   Channel 8 name character 1                                H’0071’   Channel 8 name character 2
+...       ...                                                       ...       ...
+H’007E’   Channel 8name character 15                                H’007F’   Channel 8 name character 16
+H’0080’   Channel 1 reaction time                                   H’0081’   Channel 2 reaction time
+...       …                                                         ...       ...
+H’0086’   Channel 7 reaction time                                   H’0087’   Channel 8 reaction time
+H’0088’   Channels inverted/non inverted                            H’0089’   Led backlight on/off
+H’008A’   Led backlight intensity                                   H’008C’   Led feedback on/off
+H’008C’   Enable/disable slow blinking led feedback                 H’008D’   Enable/disable fast blinking led feedback
+H’008E’   Enable/disable very fast blinking led feedback            H’008F’   Led intensity
+H’0090’   Program selection (none/summer/winter/holiday)            H’0091’   Channel 8…1 prog disable/enable flags
+H’0092’   Channel 8…1 locked/unlocked flags                         H’0093’   Alarm clock configuration
+H’0094’   Wake up 1 hour (0…23)                                     H’0095’   Wake up 1 minutes (0…59)
+H’0096’   Go to bed 1 hour (0…23)                                   H’0097’   Go to bed 1 minutes (0…59)
+H’0098’   Wake up 2 hour (0…23)                                     H’0099’   Wake up 2 minutes (0…59)
+H’009A’   Go to bed 2 hour (0…23)                                   H’009B’   Go to bed 2 minutes (0…59)
+H’009C’   Channel 1 start function                                  H’009D’   Channel 1 end function
+...       …                                                         ...       ...
+H’00AA’   Channel 8 start function                                  H’00AB’   Channel 8 end function
+H’00AC’   Multi function channels 8…1 auto reset enable             H’00AD’   Dual function channels 8…1 enable
+H’00AE’   Dual function long pressed time                           H’00AF’   Long pressed delay
+H’00B0’   Sunrise hour at 21 December (0…23)                        H’00B1’   Sunrise minutes at 21 December (0…59)
+H’00B2’   Sunrise 21 January – sunrise 5 January (-128’..127’)      H’00B3’   Sunrise 5 February – sunrise 21 January (-128’..127’)
+H’00B4’   Sunrise 21 February – sunrise 5 February (-128’..127’)    H’00B5’   Sunrise 5 March – sunrise 21 February (-128’..127’)
+H’00B6’   Sunrise 21 March – sunrise 5 March (-128’..127’)          H’00B7’   Sunrise 5 April – sunrise 21 March (-128’..127’)
+H’00B8’   Sunrise 21 April – sunrise 5 April (-128’..127’)          H’00B9’   Sunrise 5 May – sunrise 21 April (-128’..127’)
+H’00BA’   Sunrise 21 May – sunrise 5 May (-128’..127’)              H’00BB’   Sunrise 5 June – sunrise 21 May (-128’..127’)
+H’00BC’   Sunrise 21 June – sunrise 5 June (-128’..127’)            H’00BD’   Sunrise 5 July – sunrise 21 June (-128’..127’)
+H’00BE’   Sunrise 21 July – sunrise 5 July (-128’..127’)            H’00BF’   Sunrise 5 August – sunrise 21 July (-128’..127’)
+H’00C0’   Sunrise 21 August – sunrise 5 August (-128’..127’)        H’00C1’   Sunrise 5 September – sunrise 21 August (-128’..127’)
+H’00C2’   Sunrise 21 September – sunrise 5 September (-128..127’)   H’00C3’   Sunrise 5 October – sunrise 21 September (-128’..127’)
+H’00C4’   Sunrise 21 October – sunrise 5 October (-128’..127’)      H’00C5’   Sunrise 5 November – sunrise 21 October (-128’..127’)
+H’00C6’   Sunrise 21 November – sunrise 5 November (-128’..127’)    H’00C7’   Sunrise 5 December – sunrise 21 November (-128’..127’)
+H’00C8’   Sunrise 21 December – sunrise 5 December (-128’..127’)    H’00C9’   Sunrise 5 January – sunrise 21 December (-128’..127’)
+
+
+
+
+                                                VMB7IN PROTOCOL – edition 5                                                  38
+Address   Contents                                                  Address   Contents
+H’00CA’   Sunset hour at 21 December (0…23)                         H’00CB’   Sunset minutes at 21 December (0…59)
+H’00CC’   Sunset 21 January – sunrise 5 January (-128’..127’)       H’00CD’   Sunset 5 February – sunrise 21 January (-128’..127’)
+H’00CE’   Sunset 21 February – sunrise 5 February (-128’..127’)     H’00CF’   Sunset 5 March – sunrise 21 February (-128’..127’)
+H’00D0’   Sunset 21 March – sunrise 5 March (-128’..127’)           H’00D1’   Sunset 5 April – sunrise 21 March (-128’..127’)
+H’00D2’   Sunset 21 April – sunrise 5 April (-128’..127’)           H’00D3’   Sunset 5 May – sunrise 21 April (-128’..127’)
+H’00D4’   Sunset 21 May – sunrise 5 May (-128’..127’)               H’00D5’   Sunset 5 June – sunrise 21 May (-128’..127’)
+H’00D6’   Sunset 21 June – sunrise 5 June (-128’..127’)             H’00D7’   Sunset 5 July – sunrise 21 June (-128’..127’)
+H’00D8’   Sunset 21 July – sunrise 5 July (-128’..127’)             H’00D9’   Sunset 5 August – sunrise 21 July (-128’..127’)
+H’00DA’   Sunset 21 August – sunrise 5 August (-128’..127’)         H’00DA’   Sunset 5 September – sunrise 21 August (-128’..127’)
+H’00DC’   Sunset 21 September – sunrise 5 September (-128’..127’)   H’00DC’   Sunset 5 October – sunrise 21 September (-128’..127’)
+H’00DE’   Sunset 21 October – sunrise 5 October (-128’..127’)       H’00DF’   Sunset 5 November – sunrise 21 October (-128’..127’)
+H’00E0’   Sunset 21 November – sunrise 5 November (-128’..127’)     H’00E1’   Sunset 5 December – sunrise 21 November (-128’..127’)
+H’00E2’   Sunset 21 December – sunrise 5 December (-128’..127’)     H’00E3’   Sunset 5 January – sunrise 21 December (-128’..127’)
+H’00E4’   Pulse per kWh divide by 100 for KWh Counter 1             H’00E5’   Most significant byte of 32bit kWh counter 1
+H’00E6’   Upper byte of 32bit kWh counter 1                         H’00E7’   High byte of 32bit kWh counter 1
+H’00E8’   Low byte of 32bit kWh counter 1                           H’00E9’   Pulse per kWh divide by 100 for KWh Counter 2
+H’00EA’   Most significant byte of 32bit kWh counter 2              H’00EB’   Upper byte of 32bit kWh counter 2
+H’00EC’   High byte of 32bit kWh counter 2                          H’00ED’   Low byte of 32bit kWh counter 2
+H’00EE’   Pulse per kWh divide by 100 for KWh Counter 3             H’00EF’   Most significant byte of 32bit kWh counter 3
+H’00F0’   Upper byte of 32bit kWh counter 3                         H’00F1’   High byte of 32bit kWh counter 3
+H’00F2’   Low byte of 32bit kWh counter 3                           H’00F3’   Pulse per kWh divide by 100 for KWh Counter 4
+H’00F4’   Most significant byte of 32bit kWh counter 4              H’00F5’   Upper byte of 32bit kWh counter 4
+H’00F6’   High byte of 32bit kWh counter 4                          H’00F7’   Low byte of 32bit kWh counter 4
+H’00F8’   kWh counter auto send time interval                       H’00F9’   Current day (1…31)
+H’00FA’   Current month (1…12)                                      H’00FB’   Current year high byte
+H’00FC’   Current year low byte                                     H’00FD’   Module Address
+H’00FE’   Serial number high                                        H’00FF’   Serial number low
+
+     Remark:
+     Unused locations contain H’FF’
+     Do not overwrite the following address location:
+               H’00E5’…H’00E8’                32-bit kWh counter 1
+               H’00EA’…H’00ED’                32-bit kWh counter 2
+               H’00EF’…H’00F2’                32-bit kWh counter 3
+               H’00F4’…H’00F7’                32-bit kWh counter 4
+               H’0090’                        program selection
+               H’0091’                        channel program enable/disable
+               H’0092’                        channel locked/unlocked
+               H’00F9’                        current day of month
+               H’00FA’                        current month
+               H’00FB’ & H’00FC’              current year
+               H’00FD’                        module address
+               H’00FE’ & H’00FF’              module serial number
+     kWh counter input disabled if ‘Pulse per kWh divide by 100’ factor equal to zero
+
+                Valid reaction times
+                         Contents               Reaction time
+                          H’05’                 0.065s
+                          H’4C’                 1s
+                          H’99’                 2s
+                          H’E0’                 3s
+                          H’FF’                 Channel disabled
+
+                Valid long pressed delay (Build 1204 or higher)
+                         Contents             Reaction time
+                          H’40’               0.8s
+                          H’80’               1.6s
+                          H’FF’               Default 0.8s
+
+
+
+
+                                                 VMB7IN PROTOCOL – edition 5                                                 39
+Channels inverted
+       Contents               Led feedback
+     B’xxxxxxx0’              Channel 1 inverted
+     B’xxxxxxx1’              Channel 1 not inverted
+           ...                ...
+     B’0xxxxxxx’              Channel 8 inverted
+     B’1xxxxxxx’              Channel 8 non inverted
+
+Led Backlight on/off
+       Contents               Led backlight
+      B’xxxxxxx0’             Channel 1 off
+      B’xxxxxxx1’             Channel 1 on
+           ...                ...
+      B’0xxxxxxx’             Channel 8 off
+      B’1xxxxxxx’             Channel 8 on
+
+Led backlight intensity
+        Contents              Led backlight intensity
+          H’01’               Minimum
+           ...                ...
+         H’FF’                Maximum
+
+Led feedback on/off
+        Contents              Led feedback
+      B’xxxxxxx0’             Channel 1 off
+      B’xxxxxxx1’             Channel 1 on
+           ...                ...
+      B’0xxxxxxx’             Channel 8 off
+      B’1xxxxxxx’             Channel 8 on
+
+Led intensity (Build 1204 or higher)
+        Contents              Led intensity
+          H’01’               Minimum
+            ...               ...
+          H’40’               Maximum
+
+Slow blinking Led feedback on/off
+        Contents        Slow blinking Led feedback
+      B’xxxxxxx0’           Channel 1 off
+      B’xxxxxxx1’           Channel 1 on
+            ...             ...
+      B’0xxxxxxx’           Channel 8 off
+      B’1xxxxxxx’           Channel 8 on
+
+Fast blinking Led feedback on/off
+         Contents        Fast blinking Led feedback
+       B’xxxxxxx0’           Channel 1 off
+       B’xxxxxxx1’           Channel 1 on
+            ...              ...
+       B’0xxxxxxx’           Channel 8 off
+       B’1xxxxxxx’           Channel 8 on
+
+Very fast blinking Led feedback on/off
+         Contents         Very Fast blinking Led feedback
+      B’xxxxxxx0’            Channel 1 off
+      B’xxxxxxx1’            Channel 1 on
+             ...             ...
+      B’0xxxxxxx’            Channel 8 off
+      B’1xxxxxxx’            Channel 8 on
+
+
+
+
+                              VMB7IN PROTOCOL – edition 5   40
+Program selection
+       Contents            Selected program
+           0                   None
+           1                   Summer
+           2                   Winter
+           3                   Holiday
+
+Channel program disabled
+       Contents        Channel program enabled/disabled
+     B’xxxxxxx0’          Channel 1 programs enabled
+     B’xxxxxxx1’          Channel 1 programs disabled
+           ...            ...
+     B’0xxxxxxx’          Channel 8 programs enabled
+     B’1xxxxxxx’          Channel 8 programs disabled
+
+Channel locked
+       Contents            Channel locked/unlocked
+     B’xxxxxxx0’              Channel 1 unlocked
+     B’xxxxxxx1’              Channel 1 locked
+           ...                ...
+     B’0xxxxxxx’              Channel 8 unlocked
+     B’1xxxxxxx’              Channel 8 locked
+
+Alarm clock configuration
+        Contents        Channel locked/unlocked
+      B’xxxxxxx0’          Alarm 1 disabled
+      B’xxxxxxx1’          Alarm 1 enabled
+      B’0xxxxx0x’          Local alarm 1
+      B’1xxxxx1x’          Global alarm 1
+      B’xxxxx0xx’          Alarm 2 disabled
+      B’xxxxx1xx’          Alarm 2 enabled
+      B’xxxx0xxx’          Local alarm 2
+      B’xxxx1xxx’          Global alarm 2
+      B’xxx0xxxx’          Sunrise disabled
+      B’xxx1xxxx’          Sunrise enabled
+      B’xx0xxxxx’          Sunset disabled
+      B’xx1xxxxx’          Sunset enabled
+      B’x0xxxxxx’          Summer time disabled
+      B’x1xxxxxx’          Summer time enabled
+
+Channel x start/end function
+         Contents              Function
+       B’00000001’             Channel 1
+       B’00000010’             Channel 2
+             ...               ...
+       B’01000000’             Channel 7
+       B’10000000’             Channel 8
+Remark:
+For a normal one function button, the start and end function channel are the same.
+For a multi-function button, the start function channel must be less than the end function. At every press the
+next channel will be send. When the end function channel is reached, the start channel will be send again at
+the next press.
+For a dual function button, the start function channel will be send at a short press or the end function will be
+send at a long press.
+
+
+
+
+                                VMB7IN PROTOCOL – edition 5                                                    41
+Multi function auto reset
+         Contents         Multi function auto reset
+       B’xxxxxxx0’           Channel 1 auto reset disabled
+       B’xxxxxxx1’           Channel 1 auto reset enabled
+            ...              ...
+       B’0xxxxxxx’           Channel 8 auto reset disabled
+       B’1xxxxxxx’           Channel 8 auto reset enabled
+Remark: When auto reset is enabled, the start function will be loaded again after 3 seconds inactivity of the
+channel.
+
+Dual function enable
+         Contents          Dual function
+       B’xxxxxxx0’         Channel 1 dual function disabled
+       B’xxxxxxx1’         Channel 1 dual function enabled
+             ...           ...
+       B’0xxxxxxx’         Channel 8 dual function disabled
+       B’1xxxxxxx’         Channel 8 dual function enabled
+Remark:
+For a dual function button, the start function channel will be send at a short press or the end function will be
+send at a long press.
+The dual function overwrites the multi-function mode.
+
+Valid dual function long pressed times
+        Contents             Long pressed time
+         H’4C’               1s
+          H’99’              2s
+         H’E0’               3s
+
+Pulse per kWh divide by 100
+valid range: bits 5…0: 1…63 (100 … 6300 pulses/kWh)
+                         0 = kWh counter input disabled
+             Bits 7&6: 00 = x1
+                         01 = x2.5
+                         10 = x0.05
+                         11 = x0.01
+
+ kWh counter autosend time interval into seconds
+valid range: 10…255s
+             0…9 = auto send disabled
+
+
+
+
+                                VMB7IN PROTOCOL – edition 5                                                    42
+ Address     Contents                                     Address         Contents
+ H’0100’     Linked Push button 1 module address          H’0101’         Linked Push button 1 bit number
+ H’0102’     Linked Push button 1 action                  H’0103’         Linked Push button 1 time parameter
+ H’0104’     Linked Push button 1 channel parameter       H’0105’         Linked Push button 2 module address
+ H’0106’     Linked Push button 2 bit number              H’0107’         Linked Push button 2 action
+ H’0108’     Linked Push button 2 time parameter          H’0109’         Linked Push button 2 channel parameter
+ H’010A’     …                                            H’010B’         …
+ ...         ...                                          ...             ...
+ ...         …                                            H’01F5’         Linked Push button 50 module address
+ H’01F6’     Linked Push button 50 bit number             H’01F7’         Linked Push button 50 action
+ H’01F8’     Linked Push button 50 time parameter         H’01F9’         Linked Push button 50 channel parameter
+ H’01FA’     Linked Push button 51 module address         H’01FB’         Linked Push button 51 bit number
+ H’01FC’     Linked Push button 51 action                 H’01FD’         Linked Push button 51 time parameter
+ H’01FE’     Linked Push button 51 channel parameter      H’01FF’         Not used
+
+Remark: Unused locations contain H’FF’
+
+           Action
+             Action       Action                                               Time           Bit number
+             number                                                            parameter
+             0            No action                                            -              -
+             1            Lock channel at closed switch                        -              Channel bit
+             2            Lock channel at opened switch                        -              Channel bit
+             3            Lock channel                                         Timeout        Channel bit
+             4            Lock/unlock channel                                  Timeout        Channel bit
+             5            Unlock channel                                       -              Channel bit
+             6            Disable channel program at closed switch             -              Channel bit
+             7            Disable channel program at opened switch             -              Channel bit
+             8            Disable channel program channel                      Timeout        Channel bit
+             9            Disable/enable channel program                       Timeout        Channel bit
+             10           Enable channel program                               -              Channel bit
+             11           Select no programs                                   -              -
+             12           Select summer programs                               -              -
+             13           Select winter programs                               -              -
+             14           Select holiday programs                              -              -
+             15           Enable Alarm/Sunrise/Sunset at closed switch         -              Alarm/sunrise/sunset bit
+             16           Enable Alarm/Sunrise/Sunset at open switch           -              Alarm/sunrise/sunset bit
+             17           Disable Alarm/Sunrise/Sunset at closed switch        -              Alarm/sunrise/sunset bit
+             18           Disable Alarm/Sunrise/Sunset at open switch          -              Alarm/sunrise/sunset bit
+             19           Enable Alarm/Sunrise/Sunset                          -              Alarm/sunrise/sunset bit
+             20           Enable/Disable Alarm/Sunrise/Sunset                  -              Alarm/sunrise/sunset bit
+             21           Disable Alarm/Sunrise/Sunset                         -              Alarm/sunrise/sunset bit
+
+           Bit Number
+                  Contents                      Bit number
+                 B’00000001’              Channel 1 or Alarm1
+                 B’00000010’              Channel 2
+                 B’00000100’              Channel 3 or Alarm2
+                 B’00001000’              Channel 4
+                 B’00010000’              Channel 5 or Sunrise
+                 B’00100000’              Channel 6 or Sunset
+                 B’01000000’              Channel 7
+                 B’10000000’              Channel 8
+
+
+
+
+                                          VMB7IN PROTOCOL – edition 5                                                    43
+Time parameter
+   Time parameter   Timeout
+            0       0s (No timer)
+            1       1s
+            2       2s
+           ...
+          119       1min59s
+          120       2min
+          121       2min15s
+           ...
+          131       4min45s
+          132       5min
+          133       5min30s
+           ...
+          181       29min30s
+          182       30min
+          183       31min
+           ...
+          211       59min
+          212       1h
+          213       1h15min
+           ...
+          227       4h45min
+          228       5h
+          229       5h30min
+           ...
+          237       9h30min
+          238       10h
+          239       11h
+           ...
+          251       23h
+          252       1d
+          253       2d
+          254       3d
+          255       infinite
+
+
+
+
+                         VMB7IN PROTOCOL – edition 5   44
+Address    Contents                                     Address      Contents
+H’0200’    Program step 1 byte1                         H’0201’      Program step 1 byte2
+H’0202’    Program step 1 byte3                         H’0203’      Program step 1 byte4
+H’0204’    Program step 1 byte5                         H’0205’      Program step 1 byte6
+…          ..                                           ..           ..
+H’03E6’    Program step 82 byte1                        H’03E7’      Program step 82 byte2
+H’03E8’    Program step 82 byte3                        H’03E9’      Program step 82 byte4
+H’03EA’    Program step 82 byte5                        H’03EB’      Program step 82 byte6
+
+
+            Contents program byte1             Description
+                 B’000xxxxx’                   Disable program step
+                 B’001xxxxx’                   Absolute time
+                 B’010xxxxx’                   Wake up time 1 + relative time
+                 B’011xxxxx’                   Go to bed time 1 + relative time
+                 B’100xxxxx’                   Wake up time 2 + relative time
+                 B’101xxxxx’                   Go to bed time 2 + relative time
+                 B’110xxxxx’                   Sunrise + relative time
+                 B’111xxxxx’                   Sunset + relative time
+                 B’xxx01111’                   Rel. time = 3h45min
+                      …
+                 B’xxx00001’                   Rel. time = 15min
+                 B’xxx00000’                   Rel. time = 0
+                 B’xxx11111’                   Rel. time = -15min
+                      …
+                 B’xxx10000’                   Rel. time = -4h
+  Remark: Wake up, Go to bed, sunrise & sunset time are only allowed for weekly programs
+
+            Contents program byte2             Description
+                 B’xxxx0000’                   Weekly program
+                 B’xxxx0001’                   January
+                 B’xxxx0010’                   February
+                 B’xxxx0011’                   March
+                 B’xxxx0100’                   April
+                 B’xxxx0101’                   May
+                 B’xxxx0110’                   June
+                 B’xxxx0111’                   July
+                 B’xxxx1000’                   August
+                 B’xxxx1001’                   September
+                 B’xxxx1010’                   October
+                 B’xxxx1011’                   November
+                 B’xxxx1100’                   December
+                 B’xxxx1101’                   Monthly program
+                 B’xxxx1110’                   Monthly program
+                 B’xxxx1111’                   Monthly program
+
+            Contents program byte3             Description
+                 B’xxx00000’                   0h
+                 B’xxx00001’                   1h
+                      …                        …
+                 B’xxx10111’                   23h
+                 B’xx1xxxxx’                   Summer program
+                 B’x1xxxxxx’                   Winter program
+                 B’1xxxxxxx’                   Holiday program
+
+            Contents program byte4             Description
+                 B’xx000000’                   0min
+                 B’xx000001’                   1min
+                      …                        …
+                 B’xx111011’                   59min
+
+
+
+
+                                         VMB7IN PROTOCOL – edition 5                         45
+Contents program byte4             Contents program byte2   Description
+     B’00xxxxxx’                        B’0000xxxx’         Never
+     B’00xxxxxx’                        B’0001xxxx’         Day 1of the month
+     B’00xxxxxx’                        B’0010xxxx’         Day 2of the month
+          …                                  …              …
+     B’01xxxxxx’                        B’1111xxxx’         Day 31of the month
+     B’10xxxxxx’                        B’0000xxxx’         Never
+     B’10xxxxxx’                        B’0001xxxx’         Every Monday
+     B’10xxxxxx’                        B’0010xxxx’         Every Tuesday
+          …                                  …              …
+     B’10xxxxxx’                        B’0111xxxx’         Every Sunday
+     B’10xxxxxx’                        B’1000xxxx’         Every weekend (sa & su)
+     B’10xxxxxx’                        B’1001xxxx’         Every working day (mo…fr)
+     B’10xxxxxx’                        B’1010xxxx’         Every day except Sunday
+     B’10xxxxxx’                        B’1011xxxx’         Every day
+     B’10xxxxxx’                        B’1100xxxx’         Never
+          …                                  …              …
+     B’11xxxxxx’                        B’1111xxxx’         Never
+
+Contents program byte5       Action
+            0                0s25 Pulse
+            1                1s Pulse
+            2                2s Pulse
+           ...               ...
+          119                1min59s Pulse
+          120                2min Pulse
+          121                2min15s Pulse
+           ...               ...
+          131                4min45s Pulse
+          132                5min Pulse
+          133                5min30s Pulse
+           ...               ...
+          181                29min30s Pulse
+          182                30min Pulse
+          183                31min Pulse
+           ...               ...
+          211                59min Pulse
+          212                1h Pulse
+          213                1h15min Pulse
+           ...               ...
+          227                4h45min Pulse
+          228                5h Pulse
+          229                5h30min Pulse
+           ...               ...
+          237                9h30min Pulse
+          238                10h Pulse
+          239                11h Pulse
+           ...               …
+          246                18h Pulse
+          247                Press
+          248                Long Press
+          249                Release
+          250                Lock
+          251                Unlock
+          252                No action
+           …                 …
+          255                No action
+
+
+
+
+                         VMB7IN PROTOCOL – edition 5                                    46
+Contents program byte6       Channel
+     B’00000001’             Channel 1
+     B’00000010’             Channel 2
+     B’00000100’             Channel 3
+     B’00001000’             Channel 4
+     B’00010000’             Channel 5
+     B’00100000’             Channel 6
+     B’01000000’             Channel 7
+     B’10000000’             Channel 8
+
+
+
+
+                         VMB7IN PROTOCOL – edition 5   47
+Address     Contents                                Address      Contents
+H’03EC’     kWh 1 ‘On Alarm value’ low byte         H’03ED’      kWh 1 ‘On Alarm value’ high byte
+H’03EE’     kWh 1 ‘Off Alarm value’ low byte        H’03EF’      kWh 1 ‘Off Alarm value’ high byte
+H’03F0’     kWh 2 ‘On Alarm value’ low byte         H’03F1’      kWh 2 ‘On Alarm value’ high byte
+H’03F2’     kWh 2 ‘Off Alarm value’ low byte        H’03F3’      kWh 2 ‘Off Alarm value’ high byte.
+H’03F4’     kWh 3 ‘On Alarm value’ low byte         H’03F5’      kWh 3 ‘On Alarm value’ high byte
+H’03F6’     kWh 3 ‘Off Alarm value’ low byte        H’03F7’      kWh 3 ‘Off Alarm value’ high byte
+H’03F8’     kWh 4 ‘On Alarm value’ low byte         H’03F9’      kWh 4 ‘On Alarm value’ high byte
+H’03FA’     kWh 4 ‘Off Alarm value’ low byte        H’03FB’      kWh 4 ‘Off Alarm value’ high byte
+H’03FC’     Inverted alarm channels                 H’03FD’      Enabled alarm channels
+H’03FE’     Not used                                H’03FF’      Not used
+
+
+          kWh x ‘On alarm’ : 0x0000…0xFFFF
+          The alarm will be set if the instant power is greater than the ‘on alarm’ power setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          On_Alarm_value = 128*1000*1000*3600 / (On_Alarm_ Power_in_Watt) * Pulses_per_kWh _factor * 210)
+
+          kWh x ‘Off alarm’ : 0x0000…0xFFFF
+          The alarm will be cleared if the instant power is less than the ‘off alarm’ power setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          Off_Alarm_value = 128*1000*1000*3600 / (Off_Alarm_ Power_in_Watt) * Pulses_per_kWh _factor * 210)
+
+          Remark: ‘On alarm power’ must be greater than ‘Off alarm power’
+
+          Inverted alarm channels
+                   Contents                 Bit number
+                 B’0000xxx0’          kWh 1 alarm not inverted
+                 B’0000xxx1’          kWh 1 alarm inverted
+                 B’0000xx0x’          kWh 2 alarm not inverted
+                 B’0000xx1x’          kWh 2 alarm inverted
+                 B’0000x0xx’          kWh 3 alarm not inverted
+                 B’0000x1xx’          kWh 3 alarm inverted
+                 B’00000xxx’          kWh 4 alarm not inverted
+                 B’00001xxx’          kWh 4 alarm inverted
+
+          Enabled alarm channels
+                 Contents                   Bit number
+                B’0000xxx0’           kWh 1 alarm disabled
+                B’0000xxx1’           kWh 1 alarm enabled
+                B’0000xx0x’           kWh 2 alarm disabled
+                B’0000xx1x’           kWh 2 alarm enabled
+                B’0000x0xx’           kWh 3 alarm disabled
+                B’0000x1xx’           kWh 3 alarm enabled
+                B’00000xxx’           kWh 4 alarm disabled
+                B’00001xxx’           kWh 4 alarm enabled
+
+
+
+
+                                       VMB7IN PROTOCOL – edition 5                                       48
+ Memory map version 3 for build 1424 or higher:
+
+Address   Contents                                                  Address   Contents
+H’0000’   Channel name character 1                                  H’0001’   Channel 1 name character 2
+...       ...                                                       ...       ...
+H’000E’   Channel 1name character 15                                H’000F’   Channel 1 name character 16
+H’0010’   Channel 2 name character 1                                H’0011’   Channel 2 name character 2
+...       ...                                                       ...       ...
+H’001E’   Channel 2name character 15                                H’001F’   Channel 2 name character 16
+H’0020’   Channel 3 name character 1                                H’0021’   Channel 3 name character 2
+...       ...                                                       ...       ...
+H’002E’   Channel 3name character 15                                H’002F’   Channel 3 name character 16
+H’0030’   Channel 4 name character 1                                H’0031’   Channel 4 name character 2
+...       ...                                                       ...       ...
+H’003E’   Channel 4name character 15                                H’003F’   Channel 4 name character 16
+H’0040’   Channel 5 name character 1                                H’0041’   Channel 5 name character 2
+...       ...                                                       ...       ...
+H’004E’   Channel 5name character 15                                H’004F’   Channel 5 name character 16
+H’0050’   Channel 6 name character 1                                H’0051’   Channel 6 name character 2
+...       ...                                                       ...       ...
+H’005E’   Channel 6name character 15                                H’005F’   Channel 6 name character 16
+H’0060’   Channel 7 name character 1                                H’0061’   Channel 7 name character 2
+...       ...                                                       ...       ...
+H’006E’   Channel 7name character 15                                H’006F’   Channel 7 name character 16
+H’0070’   Channel 8 name character 1                                H’0071’   Channel 8 name character 2
+...       ...                                                       ...       ...
+H’007E’   Channel 8name character 15                                H’007F’   Channel 8 name character 16
+H’0080’   Channel 1 reaction time                                   H’0081’   Channel 2 reaction time
+...       …                                                         ...       ...
+H’0086’   Channel 7 reaction time                                   H’0087’   Channel 8 reaction time
+H’0088’   Channels inverted/non inverted                            H’0089’   Led backlight on/off
+H’008A’   Led backlight intensity                                   H’008C’   Led feedback on/off
+H’008C’   Enable/disable slow blinking led feedback                 H’008D’   Enable/disable fast blinking led feedback
+H’008E’   Enable/disable very fast blinking led feedback            H’008F’   Led intensity
+H’0090’   Program selection (none/summer/winter/holiday)            H’0091’   Channel 8…1 prog disable/enable flags
+H’0092’   Channel 8…1 locked/unlocked flags                         H’0093’   Alarm clock configuration
+H’0094’   Wake up 1 hour (0…23)                                     H’0095’   Wake up 1 minutes (0…59)
+H’0096’   Go to bed 1 hour (0…23)                                   H’0097’   Go to bed 1 minutes (0…59)
+H’0098’   Wake up 2 hour (0…23)                                     H’0099’   Wake up 2 minutes (0…59)
+H’009A’   Go to bed 2 hour (0…23)                                   H’009B’   Go to bed 2 minutes (0…59)
+H’009C’   Channel 1 start function                                  H’009D’   Channel 1 end function
+...       …                                                         ...       ...
+H’00AA’   Channel 8 start function                                  H’00AB’   Channel 8 end function
+H’00AC’   Multi function channels 8…1 auto reset enable             H’00AD’   Dual function channels 8…1 enable
+H’00AE’   Dual function long pressed time                           H’00AF’   Long pressed delay
+H’00B0’   Sunrise hour at 21 December (0…23)                        H’00B1’   Sunrise minutes at 21 December (0…59)
+H’00B2’   Sunrise 21 January – sunrise 5 January (-128’..127’)      H’00B3’   Sunrise 5 February – sunrise 21 January (-128’..127’)
+H’00B4’   Sunrise 21 February – sunrise 5 February (-128’..127’)    H’00B5’   Sunrise 5 March – sunrise 21 February (-128’..127’)
+H’00B6’   Sunrise 21 March – sunrise 5 March (-128’..127’)          H’00B7’   Sunrise 5 April – sunrise 21 March (-128’..127’)
+H’00B8’   Sunrise 21 April – sunrise 5 April (-128’..127’)          H’00B9’   Sunrise 5 May – sunrise 21 April (-128’..127’)
+H’00BA’   Sunrise 21 May – sunrise 5 May (-128’..127’)              H’00BB’   Sunrise 5 June – sunrise 21 May (-128’..127’)
+H’00BC’   Sunrise 21 June – sunrise 5 June (-128’..127’)            H’00BD’   Sunrise 5 July – sunrise 21 June (-128’..127’)
+H’00BE’   Sunrise 21 July – sunrise 5 July (-128’..127’)            H’00BF’   Sunrise 5 August – sunrise 21 July (-128’..127’)
+H’00C0’   Sunrise 21 August – sunrise 5 August (-128’..127’)        H’00C1’   Sunrise 5 September – sunrise 21 August (-128’..127’)
+H’00C2’   Sunrise 21 September – sunrise 5 September (-128..127’)   H’00C3’   Sunrise 5 October – sunrise 21 September (-128’..127’)
+H’00C4’   Sunrise 21 October – sunrise 5 October (-128’..127’)      H’00C5’   Sunrise 5 November – sunrise 21 October (-128’..127’)
+H’00C6’   Sunrise 21 November – sunrise 5 November (-128’..127’)    H’00C7’   Sunrise 5 December – sunrise 21 November (-128’..127’)
+H’00C8’   Sunrise 21 December – sunrise 5 December (-128’..127’)    H’00C9’   Sunrise 5 January – sunrise 21 December (-128’..127’)
+
+
+
+
+                                                VMB7IN PROTOCOL – edition 5                                                  49
+Address   Contents                                                  Address    Contents
+H’00CA’   Sunset hour at 21 December (0…23)                         H’00CB’    Sunset minutes at 21 December (0…59)
+H’00CC’   Sunset 21 January – sunrise 5 January (-128’..127’)       H’00CD’    Sunset 5 February – sunrise 21 January (-128’..127’)
+H’00CE’   Sunset 21 February – sunrise 5 February (-128’..127’)     H’00CF’    Sunset 5 March – sunrise 21 February (-128’..127’)
+H’00D0’   Sunset 21 March – sunrise 5 March (-128’..127’)           H’00D1’    Sunset 5 April – sunrise 21 March (-128’..127’)
+H’00D2’   Sunset 21 April – sunrise 5 April (-128’..127’)           H’00D3’    Sunset 5 May – sunrise 21 April (-128’..127’)
+H’00D4’   Sunset 21 May – sunrise 5 May (-128’..127’)               H’00D5’    Sunset 5 June – sunrise 21 May (-128’..127’)
+H’00D6’   Sunset 21 June – sunrise 5 June (-128’..127’)             H’00D7’    Sunset 5 July – sunrise 21 June (-128’..127’)
+H’00D8’   Sunset 21 July – sunrise 5 July (-128’..127’)             H’00D9’    Sunset 5 August – sunrise 21 July (-128’..127’)
+H’00DA’   Sunset 21 August – sunrise 5 August (-128’..127’)         H’00DA’    Sunset 5 September – sunrise 21 August (-128’..127’)
+H’00DC’   Sunset 21 September – sunrise 5 September (-128’..127’)   H’00DC’    Sunset 5 October – sunrise 21 September (-128’..127’)
+H’00DE’   Sunset 21 October – sunrise 5 October (-128’..127’)       H’00DF’    Sunset 5 November – sunrise 21 October (-128’..127’)
+H’00E0’   Sunset 21 November – sunrise 5 November (-128’..127’)     H’00E1’    Sunset 5 December – sunrise 21 November (-128’..127’)
+H’00E2’   Sunset 21 December – sunrise 5 December (-128’..127’)     H’00E3’    Sunset 5 January – sunrise 21 December (-128’..127’)
+H’00E4’   Pulse per Units divide by 100 for counter 1               H’00E5’    Most significant byte of 32bit counter 1
+H’00E6’   Upper byte of 32bit counter 1                             H’00E7’    High byte of 32bit counter 1
+H’00E8’   Low byte of 32bit counter 1                               H’00E9’    Pulse per Units divide by 100 for counter 2
+H’00EA’   Most significant byte of 32bit counter 2                  H’00EB’    Upper byte of 32bit counter 2
+H’00EC’   High byte of 32bit counter 2                              H’00ED’    Low byte of 32bit counter 2
+H’00EE’   Pulse per Units divide by 100 for counter 3               H’00EF’    Most significant byte of 32bit counter 3
+H’00F0’   Upper byte of 32bit counter 3                             H’00F1’    High byte of 32bit counter 3
+H’00F2’   Low byte of 32bit counter 3                               H’00F3’    Pulse per Units divide by 100 for counter 4
+H’00F4’   Most significant byte of 32bit counter 4                  H’00F5’    Upper byte of 32bit counter 4
+H’00F6’   High byte of 32bit counter 4                              H’00F7’    Low byte of 32bit counter 4
+H’00F8’   Counter auto send time interval                           H’00F9’    Current day (1…31)
+H’00FA’   Current month (1…12)                                      H’00FB’    Current year high byte
+H’00FC’   Current year low byte                                     H’00FD’    Module Address
+H’00FE’   Serial number high                                        H’00FF’    Serial number low
+
+     Remark:
+     Unused locations contain H’FF’
+     Do not overwrite the following address location:
+                H’00E5’…H’00E8’                 32-bit counter 1
+                H’00EA’…H’00ED’                 32-bit counter 2
+                H’00EF’…H’00F2’                 32-bit counter 3
+                H’00F4’…H’00F7’                 32-bit counter 4
+                H’0090’                         program selection
+                H’0091’                         channel program enable/disable
+                H’0092’                         channel locked/unlocked
+                H’00F9’                         current day of month
+                H’00FA’                         current month
+                H’00FB’ & H’00FC’               current year
+                H’00FD’                         module address
+                H’00FE’ & H’00FF’               module serial number
+     counter input disabled if ‘Pulse per Units divide by 100’ factor equal to zero
+
+                Valid reaction times
+                         Contents               Reaction time
+                          H’05’                 0.065s
+                          H’4C’                 1s
+                          H’99’                 2s
+                          H’E0’                 3s
+                          H’FF’                 Channel disabled
+
+                Valid long pressed delay (Build 1204 or higher)
+                         Contents             Reaction time
+                          H’40’               0.8s
+                          H’80’               1.6s
+                          H’FF’               Default 0.8s
+
+
+
+
+                                                 VMB7IN PROTOCOL – edition 5                                                  50
+Channels inverted
+       Contents               Led feedback
+     B’xxxxxxx0’              Channel 1 inverted
+     B’xxxxxxx1’              Channel 1 not inverted
+           ...                ...
+     B’0xxxxxxx’              Channel 8 inverted
+     B’1xxxxxxx’              Channel 8 non inverted
+
+Led Backlight on/off
+       Contents               Led backlight
+      B’xxxxxxx0’             Channel 1 off
+      B’xxxxxxx1’             Channel 1 on
+           ...                ...
+      B’0xxxxxxx’             Channel 8 off
+      B’1xxxxxxx’             Channel 8 on
+
+Led backlight intensity
+        Contents              Led backlight intensity
+          H’01’               Minimum
+           ...                ...
+         H’FF’                Maximum
+
+Led feedback on/off
+        Contents              Led feedback
+      B’xxxxxxx0’             Channel 1 off
+      B’xxxxxxx1’             Channel 1 on
+           ...                ...
+      B’0xxxxxxx’             Channel 8 off
+      B’1xxxxxxx’             Channel 8 on
+
+Led intensity (Build 1204 or higher)
+        Contents              Led intensity
+          H’01’               Minimum
+            ...               ...
+          H’40’               Maximum
+
+Slow blinking Led feedback on/off
+        Contents        Slow blinking Led feedback
+      B’xxxxxxx0’           Channel 1 off
+      B’xxxxxxx1’           Channel 1 on
+            ...             ...
+      B’0xxxxxxx’           Channel 8 off
+      B’1xxxxxxx’           Channel 8 on
+
+Fast blinking Led feedback on/off
+         Contents        Fast blinking Led feedback
+       B’xxxxxxx0’           Channel 1 off
+       B’xxxxxxx1’           Channel 1 on
+            ...              ...
+       B’0xxxxxxx’           Channel 8 off
+       B’1xxxxxxx’           Channel 8 on
+
+Very fast blinking Led feedback on/off
+         Contents         Very Fast blinking Led feedback
+      B’xxxxxxx0’            Channel 1 off
+      B’xxxxxxx1’            Channel 1 on
+             ...             ...
+      B’0xxxxxxx’            Channel 8 off
+      B’1xxxxxxx’            Channel 8 on
+
+
+
+
+                              VMB7IN PROTOCOL – edition 5   51
+Program selection
+       Contents            Selected program
+           0                   None
+           1                   Summer
+           2                   Winter
+           3                   Holiday
+
+Channel program disabled
+       Contents        Channel program enabled/disabled
+     B’xxxxxxx0’          Channel 1 programs enabled
+     B’xxxxxxx1’          Channel 1 programs disabled
+           ...            ...
+     B’0xxxxxxx’          Channel 8 programs enabled
+     B’1xxxxxxx’          Channel 8 programs disabled
+
+Channel locked
+       Contents            Channel locked/unlocked
+     B’xxxxxxx0’              Channel 1 unlocked
+     B’xxxxxxx1’              Channel 1 locked
+           ...                ...
+     B’0xxxxxxx’              Channel 8 unlocked
+     B’1xxxxxxx’              Channel 8 locked
+
+Alarm clock configuration
+        Contents        Channel locked/unlocked
+      B’xxxxxxx0’          Alarm 1 disabled
+      B’xxxxxxx1’          Alarm 1 enabled
+      B’0xxxxx0x’          Local alarm 1
+      B’1xxxxx1x’          Global alarm 1
+      B’xxxxx0xx’          Alarm 2 disabled
+      B’xxxxx1xx’          Alarm 2 enabled
+      B’xxxx0xxx’          Local alarm 2
+      B’xxxx1xxx’          Global alarm 2
+      B’xxx0xxxx’          Sunrise disabled
+      B’xxx1xxxx’          Sunrise enabled
+      B’xx0xxxxx’          Sunset disabled
+      B’xx1xxxxx’          Sunset enabled
+      B’x0xxxxxx’          Summer time disabled
+      B’x1xxxxxx’          Summer time enabled
+
+Channel x start/end function
+         Contents              Function
+       B’00000001’             Channel 1
+       B’00000010’             Channel 2
+             ...               ...
+       B’01000000’             Channel 7
+       B’10000000’             Channel 8
+Remark:
+For a normal one function button, the start and end function channel are the same.
+For a multi-function button, the start function channel must be less than the end function. At every press the
+next channel will be send. When the end function channel is reached, the start channel will be send again at
+the next press.
+For a dual function button, the start function channel will be send at a short press or the end function will be
+send at a long press.
+
+
+
+
+                                VMB7IN PROTOCOL – edition 5                                                    52
+Multi function auto reset
+         Contents         Multi function auto reset
+       B’xxxxxxx0’           Channel 1 auto reset disabled
+       B’xxxxxxx1’           Channel 1 auto reset enabled
+            ...              ...
+       B’0xxxxxxx’           Channel 8 auto reset disabled
+       B’1xxxxxxx’           Channel 8 auto reset enabled
+Remark: When auto reset is enabled, the start function will be loaded again after 3 seconds inactivity of the
+channel.
+
+Dual function enable
+         Contents          Dual function
+       B’xxxxxxx0’         Channel 1 dual function disabled
+       B’xxxxxxx1’         Channel 1 dual function enabled
+             ...           ...
+       B’0xxxxxxx’         Channel 8 dual function disabled
+       B’1xxxxxxx’         Channel 8 dual function enabled
+Remark:
+For a dual function button, the start function channel will be send at a short press or the end function will be
+send at a long press.
+The dual function overwrites the multi-function mode.
+
+Valid dual function long pressed times
+        Contents             Long pressed time
+         H’4C’               1s
+          H’99’              2s
+         H’E0’               3s
+
+Pulse per Units divide by 100
+valid range: bits 5…0: 1…63 (100 … 6300 pulses/Units)
+                          0 = counter input disabled
+             Bits 7&6: 00 = x1
+                          01 = x2.5
+                          10 = x0.05
+                          11 = x0.01
+
+Counter auto send time interval into seconds
+valid range: 10…255s fixed interval
+             5…9 = auto send on change with 5s as minimum interval
+             1…4 = auto send on change disabled
+             0 = no change on auto send interval
+
+
+
+
+                                VMB7IN PROTOCOL – edition 5                                                    53
+ Address     Contents                                     Address         Contents
+ H’0100’     Linked Push button 1 module address          H’0101’         Linked Push button 1 bit number
+ H’0102’     Linked Push button 1 action                  H’0103’         Linked Push button 1 time parameter
+ H’0104’     Linked Push button 1 channel parameter       H’0105’         Linked Push button 2 module address
+ H’0106’     Linked Push button 2 bit number              H’0107’         Linked Push button 2 action
+ H’0108’     Linked Push button 2 time parameter          H’0109’         Linked Push button 2 channel parameter
+ H’010A’     …                                            H’010B’         …
+ ...         ...                                          ...             ...
+ ...         …                                            H’01F5’         Linked Push button 50 module address
+ H’01F6’     Linked Push button 50 bit number             H’01F7’         Linked Push button 50 action
+ H’01F8’     Linked Push button 50 time parameter         H’01F9’         Linked Push button 50 channel parameter
+ H’01FA’     Linked Push button 51 module address         H’01FB’         Linked Push button 51 bit number
+ H’01FC’     Linked Push button 51 action                 H’01FD’         Linked Push button 51 time parameter
+ H’01FE’     Linked Push button 51 channel parameter      H’01FF’         Not used
+
+Remark: Unused locations contain H’FF’
+
+           Action
+             Action       Action                                               Time           Bit number
+             number                                                            parameter
+             0            No action                                            -              -
+             1            Lock channel at closed switch                        -              Channel bit
+             2            Lock channel at opened switch                        -              Channel bit
+             3            Lock channel                                         Timeout        Channel bit
+             4            Lock/unlock channel                                  Timeout        Channel bit
+             5            Unlock channel                                       -              Channel bit
+             6            Disable channel program at closed switch             -              Channel bit
+             7            Disable channel program at opened switch             -              Channel bit
+             8            Disable channel program channel                      Timeout        Channel bit
+             9            Disable/enable channel program                       Timeout        Channel bit
+             10           Enable channel program                               -              Channel bit
+             11           Select no programs                                   -              -
+             12           Select summer programs                               -              -
+             13           Select winter programs                               -              -
+             14           Select holiday programs                              -              -
+             15           Enable Alarm/Sunrise/Sunset at closed switch         -              Alarm/sunrise/sunset bit
+             16           Enable Alarm/Sunrise/Sunset at open switch           -              Alarm/sunrise/sunset bit
+             17           Disable Alarm/Sunrise/Sunset at closed switch        -              Alarm/sunrise/sunset bit
+             18           Disable Alarm/Sunrise/Sunset at open switch          -              Alarm/sunrise/sunset bit
+             19           Enable Alarm/Sunrise/Sunset                          -              Alarm/sunrise/sunset bit
+             20           Enable/Disable Alarm/Sunrise/Sunset                  -              Alarm/sunrise/sunset bit
+             21           Disable Alarm/Sunrise/Sunset                         -              Alarm/sunrise/sunset bit
+
+           Bit Number
+                  Contents                      Bit number
+                 B’00000001’              Channel 1 or Alarm1
+                 B’00000010’              Channel 2
+                 B’00000100’              Channel 3 or Alarm2
+                 B’00001000’              Channel 4
+                 B’00010000’              Channel 5 or Sunrise
+                 B’00100000’              Channel 6 or Sunset
+                 B’01000000’              Channel 7
+                 B’10000000’              Channel 8
+
+
+
+
+                                          VMB7IN PROTOCOL – edition 5                                                    54
+Time parameter
+   Time parameter   Timeout
+            0       0s (No timer)
+            1       1s
+            2       2s
+           ...
+          119       1min59s
+          120       2min
+          121       2min15s
+           ...
+          131       4min45s
+          132       5min
+          133       5min30s
+           ...
+          181       29min30s
+          182       30min
+          183       31min
+           ...
+          211       59min
+          212       1h
+          213       1h15min
+           ...
+          227       4h45min
+          228       5h
+          229       5h30min
+           ...
+          237       9h30min
+          238       10h
+          239       11h
+           ...
+          251       23h
+          252       1d
+          253       2d
+          254       3d
+          255       infinite
+
+
+
+
+                         VMB7IN PROTOCOL – edition 5   55
+Address    Contents                                     Address      Contents
+H’0200’    Program step 1 byte1                         H’0201’      Program step 1 byte2
+H’0202’    Program step 1 byte3                         H’0203’      Program step 1 byte4
+H’0204’    Program step 1 byte5                         H’0205’      Program step 1 byte6
+…          ..                                           ..           ..
+H’039E’    Program step 70 byte1                        H’039F’      Program step 70 byte2
+H’03A0’    Program step 70 byte3                        H’03A1’      Program step 70 byte4
+H’03A2’    Program step 70 byte5                        H’03A3’      Program step 70 byte6
+H’03A4’    Not used                                     H’03A5’      Not used
+H’03A6’    Not used                                     H’03A7’      Not used
+
+
+            Contents program byte1             Description
+                 B’000xxxxx’                   Disable program step
+                 B’001xxxxx’                   Absolute time
+                 B’010xxxxx’                   Wake up time 1 + relative time
+                 B’011xxxxx’                   Go to bed time 1 + relative time
+                 B’100xxxxx’                   Wake up time 2 + relative time
+                 B’101xxxxx’                   Go to bed time 2 + relative time
+                 B’110xxxxx’                   Sunrise + relative time
+                 B’111xxxxx’                   Sunset + relative time
+                 B’xxx01111’                   Rel. time = 3h45min
+                      …
+                 B’xxx00001’                   Rel. time = 15min
+                 B’xxx00000’                   Rel. time = 0
+                 B’xxx11111’                   Rel. time = -15min
+                      …
+                 B’xxx10000’                   Rel. time = -4h
+  Remark: Wake up, Go to bed, sunrise & sunset time are only allowed for weekly programs
+
+            Contents program byte2             Description
+                 B’xxxx0000’                   Weekly program
+                 B’xxxx0001’                   January
+                 B’xxxx0010’                   February
+                 B’xxxx0011’                   March
+                 B’xxxx0100’                   April
+                 B’xxxx0101’                   May
+                 B’xxxx0110’                   June
+                 B’xxxx0111’                   July
+                 B’xxxx1000’                   August
+                 B’xxxx1001’                   September
+                 B’xxxx1010’                   October
+                 B’xxxx1011’                   November
+                 B’xxxx1100’                   December
+                 B’xxxx1101’                   Monthly program
+                 B’xxxx1110’                   Monthly program
+                 B’xxxx1111’                   Monthly program
+
+            Contents program byte3             Description
+                 B’xxx00000’                   0h
+                 B’xxx00001’                   1h
+                      …                        …
+                 B’xxx10111’                   23h
+                 B’xx1xxxxx’                   Summer program
+                 B’x1xxxxxx’                   Winter program
+                 B’1xxxxxxx’                   Holiday program
+
+            Contents program byte4             Description
+                 B’xx000000’                   0min
+                 B’xx000001’                   1min
+                      …                        …
+                 B’xx111011’                   59min
+
+
+                                         VMB7IN PROTOCOL – edition 5                         56
+Contents program byte4             Contents program byte2   Description
+     B’00xxxxxx’                        B’0000xxxx’         Never
+     B’00xxxxxx’                        B’0001xxxx’         Day 1of the month
+     B’00xxxxxx’                        B’0010xxxx’         Day 2of the month
+          …                                  …              …
+     B’01xxxxxx’                        B’1111xxxx’         Day 31of the month
+     B’10xxxxxx’                        B’0000xxxx’         Never
+     B’10xxxxxx’                        B’0001xxxx’         Every Monday
+     B’10xxxxxx’                        B’0010xxxx’         Every Tuesday
+          …                                  …              …
+     B’10xxxxxx’                        B’0111xxxx’         Every Sunday
+     B’10xxxxxx’                        B’1000xxxx’         Every weekend (sa & su)
+     B’10xxxxxx’                        B’1001xxxx’         Every working day (mo…fr)
+     B’10xxxxxx’                        B’1010xxxx’         Every day except Sunday
+     B’10xxxxxx’                        B’1011xxxx’         Every day
+     B’10xxxxxx’                        B’1100xxxx’         Never
+          …                                  …              …
+     B’11xxxxxx’                        B’1111xxxx’         Never
+
+Contents program byte5       Action
+            0                0s25 Pulse
+            1                1s Pulse
+            2                2s Pulse
+           ...               ...
+          119                1min59s Pulse
+          120                2min Pulse
+          121                2min15s Pulse
+           ...               ...
+          131                4min45s Pulse
+          132                5min Pulse
+          133                5min30s Pulse
+           ...               ...
+          181                29min30s Pulse
+          182                30min Pulse
+          183                31min Pulse
+           ...               ...
+          211                59min Pulse
+          212                1h Pulse
+          213                1h15min Pulse
+           ...               ...
+          227                4h45min Pulse
+          228                5h Pulse
+          229                5h30min Pulse
+           ...               ...
+          237                9h30min Pulse
+          238                10h Pulse
+          239                11h Pulse
+           ...               …
+          246                18h Pulse
+          247                Press
+          248                Long Press
+          249                Release
+          250                Lock
+          251                Unlock
+          252                No action
+           …                 …
+          255                No action
+
+
+
+
+                         VMB7IN PROTOCOL – edition 5                                    57
+Contents program byte6       Channel
+     B’00000001’             Channel 1
+     B’00000010’             Channel 2
+     B’00000100’             Channel 3
+     B’00001000’             Channel 4
+     B’00010000’             Channel 5
+     B’00100000’             Channel 6
+     B’01000000’             Channel 7
+     B’10000000’             Channel 8
+
+
+
+
+                         VMB7IN PROTOCOL – edition 5   58
+Address   Contents                               Address   Contents
+H’03A8’   Location id low byte                   H’03A9’   Location id high byte
+H’03AA’   Group id low byte                      H’03AB’   Group id high byte
+H’03AC’   Module name character 1                H’03AD    Module name character 2
+                                                 1’
+…         ..                                     ..        ..
+H’03EA’   Module name character 63               H’03EB’   Module name character 64
+
+
+
+
+                                     VMB7IN PROTOCOL – edition 5                      59
+Address     Contents                                     Address       Contents
+H’03EC’     Counter 1 ‘On Alarm value’ low byte          H’03ED’       Counter 1 ‘On Alarm value’ high byte
+H’03EE’     Counter 1 ‘Off Alarm value’ low byte         H’03EF’       Counter 1 ‘Off Alarm value’ high byte
+H’03F0’     Counter 2 ‘On Alarm value’ low byte          H’03F1’       Counter 2 ‘On Alarm value’ high byte
+H’03F2’     Counter 2 ‘Off Alarm value’ low byte         H’03F3’       Counter 2 ‘Off Alarm value’ high byte.
+H’03F4’     Counter 3 ‘On Alarm value’ low byte          H’03F5’       Counter 3 ‘On Alarm value’ high byte
+H’03F6’     Counter 3 ‘Off Alarm value’ low byte         H’03F7’       Counter 3 ‘Off Alarm value’ high byte
+H’03F8’     Counter 4 ‘On Alarm value’ low byte          H’03F9’       Counter 4 ‘On Alarm value’ high byte
+H’03FA’     Counter 4 ‘Off Alarm value’ low byte         H’03FB’       Counter 4 ‘Off Alarm value’ high byte
+H’03FC’     Inverted alarm channels                      H’03FD’       Enabled alarm channels
+H’03FE’     Counter units                                H’03FF’       Module terminator
+
+
+          Power x ‘On alarm’in Watt: 0x0001…0xFFFF
+          The alarm will be set if the instant power is greater than the ‘on alarm’ power setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          On_Alarm_value = 128*1000*1000*3600 / (On_Alarm_ Power_in_Watt) * Pulses_per_kWh _factor *Multiplier* 210)
+
+          Flow x ‘On alarm’ in m3/h : 0x0001…0xFFFF
+          The alarm will be set if the instant flow is greater than the ‘on alarm’ flow setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          On_Alarm_value = 128*1000*3600 / (On_Alarm_ Flow_in_m3perhour) * Pulses_per_m3 _factor *Multiplier* 210)
+
+          Flow x ‘On alarm’ in l/h : 0x0001…0xFFFF
+          The alarm will be set if the instant flow is greater than the ‘on alarm’ flow setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          On_Alarm_value = 128*1000*3600 / (On_Alarm_ Flow_in_literperhour) * Pulses_per_m3 _factor *Multiplier* 210)
+
+
+          Power x ‘Off alarm’ in Watt: 0x0001…0xFFFF
+          The alarm will be cleared if the instant power is less than the ‘off alarm’ power setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          Off_Alarm_value = 128*1000*1000*3600 / (Off_Alarm_ Power_in_Watt) * Pulses_per_kWh _factor *Multiplier* 210)
+
+          Flow x ‘Off alarm’ in m3/h: 0x0001…0xFFFF
+          The alarm will be cleared if the instant flow is less than the ‘off alarm’ flow setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          Off_Alarm_value = 128*1000*3600 / (Off_Alarm_ Flow_in_m3perhour) * Pulses_per_m3 _factor * Multiplier*210)
+
+          Flow x ‘Off alarm’ in l/h: 0x0001…0xFFFF
+          The alarm will be cleared if the instant flow is less than the ‘off alarm’ flow setting.
+          The ‘on alarm value’ for storing into the memory map must be calculated :
+          Off_Alarm_value = 128*1000*3600 / (Off_Alarm_ Flow_in_lperhour) * Pulses_per_l _factor * Multiplier*210)
+
+
+          Remark: ‘On alarm power’ must be greater than ‘Off alarm power’
+
+          Inverted alarm channels
+                   Contents                     Bit number
+                 B’0000xxx0’              Counter 1 alarm not inverted
+                 B’0000xxx1’              Counter 1 alarm inverted
+                 B’0000xx0x’              Counter 2 alarm not inverted
+                 B’0000xx1x’              Counter 2 alarm inverted
+                 B’0000x0xx’              Counter 3 alarm not inverted
+                 B’0000x1xx’              Counter 3 alarm inverted
+                 B’00000xxx’              Counter 4 alarm not inverted
+                 B’00001xxx’              Counter 4 alarm inverted
+
+
+
+
+                                          VMB7IN PROTOCOL – edition 5                                                   60
+Enabled alarm channels
+        Contents               Bit number
+      B’0000xxx0’        Counter 1 alarm disabled
+      B’0000xxx1’        Counter 1 alarm enabled
+      B’0000xx0x’        Counter 2 alarm disabled
+      B’0000xx1x’        Counter 2 alarm enabled
+      B’0000x0xx’        Counter 3 alarm disabled
+      B’0000x1xx’        Counter 3 alarm enabled
+      B’00000xxx’        Counter 4 alarm disabled
+      B’00001xxx’        Counter 4 alarm enabled
+
+Counter units
+        Contents              Counter unit
+     B’xxxxxx00’         Counter 1: reserved
+     B’xxxxxx01’         Counter 1: liter
+     B’xxxxxx10’         Counter 1: m3
+     B’xxxxxx11’         Counter 1: kWh (default)
+     B’xxxx00xx’         Counter 2: reserved
+     B’xxxx01xx’         Counter 2: liter
+     B’xxxx10xx’         Counter 2: m3
+     B’xxxx11xx’         Counter 2: kWh (default)
+     B’xx00xxxx’         Counter 3: reserved
+     B’xx01xxxx’         Counter 3: liter
+     B’xx10xxxx’         Counter 3: m3
+     B’xx11xxxx’         Counter 3: kWh (default)
+     B’00xxxxxx’         Counter 4: reserved
+     B’01xxxxxx’         Counter 4: liter
+     B’10xxxxxx’         Counter 4: m3
+     B’11xxxxxx’         Counter 4: kWh (default)
+
+
+
+
+                         VMB7IN PROTOCOL – edition 5   61
 

@@ -5,7 +5,7 @@ load connections for VELBUS system
 
 
 
-            VMB1RYLD PROTOCOL – edition 4   1
+            VMB4RYLD PROTOCOL – edition 5   1
 Binairy format:
 <SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC14...CRC1-CRCDEL-ACK-ACKDEL-
 EOF7...EOF1-IFS3...IFS1>
@@ -68,7 +68,7 @@ The relay module can receive the following commands:
 
 
 
-                                          VMB1RYLD PROTOCOL – edition 4                          2
+                                          VMB4RYLD PROTOCOL – edition 5                          2
      Module type request
      Bus error counter status request
      Relay name request
@@ -136,7 +136,7 @@ Transmit: Blinks LEDs fast on a push button module:
 
 
 
-                                               VMB1RYLD PROTOCOL – edition 4                                          3
+                                               VMB4RYLD PROTOCOL – edition 5                                          3
 Transmit: Blinks LEDs very fast on a push button module:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address of the push button module for very fast blinking LEDs
@@ -163,7 +163,7 @@ Transmits the relay status:
     DLC3...DLC0 = 8 databytes to send
     DATABYTE1 = COMMAND_RELAY_STATUS (H’FB’)
     DATABYTE2 = Relay bit number
-                       Contents       Relay number
+                        Contents      Relay number
                   B’00000001’         Channel 1
                   B’00000010’         Channel 2
                   B’00000100’         Channel 3
@@ -176,7 +176,7 @@ Transmits the relay status:
                     B’xxxxxx10’       Channel forced on
                     B’xxxxxx11’       Channel disabled
     DATABYTE4 = Relay status
-                       Contents       Relay status
+                        Contents      Relay status
                   B’xxxxxx00’         Relay channel off
                   B’xxxxxx01’         Relay channel on
                   B’xxxxxx11’         Relay channel interval timer on
@@ -197,7 +197,7 @@ Transmits the relay status:
 
 
 
-                                          VMB1RYLD PROTOCOL – edition 4           4
+                                          VMB4RYLD PROTOCOL – edition 5           4
 Transmits the module type:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -250,11 +250,11 @@ Transmits the first part of the relay name:
     DATABYTE1 = COMMAND_RELAY_NAME_PART1 (H’F0’)
     DATABYTE2 = Relay bit number
                         Contents         Relay number
-                   B’00000001’           Channel 1
-                   B’00000010’           Channel 2
-                   B’00000100’           Channel 3
-                   B’00001000’           Channel 4
-                   B’00010000’           Virtual channel 5
+                    B’00000001’          Channel 1
+                    B’00000010’          Channel 2
+                    B’00000100’          Channel 3
+                    B’00001000’          Channel 4
+                    B’00010000’          Virtual channel 5
     DATABYTE3 = Character 1 of the relay name
     DATABYTE4 = Character 2 of the relay name
     DATABYTE5 = Character 3 of the relay name
@@ -265,7 +265,7 @@ Transmits the first part of the relay name:
 
 
 
-                                          VMB1RYLD PROTOCOL – edition 4   5
+                                          VMB4RYLD PROTOCOL – edition 5   5
 Transmits the second part of the relay name:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -310,7 +310,7 @@ Transmits the third part of the relay name:
 
 
 
-                                      VMB1RYLD PROTOCOL – edition 4   6
+                                      VMB4RYLD PROTOCOL – edition 5   6
 ‘Push button status’ received:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Module address
@@ -330,18 +330,18 @@ Transmits the third part of the relay name:
     DATABYTE2 = LEDs to clear (a one clears the corresponding LED)
 
 ‘Switch relay off’ command received:
-   SID10-SID9 = 00 (highest priority)
-   SID8...SID1 = Module address
-   RTR = 0
-   DLC3...DLC0 = 2 databytes received
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
     DATABYTE1 = COMMAND_SWITCH_RELAY_OFF (H’01’)
     DATABYTE2 = Relay bit number
-                        Contents      Relay number
-                    B’00000001’       Channel 1
-                    B’00000010’       Channel 2
-                    B’00000100’       Channel 3
-                    B’00001000’       Channel 4
-                    B’00010000’       Virtual channel 5
+                        Contents       Relay number
+                    B’00000001’        Channel 1
+                    B’00000010’        Channel 2
+                    B’00000100’        Channel 3
+                    B’00001000’        Channel 4
+                    B’00010000’        Virtual channel 5
 
 ‘Switch relay on’ command received:
     SID10-SID9 = 00 (highest priority)
@@ -377,7 +377,7 @@ Transmits the third part of the relay name:
 
 
 
-                                         VMB1RYLD PROTOCOL – edition 4      7
+                                         VMB4RYLD PROTOCOL – edition 5      7
    Remark:
    [DATABYTE3][DATABYTE4][DATABYTE5] contain a 24-bit time in seconds
    The command will be skipped when the time parameter contains zero.
@@ -444,7 +444,7 @@ Transmits the third part of the relay name:
 
 
 
-                                         VMB1RYLD PROTOCOL – edition 4                       8
+                                         VMB4RYLD PROTOCOL – edition 5                       8
 ‘Forced on’ command received (Build 1105 or higher):
    SID10-SID9 = 00 (highest priority)
    SID8...SID1 = Module address
@@ -507,7 +507,7 @@ Transmits the third part of the relay name:
 
 
 
-                                           VMB1RYLD PROTOCOL – edition 4                                           9
+                                           VMB4RYLD PROTOCOL – edition 5                                           9
 ‘Cancel inhibit’ command received (Build 1105 or higher):
    SID10-SID9 = 00 (highest priority)
    SID8...SID1 = Module address
@@ -574,7 +574,7 @@ Transmits the third part of the relay name:
 
 
 
-                                          VMB1RYLD PROTOCOL – edition 4   10
+                                          VMB4RYLD PROTOCOL – edition 5   10
 ‘Read data block from memory’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -638,7 +638,7 @@ Transmits the third part of the relay name:
 
 
 
-                                         VMB1RYLD PROTOCOL – edition 4                  11
+                                         VMB4RYLD PROTOCOL – edition 5                  11
 ‘Write module address & serial number’ command received:
     SID10-SID9 = 01 (firmware priority)
     SID8...SID1 = Current module address
@@ -655,19 +655,19 @@ Transmits the third part of the relay name:
 
 
 
-                                 VMB1RYLD PROTOCOL – edition 4   12
+                                 VMB4RYLD PROTOCOL – edition 5   12
 Memory map Build 1026:
 
    Address   Contents                                   Address   Contents
    H’0000’   Push button 1 module address               H’0001’   Push button 1 bit number
-   H’0002’   Push button 1 action fo channel 1          H’0003’   Push button 1 first time parameter
+   H’0002’   Push button 1 action for channel 1         H’0003’   Push button 1 first time parameter
    H’0004’   Push button 1 second time parameter        H’0005’   Push button 1 third time parameter
    H’0006’   Push button 2 module address               H’0007’   Push button 2 bit number
-   H’0008’   Push button 2 action fo channel 1          H’0009’   Push button 2 first time parameter
+   H’0008’   Push button 2 action for channel 1         H’0009’   Push button 2 first time parameter
    H’000A’   Push button 2 second time parameter        H’000B’   Push button 2 third time parameter
    ...       ...                                        ...       ...
    H’00E4’   Push button 39 module address              H’00E5’   Push button 39 bit number
-   H’00E6’   Push button 39 action fo channel 1         H’00E7’   Push button 39 first time parameter
+   H’00E6’   Push button 39 action for channel 1        H’00E7’   Push button 39 first time parameter
    H’00E8’   Push button 39 second time parameter       H’00E9’   Push button 39 third time parameter
    H’00EA’   Normal open or normal closed contact CH1   H’00EB’   Not used
    H’00EC’   Not used                                   H’00ED’   Not used
@@ -678,14 +678,14 @@ Transmits the third part of the relay name:
 
    Address   Contents                                   Address   Contents
    H’0100’   Push button 1 module address               H’0101’   Push button 1 bit number
-   H’0102’   Push button 1 action fo channel 2          H’0103’   Push button 1 first time parameter
+   H’0102’   Push button 1 action for channel 2         H’0103’   Push button 1 first time parameter
    H’0104’   Push button 1 second time parameter        H’0105’   Push button 1 third time parameter
    H’0106’   Push button 2 module address               H’0107’   Push button 2 bit number
-   H’0108’   Push button 2 action fo channel 2          H’0109’   Push button 2 first time parameter
+   H’0108’   Push button 2 action for channel 2         H’0109’   Push button 2 first time parameter
    H’010A’   Push button 2 second time parameter        H’010B’   Push button 2 third time parameter
    ...       ...                                        ...       ...
    H’01E4’   Push button 39 module address              H’01E5’   Push button 39 bit number
-   H’01E6’   Push button 39 action fo channel 2         H’01E7’   Push button 39 first time parameter
+   H’01E6’   Push button 39 action for channel 2        H’01E7’   Push button 39 first time parameter
    H’01E8’   Push button 39 second time parameter       H’01E9’   Push button 39 third time parameter
    H’01EA’   Normal open or normal closed contact CH2   H’01EB’   Not used
    H’01EC’   Not used                                   H’01ED’   Not used
@@ -696,14 +696,14 @@ Transmits the third part of the relay name:
 
    Address   Contents                                   Address   Contents
    H’0200’   Push button 1 module address               H’0201’   Push button 1 bit number
-   H’0202’   Push button 1 action fo channel 3          H’0203’   Push button 1 first time parameter
+   H’0202’   Push button 1 action for channel 3         H’0203’   Push button 1 first time parameter
    H’0204’   Push button 1 second time parameter        H’0205’   Push button 1 third time parameter
    H’0206’   Push button 2 module address               H’0207’   Push button 2 bit number
-   H’0208’   Push button 2 action fo channel 3          H’0209’   Push button 2 first time parameter
+   H’0208’   Push button 2 action for channel 3         H’0209’   Push button 2 first time parameter
    H’020A’   Push button 2 second time parameter        H’020B’   Push button 2 third time parameter
    ...       ...                                        ...       ...
    H’02E4’   Push button 39 module address              H’02E5’   Push button 39 bit number
-   H’02E6’   Push button 39 action fo channel 3         H’02E7’   Push button 39 first time parameter
+   H’02E6’   Push button 39 action for channel 3        H’02E7’   Push button 39 first time parameter
    H’02E8’   Push button 39 second time parameter       H’02E9’   Push button 39 third time parameter
    H’02EA’   Normal open or normal closed contact CH3   H’02EB’   Not used
    H’02EC’   Not used                                   H’02ED’   Not used
@@ -715,17 +715,17 @@ Transmits the third part of the relay name:
 
 
 
-                                       VMB1RYLD PROTOCOL – edition 4                                    13
+                                       VMB4RYLD PROTOCOL – edition 5                                    13
       Address      Contents                                      Address   Contents
       H’0300’      Push button 1 module address                  H’0301’   Push button 1 bit number
-      H’0302’      Push button 1 action fo channel 4             H’0303’   Push button 1 first time parameter
+      H’0302’      Push button 1 action for channel 4            H’0303’   Push button 1 first time parameter
       H’0304’      Push button 1 second time parameter           H’0305’   Push button 1 third time parameter
       H’0306’      Push button 2 module address                  H’0307’   Push button 2 bit number
-      H’0308’      Push button 2 action fo channel 4             H’0309’   Push button 2 first time parameter
+      H’0308’      Push button 2 action for channel 4            H’0309’   Push button 2 first time parameter
       H’030A’      Push button 2 second time parameter           H’030B’   Push button 2 third time parameter
       ...          ...                                           ...       ...
       H’03E4’      Push button 39 module address                 H’03E5’   Push button 39 bit number
-      H’03E6’      Push button 39 action fo channel 4            H’03E7’   Push button 39 first time parameter
+      H’03E6’      Push button 39 action for channel 4           H’03E7’   Push button 39 first time parameter
       H’03E8’      Push button 39 second time parameter          H’03E9’   Push button 39 third time parameter
       H’03EA’      Normal open or normal closed contact CH4      H’03EB’   Not used
       H’03EC’      Not used                                      H’03ED’   Not used
@@ -750,9 +750,6 @@ Transmits the third part of the relay name:
       H’04EA’      Normal open or normal closed contact CH5      H’04EB’   Not used
       H’04EC’      Not used                                      H’04ED’   Not used
       H’04EE’      Not used                                      H’04EF’   Not used
-      H’04EA’      Push button 40 module address                 H’04EB’   Push button 40 bit number
-      H’04EC’      Push button 40 action for virtual channel 5   H’04ED’   Push button 40 first time parameter
-      H’04EE’      Push button 40 second time parameter          H’04EF’   Push button 40 third time parameter
       H’04F0’      Virtual relay channel 5 name character 1      H’04F1’   Virtual relay channel 5 name character 2
       ...          ...                                           ...       ...
       H’04FE’      Virtual relay channel 5name character 15      H’04FF’   Virtual relay channel 5 name character 16
@@ -767,7 +764,7 @@ Normal open or normal closed contact:
 
 
 
-                                               VMB1RYLD PROTOCOL – edition 4                                           14
+                                               VMB4RYLD PROTOCOL – edition 5                                           14
 Action   Description                                    First time parameter   Second time parameter   Third time parameter
 H’00’    Momentary                                      H’FF’                  H’FF’                   H’FF’
 H’01’    Off                                            H’FF’                  H’FF’                   H’FF’
@@ -813,7 +810,7 @@ H’27’    Cancel inhibit at pressing push button         H’FF’           
 
 
 
-                                               VMB1RYLD PROTOCOL – edition 4                                            15
+                                               VMB4RYLD PROTOCOL – edition 5                                             15
 Time parameter   Time
 0                No timer
 1                1s
@@ -852,5 +849,225 @@ H’27’    Cancel inhibit at pressing push button         H’FF’           
 
 
 
-                            VMB1RYLD PROTOCOL – edition 4   16
+                            VMB4RYLD PROTOCOL – edition 5   16
+Memory map version 1 (Build 1409 or higher):
+
+    Address   Contents                                      Address   Contents
+    H’0000’   Push button 1 module address                  H’0001’   Push button 1 bit number
+    H’0002’   Push button 1 action for channel 1            H’0003’   Push button 1 first time parameter
+    H’0004’   Push button 1 second time parameter           H’0005’   Push button 1 third time parameter
+    H’0006’   Push button 2 module address                  H’0007’   Push button 2 bit number
+    H’0008’   Push button 2 action for channel 1            H’0009’   Push button 2 first time parameter
+    H’000A’   Push button 2 second time parameter           H’000B’   Push button 2 third time parameter
+    ...       ...                                           ...       ...
+    H’00D2’   Push button 36 module address                 H’00D3’   Push button 36 bit number
+    H’00D4’   Push button 36 action for virtual channel 1   H’00D5’   Push button 36 first time parameter
+    H’00D6’   Push button 36 second time parameter          H’00D7’   Push button 36 third time parameter
+    H’00D8’   Normal open or normal closed contact CH1      H’00D9’   CH1 location id low byte (Build 1409)
+    H’00DA’   CH1 location id high byte (Build 1409)        H’00DB’   CH1 group id low byte (Build 1409)
+    H’00DC’   CH1 group id high byte (Build 1409)           H’00DD’   CH1 circuit id low byte (Build 1409)
+    H’00DE’   CH1 circuit id high byte (Build 1409)         H’00DF’   CH1 load id low byte (Build 1409)
+    H’00E0’   CH1 load id high byte (Build 1409)            H’00E1’   Terminator (Build 1409)
+    H’00E2’   Not used                                      H’00E3’   Module name character 1 (Build 1409)
+    …         …                                             …         …
+    H’00EE’   Module name character 12 (Build 1409)         H’00EF’   Module name character 13 (Build 1409)
+    H’00F0’   Relay channel 1 name character 1              H’00F1’   Relay channel 1 name character 2
+    ...       ...                                           ...       ...
+    H’00FE’   Relay channel 1name character 15              H’00FF’   Relay channel 1 name character 16
+
+    Address   Contents                                      Address   Contents
+    H’0100’   Push button 1 module address                  H’0101’   Push button 1 bit number
+    H’0102’   Push button 1 action for channel 2            H’0103’   Push button 1 first time parameter
+    H’0104’   Push button 1 second time parameter           H’0105’   Push button 1 third time parameter
+    H’0106’   Push button 2 module address                  H’0107’   Push button 2 bit number
+    H’0108’   Push button 2 action for channel 2            H’0109’   Push button 2 first time parameter
+    H’010A’   Push button 2 second time parameter           H’010B’   Push button 2 third time parameter
+    ...       ...                                           ...       ...
+    H’01D2’   Push button 36 module address                 H’01D3’   Push button 36 bit number
+    H’01D4’   Push button 36 action for virtual channel 2   H’01D5’   Push button 36 first time parameter
+    H’01D6’   Push button 36 second time parameter          H’01D7’   Push button 36 third time parameter
+    H’01D8’   Normal open or normal closed contact CH2      H’01D9’   CH2 location id low byte (Build 1409)
+    H’01DA’   CH2 location id high byte (Build 1409)        H’01DB’   CH2 group id low byte (Build 1409)
+    H’01DC’   CH2 group id high byte (Build 1409)           H’01DD’   CH2 circuit id low byte (Build 1409)
+    H’01DE’   CH2 circuit id high byte (Build 1409)         H’01DF’   CH2 load id low byte (Build 1409)
+    H’01E0’   CH2 load id high byte (Build 1409)            H’01E1’   Module location id low byte (Build 1409)
+    H’01E2’   Module location id high byte (Build 1409)     H’01E3’   Module name character 14 (Build 1409)
+    …         …                                             …         …
+    H’01EE’   Module name character 25 (Build 1409)         H’01EF’   Module name character 26 (Build 1409)
+    H’01F0’   Relay channel 2 name character 1              H’01F1’   Relay channel 2 name character 2
+    ...       ...                                           ...       ...
+    H’01FE’   Relay channel 2name character 15              H’01FF’   Relay channel 2 name character 16
+
+    Address   Contents                                      Address   Contents
+    H’0200’   Push button 1 module address                  H’0201’   Push button 1 bit number
+    H’0202’   Push button 1 action for channel 3            H’0203’   Push button 1 first time parameter
+    H’0204’   Push button 1 second time parameter           H’0205’   Push button 1 third time parameter
+    H’0206’   Push button 2 module address                  H’0207’   Push button 2 bit number
+    H’0208’   Push button 2 action for channel 3            H’0209’   Push button 2 first time parameter
+    H’020A’   Push button 2 second time parameter           H’020B’   Push button 2 third time parameter
+    ...       ...                                           ...       ...
+    H’02D2’   Push button 36 module address                 H’02D3’   Push button 36 bit number
+    H’02D4’   Push button 36 action for virtual channel 3   H’02D5’   Push button 36 first time parameter
+    H’02D6’   Push button 36 second time parameter          H’02D7’   Push button 36 third time parameter
+    H’02D8’   Normal open or normal closed contact CH3      H’02D9’   CH3 location id low byte (Build 1409)
+    H’02DA’   CH3 location id high byte (Build 1409)        H’02DB’   CH3 group id low byte (Build 1409)
+    H’02DC’   CH3 group id high byte (Build 1409)           H’02DD’   CH3 circuit id low byte (Build 1409)
+    H’02DE’   CH3 circuit id high byte (Build 1409)         H’02DF’   CH3 load id low byte (Build 1409)
+    H’02E0’   CH3 load id high byte (Build 1409)            H’02E1’   Module group id low byte (Build 1409)
+    H’02E2’   Module group id high byte (Build 1409)        H’02E3’   Module name character 27 (Build 1409)
+    …         …                                             …         …
+
+
+
+
+                                          VMB4RYLD PROTOCOL – edition 5                                          17
+      H’02EE’      Module name character 38 (Build 1409)         H’02EF’   Module name character 39 (Build 1409)
+      H’02F0’      Relay channel 3 name character 1              H’02F1’   Relay channel 3 name character 2
+      ...          ...                                           ...       ...
+      H’02FE’      Relay channel 3name character 15              H’02FF’   Relay channel 3 name character 16
+
+      Address      Contents                                      Address   Contents
+      H’0300’      Push button 1 module address                  H’0301’   Push button 1 bit number
+      H’0302’      Push button 1 action for channel 4            H’0303’   Push button 1 first time parameter
+      H’0304’      Push button 1 second time parameter           H’0305’   Push button 1 third time parameter
+      H’0306’      Push button 2 module address                  H’0307’   Push button 2 bit number
+      H’0308’      Push button 2 action for channel 4            H’0309’   Push button 2 first time parameter
+      H’030A’      Push button 2 second time parameter           H’030B’   Push button 2 third time parameter
+      ...          ...                                           ...       ...
+      H’03D2’      Push button 36 module address                 H’03D3’   Push button 36 bit number
+      H’03D4’      Push button 36 action for virtual channel 4   H’03D5’   Push button 36 first time parameter
+      H’03D6’      Push button 36 second time parameter          H’03D7’   Push button 36 third time parameter
+      H’03D8’      Normal open or normal closed contact CH4      H’03D9’   CH4 location id low byte (Build 1409)
+      H’03DA’      CH4 location id high byte (Build 1409)        H’03DB’   CH4 group id low byte (Build 1409)
+      H’03DC’      CH4 group id high byte (Build 1409)           H’03DD’   CH4 circuit id low byte (Build 1409)
+      H’03DE’      CH4 circuit id high byte (Build 1409)         H’03DF’   CH4 load id low byte (Build 1409)
+      H’03E0’      CH4 load id high byte (Build 1409)            H’03E1’   Module circuit id low byte (Build 1409)
+      H’03E2’      Module circuit id high byte (Build 1409)      H’03E3’   Module name character 40 (Build 1409)
+      …            …                                             …         …
+      H’03EE’      Module name character 51 (Build 1409)         H’03EF’   Module name character 52 (Build 1409)
+      H’03F0’      Relay channel 4 name character 1              H’03F1’   Relay channel 4 name character 2
+      ...          ...                                           ...       ...
+      H’03FE’      Relay channel 4name character 15              H’03FF’   Relay channel 4 name character 16
+
+
+
+      Address      Contents                                      Address   Contents
+      H’0400’      Push button 1 module address                  H’0401’   Push button 1 bit number
+      H’0402’      Push button 1 action for virtual channel 5    H’0403’   Push button 1 first time parameter
+      H’0404’      Push button 1 second time parameter           H’0405’   Push button 1 third time parameter
+      H’0406’      Push button 2 module address                  H’0407’   Push button 2 bit number
+      H’0408’      Push button 2 action for virtual channel 5    H’0409’   Push button 2 first time parameter
+      H’040A’      Push button 2 second time parameter           H’040B’   Push button 2 third time parameter
+      ...          ...                                           ...       ...
+      H’04D2’      Push button 36 module address                 H’04D3’   Push button 36 bit number
+      H’04D4’      Push button 36 action for virtual channel 5   H’04D5’   Push button 36 first time parameter
+      H’04D6’      Push button 36 second time parameter          H’04D7’   Push button 36 third time parameter
+      H’04D8’      Normal open or normal closed contact CH5      H’04D9’   CH5 location id low byte (Build 1409)
+      H’04DA’      CH5 location id high byte (Build 1409)        H’04DB’   CH5 group id low byte (Build 1409)
+      H’04DC’      CH5 group id high byte (Build 1409)           H’04DD’   CH5 circuit id low byte (Build 1409)
+      H’04DE’      CH5 circuit id high byte (Build 1409)         H’04DF’   CH5 load id low byte (Build 1409)
+      H’04E0’      CH5 load id high byte (Build 1409)            H’04E1’   Module load id low byte (Build 1409)
+      H’04E2’      Module load id high byte (Build 1409)         H’04E3’   Module name character 53 (Build 1409)
+      …            …                                             …         …
+      H’04EE’      Module name character 64 (Build 1409)         H’04EF’   Not used
+      H’04F0’      Virtual relay channel 5 name character 1      H’04F1’   Virtual relay channel 5 name character 2
+      ...          ...                                           ...       ...
+      H’04FE’      Virtual relay channel 5name character 15      H’04FF’   Virtual relay channel 5 name character 16
+
+    Remark:
+    Unused locations contain H’FF’
+
+Normal open or normal closed contact:
+        H’FF’ : normal open relay contact
+        H’00’ : normal closed relay contact
+
+
+
+
+                                               VMB4RYLD PROTOCOL – edition 5                                           18
+Action   Description                                    First time parameter   Second time parameter   Third time parameter
+H’00’    Momentary                                      H’FF’                  H’FF’                   H’FF’
+H’01’    Off                                            H’FF’                  H’FF’                   H’FF’
+H’02’    ‘Off’ with timers disabled                     H’FF’                  H’FF’                   H’FF’
+H’03’    ‘Off’ with timers disabled at short press      H’FF’                  H’FF’                   H’FF’
+H’04’    ‘Off’ with timers disabled at long press       H’FF’                  H’FF’                   H’FF’
+H’05’    On                                             H’FF’                  H’FF’                   H’FF’
+H’06’    ‘On’ with timers disabled                      H’FF’                  H’FF’                   H’FF’
+H’07’    ‘On’ with timers disabled at short press       H’FF’                  H’FF’                   H’FF’
+H’08’    ‘On’ with timers disabled at long press        H’FF’                  H’FF’                   H’FF’
+H’09’    Toggle                                         H’FF’                  H’FF’                   H’FF’
+H’0A’    ‘Toggle’ with timers disabled                  H’FF’                  H’FF’                   H’FF’
+H’0B’    ‘Toggle’ with timers disabled at short press   H’FF’                  H’FF’                   H’FF’
+H’0C’    ‘Toggle’ with timers disabled at long press    H’FF’                  H’FF’                   H’FF’
+H’0D’    Start/stop timer                               Time1 at short press   Time2 at long press     H’FF’
+H’0E’    Restartable timer                              Time1 at short press   Time2 at long press     H’FF’
+H’0F’    Non retriggerable timer                        Time                   H’FF’                   H’FF’
+H’10’    Trigger on release timer                       Time                   H’FF’                   H’FF’
+H’11’    ‘On’ at press, delayed ‘Off’ at release        Delayed ‘Off’ time     H’FF’                   H’FF’
+H’12’    Delayed ‘Off’ only when relay is on            Delayed ‘Off’ time     H’FF’                   H’FF’
+H’13’    Start/stop delayed ‘On’                        Delayed ‘On’ time      Timeout                 H’FF’
+H’14’    Restartable delayed ‘On’                       Delayed ‘On’ time      Timeout                 H’FF’
+H’15’    Non restartable delayed ‘On’                   Delayed ‘On’ time      Timeout                 H’FF’
+H’16’    Start/Stop interval timer                      Timeout                Pulse time              Pauze time
+H’17’    Restartable interval timer                     Timeout                Pulse time              Pauze time
+H’18’    Non restartable interval timer                 Timeout                Pulse time              Pauze time
+H’19’    Disable at closed switch                       H’FF’                  H’FF’                   H’FF’
+H’1A’    Disable at opened switch                       H’FF’                  H’FF’                   H’FF’
+H’1B’    Disable at pressing push button                Timeout                H’FF’                   H’FF’
+H’1C’    Toggle disable at pressing push button         Timeout                H’FF’                   H’FF’
+H’1D’    Cancel disable at pressing push button         H’FF’                  H’FF’                   H’FF’
+H’1E’    Forced ‘On’ at closed switch                   H’FF’                  H’FF’                   H’FF’
+H’1F’    Forced ‘On’ at opened switch                   H’FF’                  H’FF’                   H’FF’
+H’20’    Forced ‘On’ at pressing push button            Timeout                H’FF’                   H’FF’
+H’21’    Toggle forced ‘On’ at pressing push button     Timeout                H’FF’                   H’FF’
+H’22’    Cancel Forced ‘On’ at pressing push button     H’FF’                  H’FF’                   H’FF’
+H’23’    Inhibit at closed switch                       H’FF’                  H’FF’                   H’FF’
+H’24’    Inhibit at opened switch                       H’FF’                  H’FF’                   H’FF’
+H’25’    Inhibit at pressing push button                Timeout                H’FF’                   H’FF’
+H’26’    Toggle inhibit at pressing push button         Timeout                H’FF’                   H’FF’
+H’27’    Cancel inhibit at pressing push button         H’FF’                  H’FF’                   H’FF’
+
+
+
+
+                                               VMB4RYLD PROTOCOL – edition 5                                             19
+Time parameter   Time
+0                No timer
+1                1s
+2                2s
+...
+119              1min59s
+120              2min
+121              2min15s
+...
+131              4min45s
+132              5min
+133              5min30s
+...
+181              29min30s
+182              30min
+183              31min
+...
+211              59min
+212              1h
+213              1h15min
+...
+227              4h45min
+228              5h
+229              5h30min
+...
+237              9h30min
+238              10h
+239              11h
+...
+251              23h
+252              1d
+253              2d
+254              3d
+255              infinite
+
+
+
+
+                            VMB4RYLD PROTOCOL – edition 5   20
 

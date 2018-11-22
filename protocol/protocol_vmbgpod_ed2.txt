@@ -1,0 +1,3607 @@
+VMBGPOD-2
+Touch panel with Oled display
+  for VELBUS system (ed2)
+
+
+
+
+         VMBGPOD-2 PROTOCOL – version 1   1
+Binairy format:
+
+<SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-ACK-ACKDEL-
+EOF7...EOF1-IFS3...IFS1>
+  bits                          Description
+  SOF                           Start Of Frame (always 0)
+  SID10 & SID9                  Priority (00: highest … 11: lowest priority)
+  SID8…SID1                     Address
+  SID0                          Always 0
+  RTR                           Remote Transmit Request
+  IDE                           Identifier Extension (always 0)
+  r0                            reserved (always 0)
+  DLC3…DLC0                     Data Length Code (0…8)
+  Databyte1                     Command
+  Databyte2                     Parameter
+  Databyte3                     Parameter
+  Databyte4                     Parameter
+  Databyte5                     Parameter
+  Databyte6                     Parameter
+  Databyte7                     Parameter
+  Databyte8                     Parameter
+  CRC15…CRC1                    Cyclic Redundancy Checksum
+  CRCDEL                        CRC Delimiter (always 1)
+  ACK                           Acknowledge slot (transmit 1 readback 0 if received correctly)
+  ACKDEL                        Acknowledge Delimiter (always 1)
+  EOF7...EOF1                   End Of Frame (always 1111111)
+  IFS3...IFS1                   InterFrame Space (always 111)
+
+The module can transmit the following messages:
+ • Channel status
+ • Sensor output status
+ • Module status
+ • Sensor status
+ • Sensor temperature
+ • Sensor time statistics
+ • Sensor settings
+ • Module type and subtype
+ • Bus error counter status
+ • First, second and third part of the channel names
+ • Memory data
+ • Memory data block (4 bytes)
+ • Real-time clock status
+ • Date status
+ • Daylight savings status
+ • Program step
+ • Power up
+
+The module can transmit the following commands:
+ • Real-time clock status request
+ • Set global clock alarm
+ • Clear linked push button led
+ • Set linked push button led
+ • Slow blink linked push button led
+ • Counter status request
+ • Remote sensor status request
+ • Remote sensor temperature request
+ • Remote sensor settings request
+ • Remote sensor statistics request
+
+
+
+
+                                           VMBGPOD-2 PROTOCOL – version 1                        2
+  •   Remote sensor set temperature settings
+  •   Remote sensor set heating mode
+  •   Remote sensor set cooling mode
+  •   Remote sensor set comfort mode
+  •   Remote sensor set day mode
+  •   Remote sensor set night mode
+  •   Remote sensor set safe mode
+  •   Read program step
+  •   Write program step
+  •   Remote Analog Sensor readout request
+
+The module can receive the following messages:
+ • Linked push button status
+ • Power up
+ • Module type request
+ • Module status request
+ • Channel name request
+ • Clear channel led
+ • Set channel led
+ • Slow blink channel led
+ • Fast blink channel led
+ • Very fast channel led
+ • Update channel leds
+ • Read memory data
+ • Read memory data block (4 bytes)
+ • Memory dump request
+ • Counter log dump request
+ • Counter status
+ • Write memory data
+ • Write memory data block (4 bytes)
+ • Bus error counter status request
+ • Real-time clock status request
+ • Set real-time clock
+ • Set date
+ • Set daylight savings
+ • Enable/disable global sunrise/sunset related actions
+ • Enable/disable local sunrise/sunset related actions
+ • Set local alarm clock
+ • Set global alarm clock
+ • Lock channel
+ • Unlock channel
+ • Disable channel program
+ • Enable channel program
+ • Select program
+ • Read program step
+ • Program step info
+ • Write program step
+ • Sensor temperature request
+ • Sensor settings request
+ • Set heating mode
+ • Set cooling mode
+ • Set default sleep time
+ • Set temperature settings
+ • Switch to comfort mode
+ • Switch to day mode
+ • Switch to night mode
+ • Switch to safe temperature mode
+ • Time statistics request
+ • Remote sensor module status
+ • Remote sensor status
+
+
+
+                                               VMBGPOD-2 PROTOCOL – version 1   3
+•   Remote Sensor temperature
+•   Remote sensor settings
+•   Remote sensor time statistics
+•   Readout of the remote analog sensor
+•   Memo text
+
+
+
+
+                                          VMBGPOD-2 PROTOCOL – version 1   4
+Transmits power up message:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = H’00’
+    RTR = 0
+    DLC3...DLC0 = 2 databyte to send
+    DATABYTE1 = COMMAND_POWER_UP (H’AB’)
+    DATABYTE2 = module address
+
+Transmits real time clock status request:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = H’00’
+    RTR = 0
+    DLC3...DLC0 = 1 databyte to send
+    DATABYTE1 = COMMAND_REALTIME_CLOCK_STATUS_REQUEST (H’D7’)
+
+Transmits the real time clock status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_REALTIME_CLOCK_STATUS (H’D8’)
+    DATABYTE2 = Day
+                         Contents     Day
+                            0         Monday
+                            1         Tuesday
+                            2         Wednesday
+                            3         Thursday
+                            4         Friday
+                            5         Saturday
+                            6         Sunday
+    DATABYTE3 = Hour (0…23)
+    DATABYTE4 = Minute (0…59)
+
+Transmits the date status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 5 databytes to send
+    DATABYTE1 = COMMAND_DATE_STATUS (H’B7’)
+    DATABYTE2 = Day (1…31)
+    DATABYTE3 = Month (1…12)
+    DATABYTE4 = High byte of Year
+    DATABYTE5 = Low byte of Year
+
+Transmits the daylight savings status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_DAYLIGHT_SAVING_STATUS (H’AF’)
+    DATABYTE2 = 0 =disabled / 1 = enabled
+
+Transmit ‘set global clock alarm’:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = H’00’
+    RTR = 0
+    DLC3...DLC0 = 7 databytes to send
+    DATABYTE1 = COMMAND_SET_ALARM_CLOCK (H’C3’)
+    DATABYTE2 = Alarm number (1 or 2)
+    DATABYTE3 = Wake up hour (0…23)
+    DATABYTE4 = Wake up minute (0…59)
+    DATABYTE5 = Go to bed hour (0…23)
+    DATABYTE6 = Go to bed minute (0…59)
+
+
+
+                              VMBGPOD-2 PROTOCOL – version 1    5
+DATABYTE7 = Clock alarm enable flag (0 = disabled / 1 = enabled)
+
+
+
+
+                                    VMBGPOD-2 PROTOCOL – version 1   6
+Transmits the channel switch status:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_PUSH_BUTTON_STATUS (H’00’)
+    DATABYTE2 = Channel just pressed
+    DATABYTE3 = Channel just released
+    DATABYTE4 = Channel long pressed
+
+Transmits the sensor output switch status:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Subaddress 4
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_OUTPUT_STATUS (H’00’)
+    DATABYTE2 = Output channel just activated (1 = just activated)
+                      Contents       Output channel
+                      xxxxxxx1       Heater just activated
+                      xxxxxx1x       Boost heater/cooler just activated
+                      xxxxx1xx       Pump just activated
+                      xxxx1xxx       Cooler just activated
+                      xxx1xxxx       Temperature alarm 1 just activated
+                      xx1xxxxx       Temperature alarm 2 alarm activated
+                      x1xxxxxx       Temperature alarm 3 just activated
+                      1xxxxxxx       Temperature alarm 4 alarm activated
+    DATABYTE3 = Outputs just deactivated (1 = just deactivated)
+                      Contents       Output channel
+                      xxxxxxx1       Heater just deactivated
+                      xxxxxx1x       Boost heater/cooler just deactivated
+                      xxxxx1xx       Pump just deactivated
+                      xxxx1xxx       Cooler just deactivated
+                      xxx1xxxx       Temperature alarm 1 just deactivated
+                      xx1xxxxx       Temperature alarm 2 alarm deactivated
+                      x1xxxxxx       Temperature alarm 3 just deactivated
+                      1xxxxxxx       Temperature alarm 4 alarm deactivated
+    DATABYTE4 = always zero
+
+Transmits the module type
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_MODULE_TYPE (H’FF’)
+    DATABYTE2 = VMBGPOD-2 type (H’3D’)
+    DATABYTE3 = High byte of serial number
+    DATABYTE4 = Low byte of serial number
+    DATABYTE5 = Memorymap version
+    DATABYTE6 = Build year
+    DATABYTE7 = Build week
+    DATABYTE8 = Version + CAN Termination
+                      Contents      Output channel
+                      xxxxxxx1      1 = TERM closed, 0 = TERM open
+                      xxxx111x      Version number. (0 = old OLED / 1 = new OLED)
+
+Transmits the module subtype:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_SUBTYPE (H’B0’)
+    DATABYTE2 = VMBGPOD-2 type (H’3D’)
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1             7
+    DATABYTE3 = High byte of serial number
+    DATABYTE4 = Low byte of serial number
+    DATABYTE5 = Subaddress1 (H’FF’ subaddress disabled)
+    DATABYTE6 = Subaddress2 (H’FF’ subaddress disabled)
+    DATABYTE7 = Subaddress3 (H’FF’ subaddress disabled)
+    DATABYTE8 = Subaddress4 (H’FF’ subaddress disabled)
+
+
+Transmits the module subtype:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_SUBTYPE (H’B0’)
+    DATABYTE2 = VMBGPOD-2 type (H’28’)
+    DATABYTE3 = High byte of serial number
+    DATABYTE4 = Low byte of serial number
+    DATABYTE5 = Subaddress1 (H’FF’ subaddress disabled)
+    DATABYTE6 = Subaddress2 (H’FF’ subaddress disabled)
+    DATABYTE7 = Subaddress3 (H’FF’ subaddress disabled)
+    DATABYTE8 = Subaddress4 (H’FF’ subaddress disabled)
+
+Transmit: Bus error counter status
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_BUSERROR_COUNTER_STATUS (H’DA’)
+    DATABYTE2 = Transmit error counter
+    DATABYTE3 = Receive error counter
+    DATABYTE4 = Bus off counter
+
+Transmits the memory data:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_MEMORY_DATA (H’FE’)
+    DATABYTE2 = High memory address
+    DATABYTE3 = LOW memory address
+    DATABYTE4 = memory data
+
+    Remark:    address range: H’0000’ to H’1A03’
+
+Transmits memory data block (4 bytes):
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 7 databytes to send
+    DATABYTE1 = COMMAND_MEMORY_DATA_BLOCK (H’CC’)
+    DATABYTE2 = High start address of memory block
+    DATABYTE3 = LOW start address of memory block
+    DATABYTE4 = memory data1
+    DATABYTE5 = memory data2
+    DATABYTE6 = memory data3
+    DATABYTE7 = memory data4
+
+    Remark:
+    address range: H’0000’ to H’1A00’ = memory map
+                   H’1A04’ to H’2A00’ = counter log data
+                   H’2A04’ to H’2E00’ = eeprom data
+
+Transmits the first part of channel name:
+
+
+
+
+                                            VMBGPOD-2 PROTOCOL – version 1   8
+SID10-SID9 = 11 (lowest priority)
+SID8...SID1 = Module address
+RTR = 0
+DLC3...DLC0 = 8 databytes to send
+DATABYTE1 = COMMAND_CHANNEL_NAME_PART1 (H’F0’)
+DATABYTE2 = channel number 1…33 (channel 33 = temperature sensor name)
+DATABYTE3 = Character 1 of the channel name
+DATABYTE4 = Character 2 of the channel name
+DATABYTE5 = Character 3 of the channel name
+DATABYTE6 = Character 4 of the channel name
+DATABYTE7 = Character 5 of the channel name
+DATABYTE8 = Character 6 of the channel name
+
+
+
+
+                                  VMBGPOD-2 PROTOCOL – version 1         9
+Transmits the second part of the channel name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_CHANNEL_NAME_PART2 (H’F1’)
+    DATABYTE2 = Channel number 1…33 (channel 33 = temperature sensor name)
+    DATABYTE3 = Character 7 of the channel name
+    DATABYTE4 = Character 8 of the channel name
+    DATABYTE5 = Character 9 of the channel name
+    DATABYTE6 = Character 10 of the channel name
+    DATABYTE7 = Character 11 of the channel name
+    DATABYTE8 = Character 12 of the channel name
+
+Transmits the third part of the channel name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 6 databytes to send
+    DATABYTE1 = COMMAND_CHANNEL_NAME_PART3 (H’F2’)
+    DATABYTE2 = channel number 1…33 (channel 33 = temperature sensor name)
+    DATABYTE3 = Character 13 of the channel name
+    DATABYTE4 = Character 14 of the channel name
+    DATABYTE5 = Character 15 of the channel name
+    DATABYTE6 = Character 16 of the channel name
+
+    Remarks:
+    Unused characters contain H’FF’.
+
+Transmits the module status
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address, sub address1, sub address2 or sub address3
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send for master address, 7 databytes to send for sub addresses
+    DATABYTE1 = COMMAND_MODULE_STATUS (H’ED’)
+    DATABYTE2 = channel 1 to 8 status (1 = pressed / 0 = released)
+    DATABYTE3 = enabled/disable channel status (1 = enabled / 0 = disabled)
+    DATABYTE4 = normal/inverted channel status (1 = normal / 0 = inverted)
+    DATABYTE5 = locked channel status (0 = unlocked / 1 = locked)
+    DATABYTE6 = disabled channel program status (0 = program enabled / 1 = program disabled)
+    DATABYTE7 = alarm & program selection
+                       Contents        Alarm /Selected program
+                  B’xxxxxx00’          None
+                  B’xxxxxx01’          Summer
+                  B’xxxxxx10’          Winter
+                  B’xxxxxx11’          Holiday
+                  B’xxxxx0xx’          Alarm 1 off
+                  B’xxxxx1xx’          Alarm 1 on
+                  B’xxxx0xxx’          Local alarm 1
+                  B’xxxx1xxx’          Global alarm 1
+                  B’xxx0xxxx’          Alarm 2 off
+                  B’xxx1xxxx’          Alarm 2 on
+                  B’xx0xxxxx’          Local alarm 2
+                  B’xx1xxxxx’          Global alarm 2
+                  B’x0xxxxxx’          Sunrise disabled
+                  B’x1xxxxxx’          Sunrise enabled
+                  B’0xxxxxxx’          Sunset disabled
+                  B’1xxxxxxx’          Sunset enabled
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1                           10
+    DATABYTE8 = oled display status (only for master address
+                   Contents          Display status
+              B’xx000000’            Button page 1
+                    …                …
+              B’xx000111’            Button page 8
+              B’xx001000’            Counter 1 page
+                    …                …
+              B’xx001011’            Counter 4 page
+              B’xx001100’            Local temperature page
+              B’xx001101’            Remote temperature 1 page
+                    …                …
+              B’xx011000’            Remote temperature 12 page
+              B’xx011001’            Analog sensor 1 page
+                    …                …
+              B’xx011100’            Analog sensor 4 page
+              B’xx011101’            Clock page
+              B’xx1xxxxx’            Menu pages
+              B’x0xxxxxx’            Screensaver off
+              B’x1xxxxxx’            Screensaver on
+              B’0xxxxxxx’            Display off
+              B’1xxxxxxx’            Display on
+
+Transmit the sensor status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_STATUS (H’EA’)
+    DATABYTE2 = Operating mode
+                       Contents     Operating mode
+                       xxxxxxx1     Local control locked
+                       xxxxxxx0     Local control unlocked
+                       Xxxxx11x     Disable mode
+                       xxxxx01x     Manual mode
+                       xxxxx10x     Sleep timer mode
+                       xxxxx00x     Run mode
+                       xxxx1xxx     Auto send sensor temperature enabled
+                       xxxx0xxx     Auto send sensor temperature disabled
+                       x100xxxx     Comfort mode
+                       x010xxxx     Day mode
+                       x001xxxx     Night mode
+                       x000xxxx     Safe temp mode (anti frost)
+                       1xxxxxxx     Cooler mode
+                       0xxxxxxx     Heater mode
+    DATABYTE3 = Program step mode
+                       Contents     Program step mode
+                       xxxxx0xx     No sensor program group 1
+                       xxxxx1xx     Sensor program group 1 available
+                       xxxx0xxx     No sensor program group 2
+                       xxxx1xxx     Sensor program group 2 available
+                       0xxxxxxx     No sensor program group 3
+                       1xxxxxxx     Sensor program group 3 available
+                       x100xxxx     Comfort program step received
+                       x010xxxx     Day program step received
+                       x001xxxx     Night program step received
+                       X000xxxx     Safe temperature program step received
+                       xxxxxx1x     Enable unjamming heater valve
+                       xxxxxx0x     Disable unjamming heater valve
+                       xxxxxxx1     Enable unjamming pump
+                       xxxxxxx0     Disable unjamming pump
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1      11
+DATABYTE4 = Output status (1 = activated)
+             Contents        Output channel
+             xxxxxxx0        Heater off
+             xxxxxxx1        Heater on
+             xxxxxx0x        Boost heater/cooler off
+             xxxxxx1x        Boost heater/cooler on
+             xxxxx0xx        Pump off
+             xxxxx1xx        Pump on
+             xxxx0xxx        Cooler off
+             xxxx1xxx        Cooler on
+             xxx0xxxx        Temperature alarm 1 off
+             xxx1xxxx        Temperature alarm 1 on
+             xx0xxxxx        Temperature alarm 2 off
+             xx1xxxxxx Temperature alarm 2 on
+             x0xxxxxx        Temperature alarm 3 off
+             x1xxxxxx        Temperature alarm 3 on
+             0xxxxxxx        Temperature alarm 4 off
+             1xxxxxxx        Temperature alarm 4 on
+DATABYTE5 = Current sensor temperature into two’s complement format (resolution 0.5°)
+             Contents        Current sensor temperature
+             01111111        63.5°C
+
+                   00000001      0.5°C
+                   00000000      0°C
+                   11111111      -0.5°C
+
+              10010010      -55°C
+DATABYTE6 = target temperature set (resolution 0.5°)
+              Contents      Current temperature set
+              01101100      54°C
+
+                   00101000      20°C
+
+                   00000010      1°C
+                   00000001      0.5°C
+                   00000000      0°C
+                   11111111      -0.5°C
+
+             11000000        -32°C
+DATABYTE7 = High byte of the sleep timer
+DATABYTE8 = Low byte of the sleep timer into minutes
+
+Remark:
+[DATABYTE7][DATABYTE8] contains a 16-bit sleep timer into minutes (1 to 65.279min).
+If the sleep timer contains H’0000’, the sleep timer is deactivated.
+If the sleep timer contains a value between H’0001’ and H’FEFF’ (1 to 65.279min), the sleep timer is running for that
+time.
+If the sleep timer contains H’FFFF’, the sensor is in manual mode.
+
+
+
+
+                                        VMBGPOD-2 PROTOCOL – version 1                                                  12
+Transmit the sensor temperature:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 7 databytes to send
+    DATABYTE1 = COMMAND_SENSOR_TEMPERATURE (H’E6’)
+    DATABYTE2 = High byte current sensor temperature
+    DATABYTE3 = Low byte current sensor temperature into two’s complement format (resolution 0.0625°)
+    DATABYTE4 = High byte minimum sensor temperature
+    DATABYTE5 = Low byte minimum sensor temperature into two’s complement format (resolution 0.0625°)
+    DATABYTE6 = High byte maximum sensor temperature
+    DATABYTE7 = Low byte maximum sensor temperature into two’s complement format (resolution 0.0625°)
+                      High byte     Low byte  Current sensor temperature
+                      01111111      11100000  63.5°C
+
+                       00000001       00000000       0.5°C
+                       00000000       10000000       0.25°C
+                       00000000       01000000       0.125°C
+                       00000000       00100000       0.0625°C
+                       00000000       00000000       0°C
+                       11111111       11111111       -0.0625°C
+                       11111111       11011111       -0.125°C
+                       11111111       10011111       -0.25°C
+                       11111110       00011111       -0.5°C
+
+                       10010010       00011111       -55°C
+
+    Remark:
+    The 5 least significant bits of the low byte are always zero for positive temperature and one for negative temperature.
+    The low order bytes are not sending with the data length of 4 bytes (resolution 0.5°C)
+
+Transmit time statistics
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_TIME_STATISTICS (H’C8’)
+    DATABYTE2 = statistics mode index
+                        Contents    Time statistics
+                        10000001    Heating antifreeze mode time statistics
+                        10000010    Heating night mode time statistics
+                        10000100    Heating day mode time statistics
+                        10001000    Heating comfort mode time statistics
+                        10010000    Heating global time statistics
+                        01000001    Cooling standby mode time statistics
+                        01000010    Cooling night mode time statistics
+                        01000100    Cooling day mode time statistics
+                        01001000    Cooling comfort mode time statistics
+                        01010000    Cooling global time statistics
+    DATABYTE3 = ‘ON’ time (hours bcd digits 4 & 3)
+    DATABYTE4 = ‘ON’ time (hours bcd digits 2 & 1)
+    DATABYTE5 = ‘ON’ time (minutes bcd digits 2 & 1)
+    DATABYTE6 = Mode time (hours bcd digits 4 & 3)
+    DATABYTE7 = Mode time (hours bcd digits 2 & 1)
+    DATABYTE8 = Mode time (minutes bcd digits 2 & 1)
+
+    Remark:
+    The time is bcd formatted.
+    Databytes 3, 4 & 5 gives the total ‘ON’ time of the heater or cooler in the corresponding mode.
+    Databytes 6, 7 & 8 gives the total time of selected mode.
+
+
+
+
+                                            VMBGPOD-2 PROTOCOL – version 1                                                    13
+Transmit the first part of the sensor settings:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART1 (H’E8’)
+    DATABYTE2 = Current temperature set (resolution 0.5°)
+    DATABYTE3 = Comfort temperature set for heating mode (resolution 0.5°)
+    DATABYTE4 = Day temperature set for heating mode (resolution 0.5°)
+    DATABYTE5 = Night temperature set for heating mode (resolution 0.5°)
+    DATABYTE6 = Anti frost temperature set for heating mode (resolution 0.5°)
+    DATABYTE7 = Boost temperature difference set (resolution 0.5°)
+    DATABYTE8 = Hysteresis temperature set
+                        Contents       Hysteresis
+                        xxx11111       15.5°C
+
+                      Xxx00001     0.5°C
+                      Xxx00000     0°C
+
+Transmit the second part of the sensor settings:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART2 (H’E9’)
+    DATABYTE2 = Comfort temperature set for cooling mode (resolution 0.5°)
+    DATABYTE3 = Day temperature set for cooling mode (resolution 0.5°)
+    DATABYTE4 = Night temperature set for cooling mode (resolution 0.5°)
+    DATABYTE5 = Safe temperature set for cooling mode (resolution 0.5°)
+    DATABYTE6 = High byte of the default sleep timer
+    DATABYTE7 = Low byte of the default sleep timer into minutes (1 to 65.279min)
+    DATABYTE8 = Default auto send temperature time interval into seconds
+                     (Valid range: 10…255s)
+                     (5…9 = auto send on temperature change with min interval 5…9s)
+                     (<4 = auto send disabled)
+
+Transmit the third part of the sensor settings:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART3 (H’C6’)
+    DATABYTE2 = Temperature alarm 1 setting (resolution 0.5°)
+    DATABYTE3 = Temperature alarm 4 setting (resolution 0.5°)
+    DATABYTE4 = Lower temperature range cool mode (resolution 0.5°)
+    DATABYTE5 = Upper temperature range heat mode (resolution 0.5°)
+    DATABYTE6 = Calibration offset factor (resolution 0.5°)
+                       Contents        Calibration factor
+                       00001111        Calibration factor +7.5°C
+
+                      00000001     Calibration factor +0.5°C
+                      00000000     Calibration factor +0°C
+                      11111111     Calibration factor -0.5°C
+
+                 11110000        Calibration factor -8°C
+    DATABYTE7 = Zone number
+    DATABYTE8 = Calibration gain factor
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1               14
+Transmit the fourth part of the sensor settings:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART4 (H’B9’)
+    DATABYTE2 = Minimum switching time (0…255s)
+    DATABYTE3 = Pump delayed on time (0…255s)
+    DATABYTE4 = Pump delayed off time (0…255s)
+    DATABYTE5 = Temperature alarm 2 setting (resolution 0.5°)
+    DATABYTE6 = Temperature alarm 3 setting (resolution 0.5°)
+    DATABYTE7 = Lower temperature range heat mode (resolution 0.5°)
+    DATABYTE8 = Upper temperature range cool mode (resolution 0.5°)
+
+Transmit: Clears LEDs on a linked push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the linked push button module for clearing LEDs
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_CLEAR_LED (H’F5’)
+    DATABYTE2 = LED bit numbers (1 = clear LED)
+
+Transmit: Sets LEDs on a linked push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the linked push button module for setting LEDs on
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_SET_LED (H’F6’)
+    DATABYTE2 = LED bit numbers (1 = set LED)
+
+Transmit: Blinks LEDs slowly on a linked push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the linked push button module for slowly blinking LEDs
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_SLOW_BLINKING_LED (H’F7’)
+    DATABYTE2 = LED bit numbers (1 = slow blink LED)
+
+Transmits program step info:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_PROGRAM_STEP_INFO (H’C1’)
+    DATABYTE2 = Program step number (1…170 / 255 step not found)
+    DATABYTE3 = Program reference
+                          Contents    Description
+                          000xxxxx    Disable program step
+                          001xxxxx    Absolute time
+                          010xxxxx    Wake up time 1 + relative time
+                          011xxxxx    Go to bed time 1 + relative time
+                          100xxxxx    Wake up time 2 + relative time
+                          101xxxxx    Go to bed time 2 + relative time
+                          110xxxxx    Sunrise + relative time
+                          111xxxxx    Sunset + relative time
+                          xxx01111    Rel. time = 3h45min
+                             …
+                          xxx00001    Rel. time = 15min
+                          xxx00000    Rel. time = 0
+                          xxx11111    Rel. time = -15min
+                             …
+                          xxx10000    Rel. time = -4h
+
+
+
+
+                                          VMBGPOD-2 PROTOCOL – version 1              15
+DATABYTE4 = Program step month & four least significant bits of day
+                  Contents                           Description
+                 xxxx0000       Weekly program
+                 xxxx0001       January
+                 xxxx0010       February
+                 xxxx0011       March
+                 xxxx0100       April
+                 xxxx0101       May
+                 xxxx0110       June
+                 xxxx0111       July
+                 xxxx1000       August
+                 xxxx1001       September
+                 xxxx1010       October
+                 xxxx1011       November
+                 xxxx1100       December
+                 xxxx1101       Monthly program
+                 xxxx1110       Monthly program
+                 xxxx1111       Monthly program
+
+                  Contents byte6     Contents byte4     Description
+                    00xxxxxx           0000xxxx         Never
+                    00xxxxxx           0001xxxx         Day 1of the month
+                    00xxxxxx           0010xxxx         Day 2of the month
+                       …                  ...           …
+                    01xxxxxx           1111xxxx         Day 31of the month
+                    10xxxxxx           0000xxxx         Never
+                    10xxxxxx           0001xxxx         Every Monday
+                    10xxxxxx           0010xxxx         Every Tuesday
+                        ...               …             …
+                    10xxxxxx           0111xxxx         Every Sunday
+                    10xxxxxx           1000xxxx         Every weekend (sa & su)
+                    10xxxxxx           1001xxxx         Every working day (mo…fr)
+                    10xxxxxx           1010xxxx         Every day except Sunday
+                    10xxxxxx           1011xxxx         Every day
+                    10xxxxxx           1100xxxx         Never
+                       …                  …             …
+                    11xxxxxx           1111xxxx         Never
+
+DATABYTE5 = Program step hour & group number
+                  Contents      Description
+                 xxx00000       0h
+                 xxx00001       1h
+                    …           …
+                 xxx10111       23h
+                 xx1xxxxx       Program group 1 (Summer program)
+                 x1xxxxxx       Program group 2 (Winter program)
+                 1xxxxxxx       Program group 3 (Holiday program)
+
+DATABYTE6 = Program step minute & every flag & msb of day
+                  Contents      Description
+                 xx000000       0min
+                 xx000001       1min
+                    …           …
+                 xx111011       59min
+
+                  Contents byte6     Contents byte4     Description
+                    00xxxxxx           0000xxxx         Never
+                    00xxxxxx           0001xxxx         Day 1of the month
+
+
+
+
+                                    VMBGPOD-2 PROTOCOL – version 1                  16
+                   00xxxxxx          0010xxxx       Day 2of the month
+                      …                 ...         …
+                   01xxxxxx          1111xxxx       Day 31of the month
+                   10xxxxxx          0000xxxx       Never
+                   10xxxxxx          0001xxxx       Every Monday
+                   10xxxxxx          0010xxxx       Every Tuesday
+                      ...               …           …
+                   10xxxxxx          0111xxxx       Every Sunday
+                   10xxxxxx          1000xxxx       Every weekend (sa & su)
+                   10xxxxxx          1001xxxx       Every working day (mo…fr)
+                   10xxxxxx          1010xxxx       Every day except Sunday
+                   10xxxxxx          1011xxxx       Every day
+                   10xxxxxx          1100xxxx       Never
+                      …                 …           …
+                   11xxxxxx          1111xxxx       Never
+
+DATABYTE7 = Program step action
+                  Contents        Action
+                      0           0s25 Pulse
+                      1           1s Pulse
+                      2           2s Pulse
+                     ...          ...
+                    119           1min59s Pulse
+                    120           2min Pulse
+                    121           2min15s Pulse
+                     ...          ...
+                    131           4min45s Pulse
+                    132           5min Pulse
+                    133           5min30s Pulse
+                     ...          ...
+                    181           29min30s Pulse
+                    182           30min Pulse
+                    183           31min Pulse
+                     ...          ...
+                    211           59min Pulse
+                    212           1h Pulse
+                    213           1h15min Pulse
+                     ...          ...
+                    227           4h45min Pulse
+                    228           5h Pulse
+                    229           5h30min Pulse
+                     ...          ...
+                    237           9h30min Pulse
+                    238           10h Pulse
+                    239           11h Pulse
+                     ...          …
+                    246           18h Pulse
+                    247           Press
+                    248           Long Press
+                    249           Release
+                    250           Lock
+                    251           Unlock
+                    252           Sensor: Safe mode
+                    253           Sensor: Night mode
+                    254           Sensor: Day mode
+                    255           Sensor: Comfort mode
+
+
+DATABYTE8 = Channel
+                 Contents         Channel
+
+
+
+
+                                  VMBGPOD-2 PROTOCOL – version 1                17
+ 1    Channel 1 or temperature sensor
+ 2    Channel 2
+...   …
+ 7    Channel 7
+ 8    Channel 8
+
+
+
+
+      VMBGPOD-2 PROTOCOL – version 1    18
+Transmit ‘counter status request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Counter address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_ENERGY_COUNTER_STATUS_RQ (H’BD’)
+    DATABYTE2 = energy counter channel 1 to 4
+                       Contents        Description
+                   B’xxxxxxx1’         Channel 1
+                   B’xxxxxx1x’         Channel 2
+                   B’xxxxx1xx’         Channel 3
+                   B’xxxx1xxx’         Channel 4
+    DATABYTE3 = auto send interval
+                       10…255s fixed interval
+                       5…9 = auto send on change with 5s as minimum interval
+                       1…4 = auto send on change disabled
+                       0 = no change on auto send interval
+
+    Remark: the auto send interval is common for all channels
+
+Transmit ‘Remote Sensor status request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_MODULE_STATUS_REQUEST (H’FA’)
+    DATABYTE2 = don’t care
+
+Transmit ‘Remote Sensor temperature request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_SENSOR_TEMP_REQUEST (H’E5’)
+    DATABYTE2 = Autosend time interval into seconds
+                    (valid range: 10…255s)
+                    (5…9 = auto send on temperature change)
+                    (1…4 = auto send disabled)
+                    (0 = no change on auto send interval)
+
+Transmit ‘Remote Sensor settings request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_REQUEST (H’E7’)
+    DATABYTE2 = don’t care
+
+
+
+
+                                          VMBGPOD-2 PROTOCOL – version 1       19
+Transmit ‘Remote sensor Time statistics request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_TIME_STATISTICS_REQUEST (H’C7’)
+    DATABYTE2 = statistics mode index
+                     Contents       Time statistics request
+                     10000001       Heating antifreeze mode time statistics
+                     10000010       Heating night mode time statistics
+                     10000100       Heating day mode time statistics
+                     10001000       Heating comfort mode time statistics
+                     10010000       Heating global time statistics
+                     01000001       Cooling standby mode time statistics
+                     01000010       Cooling night mode time statistics
+                     01000100       Cooling day mode time statistics
+                     01001000       Cooling comfort mode time statistics
+                     01010000       Cooling global time statistics
+
+Transmit ‘Remote Sensor Set temperature’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_SET_TEMP (H’E4’)
+    DATABYTE2 = Pointer to temperature variable (0…20)
+                     Contents       Temperature variable
+                          0         Target temperature set
+                          1         Comfort temperature set for heating
+                          2         Day temperature set for heating
+                          3         Night temperature set for heating
+                          4         Safe temperature set for heating
+                          5         Temperature difference for turbo output
+                          6         Hysteresis (0°…15.5°C)
+                          7         Comfort temperature set for cooling
+                          8         Day temperature set for cooling
+                          9         Night temperature set for cooling
+                         10         Safe temperature set for cooling
+                         11         Calibration offset factor (-8°…+7.5°C)
+                         12         Reset minimum/maximum temperature
+                         13         Reset time statistics
+                         14         enable/disable anti-block valve/pump
+                         15         Temperature alarm 1 set
+                         16         Temperature alarm 4 set
+                         17         Lower temperature range cool mode
+                         18         Upper temperature range heat mode
+                         19         Differential sensor address (H’FF’ = no diff. sensor)
+                         20         Target temperature set for the differential sensor
+                         21         Minimum switching time
+                         22         Pump delayed on time
+                         23         Pump delayed off time
+                         24         Temperature alarm 2 set
+                         25         Temperature alarm 3 set
+                         26         Lower temperature range heat mode
+                         27         Upper temperature range cool mode
+                         28         Calibration gain factor
+
+
+
+
+                                           VMBGPOD-2 PROTOCOL – version 1                   20
+   DATABYTE3 = Temperature set (resolution 0.5°)
+                Contents       Temperature set
+                01111111       63.5°C
+
+                     00101000      20°C
+
+                     00000010      1°C
+                     00000001      0.5°C
+                     00000000      0°C
+                     11111111      -0.5°C
+
+                10010010        -55°C
+   DATABYTE3 = Reset minimum/maximum temperature
+                Contents        Reset temperature
+                00000001        Reset minimum temperature
+                00000010        Reset maximum temperature
+   DATABYTE3 = Reset time statistics mode index
+                Contents        Reset time statistics
+                10000001        Reset heating antifreeze mode time statistics
+                10000010        Reset heating night mode time statistics
+                10000100        Reset heating day mode time statistics
+                10001000        Reset heating comfort mode time statistics
+                10010000        Reset heating global time statistics
+                01000001        Reset cooling standby mode time statistics
+                01000010        Reset cooling night mode time statistics
+                01000100        Reset cooling day mode time statistics
+                01001000        Reset cooling comfort mode time statistics
+                01010000        Reset cooling global time statistics
+   DATABYTE3 = Enable/disable unjamming heater valve & pump
+                Contents        Enable/disable unjamming valve and pump
+                00000000        Disable unjamming heater valve & pump
+                00000001        Disable unjamming heater valve & enable unjamming pump
+                00000010        Enable unjamming heater valve & disable unjamming pump
+                00000011        Enable unjamming heater valve & pump
+
+   DATABYTE3 = Minimum switching time:
+                Contents     Operating mode
+                00000000     No switching time protection
+                00000001     1 minute switching time protection
+                00000010     2 minute switching time protection
+                …            …
+                11111110     254 minute switching time protection
+                11111111     Default 1 minute switching time protection
+
+   Remark:
+   Valid hysteresis range = 0 …15.5°C
+   Valid calibration factor range = -8 …7.5°C
+   Wait at least 10ms for sending a next command on the velbus.
+
+Transmit ‘Remote Sensor Set heating mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_SET_HEATING_MODE (H’E0’)
+    DATABYTE2 = don’t care
+
+
+
+
+                                          VMBGPOD-2 PROTOCOL – version 1                 21
+Transmit ‘Remote Sensor Set cooling mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_SET_COOLING_MODE (H’DF’)
+    DATABYTE2 = don’t care
+
+Transmit ‘Switch to comfort mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_COMFORT_MODE (H’DB’)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains H’FF00’, the command is a program step.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+Transmit ‘Switch to day mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_DAY_MODE (H’DC’)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains H’FF00’, the command is a program step.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+Transmit ‘Switch to night mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_NIGHT_MODE (H’DD’)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains H’FF00’, the command is a program step.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1                                               22
+Transmit ‘Switch to safe temperature mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_SAFE_MODE (H’DE’)
+    DATABYTE7 = High byte of the sleep time
+    DATABYTE8 = Low byte of the sleep time into minutes
+
+    Remark:
+    If the sleep time contains H’FF00’, the command is a program step.
+    A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps will
+    not be executed during that time.
+    A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore.
+    A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+Transmit ‘Read program step’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 5 databytes to send
+    DATABYTE1 = COMMAND_READ_PROGRAM_STEP (H’C0’)
+    DATABYTE2 = Start program step number (1…170)
+    DATABYTE3 = Program group number (1…3)
+    DATABYTE4 = Channel (1…32 for buttons or 128 for temperature channel)
+    DATABYTE5 = Search direction (1 = search for next matched step / 0 = search for previous matched program step)
+
+Transmit ‘Remote Sensor Write program step’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_WRITE_PROGRAM_STEP (H’C2’)
+    DATABYTE2 = Program step number (1…170)
+    DATABYTE3 = Program reference
+                         Contents      Description
+                         000xxxxx      Disable program step
+                         001xxxxx      Absolute time
+                         010xxxxx      Wake up time 1 + relative time
+                         011xxxxx      Go to bed time 1 + relative time
+                         100xxxxx      Wake up time 2 + relative time
+                         101xxxxx      Go to bed time 2 + relative time
+                         110xxxxx      Sunrise + relative time
+                         111xxxxx      Sunset + relative time
+                         xxx01111      Rel. time = 3h45min
+                             …
+                         xxx00001      Rel. time = 15min
+                         xxx00000      Rel. time = 0
+                         xxx11111      Rel. time = -15min
+                             …
+                         xxx10000      Rel. time = -4h
+
+
+
+
+                                          VMBGPOD-2 PROTOCOL – version 1                                               23
+DATABYTE4 = Program step month & four least significant bits of day
+                  Contents                           Description
+                 xxxx0000       Weekly program
+                 xxxx0001       January
+                 xxxx0010       February
+                 xxxx0011       March
+                 xxxx0100       April
+                 xxxx0101       May
+                 xxxx0110       June
+                 xxxx0111       July
+                 xxxx1000       August
+                 xxxx1001       September
+                 xxxx1010       October
+                 xxxx1011       November
+                 xxxx1100       December
+                 xxxx1101       Monthly program
+                 xxxx1110       Monthly program
+                 xxxx1111       Monthly program
+
+                  Contents byte6     Contents byte4     Description
+                    00xxxxxx           0000xxxx         Never
+                    00xxxxxx           0001xxxx         Day 1of the month
+                    00xxxxxx           0010xxxx         Day 2of the month
+                       …                  ...           …
+                    01xxxxxx           1111xxxx         Day 31of the month
+                    10xxxxxx           0000xxxx         Never
+                    10xxxxxx           0001xxxx         Every Monday
+                    10xxxxxx           0010xxxx         Every Tuesday
+                        ...               …             …
+                    10xxxxxx           0111xxxx         Every Sunday
+                    10xxxxxx           1000xxxx         Every weekend (sa & su)
+                    10xxxxxx           1001xxxx         Every working day (mo…fr)
+                    10xxxxxx           1010xxxx         Every day except Sunday
+                    10xxxxxx           1011xxxx         Every day
+                    10xxxxxx           1100xxxx         Never
+                       …                  …             …
+                    11xxxxxx           1111xxxx         Never
+
+DATABYTE5 = Program step hour & group number
+                  Contents      Description
+                 xxx00000       0h
+                 xxx00001       1h
+                    …           …
+                 xxx10111       23h
+                 xx1xxxxx       Program group 1 (Summer program)
+                 x1xxxxxx       Program group 2 (Winter program)
+                 1xxxxxxx       Program group 3 (Holiday program)
+
+DATABYTE6 = Program step minute & msb of day & every flag
+                  Contents      Description
+                 xx000000       0min
+                 xx000001       1min
+                    …           …
+                 xx111011       59min
+
+
+
+
+                                    VMBGPOD-2 PROTOCOL – version 1                  24
+                Contents byte6     Contents byte4   Description
+                  00xxxxxx           0000xxxx       Never
+                  00xxxxxx           0001xxxx       Day 1of the month
+                  00xxxxxx           0010xxxx       Day 2of the month
+                     …                  ...         …
+                  01xxxxxx           1111xxxx       Day 31of the month
+                  10xxxxxx           0000xxxx       Never
+                  10xxxxxx           0001xxxx       Every Monday
+                  10xxxxxx           0010xxxx       Every Tuesday
+                      ...               …           …
+                  10xxxxxx           0111xxxx       Every Sunday
+                  10xxxxxx           1000xxxx       Every weekend (sa & su)
+                  10xxxxxx           1001xxxx       Every working day (mo…fr)
+                  10xxxxxx           1010xxxx       Every day except Sunday
+                  10xxxxxx           1011xxxx       Every day
+                  10xxxxxx           1100xxxx       Never
+                     …                  …           …
+                  11xxxxxx           1111xxxx       Never
+
+DATABYTE7 = Program step action
+                  Contents        Action
+                      0           0s25 Pulse
+                      1           1s Pulse
+                      2           2s Pulse
+                     ...          ...
+                    119           1min59s Pulse
+                    120           2min Pulse
+                    121           2min15s Pulse
+                     ...          ...
+                    131           4min45s Pulse
+                    132           5min Pulse
+                    133           5min30s Pulse
+                     ...          ...
+                    181           29min30s Pulse
+                    182           30min Pulse
+                    183           31min Pulse
+                     ...          ...
+                    211           59min Pulse
+                    212           1h Pulse
+                    213           1h15min Pulse
+                     ...          ...
+                    227           4h45min Pulse
+                    228           5h Pulse
+                    229           5h30min Pulse
+                     ...          ...
+                    237           9h30min Pulse
+                    238           10h Pulse
+                    239           11h Pulse
+                     ...          …
+                    246           18h Pulse
+                    247           Press
+                    248           Long Press
+                    249           Release
+                    250           Lock
+                    251           Unlock
+                    252           Sensor: Safe mode
+                    253           Sensor: Night mode
+                    254           Sensor: Day mode
+                    255           Sensor: Comfort mode
+
+
+
+
+                                  VMBGPOD-2 PROTOCOL – version 1                25
+VMBGPOD-2 PROTOCOL – version 1   26
+   DATABYTE8 = Channel
+                    Contents      Channel
+                        1         Channel 1 or temperature sensor
+                        2         Channel 2
+                       ...        …
+                        7         Channel 7
+                        8         Channel 8
+
+Transmit ‘Remote Analog Sensor readout request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Analog Sensor Address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes to send
+    DATABYTE1 = COMMAND_SENSOR_TEMP_REQUEST (H’E5’)
+    DATABYTE2 = Remote analog sensor channel
+    DATABYTE3 = Autosend time interval into seconds
+                    (valid range: 10…255s)
+                    (5…9 = auto send on temperature change)
+                    (1…4 = auto send disabled)
+                    (0 = no change on auto send interval)
+
+
+
+
+                                  VMBGPOD-2 PROTOCOL – version 1    27
+‘Linked push button status’ received:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Address of the linked push button module
+    RTR = 0
+    DLC3...DLC0 = 4 databytes received
+    DATABYTE1 = COMMAND_PUSH_BUTTON_STATUS (H’00’)
+    DATABYTE2 = Linked push buttons just pressed (1 = just pressed)
+    DATABYTE3 = Linked push buttons just released (1 = just released)
+    DATABYTE4 = linked push buttons long pressed (1 = longer than 0.85s pressed)
+
+‘Power up message’ received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = H’00’
+    RTR = 0
+    DLC3...DLC0 = 2 databyte to send
+    DATABYTE1 = COMMAND_POWER_UP (H’AB’)
+    DATABYTE2 = module address
+
+‘Set real time clock’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = H’00’
+    RTR = 0
+    DLC3...DLC0 = 4 databytes to send
+    DATABYTE1 = COMMAND_SET_REALTIME_CLOCK (H’D8’)
+    DATABYTE2 = Day of week
+                 Contents day of week’  Description
+                        H’00’           Monday
+                        H’01’           Tuesday
+                        H’02’           Wednesday
+                        H’03’           Thursday
+                        H’04’           Friday
+                        H’05’           Saterday
+                        H’06’           Sunday
+    DATABYTE3 = Hours (0…23)
+    DATABYTE4 = Minutes (0…59)
+
+‘Set date’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = H’00’
+     RTR = 0
+     DLC3...DLC0 = 5 databytes to send
+     DATABYTE1 = COMMAND_SET_REALTIME_DATE (H’B7’)
+     DATABYTE2 = Day (1…31)
+     DATABYTE3 = Month (1…12)
+     DATABYTE4 = High byte of Year
+     DATABYTE5 = Low byte of Year
+
+‘Set daylight savings’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = H’00’
+     RTR = 0
+     DLC3...DLC0 = 2 databytes to send
+     DATABYTE1 = COMMAND_SET_DAYLIGHT_SAVING (H’AF’)
+     DATABYTE2 = 0 =disabled / 1 = enabled
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1            28
+‘Enable/disable global sunrise/sunset related actions’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = H’00’
+    RTR = 0
+    DLC3...DLC0 = 3 databytes to send
+    DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
+    DATABYTE2 = Channel (FF)
+    DATABYTE3 = enable/disable flags
+                       Contents              Description
+                    B’xxxxxxx0’              Disable sunrise related actions
+                    B’xxxxxxx1’              Enable sunrise related actions
+                    B’xxxxxx0x’              Disable sunset related actions
+                    B’xxxxxx1x’              Enable sunset related actions
+
+‘Enable/disable local sunrise/sunset related actions’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes to send
+    DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
+    DATABYTE2 = Channel (FF)
+    DATABYTE3 = enable/disable flags
+                       Contents               Description
+                     B’xxxxxxx0’              Disable sunrise related actions
+                     B’xxxxxxx1’              Enable sunrise related actions
+                     B’xxxxxx0x’              Disable sunset related actions
+                     B’xxxxxx1x’              Enable sunset related actions
+
+‘Set global clock alarm’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = H’00’
+    RTR = 0
+    DLC3...DLC0 = 7 databytes to send
+    DATABYTE1 = COMMAND_SET_ALARM_CLOCK (H’C3’)
+    DATABYTE2 = Alarm number (1 or 2)
+    DATABYTE3 = Wake up hour (0…23)
+    DATABYTE4 = Wake up minute (0…59)
+    DATABYTE5 = Go to bed hour (0…23)
+    DATABYTE6 = Go to bed minute (0…59)
+    DATABYTE7 = Clock alarm enable flag (0 = disabled / 1 = enabled)
+
+‘Set local clock alarm’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 7 databytes to send
+     DATABYTE1 = COMMAND_SET_ALARM_CLOCK (H’C3’)
+     DATABYTE2 = Alarm number (1 or 2)
+     DATABYTE3 = Wake up hour (0…23)
+     DATABYTE4 = Wake up minute (0…59)
+     DATABYTE5 = Go to bed hour (0…23)
+     DATABYTE6 = Go to bed minute (0…59)
+     DATABYTE7 = Clock alarm enable flag (0 = disabled / 1 = enabled)
+
+‘Module type request’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 1
+   DLC3...DLC0 = 0 databytes received
+
+
+
+
+                                           VMBGPOD-2 PROTOCOL – version 1       29
+‘Module status request’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 2 databytes received
+   DATABYTE1 = COMMAND_MODULE_STATUS_REQUEST (H’FA’)
+   DATABYTE2 = don’t care
+
+‘Channel name request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_CHANNEL_NAME_REQUEST (H’EF’)
+    DATABYTE2 = channel number 1…33 (channel 33 = temperature sensor name)
+
+    Remark: channel = H’FF’ for all 32 channel names & temperature sensor name
+
+‘Clear channel LED’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_CLEAR_LED (H’F5’)
+    DATABYTE2 = LEDs to clear (a one clears the corresponding LED of channel 1 to 8)
+
+‘Set channel LED’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+     RTR = 0
+     DLC3...DLC0 = 2 databytes received
+     DATABYTE1 = COMMAND_SET_LED (H’F6’)
+     DATABYTE2 = LEDs to set (a one sets the corresponding LED of channel 1 to 8)
+
+‘Slow blink channel LED’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_SLOW_BLINK_LED (H’F7’)
+    DATABYTE2 = LEDs to blink slow (a one blinks slow the corresponding LED of channel 1 to 8)
+
+‘Fast blink channel LED’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_FAST_BLINK_LED (H’F8’)
+    DATABYTE2 = LEDs to blink fast (a one blinks fast the corresponding LED of channel 1 to 8)
+
+‘Very fast blink channel LED’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_VERY_FAST_BLINK_LED (H’F9’)
+    DATABYTE2 = LEDs to blink very fast (a one blinks very fast the corresponding LED of channel 1 to 8)
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1                                    30
+‘Update channel LEDs’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+   RTR = 0
+   DLC3...DLC0 = 4 databytes received
+   DATABYTE1 = COMMAND_UPDATE_LED_STATUS (H’F4’)
+   DATABYTE2 = LEDs to set (a one sets the corresponding LED of channel 1 to 8)
+   DATABYTE3 = LEDs to blink slow (a one blinks slow the corresponding LED of channel 1 to 8)
+   DATABYTE4 = LEDs to blink fast (a one blinks very fast the corresponding LED of channel 1 to 8)
+
+    Remark:
+    The ‘LEDs to set’ status overrides the blinking modes.
+    Very fast blinking if slow & fast blinking are set.
+
+‘Read data from memory’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_READ_DATA_FROM_MEMORY (H’FD’)
+    DATABYTE2 = High memory address
+    DATABYTE3 = LOW memory address
+
+    Remark: address range: H’0000’ to H’1A03’
+
+‘Read data block from memory’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 3 databytes received
+   DATABYTE1 = COMMAND_READ_MEMORY_BLOCK (H’C9’)
+   DATABYTE2 = High memory address
+   DATABYTE3 = LOW memory address
+
+    Remark: address range: H’0000’ to H’1A00’
+
+‘Memory dump request’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 1 databytes received
+   DATABYTE1 = COMMAND_MEMORY_DUMP_REQUEST (H’CB’)
+
+‘Counter log dump request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_MEMORY_DUMP_REQUEST (H’CB’)
+    DATABYTE2 = don’t care
+    DATABYTE3 = don’t care
+
+‘Write data to memory’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 4 databytes received
+    DATABYTE1 = COMMAND_WRITE_DATA_TO_MEMORY (H’FC’)
+    DATABYTE2 = High memory address
+    DATABYTE3 = LOW memory address
+    DATABYTE4 = memory data to write
+    Remark:
+    Wait for ‘data memory byte’ feedback before sending a next command on the velbus.
+
+
+
+                                           VMBGPOD-2 PROTOCOL – version 1                            31
+   Address range: H’0000’ to H’1A03’
+   Terminate always with a write command at the last memory location .
+
+‘Write memory block’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 7 databytes received
+    DATABYTE1 = COMMAND_WRITE_MEMORY_BLOCK (H’CA’)
+    DATABYTE2 = High memory address
+    DATABYTE3 = LOW memory address
+    DATABYTE4 = memory databyte1 to write
+    DATABYTE5 = memory databyte2 to write
+    DATABYTE6 = memory databyte3 to write
+    DATABYTE7 = memory databyte4 to write
+
+   Remark:
+   Wait for ‘memory data block’ feedback before sending a next command on the velbus.
+   Address range: H’0000’ to H’1A00’
+   Terminate always with a write command at the last memory location .
+
+‘Bus error counter status request’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 1 databytes to send
+   DATABYTE1 = COMMAND_BUS_ERROR_COUNTER_STATUS_REQUEST (H’D9’)
+
+‘Unlock channel’ command received:
+   SID10-SID9 = 00 (highest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_CANCEL_FORCED_OFF (H’13’)
+    DATABYTE2 = Channel number 1…33 (33 for enable temperature sensor)
+
+   Remark: channel number = H’FF’ for all 32 channels & enable temperature sensor
+
+‘Lock channel’ command received:
+   SID10-SID9 = 00 (highest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 5 databytes received
+   DATABYTE1 = COMMAND_FORCED_OFF (H’12’)
+   DATABYTE2 = Channel number 1…33 (33 for disable temperature sensor)
+   DATABYTE3 = high byte of delay time
+   DATABYTE4 = mid byte of delay time
+   DATABYTE5 = low byte of delay time
+
+   Remark:
+   Channel number = H’FF’ for all 32 channels & disable temperature sensor
+   [DATABYTE3][DATABYTE4][DATABYTE5] contain a 24-bit time in seconds
+   The command will be skipped when the time parameter contains zero.
+   When the time parameter contains H’FFFFFF’ then the channel will be permanently locked.
+
+‘Enable Channel Program’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 2 databytes received
+   DATABYTE1 = COMMAND_ENABLE_PROGRAM (H’B2’)
+   DATABYTE2 = Channel number (1…32)
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1                      32
+Remark: channel number = H’FF’ for all 32 channels
+
+
+
+
+                                     VMBGPOD-2 PROTOCOL – version 1   33
+‘Disable Channel Program’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 5 databytes received
+    DATABYTE1 = COMMAND_DISABLE_PROGRAM (H’B1’)
+    DATABYTE2 = Channel number (1…32)
+    DATABYTE3 = high byte of delay time
+    DATABYTE4 = mid byte of delay time
+    DATABYTE5 = low byte of delay time
+
+   Remark:
+   Channel number = H’FF’ for all 32 channels
+   [DATABYTE3][DATABYTE4][DATABYTE5] contain a 24-bit time in seconds
+   The command will be skipped when the time parameter contains zero.
+   When the time parameter contains H’FFFFFF’ then the channel program will be permanently disabled.
+
+‘Select Program’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 2 databytes received
+    DATABYTE1 = COMMAND_SELECT_PROGRAM (H’B3’)
+    DATABYTE2 = Program mode
+                     Contents         Selected program
+                       0              None
+                       1              Group 1 (Summer)
+                       2              Group 2 (Winter)
+                       3              Group 3 (Holiday)
+
+‘Sensor temperature request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_SENSOR_TEMP_REQUEST (H’E5’)
+    DATABYTE2 = Autosend time interval into seconds
+                     (valid range: 10…255s)
+                     (5…9 = auto send on temperature change)
+                     (1…4 = auto send disabled)
+                     (0 = no change on auto send interval)
+
+‘Sensor settings request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_REQUEST (H’E7’)
+    DATABYTE2 = don’t care
+
+‘Set heating mode’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 2 databytes received
+     DATABYTE1 = COMMAND_SET_HEATING_MODE (H’E0’)
+     DATABYTE2 = don’t care
+
+
+
+
+                                        VMBGPOD-2 PROTOCOL – version 1                                 34
+‘Set cooling mode’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 2 databytes received
+     DATABYTE1 = COMMAND_SET_COOLING_MODE (H’DF’)
+     DATABYTE2 = don’t care
+
+‘Set default sleep time’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 3 databytes received
+     DATABYTE1 = COMMAND_SET_DEFAULT_SLEEP_TIME (H’E3’)
+     DATABYTE2 = High byte of the default sleep time
+     DATABYTE3 = Low byte of the default sleep time into minutes
+                       (valid range H’0001’ to H’FEFF’ or 1min to 65.279min)
+
+    Remark: Wait at least 20ms for sending a next command on the velbus
+
+‘Set temperature’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 3 databytes received
+     DATABYTE1 = COMMAND_SET_TEMP (H’E4’)
+     DATABYTE2 = Pointer to temperature variable (0…20)
+                      Contents       Temperature variable
+                            0        Target temperature set
+                            1        Comfort temperature set for heating
+                            2        Day temperature set for heating
+                            3        Night temperature set for heating
+                            4        Safe temperature set for heating
+                            5        Temperature difference for turbo output
+                            6        Hysteresis (0°…15.5°C)
+                            7        Comfort temperature set for cooling
+                            8        Day temperature set for cooling
+                            9        Night temperature set for cooling
+                           10        Safe temperature set for cooling
+                           11        Calibration offset factor (-8°…+7.5°C)
+                           12        Reset minimum/maximum temperature
+                           13        Reset time statistics
+                           14        enable/disable anti-block valve/pump
+                           15        Temperature alarm 1 set
+                           16        Temperature alarm 4 set
+                           17        Lower temperature range cool mode
+                           18        Upper temperature range heat mode
+                           19        Differential sensor address (H’FF’ = no diff. sensor)
+                           20        Target temperature set for the differential sensor
+                           21        Minimum switching time
+                           22        Pump delayed on time
+                           23        Pump delayed off time
+                           24        Temperature alarm 2 set
+                           25        Temperature alarm 3 set
+                           26        Lower temperature range heat mode
+                           27        Upper temperature range cool mode
+                           28        Calibration gain factor
+
+
+
+
+                                           VMBGPOD-2 PROTOCOL – version 1                    35
+DATABYTE3 = Temperature set (resolution 0.5°)
+             Contents       Temperature set
+             01111111       63.5°C
+
+                  00101000      20°C
+
+                  00000010      1°C
+                  00000001      0.5°C
+                  00000000      0°C
+                  11111111      -0.5°C
+
+             10010010        -55°C
+DATABYTE3 = Reset minimum/maximum temperature
+             Contents        Reset temperature
+             00000001        Reset minimum temperature
+             00000010        Reset maximum temperature
+DATABYTE3 = Reset time statistics mode index
+             Contents        Reset time statistics
+             10000001        Reset heating antifreeze mode time statistics
+             10000010        Reset heating night mode time statistics
+             10000100        Reset heating day mode time statistics
+             10001000        Reset heating comfort mode time statistics
+             10010000        Reset heating global time statistics
+             01000001        Reset cooling standby mode time statistics
+             01000010        Reset cooling night mode time statistics
+             01000100        Reset cooling day mode time statistics
+             01001000        Reset cooling comfort mode time statistics
+             01010000        Reset cooling global time statistics
+DATABYTE3 = Enable/disable unjamming heater valve & pump
+             Contents        Enable/disable unjamming valve and pump
+             00000000        Disable unjamming heater valve & pump
+             00000001        Disable unjamming heater valve & enable unjamming pump
+             00000010        Enable unjamming heater valve & disable unjamming pump
+             00000011        Enable unjamming heater valve & pump
+
+DATABYTE3 = Minimum switching time:
+             Contents     Operating mode
+             00000000     No switching time protection
+             00000001     1 minute switching time protection
+             00000010     2 minute switching time protection
+             …            …
+             11111110     254 minute switching time protection
+             11111111     Default 1 minute switching time protection
+
+Remark:
+Valid hysteresis range = 0 …15.5°C
+Valid calibration factor range = -8 …7.5°C
+Wait at least 10ms for sending a next command on the velbus.
+
+
+
+
+                                       VMBGPOD-2 PROTOCOL – version 1                 36
+‘Switch to comfort mode’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_COMFORT_MODE (H’DB’)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains H’FF00’, the command is a program step.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+‘Switch to day mode’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_DAY_MODE (H’DC’)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains H’FF00’, the command is a program step.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+‘Switch to night mode’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_NIGHT_MODE (H’DD’)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains H’FF00’, the command is a program step.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+‘Switch to safe temperature mode’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_SAFE_MODE (H’DE’)
+    DATABYTE7 = High byte of the sleep time
+    DATABYTE8 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains H’FF00’, the command is a program step.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1                                               37
+VMBGPOD-2 PROTOCOL – version 1   38
+‘Time statistics request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 databytes to send
+    DATABYTE1 = COMMAND_TIME_STATISTICS_REQUEST (H’C7’)
+    DATABYTE2 = statistics mode index
+                        Contents     Time statistics request
+                        10000001     Heating antifreeze mode time statistics
+                        10000010     Heating night mode time statistics
+                        10000100     Heating day mode time statistics
+                        10001000     Heating comfort mode time statistics
+                        10010000     Heating global time statistics
+                        01000001     Cooling standby mode time statistics
+                        01000010     Cooling night mode time statistics
+                        01000100     Cooling day mode time statistics
+                        01001000     Cooling comfort mode time statistics
+                        01010000     Cooling global time statistics
+
+‘Read program step’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 5 databytes to send
+    DATABYTE1 = COMMAND_READ_PROGRAM_STEP (H’C0’)
+    DATABYTE2 = Start program step number (1…170)
+    DATABYTE3 = Program group number (1…3)
+    DATABYTE4 = Channel (1…32 for buttons or 128 for temperature channel)
+    DATABYTE5 = Search direction (1 = search for next matched step / 0 = search for previous matched program step)
+
+‘Program step info’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_PROGRAM_STEP_INFO (H’C1’)
+    DATABYTE2 = Program step number (1…170 / 255 step not found)
+    DATABYTE3 = Program reference
+                         Contents     Description
+                         000xxxxx     Disable program step
+                         001xxxxx     Absolute time
+                         010xxxxx     Wake up time 1 + relative time
+                         011xxxxx     Go to bed time 1 + relative time
+                         100xxxxx     Wake up time 2 + relative time
+                         101xxxxx     Go to bed time 2 + relative time
+                         110xxxxx     Sunrise + relative time
+                         111xxxxx     Sunset + relative time
+                         xxx01111     Rel. time = 3h45min
+                             …
+                         xxx00001     Rel. time = 15min
+                         xxx00000     Rel. time = 0
+                         xxx11111     Rel. time = -15min
+                             …
+                         xxx10000     Rel. time = -4h
+
+
+
+
+                                          VMBGPOD-2 PROTOCOL – version 1                                             39
+DATABYTE4 = Program step month & four least significant bits of day
+                  Contents                           Description
+                 xxxx0000       Weekly program
+                 xxxx0001       January
+                 xxxx0010       February
+                 xxxx0011       March
+                 xxxx0100       April
+                 xxxx0101       May
+                 xxxx0110       June
+                 xxxx0111       July
+                 xxxx1000       August
+                 xxxx1001       September
+                 xxxx1010       October
+                 xxxx1011       November
+                 xxxx1100       December
+                 xxxx1101       Monthly program
+                 xxxx1110       Monthly program
+                 xxxx1111       Monthly program
+
+                  Contents byte6     Contents byte4     Description
+                    00xxxxxx           0000xxxx         Never
+                    00xxxxxx           0001xxxx         Day 1of the month
+                    00xxxxxx           0010xxxx         Day 2of the month
+                       …                  ...           …
+                    01xxxxxx           1111xxxx         Day 31of the month
+                    10xxxxxx           0000xxxx         Never
+                    10xxxxxx           0001xxxx         Every Monday
+                    10xxxxxx           0010xxxx         Every Tuesday
+                        ...               …             …
+                    10xxxxxx           0111xxxx         Every Sunday
+                    10xxxxxx           1000xxxx         Every weekend (sa & su)
+                    10xxxxxx           1001xxxx         Every working day (mo…fr)
+                    10xxxxxx           1010xxxx         Every day except Sunday
+                    10xxxxxx           1011xxxx         Every day
+                    10xxxxxx           1100xxxx         Never
+                       …                  …             …
+                    11xxxxxx           1111xxxx         Never
+
+DATABYTE5 = Program step hour & group number
+                  Contents      Description
+                 xxx00000       0h
+                 xxx00001       1h
+                    …           …
+                 xxx10111       23h
+                 xx1xxxxx       Program group 1 (Summer program)
+                 x1xxxxxx       Program group 2 (Winter program)
+                 1xxxxxxx       Program group 3 (Holiday program)
+
+DATABYTE6 = Program step minute & every flag & msb of day
+                  Contents      Description
+                 xx000000       0min
+                 xx000001       1min
+                    …           …
+                 xx111011       59min
+
+
+
+
+                                    VMBGPOD-2 PROTOCOL – version 1                  40
+                Contents byte6     Contents byte4   Description
+                  00xxxxxx           0000xxxx       Never
+                  00xxxxxx           0001xxxx       Day 1of the month
+                  00xxxxxx           0010xxxx       Day 2of the month
+                     …                  ...         …
+                  01xxxxxx           1111xxxx       Day 31of the month
+                  10xxxxxx           0000xxxx       Never
+                  10xxxxxx           0001xxxx       Every Monday
+                  10xxxxxx           0010xxxx       Every Tuesday
+                      ...               …           …
+                  10xxxxxx           0111xxxx       Every Sunday
+                  10xxxxxx           1000xxxx       Every weekend (sa & su)
+                  10xxxxxx           1001xxxx       Every working day (mo…fr)
+                  10xxxxxx           1010xxxx       Every day except Sunday
+                  10xxxxxx           1011xxxx       Every day
+                  10xxxxxx           1100xxxx       Never
+                     …                  …           …
+                  11xxxxxx           1111xxxx       Never
+
+DATABYTE7 = Program step action
+                  Contents        Action
+                      0           0s25 Pulse
+                      1           1s Pulse
+                      2           2s Pulse
+                     ...          ...
+                    119           1min59s Pulse
+                    120           2min Pulse
+                    121           2min15s Pulse
+                     ...          ...
+                    131           4min45s Pulse
+                    132           5min Pulse
+                    133           5min30s Pulse
+                     ...          ...
+                    181           29min30s Pulse
+                    182           30min Pulse
+                    183           31min Pulse
+                     ...          ...
+                    211           59min Pulse
+                    212           1h Pulse
+                    213           1h15min Pulse
+                     ...          ...
+                    227           4h45min Pulse
+                    228           5h Pulse
+                    229           5h30min Pulse
+                     ...          ...
+                    237           9h30min Pulse
+                    238           10h Pulse
+                    239           11h Pulse
+                     ...          …
+                    246           18h Pulse
+                    247           Press
+                    248           Long Press
+                    249           Release
+                    250           Lock
+                    251           Unlock
+                    252           Sensor: Safe mode
+                    253           Sensor: Night mode
+                    254           Sensor: Day mode
+                    255           Sensor: Comfort mode
+
+
+
+
+                                  VMBGPOD-2 PROTOCOL – version 1                41
+VMBGPOD-2 PROTOCOL – version 1   42
+    DATABYTE8 = Channel
+                     Contents            Channel
+                         1               Channel 1 or temperature sensor
+                         2               Channel 2
+                        ...              …
+                         7               Channel 7
+                         8               Channel 8
+
+
+‘Write program step’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_WRITE_PROGRAM_STEP (H’C2’)
+    DATABYTE2 = Program step number (1…170)
+    DATABYTE3 = Program reference
+                         Contents      Description
+                         000xxxxx      Disable program step
+                         001xxxxx      Absolute time
+                         010xxxxx      Wake up time 1 + relative time
+                         011xxxxx      Go to bed time 1 + relative time
+                         100xxxxx      Wake up time 2 + relative time
+                         101xxxxx      Go to bed time 2 + relative time
+                         110xxxxx      Sunrise + relative time
+                         111xxxxx      Sunset + relative time
+                         xxx01111      Rel. time = 3h45min
+                             …
+                         xxx00001      Rel. time = 15min
+                         xxx00000      Rel. time = 0
+                         xxx11111      Rel. time = -15min
+                             …
+                         xxx10000      Rel. time = -4h
+
+    DATABYTE4 = Program step month & four least significant bits of day
+                      Contents                           Description
+                     xxxx0000       Weekly program
+                     xxxx0001       January
+                     xxxx0010       February
+                     xxxx0011       March
+                     xxxx0100       April
+                     xxxx0101       May
+                     xxxx0110       June
+                     xxxx0111       July
+                     xxxx1000       August
+                     xxxx1001       September
+                     xxxx1010       October
+                     xxxx1011       November
+                     xxxx1100       December
+                     xxxx1101       Monthly program
+                     xxxx1110       Monthly program
+                     xxxx1111       Monthly program
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1    43
+                 Contents byte6    Contents byte4   Description
+                   00xxxxxx          0000xxxx       Never
+                   00xxxxxx          0001xxxx       Day 1of the month
+                   00xxxxxx          0010xxxx       Day 2of the month
+                      …                 ...         …
+                   01xxxxxx          1111xxxx       Day 31of the month
+                   10xxxxxx          0000xxxx       Never
+                   10xxxxxx          0001xxxx       Every Monday
+                   10xxxxxx          0010xxxx       Every Tuesday
+                       ...              …           …
+                   10xxxxxx          0111xxxx       Every Sunday
+                   10xxxxxx          1000xxxx       Every weekend (sa & su)
+                   10xxxxxx          1001xxxx       Every working day (mo…fr)
+                   10xxxxxx          1010xxxx       Every day except Sunday
+                   10xxxxxx          1011xxxx       Every day
+                   10xxxxxx          1100xxxx       Never
+                      …                 …           …
+                   11xxxxxx          1111xxxx       Never
+
+DATABYTE5 = Program step hour & group number
+                  Contents      Description
+                 xxx00000       0h
+                 xxx00001       1h
+                    …           …
+                 xxx10111       23h
+                 xx1xxxxx       Program group 1 (Summer program)
+                 x1xxxxxx       Program group 2 (Winter program)
+                 1xxxxxxx       Program group 3 (Holiday program)
+
+DATABYTE6 = Program step minute & msb of day & every flag
+                  Contents      Description
+                 xx000000       0min
+                 xx000001       1min
+                    …           …
+                 xx111011       59min
+
+                 Contents byte6    Contents byte4   Description
+                   00xxxxxx          0000xxxx       Never
+                   00xxxxxx          0001xxxx       Day 1of the month
+                   00xxxxxx          0010xxxx       Day 2of the month
+                      …                 ...         …
+                   01xxxxxx          1111xxxx       Day 31of the month
+                   10xxxxxx          0000xxxx       Never
+                   10xxxxxx          0001xxxx       Every Monday
+                   10xxxxxx          0010xxxx       Every Tuesday
+                       ...              …           …
+                   10xxxxxx          0111xxxx       Every Sunday
+                   10xxxxxx          1000xxxx       Every weekend (sa & su)
+                   10xxxxxx          1001xxxx       Every working day (mo…fr)
+                   10xxxxxx          1010xxxx       Every day except Sunday
+                   10xxxxxx          1011xxxx       Every day
+                   10xxxxxx          1100xxxx       Never
+                      …                 …           …
+                   11xxxxxx          1111xxxx       Never
+
+
+
+
+                                  VMBGPOD-2 PROTOCOL – version 1                44
+DATABYTE7 = Program step action
+                  Contents        Action
+                      0           0s25 Pulse
+                      1           1s Pulse
+                      2           2s Pulse
+                     ...          ...
+                    119           1min59s Pulse
+                    120           2min Pulse
+                    121           2min15s Pulse
+                     ...          ...
+                    131           4min45s Pulse
+                    132           5min Pulse
+                    133           5min30s Pulse
+                     ...          ...
+                    181           29min30s Pulse
+                    182           30min Pulse
+                    183           31min Pulse
+                     ...          ...
+                    211           59min Pulse
+                    212           1h Pulse
+                    213           1h15min Pulse
+                     ...          ...
+                    227           4h45min Pulse
+                    228           5h Pulse
+                    229           5h30min Pulse
+                     ...          ...
+                    237           9h30min Pulse
+                    238           10h Pulse
+                    239           11h Pulse
+                     ...          …
+                    246           18h Pulse
+                    247           Press
+                    248           Long Press
+                    249           Release
+                    250           Lock
+                    251           Unlock
+                    252           Sensor: Safe mode
+                    253           Sensor: Night mode
+                    254           Sensor: Day mode
+                    255           Sensor: Comfort mode
+
+
+DATABYTE8 = Channel
+                 Contents         Channel
+                     1            Channel 1 or temperature sensor
+                     2            Channel 2
+                    ...           …
+                     7            Channel 7
+                     8            Channel 8
+
+
+
+
+                                  VMBGPOD-2 PROTOCOL – version 1    45
+‘Counter status’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Counter Module address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_ENERGY_COUNTER_STATUS (H’BE’)
+    DATABYTE2 = counter channel 1 to 4 & number of pulses/Unit (kWh-l-m3) divide by 100
+                      Contents        Description
+                   B’xxxxxx00’        Channel 1
+                   B’xxxxxx01’        Channel 2
+                   B’xxxxxx10’        Channel 3
+                   B’xxxxxx11’        Channel 4
+                   B’000001xx’        100 pulses/Unit
+                   B’000010xx’        200 pulses/Unit
+                       …              …
+                   B’001000xx’        800 pulses/Unit
+                       …              …
+                   B’001010xx’        1000 pulses/Unit
+                       …              …
+                   B’010100xx’        2000 pulses/Unit
+                       …              …
+    DATABYTE3 = most significant byte of pulse counter
+    DATABYTE4 = upper byte of pulse counter
+    DATABYTE5 = high byte of pulse counter
+    DATABYTE6 = low byte of pulse counter
+    DATABYTE7 = high byte of period in ms between 2 pulses
+    DATABYTE8 = low byte of period in ms between 2 pulses
+
+    Remark: a period counter contents of 0xFFFF means overflow
+            Counter pulses in Units (kWh-l-m3) = DATABYTE[3…6] / (DATABYTE2[pulses/Unit factor] * Multiplier)
+            Power in W = 1000 * 1000 * 3600 / (DATABYTE[7..8] * DATABYTE2[pulses/Unit factor] * Multiplier)
+            Flow in Units/h = 1000 * 3600 / (DATABYTE[7..8] * DATABYTE2[pulses/Unit factor] * Multiplier)
+
+Remote sensor module status received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Sensor Master address
+   RTR = 0
+   DLC3...DLC0 = 7 databytes to send
+   DATABYTE1 = COMMAND_MODULE_STATUS (H’ED’)
+   DATABYTE2 = channel 1 to 8 status (1 = pressed / 0 = released)
+   DATABYTE3 = enabled/disable channel status (1 = enabled / 0 = disabled)
+   DATABYTE4 = normal/inverted channel status (1 = normal / 0 = inverted)
+   DATABYTE5 = locked channel status (0 = unlocked / 1 = locked)
+   DATABYTE6 = disabled channel program status (0 = program enabled / 1 = program disabled)
+   DATABYTE7 = alarm & program selection
+                      Contents        Selected programl
+                 B’xxxxxx00’          None
+                 B’xxxxxx01’          Summer
+                 B’xxxxxx10’          Winter
+                 B’xxxxxx11’          Holiday
+                 B’xxxxx0xx’          Alarm 1 off
+                 B’xxxxx1xx’          Alarm 1 on
+                 B’xxxx0xxx’          Local alarm 1
+                 B’xxxx1xxx’          Global alarm 1
+                 B’xxx0xxxx’          Alarm 2 off
+                 B’xxx1xxxx’          Alarm 2 on
+                 B’xx0xxxxx’          Local alarm 2
+                 B’xx1xxxxx’          Global alarm 2
+                 B’x0xxxxxx’          Sunrise disabled
+                 B’x1xxxxxx’          Sunrise enabled
+                 B’0xxxxxxx’          Sunset disabled
+
+
+
+
+                                        VMBGPOD-2 PROTOCOL – version 1                                      46
+B’1xxxxxxx’   Sunset enabled
+
+
+
+
+                VMBGPOD-2 PROTOCOL – version 1   47
+Remote Sensor status received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Sensor Master address
+   RTR = 0
+   DLC3...DLC0 = 8 databytes to send
+   DATABYTE1 = COMMAND_TEMP_SENSOR_STATUS (H’EA’)
+   DATABYTE2 = Operating mode
+                      Contents     Operating mode
+                      xxxxxxx1     Mode push button locked
+                      xxxxxxx0     Mode push button unlocked
+                      Xxxxx11x     Disable mode
+                      xxxxx01x     Manual mode
+                      xxxxx10x     Sleep timer mode
+                      xxxxx00x     Run mode
+                      xxxx1xxx     Auto send sensor temperature enabled
+                      xxxx0xxx     Auto send sensor temperature disabled
+                      x100xxxx     Comfort mode
+                      x010xxxx     Day mode
+                      x001xxxx     Night mode
+                      x000xxxx     Safe temp mode (anti frost)
+                      1xxxxxxx     Cooler mode
+                      0xxxxxxx     Heater mode
+   DATABYTE3 = Program step mode
+                      Contents     Program step mode
+                      xxxxx0xx     No sensor program
+                      xxxxx1xx     Sensor program available
+                      xxxx0xxx     No zone program
+                      xxxx1xxx     Zone program available
+                      0xxxxxxx     No all rooms program
+                      1xxxxxxx     All rooms program available
+                      x100xxxx     Comfort program step received
+                      x010xxxx     Day program step received
+                      x001xxxx     Night program step received
+                      X000xxxx     Safe temperature program step received
+                      xxxxxx1x     Enable unjamming heater valve
+                      xxxxxx0x     Disable unjamming heater valve
+                      xxxxxxx1     Enable unjamming pump
+                      xxxxxxx0     Disable unjamming pump
+   DATABYTE4 = Output status (1 = activated)
+                      Contents     Output channel
+                      xxxxxxx0     Heater off
+                      xxxxxxx1     Heater on
+                      xxxxxx0x     Boost heater/cooler off
+                      xxxxxx1x     Boost heater/cooler on
+                      xxxxx0xx     Pump off
+                      xxxxx1xx     Pump on
+                      xxxx0xxx     Cooler off
+                      xxxx1xxx     Cooler on
+                      xxx0xxxx     Temperature alarm 1 off
+                      xxx1xxxx     Temperature alarm 1 on
+                      xx0xxxxx     Temperature alarm 2 off
+                      xx1xxxxxx Temperature alarm 2 on
+                      x0xxxxxx     Temperature alarm 3 off
+                      x1xxxxxx     Temperature alarm 3 on
+                      0xxxxxxx     Temperature alarm 4 off
+                      1xxxxxxx     Temperature alarm 4 on
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1     48
+   DATABYTE5 = Current sensor temperature into two’s complement format (resolution 0.5°)
+                Contents        Current sensor temperature
+                01111111        63.5°C
+
+                      00000001       0.5°C
+                      00000000       0°C
+                      11111111       -0.5°C
+
+                 10010010       -55°C
+   DATABYTE6 = target temperature set (resolution 0.5°)
+                 Contents       Current temperature set
+                 01101100       54°C
+
+                      00101000       20°C
+
+                      00000010       1°C
+                      00000001       0.5°C
+                      00000000       0°C
+                      11111111       -0.5°C
+
+                11000000        -32°C
+   DATABYTE7 = High byte of the sleep timer
+   DATABYTE8 = Low byte of the sleep timer into minutes
+
+   Remark:
+   [DATABYTE7][DATABYTE8] contains a 16-bit sleep timer into minutes (1 to 65.279min).
+   If the sleep timer contains H’0000’, the sleep timer is deactivated.
+   If the sleep timer contains a value between H’0001’ and H’FEFF’ (1 to 65.279min), the sleep timer is running for that
+   time.
+   If the sleep timer contains H’FFFF’, the sensor is in manual mode.
+
+Remote Sensor temperature received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Sensor Master address
+   RTR = 0
+   DLC3...DLC0 = 7 databytes to send
+   DATABYTE1 = COMMAND_SENSOR_TEMPERATURE (H’E6’)
+   DATABYTE2 = High byte current sensor temperature
+   DATABYTE3 = Low byte current sensor temperature into two’s complement format (resolution 0.0625°)
+   DATABYTE4 = High byte minimum sensor temperature
+   DATABYTE5 = Low byte minimum sensor temperature into two’s complement format (resolution 0.0625°)
+   DATABYTE6 = High byte maximum sensor temperature
+   DATABYTE7 = Low byte maximum sensor temperature into two’s complement format (resolution 0.0625°)
+                     High byte      Low byte  Current sensor temperature
+                     01111111       11100000  63.5°C
+
+                      00000001       00000000       0.5°C
+                      00000000       10000000       0.25°C
+                      00000000       01000000       0.125°C
+                      00000000       00100000       0.0625°C
+                      00000000       00000000       0°C
+                      11111111       11111111       -0.0625°C
+                      11111111       11011111       -0.125°C
+                      11111111       10011111       -0.25°C
+                      11111110       00011111       -0.5°C
+
+                      10010010       00011111       -55°C
+
+   Remark:
+   The 5 least significant bits of the low byte are always zero for positive temperature and one for negative temperature.
+   The low order bytes are not sending with the data length of 4 bytes (resolution 0.5°C)
+
+
+
+
+                                            VMBGPOD-2 PROTOCOL – version 1                                                   49
+VMBGPOD-2 PROTOCOL – version 1   50
+First part of the remote sensor settings received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART1 (H’E8’)
+    DATABYTE2 = Current temperature set (resolution 0.5°)
+    DATABYTE3 = Comfort temperature set for heating mode (resolution 0.5°)
+    DATABYTE4 = Day temperature set for heating mode (resolution 0.5°)
+    DATABYTE5 = Night temperature set for heating mode (resolution 0.5°)
+    DATABYTE6 = Anti frost temperature set for heating mode (resolution 0.5°)
+    DATABYTE7 = Boost temperature difference set (resolution 0.5°)
+    DATABYTE8 = Hysteresis temperature set
+                        Contents       Hysteresis
+                        xxx11111       15.5°C
+
+                      Xxx00001      0.5°C
+                      Xxx00000      0°C
+
+Second part of the remote sensor settings received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART2 (H’E9’)
+    DATABYTE2 = Comfort temperature set for cooling mode (resolution 0.5°)
+    DATABYTE3 = Day temperature set for cooling mode (resolution 0.5°)
+    DATABYTE4 = Night temperature set for cooling mode (resolution 0.5°)
+    DATABYTE5 = Safe temperature set for cooling mode (resolution 0.5°)
+    DATABYTE6 = High byte of the default sleep timer
+    DATABYTE7 = Low byte of the default sleep timer into minutes (1 to 65.279min)
+    DATABYTE8 = Default auto send temperature time interval into seconds
+                      (Valid range: 10…255s)
+                      (5…9 = auto send on temperature change with min interval 5…9s)
+                      (<4 = auto send disabled)
+
+Third part of the remote sensor settings received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master address
+    RTR = 0
+    DLC3...DLC0 = 8 databytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART3 (H’C6’)
+    DATABYTE2 = Temperature alarm 1 setting (resolution 0.5°)
+    DATABYTE3 = Temperature alarm 4 setting (resolution 0.5°)
+    DATABYTE4 = Lower temperature range cool mode (resolution 0.5°)
+    DATABYTE5 = Upper temperature range heat mode (resolution 0.5°)
+    DATABYTE6 = Calibration offset factor (resolution 0.5°)
+                       Contents       Calibration factor
+                       00001111       Calibration factor +7.5°C
+
+                      00000001      Calibration factor +0.5°C
+                      00000000      Calibration factor +0°C
+                      11111111      Calibration factor -0.5°C
+
+                 11110000        Calibration factor -8°C
+    DATABYTE7 = Zone number
+    DATABYTE8 = Calibration gain factor
+
+
+
+
+                                         VMBGPOD-2 PROTOCOL – version 1                51
+Fourth part of the remote sensor settings received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Sensor Master address
+   RTR = 0
+   DLC3...DLC0 = 8 databytes to send
+   DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART4 (H’B9’)
+   DATABYTE2 = Minimum switching time (0…255s)
+   DATABYTE3 = Pump delayed on time (0…255s)
+   DATABYTE4 = Pump delayed off time (0…255s)
+   DATABYTE5 = Temperature alarm 2 setting (resolution 0.5°)
+   DATABYTE6 = Temperature alarm 3 setting (resolution 0.5°)
+   DATABYTE7 = Lower temperature range heat mode (resolution 0.5°)
+   DATABYTE8 = Upper temperature range cool mode (resolution 0.5°)
+
+Time statistics of the remote sensor received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Sensor Master address
+   RTR = 0
+   DLC3...DLC0 = 8 databytes to send
+   DATABYTE1 = COMMAND_TIME_STATISTICS (H’C8’)
+   DATABYTE2 = statistics mode index
+                         Contents      Time statistics
+                         10000001      Heating antifreeze mode time statistics
+                         10000010      Heating night mode time statistics
+                         10000100      Heating day mode time statistics
+                         10001000      Heating comfort mode time statistics
+                         10010000      Heating global time statistics
+                         01000001      Cooling standby mode time statistics
+                         01000010      Cooling night mode time statistics
+                         01000100      Cooling day mode time statistics
+                         01001000      Cooling comfort mode time statistics
+                         01010000      Cooling global time statistics
+   DATABYTE3 = ‘ON’ time (hours bcd digits 4 & 3)
+   DATABYTE4 = ‘ON’ time (hours bcd digits 2 & 1)
+   DATABYTE5 = ‘ON’ time (minutes bcd digits 2 & 1)
+   DATABYTE6 = Mode time (hours bcd digits 4 & 3)
+   DATABYTE7 = Mode time (hours bcd digits 2 & 1)
+   DATABYTE8 = Mode time (minutes bcd digits 2 & 1)
+
+    Remark:
+    The time is bcd formatted.
+    Databytes 3, 4 & 5 gives the total ‘ON’ time of the heater or cooler in the corresponding mode.
+    Databytes 6, 7 & 8 gives the total time of selected mode.
+
+Readout of the remote analog sensor received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Analog Sensor address
+   RTR = 0
+   DLC3...DLC0 = number of databytes to send
+   DATABYTE1 = COMMAND_TEXT (H’AC’)
+   DATABYTE2 = remote analog sensor channel
+   DATABYTE3 = text start position
+   DATABYTE4 = character 1
+   DATABYTE5 = character 2
+   DATABYTE6 = character 3
+   DATABYTE7 = character 4
+   DATABYTE8 = character 5
+
+    Remark:
+    valid text start position: 0…15
+    maximum 15 characters are allowed
+    shorter text stings must be ended with a zero value
+
+
+
+
+                                            VMBGPOD-2 PROTOCOL – version 1                            52
+VMBGPOD-2 PROTOCOL – version 1   53
+Memo text received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = number of databytes to send
+   DATABYTE1 = COMMAND_TEXT (H’AC’)
+   DATABYTE2 = don’t care
+   DATABYTE3 = text start position
+   DATABYTE4 = character 1
+   DATABYTE5 = character 2
+   DATABYTE6 = character 3
+   DATABYTE7 = character 4
+   DATABYTE8 = character 5
+
+   Remark:
+   valid text start position: 0…63
+   maximum 64 characters are allowed
+   The last character must be zero
+
+
+
+
+                                       VMBGPOD-2 PROTOCOL – version 1   54
+ Memory map 2 build 1803 or higher: (PCB With New Touch Controller CAP1188)
+
+Address   Contents                                                 Address   Contents
+H’0000’   Channel 1 name character 1                               H’0001’   Channel 1 name character 2
+...       ...                                                      ...       ...
+H’000E’   Channel 1 name character 15                              H’000F’   Channel 1 name character 16
+H’0010’   Channel 1 reaction time                                  H’0011’   Channel 1 start function
+H’0012’   Channel 1 end function                                   H’0013’   Channel 1 mode
+H’0014’   Channel 2 name character 1                               H’0015’   Channel 2 name character 2
+...       ...                                                      ...       ...
+H’0022’   Channel 2 name character 15                              H’0023’   Channel 2 name character 16
+H’0024’   Channel 2 reaction time                                  H’0025’   Channel 2 start function
+H’0026’   Channel 2 end function                                   H’0027’   Channel 2 mode
+...       ...                                                      ...       ...
+H’026C’   Channel 32 name character 1                              H’026D’   Channel 32 name character 2
+...       ...                                                      ...       ...
+H’027A’   Channel 32 name character 15                             H’027B’   Channel 32 name character 16
+H’027C’   Channel 32 reaction time                                 H’027D’   Channel 32 start function
+H’027E’   Channel 32 end function                                  H’027F’   Channel 32 mode
+H’0280’   Long pressed delay                                       H’0281’   Dual function long pressed time
+H’0282’   Led backlight intensity                                  H’0283’   Led intensity
+H’0284’   Alarm clock configuration                                H’0285’   Wake up 1 hour (0…23)
+H’0286’   Wake up 1 minutes (0…59)                                 H’0287’   Go to bed 1 hour (0…23)
+H’0288’   Go to bed 1 minutes (0…59)                               H’0289’   Wake up 2 hour (0…23)
+H’028A’   Wake up 2 minutes (0…59)                                 H’028B’   Go to bed 2 hour (0…23)
+H’028C’   Go to bed 2 minutes (0…59)                               H’028D’   Sunrise hour at 21 December (0…23)
+H’028E’   Sunrise minutes at 21 December (0…59)                    H’028F’   Sunrise 21 January – sunrise 5 January (-128’..127’)
+H’0290’   Sunrise 5 February – sunrise 21 January (-128’..127’)    H’0291’   Sunrise 21 February – sunrise 5 February (-128’..127’)
+H’0292’   Sunrise 5 March – sunrise 21 February (-128’..127’)      H’0293’   Sunrise 21 March – sunrise 5 March (-128’..127’)
+H’0294’   Sunrise 5 April – sunrise 21 March (-128’..127’)         H’0295’   Sunrise 21 April – sunrise 5 April (-128’..127’)
+H’0296’   Sunrise 5 May – sunrise 21 April (-128’..127’)           H’0297’   Sunrise 21 May – sunrise 5 May (-128’..127’)
+H’0298’   Sunrise 5 June – sunrise 21 May (-128’..127’)            H’0299’   Sunrise 21 June – sunrise 5 June (-128’..127’)
+H’029A’   Sunrise 5 July – sunrise 21 June (-128’..127’)           H’029B’   Sunrise 21 July – sunrise 5 July (-128’..127’)
+H’029C’   Sunrise 5 August – sunrise 21 July (-128’..127’)         H’029D’   Sunrise 21 August – sunrise 5 August (-128’..127’)
+H’029E’   Sunrise 5 September – sunrise 21 August (-128’..127’)    H’029F’   Sunrise 21 September – sunrise 5 September (-128..127’)
+H’02A0’   Sunrise 5 October – sunrise 21 September (-128’..127’)   H’02A1’   Sunrise 21 October – sunrise 5 October (-128’..127’)
+H’02A2’   Sunrise 5 November – sunrise 21 October (-128’..127’)    H’02A3’   Sunrise 21 November – sunrise 5 November (-128’..127’)
+H’02A4’   Sunrise 5 December – sunrise 21 November (-128’..127’)   H’02A5’   Sunrise 21 December – sunrise 5 December (-128’..127’)
+H’02A6’   Sunrise 5 January – sunrise 21 December (-128’..127’)    H’02A7’   Sunset hour at 21 December (0…23)
+H’02A8’   Sunset minutes at 21 December (0…59)                     H’02A9’   Sunset 21 January – sunset 5 January (-128’..127’)
+H’02AA’   Sunset 5 February – sunset 21 January (-128’..127’)      H’02AB’   Sunset 21 February – sunset 5 February (-128’..127’)
+H’02AC’   Sunset 5 March – sunset 21 February (-128’..127’)        H’02AD’   Sunset 21 March – sunset 5 March (-128’..127’)
+H’02AE’   Sunset 5 April – sunset 21 March (-128’..127’)           H’02AF’   Sunset 21 April – sunset 5 April (-128’..127’)
+H’02B0’   Sunset 5 May – sunset 21 April (-128’..127’)             H’02B1’   Sunset 21 May – sunset 5 May (-128’..127’)
+H’02B2’   Sunset 5 June – sunset 21 May (-128’..127’)              H’02B3’   Sunset 21 June – sunset 5 June (-128’..127’)
+H’02B4’   Sunset 5 July – sunset 21 June (-128’..127’)             H’02B5’   Sunset 21 July – sunset 5 July (-128’..127’)
+H’02B6’   Sunset 5 August – sunset 21 July (-128’..127’)           H’02B7’   Sunset 21 August – sunset 5 August (-128’..127’)
+H’02B8’   Sunset 5 September – sunset 21 August (-128’..127’)      H’02B9’   Sunset 21 September – sunset 5 September (-128’..127’)
+H’02BA’   Sunset 5 October – sunset 21 September (-128’..127’)     H’02BB’   Sunset 21 October – sunset 5 October (-128’..127’)
+H’02BC’   Sunset 5 November – sunset 21 October (-128’..127’)      H’02BD’   Sunset 21 November – sunset 5 November (-128’..127’)
+H’02BE’   Sunset 5 December – sunset 21 November (-128’..127’)     H’02BF’   Sunset 21 December – sunset 5 December (-128’..127’)
+H’02C0’   Sunset 5 January – sunset 21 December (-128’..127’)      H’02C1’   Sensor name character 1
+H’02C2’   Sensor name character 2                                  H’02C3’   Sensor name character 3
+...       ...                                                      ...       ...
+H’02D0’   Sensor name character 16                                 H’02D1’   Temp. sensor: zone
+H’02D2’   Temp. sensor: flags                                      H’02D3’   Temp. sensor: calibration offset
+H’02D4’   Temp. sensor: calibration gain                           H’02D5’   Temp. sensor: hysteresis
+H’02D6’   Temp. sensor: boost difference                           H’02D7’   Temp. sensor: Pump delayed on
+H’02D8’   Temp. sensor: pump delayed off                           H’02D9’   Temp. sensor: min switching time
+H’02DA’   Temp. sensor: default sleep time low byte                H’02DB’   Temp. sensor: default sleep time high byte
+H’02DC’   Temp. sensor: heater lower temperature range             H’02DD’   Temp. sensor: heater upper temperature range
+H’02DE’   Temp. sensor: heater safe temperature set                H’02DF’   Temp. sensor: heater night temperature set
+H’02E0’   Temp. sensor: heater day temperature set                 H’02E1’   Temp. sensor: heater comfort temperature set
+
+
+
+
+                                             VMBGPOD-2 PROTOCOL – version 1                                                  55
+H’02E2’   Temp. sensor: cooler lower temperature range              H’02E3’   Temp. sensor: cooler upper temperature range
+H’02E4’   Temp. sensor: cooler safe temperature set                 H’02E5’   Temp. sensor: cooler night temperature set
+H’02E6’   Temp. sensor: cooler day temperature set                  H’02E7’   Temp. sensor: cooler comfort temperature set
+H’02E8’   Temp. sensor: alarm 1 temperature set                     H’02E9’   Temp. sensor: alarm 2 temperature set
+H’02EA’   Temp. sensor: alarm 3 temperature set                     H’02EB’   Temp. sensor: alarm 4 temperature set
+H’02EC’   Temp. sensor alarm1 & 2 modes                             H’02ED’   Temp. sensor alarm3 & 4 modes
+H’02EE’   unused                                                    H’02EF’   Memo Display Pages
+H’02F0’   Module settings                                           H’02F1’   Oled intensisty
+H’02F2’   Language                                                  H’02F3’   Display Pages
+H’02F4’   Display counters, clock & sensors                         H’02F5’   Number of remote temperature sensors (0…12)
+H’02F6’   Counter 1 Address                                         H’02F7’   Counter 1 channel
+H’02F8’   Counter 1 name character 1                                H’02F9’   Counter 1 name character 2
+...       ...                                                       ...       ...
+H’0306’   Counter 1 name character 15                               H’0307’   Counter 1 name character 16
+...       ...                                                                 …
+H’032C’   Counter 4 Address                                         H’032D’   Counter 1 channel
+H’032E’   Counter 4 name character 1                                H’032F’   Counter 4 name character 2
+...       ...                                                       ...       ...
+H’033C’   Counter 4 name character 15                               H’033D’   Counter 4 name character 16
+H’033E’   Counters 1…4 multiply factors (x1-x2.5-x0.05-x0.01)       H’033F’   Counters 1...4 units (l-m3-kWh)
+H’0340’   Remote Temperature sensor 1 master address                H’0341’   Remote Temperature sensor 1 sub address
+H’0342’   Remote Temperature sensor 1 name character 1              H’0343’   Remote Temperature sensor 1 name character 2
+...       ...                                                       ...       ...
+H’0350’   Remote Temperature sensor 1 name character 15             H’0351’   Remote Temperature sensor 1 name character 16
+...       ...                                                                 …
+H’0406’   Remote Temperature sensor 12 master address               H’0407’   Remote Temperature sensor 12 sub address
+H’0408’   Remote Temperature sensor 12 name character 1             H’0409’   Remote Temperature sensor 12 name character 2
+...       ...                                                       ...       ...
+H’0416’   Remote Temperature sensor 12 name character 15            H’0417’   Remote Temperature sensor 12 name character 16
+H’0418’   Remote Analog sensor 1 address                            H’0419’   Remote Analog sensor 1 channel
+H’041A’   Remote Analog sensor 1 name character 1                   H’041B’   Remote Analog sensor 1 name character 2
+...       ...                                                       ...       ...
+H’0428’   Remote Analog sensor 1 name character 15                  H’0429’   Remote Analog sensor 1 name character 16
+...       ...                                                                 …
+H’044E’   Remote Analog sensor 4 address                            H’044F’   Remote Analog sensor 4 channel
+H’0450’   Remote Analog sensor 4 name character 1                   H’0451’   Remote Analog sensor 4 name character 2
+...       ...                                                       ...       ...
+H’045E’   Remote Analog sensor 4 name character 15                  H’045F’   Remote Analog sensor 4 name character 16
+
+     Remark:
+     Unused locations contain H’FF’
+     For VMB1TS: Remote temperature sensor master address and sub address must be equal
+
+                Valid reaction times
+                         Contents            Reaction time
+                          H’01’              immediatly (default)
+                          H’4C’              1s
+                          H’99’              2s
+                          H’E0’              3s
+                          H’FF’              Channel disabled
+
+                Channel x start/end function
+                         Contents            Function
+                              1              Channel 1 (default & write protected)
+                              2              Channel 2 (default & write protected)
+                             ...             ...
+                             31              Channel 31 (default & write protected)
+                             32              Channel 32 (default & write protected)
+                Remark:
+                For a normal one function button, the start and end function channel are the same.
+                For a multi function button, the start function channel must be less than the end function. At every press the
+                next channel will be send. When the end function channel is reached, the start channel will be send again at
+                the next press.
+
+
+
+
+                                             VMBGPOD-2 PROTOCOL – version 1                                                    56
+For a dual function button, the start function channel will be send at a short press or the end function will be
+send at a long press.
+
+
+
+
+                             VMBGPOD-2 PROTOCOL – version 1                                                    57
+Channels mode
+         Contents            Description
+       B’xxxxxxx0’           Dual function disabled (default & write protected)
+       B’xxxxxxx1’           Dual function enabled
+       B’xxxxxx0x’           Multi-function auto reset disabled (default & write protected)
+       B’xxxxxx1x’           Multi-function auto reset enabled
+       B’xxxxx0xx’           Led backlight off (default)
+       B’xxxxx1xx’           Led backlight on
+       B’xxxx0xxx’           Led feedback off
+       B’xxxx1xxx’           Led feedback on (default)
+       B’xxx0xxxx’           Slow blinking led feedback off
+       B’xxx1xxxx’           Slow blinking led feedback on (default)
+       B’xx0xxxxx’           Fast blinking led feedback off
+       B’xx1xxxxx’           Fast blinking led feedback on (default)
+       B’x0xxxxxx’           Very fast blinking led feedback off
+       B’x1xxxxxx’           Very fast blinking led feedback on (default)
+Remark:
+When auto reset is enabled, the start function will be loaded again after 3 seconds inactivity of the channel.
+For a dual function button, the start function channel will be send at a short press or the end function will be
+send at a long press.
+The dual function overwrites the multi-function mode.
+
+Valid long pressed delay
+         Contents            Reaction time
+          H’40’              0.8s (default)
+          H’80’              1.6s
+
+Valid dual function long pressed times
+        Contents             Long pressed time
+         H’4C’               1s
+          H’99’              2s (default & write protect)
+         H’E0’               3s
+
+Led backlight intensity
+        Contents               Led backlight intensity
+          H’01’                Minimum
+           ...                 ...
+          H’05’                default
+           ...                 ...
+          H’0F’                Maximum
+
+Led intensity
+        Contents               Led intensity
+          H’01’                Minimum
+            ...                ...
+          H’29’                Maximum (default)
+
+Oled intensity
+         Contents              Led intensity
+          H’0F’                Minimum
+          H’1F’                ...
+          H’3F’                Mid (default)
+          H’7F’                ...
+          H’FF’                Maximum
+
+
+
+
+                             VMBGPOD-2 PROTOCOL – version 1                                                    58
+Alarm clock configuration
+        Contents        Channel locked/unlocked
+      B’xxxxxxx0’       Alarm 1 disabled (default)
+      B’xxxxxxx1’       Alarm 1 enabled
+      B’0xxxxx0x’       Local alarm 1 (default)
+      B’1xxxxx1x’       Global alarm 1
+      B’xxxxx0xx’       Alarm 2 disabled (default)
+      B’xxxxx1xx’       Alarm 2 enabled
+      B’xxxx0xxx’       Local alarm 2 (default)
+      B’xxxx1xxx’       Global alarm 2
+      B’xxx0xxxx’       Sunrise disabled
+      B’xxx1xxxx’       Sunrise enabled (default)
+      B’xx0xxxxx’       Sunset disabled
+      B’xx1xxxxx’       Sunset enabled (default)
+      B’x0xxxxxx’       Day light savings disabled
+      B’x1xxxxxx’       Day light savings enabled (default)
+
+Memo Display pages
+      Contents               Description
+    B’xxxxxxx0’              Memo text not displayed into page 1 (default)
+    B’xxxxxxx1’              Memo text displayed into page 1
+    B’xxxxxx0x’              Memo text not displayed into page 2 (default)
+    B’0xxxxx1x’              Memo text displayed into page 2
+    B’1xxxx0xx’              Memo text not displayed into page 3 (default)
+    B’xxxxx1xx’              Memo text displayed into page 3
+    B’xxxx0xxx’              Memo text not displayed into page 4 (default)
+    B’xxxx1xxx’              Memo text displayed into page 4
+    B’xxx0xxxx’              Memo text not displayed into page 5 (default)
+    B’xxx1xxxx’              Memo text displayed into page 5
+    B’xx0xxxxx’              Memo text not displayed into page 6 (default)
+    B’xx1xxxxx’              Memo text displayed into page 6
+    B’x0xxxxxx’              Memo text not displayed into page 7 (default)
+    B’x1xxxxxx’              Memo text displayed into page 7
+    B’0xxxxxxx’              Memo text not displayed into page 8 (default)
+    B’1xxxxxxx’              Memo text displayed into page 8
+
+Module settings
+       Contents              Description
+     B’xxxxxxx0’         Page 1 not as start-up page (default)
+     B’xxxxxxx1’         Page 1 as start-up page
+     B’0xxxxx0x’         Counter 1 not as start-up page (default)
+     B’1xxxxx1x’         Counter 1 as start-up page
+     B’xxxxx0xx’         Temperature sensor not as start-up page (default)
+     B’xxxxx1xx’         Temperature sensor as start-up page
+     B’xxxx0xxx’         Menu button do not switch between buttons, counters, sensors or clock pages (default)
+     B’xxxx1xxx’         Menu button switch between buttons, counters, sensors or clock pages
+     B’xxx0xxxx’         Wake-up display with no direct actions on the buttons
+     B’xxx1xxxx’         Wake-up with direct actions on buttons (default)
+     B’xx0xxxxx’         Infrared receiver disabled (default)
+     B’xx1xxxxx’         Infrared receiver enabled
+     B’x0xxxxxx’         Keybeep off
+     B’x1xxxxxx’         Keybeep enabled (default)
+     B’0xxxxxxx’         Screensaver off
+     B’1xxxxxxx’         Screensaver on (default)
+
+
+
+
+                           VMBGPOD-2 PROTOCOL – version 1                                               59
+Language
+       Contents              Description
+          0                  English (default)
+          1                  Français
+          2                  Nederlands
+          3                  Espanõl
+          4                  Deutsch
+          5                  Italiano
+
+Display pages
+        Contents             Description
+      B’xxxxxxx1’            Display page 1 always allowed (default)
+      B’xxxxxx01’            Display page 2 not allowed (default)
+      B’0xxxxx11’            Display page 2 allowed
+      B’1xxxx0x1’            Display page 3 not allowed (default)
+      B’xxxxx1x1’            Display page 3 allowed
+      B’xxxx0xx1’            Display page 4 not allowed (default)
+      B’xxxx1xx1’            Display page 4 allowed
+      B’xxx0xxx1’            Display page 5 not allowed (default)
+      B’xxx1xxx1’            Display page 5 allowed
+      B’xx0xxxx1’            Display page 6 not allowed (default)
+      B’xx1xxxx1’            Display page 6 allowed
+      B’x0xxxxx1’            Display page 7 not allowed (default)
+      B’x1xxxxx1’            Display page 7 allowed
+      B’0xxxxxx1’            Display page 8 not allowed (default)
+      B’1xxxxxx1’            Display page 8 allowed
+
+Display counters, clock & temperature sensors
+        Contents             Description
+      B’xxxxxxx1’            Counter 1 disabled (default)
+      B’xxxxxxx1’            Counter 1 enabled
+      B’xxxxxx0x’            Counter 2 disabled (default)
+      B’xxxxxx1x’            Counter 2 enabled
+      B’xxxxx0xx’            Counter 3 disabled (default)
+      B’xxxxx1xx’            Counter 3 enabled
+      B’xxxx0xxx’            Counter 4 disabled (default)
+      B’xxxx1xxx’            Counter 4 enabled
+      B’xxx0xxxx’            Do not display the clock page (default)
+      B’xxx1xxxx’            Display the clock page
+      B’xx0xxxxx’            Do not display the temperature sensor pages (default)
+      B’xx1xxxxx’            Display the temperature pages
+      B’x0xxxxxx’            Show local temperature if temperature pages are enabled (default)
+      B’x1xxxxxx’            Hide local temperature page
+      B’0xxxxxxx’            Do not display the analog sensor pages (default)
+      B’1xxxxxxx’            Display the analog sensor pages
+
+Counter channel
+        Contents             Description
+     B’00000001’             Counter channel 1
+     B’00000010’             Counter channel 2
+     B’00000100’             Counter channel 3
+     B’00001000’             Counter channel 4
+
+
+
+
+                           VMBGPOD-2 PROTOCOL – version 1                                        60
+Counter multiply factor
+        Contents           Counter multiply factor
+     B’xxxxxx00’           Counter 1: x 1 (default)
+     B’xxxxxx01’           Counter 1: x 2.5
+     B’xxxxxx10’           Counter 1: x 0.05
+     B’xxxxxx11’           Counter 1: x 0.01
+     B’xxxx00xx’           Counter 2: x 1 (default)
+     B’xxxx01xx’           Counter 2: x 2.5
+     B’xxxx10xx’           Counter 2: x 0.05
+     B’xxxx11xx’           Counter 2: x 0.01
+     B’xx00xxxx’           Counter 3: x 1 (default)
+     B’xx01xxxx’           Counter 3: x 2.5
+     B’xx10xxxx’           Counter 3: x 0.05
+     B’xx11xxxx’           Counter 3: x 0.01
+     B’00xxxxxx’           Counter 4: x 1 (default)
+     B’01xxxxxx’           Counter 4: x 2.5
+     B’10xxxxxx’           Counter 4: x 0.05
+     B’11xxxxxx’           Counter 4: x 0.01
+
+Counter units
+        Contents                Counter unit
+     B’xxxxxx00’           Counter 1: reserved
+     B’xxxxxx01’           Counter 1: liter
+     B’xxxxxx10’           Counter 1: m3
+     B’xxxxxx11’           Counter 1: kWh (default)
+     B’xxxx00xx’           Counter 2: reserved
+     B’xxxx01xx’           Counter 2: liter
+     B’xxxx10xx’           Counter 2: m3
+     B’xxxx11xx’           Counter 2: kWh (default)
+     B’xx00xxxx’           Counter 3: reserved
+     B’xx01xxxx’           Counter 3: liter
+     B’xx10xxxx’           Counter 3: m3
+     B’xx11xxxx’           Counter 3: kWh (default)
+     B’00xxxxxx’           Counter 4: reserved
+     B’01xxxxxx’           Counter 4: liter
+     B’10xxxxxx’           Counter 4: m3
+     B’11xxxxxx’           Counter 4: kWh (default)
+
+Temp. sensor zone
+        Contents           Zone
+           0’              No zone
+           1.              Zone 1...
+           ...             ...
+            7              Zone 7
+
+
+
+
+                          VMBGPOD-2 PROTOCOL – version 1   61
+Temp. sensor flags
+        Contents          Description
+      B’xxxxxxx0’         Pump unjamming disabled (default)
+      B’xxxxxxx1’         Pump unjamming enabled
+      B’xxxxxx0x’         Heater valve unjamming disabled (default)
+      B’xxxxxx1x’         Heater valve unjamming enabled
+      B’xxxxx0xx’         Not used (default)
+      B’xxxxx1xx’         Not used
+      B’xxxx0xxx’         Not used (default)
+      B’xxxx1xxx’         Not used
+      B’xxx0xxxx’         Local control thermostat do not starts sleep timer (default)
+      B’xxx1xxxx’         Local control thermostat control starts sleep timer
+      B’xx0xxxxx’         Independent temperature alarms (default)
+      B’xx1xxxxx’         Dependent temperature alarms
+      B’x0xxxxxx’         Local control of thermostat unlocked (default)
+      B’x1xxxxxx’         Local control of thermostat locked
+      B’0xxxxxxx’         Local control thermostat at short key press (default)
+      B’1xxxxxxx’         Local control thermostat at long key press
+
+Temp. sensor Alarm1 & 2 modes
+        Contents         Description
+      B’xxxxx000’        Low temperature alarm 1
+      B’xxxxx001’        High temperature alarm 1 (default)
+      B’xxxxx010’        Anti-frost mode alarm 1
+      B’xxxxx011’        Night mode alarm 1
+      B’xxxxx100’        Day mode alarm 1
+      B’xxxxx101’        Comfort mode alarm 1
+      B’xxxxx110’        Night, Day or Comfort mode alarm 1
+      B’xxxxx111’        Day or Comfort mode alarm 1
+      B’xxxx0xxx’        Temperature alarms 1 absolute (default)
+      B’xxxx1xxx’        Temperature alarms 1 relative
+      B’x000xxxx’        Low temperature alarm 2
+      B’x001xxxx’        High temperature alarm 2 (default)
+      B’x010xxxx’        Anti-frost mode alarm 2
+      B’x011xxxx’        Night mode alarm 2
+      B’x100xxxx’        Day mode alarm 2
+      B’x101xxxx’        Comfort mode alarm 2
+      B’x110xxxx’        Night, Day or Comfort mode alarm 2
+      B’x111xxxx’        Day or Comfort mode alarm 2
+      B’0xxxxxxx’        Temperature alarms 2 absolute (default)
+      B’1xxxxxxx’        Temperature alarms 2 relative
+
+
+
+
+                          VMBGPOD-2 PROTOCOL – version 1                                 62
+Temp. sensor Alarm3 & 4 modes
+        Contents         Description
+      B’xxxxx000’        Low temperature alarm 3
+      B’xxxxx001’        High temperature alarm 3 (default)
+      B’xxxxx010’        Anti-frost mode alarm 3
+      B’xxxxx011’        Night mode alarm 3
+      B’xxxxx100’        Day mode alarm 3
+      B’xxxxx101’        Comfort mode alarm 3
+      B’xxxxx110’        Night, Day or Comfort mode alarm 3
+      B’xxxxx111’        Day or Comfort mode alarm 3
+      B’xxxx0xxx’        Temperature alarms 3 absolute (default)
+      B’xxxx1xxx’        Temperature alarms 3 relative
+      B’x000xxxx’        Low temperature alarm 4
+      B’x001xxxx’        High temperature alarm 4 (default)
+      B’x010xxxx’        Anti-frost mode alarm 4
+      B’x011xxxx’        Night mode alarm 4
+      B’x100xxxx’        Day mode alarm 4
+      B’x101xxxx’        Comfort mode alarm 4
+      B’x110xxxx’        Night, Day or Comfort mode alarm 4
+      B’x111xxxx’        Day or Comfort mode alarm 4
+      B’0xxxxxxx’        Temperature alarms 4 absolute (default)
+      B’1xxxxxxx’        Temperature alarms 4 relative
+
+Temp. sensor calibration offset (resolution 0.5°):
+  Contents               Calibration offset
+  00001111               Calibration offset +7.5°C
+  …                      …
+  00000001               Calibration offset +0.5°C
+  00000000               Calibration offset +0°C (default)
+  11111111               Calibration offset -0.5°C
+  …                      …
+  11110000               Calibration offset -8°C
+
+Temp. sensor calibration gain:
+  Contents               Calibration gain
+  0                      Calibration gain
+  …                      …
+  128                    Calibration gain (default)
+  …                      …
+  255                    Calibration gain
+ Calibrated Temperature = (gain/128) * sensortemperature + offset
+
+Temp. sensor hysteresis (resolution 0.5°):
+  Contents               Hysteresis
+  00011111               15.5°C
+
+   00000001              0.5°C
+   00000000              0°C
+
+Temp. sensor boost difference (resolution 0.5°):
+  Contents               Temperature difference
+  00010100               +10°C
+
+   00000001              +0.5°C
+   00000000              0°C
+   11111111              -0.5°C
+
+   11101100              -10°C
+
+
+
+
+                           VMBGPOD-2 PROTOCOL – version 1           63
+Temp. sensor pump delayed on, pump delayed off & valve minimum switching time:
+       Contents    Time
+       00000000    0
+       00000001    1 sec
+       00000010    2 sec
+       …           …
+       11111110    254 sec
+       11111111    255 sec
+
+Temp. sensor default sleep time into minutes
+ valid range H’0001’ to H’FEFF’ or 1min to 65.279min
+
+Temp. sensor lower, upper, safe, night, day, comfort or alarm set (resolution 0.5°):
+       Contents      Temperature set
+       01111000      60°C
+
+       00101000       20°C
+
+       00000010       1°C
+       00000001       0.5°C
+       00000000       0°C
+       11111111       -0.5°C
+
+       11000000       -32°C
+
+
+
+
+                             VMBGPOD-2 PROTOCOL – version 1                            64
+     Address     Contents                                    Address      Contents
+     H’0460’     Linked Push button 1 module address         H’0461’      Linked Push button 1 bit number
+     H’0462’     Linked Push button 1 action                 H’0463’      Linked Push button 1 time parameter
+     H’0464’     Linked Push button 1 channel parameter      H’0465’      Linked Push button 2 module address
+     H’0466’     Linked Push button 2 bit number             H’0467’      Linked Push button 2 action
+     H’0468’     Linked Push button 2 time parameter         H’0469’      Linked Push button 2 channel parameter
+     H’046A’     …                                           H’046B’      …
+     ...         ...                                         ...          ...
+     H’05EA’     …                                           H’05EB’      Linked Push button 80 module address
+     H’05EC’     Linked Push button 80 bit number            H’05ED’      Linked Push button 80 action
+     H’05EE’     Linked Push button 80 time parameter        H’05EF’      Linked Push button 80 channel parameter
+     H’05F0’     Linked Push button 81 module address        H’05F1’      Linked Push button 81 bit number
+     H’05F2’     Linked Push button 81 action                H’05F3’      Linked Push button 81 time parameter
+     H’05F4’     Linked Push button 81 channel parameter     H’05FF’      Not used (0xFF)
+
+What has changed? Max limit Linked Push Buttons reduced to 81 (Previous 83)
+
+    Remark: Unused locations contain H’FF’
+
+               Action
+                 Action       Action                                           Time parameter          Channel parameter
+                 number
+                 0            Switch status led indication                     -                       Channel number (1...32)
+                 1            Lock channel at closed switch                    -                       Channel number (1...32)
+                 2            Lock channel at opened switch                    -                       Channel number (1...32)
+                 3            Lock channel                                     Timeout                 Channel number (1...32)
+                 4            Lock/unlock channel                              Timeout                 Channel number (1...32)
+                 5            Unlock channel                                   -                       Channel number (1...32)
+                 6            Disable channel program at closed switch         -                       Channel number (1...32)
+                 7            Disable channel program at opened switch         -                       Channel number (1...32)
+                 8            Disable channel program channel                  Timeout                 Channel number (1...32)
+                 9            Disable/enable channel program                   Timeout                 Channel number (1...32)
+                 10           Enable channel program                           -                       Channel number (1...32)
+                 11           Select no programs                               -                       -
+                 12           Select program group 1 (eg. summer programs)     -                       -
+                 13           Select program group 2 (eg. winter programs)     -                       -
+                 14           Select program group 3 (eg. holiday programs)    -                       -
+                 15           Enable Alarm 1 at closed switch                  -                       -
+                 16           Enable Alarm 1 at open switch                    -                       -
+                 17           Disable Alarm 1 at closed switch                 -                       -
+                 18           Disable Alarm 1 at open switch                   -                       -
+                 19           Enable Alarm 1                                   -                       -
+                 20           Enable/Disable Alarm 1                           -                       -
+                 21           Disable Alarm 1                                  -                       -
+                 22           Enable Alarm 2 at closed switch                  -                       -
+                 23           Enable Alarm 2 at open switch                    -                       -
+                 24           Disable Alarm 2 at closed switch                 -                       -
+                 25           Disable Alarm 2 at open switch                   -                       -
+                 26           Enable Alarm 2                                   -                       -
+                 27           Enable/Disable Alarm 2                           -                       -
+                 28           Disable Alarm 2                                  -                       -
+                 29           Enable Sunrise at closed switch                  -                       -
+                 30           Enable Sunrise at open switch                    -                       -
+                 31           Disable Sunrise at closed switch                 -                       -
+                 32           Disable Sunrise at open switch                   -                       -
+                 33           Enable Sunrise                                   -                       -
+                 34           Enable/Disable Sunrise                           -                       -
+                 35           Disable Sunrise                                  -                       -
+                 36           Enable Sunset at closed switch                   -                       -
+                 37           Enable Sunset at open switch                     -                       -
+                 38           Disable Sunset at closed switch                  -                       -
+                 39           Disable Sunset at open switch                    -                       -
+                 40           Enable Sunset                                    -                       -
+                 41           Enable/Disable Sunset                            -                       -
+                 42           Disable Sunset                                   -                       -
+
+
+
+
+                                           VMBGPOD-2 PROTOCOL – version 1                                                   65
+  43         Sensor: Comfort mode                             Short press sleep time   Long press sleep time
+  44         Sensor: Day mode                                 Short press sleep time   Short press sleep time
+  45         Sensor: Night mode                               Short press sleep time   Short press sleep time
+  46         Sensor: Safe mode                                Short press sleep time   Short press sleep time
+  47         Sensor: Heating mode                             -                        -
+  48         Sensor: Cooling mode                             -                        -
+  49         Sensor: Forced Safe mode at open switch          -                        0xFF
+  50         Sensor: Forced Safe mode at closed switch        -                        0xFF
+  51         Sensor: Forced Safe mode                         Timeout                  -
+  52         Sensor: Forced or Cancel Forced Safe mode        Timeout                  -
+  53         Sensor: Cancel Forced Safe mode                  -                        -
+  54         Toggle program group 1 (eg. summer programs)     -                        -
+  55         Toggle program group 2 (eg. winter programs)     -                        -
+  56         Toggle program group 3 (eg. holiday programs)    -                        -
+  57         Screensaver off                                  -                        -
+  58         Screensaver on (if active)                       -                        -
+
+Time parameter
+      Time       Timeout            Sleep time       action
+   parameter                        parameter
+         0       0s (no timer)      0                No action
+         1       1s                 1                Select until next program step execution
+         2       2s                 2                Select for default sleep time (see sensor config.)
+         3       3s                 3                Select for 15 min (auto return to program)
+        ...                         4                Select for 30 min (auto return to program)
+       119       1min59s            ...              ...
+       120       2min               17               Select for 3h45 min (auto return to program)
+       121       2min15s            18               Select for 4h min (auto return to program)
+        ...                         19               Select for 4h30 min (auto return to program)
+       131       4min45s            ...              ...
+       132       5min               33               Select for 11h30 min (auto return to program)
+       133       5min30s            34               Select for 12h (auto return to program)
+        ...                         35               Select for 13h (auto return to program)
+       181       29min30s           ...              ...
+       182       30min              45               Select for 23h (auto return to program)
+       183       31min              46               Select for 1 day (auto return to program)
+        ...                         47               Select for 1 day 12h (auto return to program)
+       211       59min              ...              ...
+       212       1h                 57               Select for 6 days 12h (auto return to program)
+       213       1h15min            58               Select for 7 days (auto return to program)
+        ...                         59               Select for 8 days (auto return to program)
+       227       4h45min            ...              ...
+       228       5h                 96               Select for 45 days (auto return to program)
+       229       5h30min            97               Select and ignore all program steps
+        ...      ...
+       237       9h30min
+       238       10h
+       239       11h
+        ...
+       251       23h
+       252       1d
+       253       2d
+       254       3d
+       255       Infinite
+
+
+
+
+                            VMBGPOD-2 PROTOCOL – version 1                                                      66
+     Address     Contents                                      Address     Contents
+     H’05F5’     Button Treshold TP1                           H’05F6’     Button Treshold TP2
+     H’05F7’     Button Treshold TP3                           H’05F8’     Button Treshold TP4
+     H’05F9’     Button Treshold TP5                           H’05FA’     Button Treshold TP6
+     H’05FB’     Button Treshold TP7                           H’05FC’     Touch Controller Param 1
+     H’05FD’     Touch Controller Param 2                      H’05FE’     Touch Controller Param 3
+Remark: A lot of these parameters can be found -with extra information- in the CAP1188 datasheet.
+
+               Button Treshold TP1 – TP7
+               Writes a byte that adjusts the threshold when a touch is detected. (7bit number!)
+
+
+
+
+               Touch Controller Param1/2/3
+               Writes a byte that contains settings for detecting touches on the glass panel.
+
+                              Bit 7      Bit 6     Bit 5  Bit 4   Bit 3        Bit 2           Bit 1             Bit 0   length
+               Param 1            GAIN                 DELTA SENS         DIS_DIG_NOISE   DIS_ANA_NOISE     MAX_DUR_EN   = 8bit
+               Param 2    DIS_RF_NOISE              MAX_DUR                          CS_BN_TH                   unused   = 8bit
+               Param 3    MULT_BLK_EN            AVERAGE                SAMP_TIME                    CYCLE_TIME          = 8bit
+
+
+               a) GAIN:
+
+
+
+
+               b) DELTA_SENS:
+
+
+
+
+                                            VMBGPOD-2 PROTOCOL – version 1                                                  67
+c) DIS_DIG_NOISE
+
+
+
+
+d) DIS_ANA_NOISE
+
+
+
+
+e) MAX_DUR_EN
+
+
+
+
+f) DIS_RF_NOISE
+
+
+
+
+g) MAX_DUR
+
+
+
+
+h) CS_BN_TH
+
+
+
+
+                   VMBGPOD-2 PROTOCOL – version 1   68
+i) MULT_BLK_EN
+
+
+
+
+h) AVERAGE
+
+
+
+
+h) SAMP_TIME
+
+
+
+
+h) CYCLE_TIME
+
+
+
+
+                 VMBGPOD-2 PROTOCOL – version 1   69
+Address    Contents                                     Address      Contents
+H’0600’    Program step 1 byte1                         H’0601’      Program step 1 byte2
+H’0602’    Program step 1 byte3                         H’0603’      Program step 1 byte4
+H’0604’    Program step 1 byte5                         H’0605’      Program step 1 byte6
+…          ..                                           ..           ..
+H’09B4’    Program step 159 byte1                       H’09B5’      Program step 159 byte2
+H’09B6’    Program step 159 byte3                       H’09B7’      Program step 159 byte4
+H’09B8’    Program step 159 byte5                       H’09B9’      Program step 159 byte6
+
+            Contents program byte1             Description
+                 B’000xxxxx’                   Disable program step
+                 B’001xxxxx’                   Absolute time
+                 B’010xxxxx’                   Wake up time 1 + relative time
+                 B’011xxxxx’                   Go to bed time 1 + relative time
+                 B’100xxxxx’                   Wake up time 2 + relative time
+                 B’101xxxxx’                   Go to bed time 2 + relative time
+                 B’110xxxxx’                   Sunrise + relative time
+                 B’111xxxxx’                   Sunset + relative time
+                 B’xxx01111’                   Rel. time = 3h45min
+                      …
+                 B’xxx00001’                   Rel. time = 15min
+                 B’xxx00000’                   Rel. time = 0
+                 B’xxx11111’                   Rel. time = -15min
+                      …
+                 B’xxx10000’                   Rel. time = -4h
+  Remark: Wake up, Go to bed, sunrise & sunset time are only allowed for weekly programs
+
+            Contents program byte2             Description
+                 B’xxxx0000’                   Weekly program
+                 B’xxxx0001’                   January
+                 B’xxxx0010’                   February
+                 B’xxxx0011’                   March
+                 B’xxxx0100’                   April
+                 B’xxxx0101’                   May
+                 B’xxxx0110’                   June
+                 B’xxxx0111’                   July
+                 B’xxxx1000’                   August
+                 B’xxxx1001’                   September
+                 B’xxxx1010’                   October
+                 B’xxxx1011’                   November
+                 B’xxxx1100’                   December
+                 B’xxxx1101’                   Monthly program
+                 B’xxxx1110’                   Monthly program
+                 B’xxxx1111’                   Monthly program
+
+            Contents program byte3             Description
+                 B’xxx00000’                   0h
+                 B’xxx00001’                   1h
+                      …                        …
+                 B’xxx10111’                   23h
+                 B’xx1xxxxx’                   Program group 1 (Summer program)
+                 B’x1xxxxxx’                   Program group 2 (Winter program)
+                 B’1xxxxxxx’                   Program group 3 (Holiday program)
+
+
+
+
+                                      VMBGPOD-2 PROTOCOL – version 1                          70
+Contents program byte4         Description
+     B’xx000000’               0min
+     B’xx000001’               1min
+          …                    …
+     B’xx111011’               59min
+
+
+
+
+                         VMBGPOD-2 PROTOCOL – version 1   71
+Contents program byte4              Contents program byte2   Description
+     B’00xxxxxx’                         B’0000xxxx’         Never
+     B’00xxxxxx’                         B’0001xxxx’         Day 1of the month
+     B’00xxxxxx’                         B’0010xxxx’         Day 2of the month
+          …                                   …              …
+     B’01xxxxxx’                         B’1111xxxx’         Day 31of the month
+     B’10xxxxxx’                         B’0000xxxx’         Never
+     B’10xxxxxx’                         B’0001xxxx’         Every Monday
+     B’10xxxxxx’                         B’0010xxxx’         Every Tuesday
+          …                                   …              …
+     B’10xxxxxx’                         B’0111xxxx’         Every Sunday
+     B’10xxxxxx’                         B’1000xxxx’         Every weekend (sa & su)
+     B’10xxxxxx’                         B’1001xxxx’         Every working day (mo…fr)
+     B’10xxxxxx’                         B’1010xxxx’         Every day except Sunday
+     B’10xxxxxx’                         B’1011xxxx’         Every day
+     B’10xxxxxx’                         B’1100xxxx’         Never
+          …                                   …              …
+     B’11xxxxxx’                         B’1111xxxx’         Never
+
+Contents program byte5         Action
+            0                  0s25 Pulse
+            1                  1s Pulse
+            2                  2s Pulse
+           ...                 ...
+          119                  1min59s Pulse
+          120                  2min Pulse
+          121                  2min15s Pulse
+           ...                 ...
+          131                  4min45s Pulse
+          132                  5min Pulse
+          133                  5min30s Pulse
+           ...                 ...
+          181                  29min30s Pulse
+          182                  30min Pulse
+          183                  31min Pulse
+           ...                 ...
+          211                  59min Pulse
+          212                  1h Pulse
+          213                  1h15min Pulse
+           ...                 ...
+          227                  4h45min Pulse
+          228                  5h Pulse
+          229                  5h30min Pulse
+           ...                 ...
+          237                  9h30min Pulse
+          238                  10h Pulse
+          239                  11h Pulse
+           ...                 …
+          246                  18h Pulse
+          247                  Press
+          248                  Long Press
+          249                  Release
+          250                  Lock
+          251                  Unlock
+          252                  Sensor : Safe mode
+          253                  Sensor : Night mode
+          254                  Sensor : Day mode
+          255                  Sensor : Comfort mode
+
+
+
+
+                         VMBGPOD-2 PROTOCOL – version 1                                  72
+Contents program byte6         Channel
+            1                  Channel 1
+            2                  Channel 2
+            ..                 …
+           31                  Channel 31
+           32                  Channel 32
+          128                  Temperature sensor
+
+
+
+
+                         VMBGPOD-2 PROTOCOL – version 1   73
+Address   Contents                            Address   Contents
+H’09BA’   Location id low byte                H’09BB’   Location id high byte
+H’09BC’   Group id low byte                   H’09BD’   Group id high byte
+H’09BE’   Module name character 1             H’09BF’   Module name character 2
+…         ..                                  ..        ..
+H’09FC’   Module name character 63            H’09FD’   Module name character 64
+H’09FE’   Not used                            H’09FF’   Not used
+
+
+
+
+                                 VMBGPOD-2 PROTOCOL – version 1                    74
+Address   Contents                               Address   Contents
+H’0A00’   Page 1 bitmap data row 1 / x-pos 0     H’0A01’   Page 1 bitmap data row 1 / x-pos 1
+          …                                                …
+H’0A7E’   Page 1 bitmap data row 1 / x-pos 126   H’0A7F’   Page 1 bitmap data row 1 / x-pos 127
+H’0A80’   Page 1 bitmap data row 2 / x-pos 0     H’0A81’   Page 1 bitmap data row 2 / x-pos 1
+          …                                                …
+H’0AFE’   Page 1 bitmap data row 2 / x-pos 126   H’0AFF’   Page 1 bitmap data row 2 / x-pos 127
+H’0B00’   Page 1 bitmap data row 3 / x-pos 0     H’0B01’   Page 1 bitmap data row 3 / x-pos 1
+          …                                                …
+H’0B7E’   Page 1 bitmap data row 3 / x-pos 126   H’0B7F’   Page 1 bitmap data row 3 / x-pos 127
+H’0B80’   Page 1 bitmap data row 4 / x-pos 0     H’0B81’   Page 1 bitmap data row 4 / x-pos 1
+          …                                                …
+H’0BFE’   Page 1 bitmap data row 4 / x-pos 126   H’0BFF’   Page 1 bitmap data row 4 / x-pos 127
+
+  …
+
+Address   Contents                               Address   Contents
+H’1800’   Page 8 bitmap data row 1 / x-pos 0     H’1801’   Page 8 bitmap data row 1 / x-pos 1
+          …                                                …
+H’187E’   Page 8 bitmap data row 1 / x-pos 126   H’187F’   Page 8 bitmap data row 1 / x-pos 127
+H’1880’   Page 8 bitmap data row 2 / x-pos 0     H’1881’   Page 8 bitmap data row 2 / x-pos 1
+          …                                                …
+H’18FE’   Page 8 bitmap data row 2 / x-pos 126   H’18FF’   Page 8 bitmap data row 2 / x-pos 127
+H’1900’   Page 8 bitmap data row 3 / x-pos 0     H’1901’   Page 8 bitmap data row 3 / x-pos 1
+          …                                                …
+H’197E’   Page 8 bitmap data row 3 / x-pos 126   H’197F’   Page 8 bitmap data row 3 / x-pos 127
+H’1980’   Page 8 bitmap data row 4 / x-pos 0     H’1981’   Page 8 bitmap data row 4 / x-pos 1
+          …                                                …
+H’19FE’   Page 8 bitmap data row 4 / x-pos 126   H’19FF’   Page 8 bitmap data row 4 / x-pos 127
+H’1A00’   Not used                               H’1A01’   Not used
+H’1A02’   Not used                               H’1A03’   Not used
+
+
+
+
+                                  VMBGPOD-2 PROTOCOL – version 1                                  75
+Counter   1 log memory map:
+    Address    Contents                            Address   Contents
+    H’1A04’    Day                                 H’1A05’   Month
+    H’1A06’    Year low byte                       H’1A07’   Year high byte
+    H’1A08’    Counter 1 low byte                  H’1A09’   Counter 1 high byte
+    H’1A0A’    Counter 1 upper byte                H’1A0B’   Counter 1 most significant byte
+               …                                             …
+    H’1DFC’    Day                                 H’1DFD    Month
+    H’1DFE’    Year low byte                       H’1DFF’   Year high byte
+    H’1E00’    Counter 1 low byte                  H’1E01’   Counter 1 high byte
+    H’1E02’    Counter 1 upper byte                H’1E03’   Counter 1 most significant byte
+
+
+Counter 2 log memory map:
+    Address    Contents                            Address   Contents
+    H’1E04’    Day                                 H’1E05’   Month
+    H’1E06’    Year low byte                       H’1E07’   Year high byte
+    H’1E08’    Counter 2 low byte                  H’1E09’   Counter 2 high byte
+    H’1E0A’    Counter 2 upper byte                H’1E0B’   Counter 2 most significant byte
+               …                                             …
+    H’21FC’    Day                                 H’21FD’   Month
+    H’21FE’    Year low byte                       H’21FF’   Year high byte
+    H’2200’    Counter 2 low byte                  H’2201’   Counter 2 high byte
+    H’2202’    Counter 2 upper byte                H’2203’   Counter 2 most significant byte
+
+
+Counter 3 log memory map:
+    Address    Contents                            Address   Contents
+    H’2204’    Day                                 H’2205’   Month
+    H’2206’    Year low byte                       H’2207’   Year high byte
+    H’2208’    Counter 3 low byte                  H’2209’   Counter 3 high byte
+    H’220A’    Counter 3 upper byte                H’220B’   Counter 3 most significant byte
+               …                                             …
+    H’25FC’    Day                                 H’25FD’   Month
+    H’25FE’    Year low byte                       H’25FF’   Year high byte
+    H’2600’    Counter 3 low byte                  H’2601’   Counter 3 high byte
+    H’2602’    Counter 3 upper byte                H’2603’   Counter 3 most significant byte
+
+
+Counter 4 log memory map:
+    Address    Contents                            Address   Contents
+    H’2604’    Day                                 H’2605’   Month
+    H’2606’    Year low byte                       H’2607’   Year high byte
+    H’2608’    Counter 4 low byte                  H’2609’   Counter 4 high byte
+    H’260A’    Counter 4 upper byte                H’260B’   Counter 4 most significant byte
+               …                                             …
+    H’29FC’    Day                                 H’29FD’   Month
+    H’29FE’    Year low byte                       H’29FF’   Year high byte
+    H’2A00’    Counter 4 low byte                  H’2A01’   Counter 4 high byte
+    H’2A02’    Counter 4 upper byte                H’2A03’   Counter 4 most significant byte
+
+
+
+
+                                      VMBGPOD-2 PROTOCOL – version 1                           76
+EEprom memory map:
+   Address   Contents                                      Address   Contents
+   H’2A04’   Bank 1: Day of week                           H’2A05’   Bank 1: Day of month
+   H’2A06’   Bank 1: Month                                 H’2A07’   Bank 1: Year low byte
+   H’2A08’   Bank 1: Year high byte                        H’2A09’   Bank 1: Program group number
+   H’2A0A’   Bank 1: Locked flags ch1…8                    H’2A0B’   Bank 1: Locked flags ch9…16
+   H’2A0C’   Bank 1: Locked flags ch17…24                  H’2A0D’   Bank 1: Locked flags ch25…32
+   H’2A0E’   Bank 1: Program disabled flags ch1…8          H’2A0F’   Bank 1: Program disabled flags ch9…16
+   H’2A10’   Bank 1: Program disabled flags ch17…24        H’2A11’   Bank 1: Program disabled flags ch25…32
+   H’2A12’   Bank 1: Sensor current mode low byte          H’2A13’   Bank 1: Sensor current mode high byte
+   H’2A14’   Bank 1: Sensor current program mode           H’2A15’   Bank 1: Sensor target temperature low byte
+   H’2A16’   Bank 1: Sensor target temperature high byte   H’2A17’   Bank 1: Auto send sensor temperature
+   H’2A18’   Bank 1: reserved                              H’2A19’   Bank 1: reserved
+   H’2A1A’   Bank 1: reserved                              H’2A1B’   Bank 1: reserved
+   H’2A1C’   Bank 1: reserved                              H’2A1D’   Bank 1: reserved
+   H’2A1E’   Bank 1: reserved                              H’2A1F’   Bank 1: reserved
+   H’2A20’   Bank 1: reserved                              H’2A21’   Bank 1: reserved
+   H’2A22’   Bank 1: reserved                              H’2A23’   Bank 1: current bank number
+             …                                                       …
+   H’2DE4’   Bank 32: Day of week                          H’2DE5’   Bank 32: Day of month
+   H’2DE6’   Bank 32: Month                                H’2DE7’   Bank 32: Year low byte
+   H’2DE8’   Bank 32: Year high byte                       H’2DE9’   Bank 32: Program group number
+   H’2DEA’   Bank 32: Locked flags ch1…8                   H’2DEB’   Bank 32: Locked flags ch9…16
+   H’2DEC’   Bank 32: Locked flags ch17…24                 H’2DED’   Bank 32: Locked flags ch25…32
+   H’2DEE’   Bank 32: Program disabled flags ch1…8         H’2DEF’   Bank 32: Program disabled flags ch9…16
+   H’2DF0’   Bank 32: Program disabled flags ch17…24       H’2DF1’   Bank 32: Program disabled flags ch25…32
+   H’2DF2’   Bank 32: Sensor current mode low byte         H’2DF3’   Bank 32: Sensor current mode high byte
+   H’2DF4’   Bank 32: Sensor current program mode          H’2DF5’   Bank 32: Sensor target temperature low byte
+   H’2DF6’   Bank 32: Sensor target temperature low byte   H’2DF7’   Bank 32: Auto send sensor temperature
+   H’2DF8’   Bank 32: reserved                             H’2DF9’   Bank 32: reserved
+   H’2DFA’   Bank 32: reserved                             H’2DFB’   Bank 32: reserved
+   H’2DFC’   Bank 32: reserved                             H’2DFD’   Bank 32: reserved
+   H’2DFE’   Bank 32: reserved                             H’2DFF’   Bank 32: reserved
+   H’2E00’   Bank 32: reserved                             H’2E01’   Bank 32: reserved
+   H’2E02’   Bank 32: reserved                             H’2E03’   Bank 32: current bank number
+
+
+
+
+                                     VMBGPOD-2 PROTOCOL – version 1                                          77
+VMBGPOD-2 PROTOCOL – version 1   78
+

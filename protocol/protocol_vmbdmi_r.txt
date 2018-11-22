@@ -1,11 +1,11 @@
-    VMBDMI
+ VMBDMI-R
 Velbus dimmer for resistive or
        inductive load
 
 
 
 
-          VMBDMI PROTOCOL – edition 2   1
+          VMBDMI-R PROTOCOL – edition 2   1
 Binairy format:
 
 <SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-ACK-ACKDEL-
@@ -35,50 +35,50 @@ EOF7...EOF1-IFS3...IFS1>
   IFS3...IFS1                   InterFrame Space (always 111)
 
 The dimmer module can transmit the following commands:
-  Clears LEDs on a push button module
-  Sets LEDs on a push button module
-  Blinks LEDs slowly on a push button module
-  Blinks LEDs fast on a push button module
+ • Clears LEDs on a push button module
+ • Sets LEDs on a push button module
+ • Blinks LEDs slowly on a push button module
+ • Blinks LEDs fast on a push button module
 
 The dimmer module can transmit the following messages:
-  Dimmer status
-  Module type
-  Dimmer switch status
-  Dimmer slider status
-  Bus error counter status
-  First, second and third part of the dimmer name
-  Memory data
-  Memory data block (4 bytes)
+ • Dimmer status
+ • Module type
+ • Dimmer switch status
+ • Dimmer slider status
+ • Bus error counter status
+ • First, second and third part of the dimmer name
+ • Memory data
+ • Memory data block (4 bytes)
 
 The dimmer module can receive the following messages:
-  Push button status
-  Slider status
+ • Push button status
+ • Slider status
 
 The dimmer module can receive the following commands:
-  Set dimmer value
-  Set dimmer at last used dimvalue
-  Start dimmer timer
-  Stop dimming
-  Forced off
-  Cancel forced off
-  Forced on
-  Cancel forced on
-  Inhibit
-  Cancel inhibit
-  Dimmer status request
-  Clear Push button Led
-  Module type request
-  Bus error counter status request
+ • Set dimmer value
+ • Set dimmer at last used dimvalue
+ • Start dimmer timer
+ • Stop dimming
+ • Forced off
+ • Cancel forced off
+ • Forced on
+ • Cancel forced on
+ • Inhibit
+ • Cancel inhibit
+ • Dimmer status request
+ • Clear Push button Led
+ • Module type request
+ • Bus error counter status request
 
 
 
-                                          VMBDMI PROTOCOL – edition 2                            2
-     Dimmer name request
-     Read memory data
-     Read memory data block (4 bytes)
-     Memory dump request
-     Write memory data
-     Write memory data block (4 bytes)
+                                         VMBDMI-R PROTOCOL – edition 2                           2
+  •   Dimmer name request
+  •   Read memory data
+  •   Read memory data block (4 bytes)
+  •   Memory dump request
+  •   Write memory data
+  •   Write memory data block (4 bytes)
 
 Transmits the dimmer switch status:
     SID10-SID9 = 00 (highest priority)
@@ -138,7 +138,7 @@ Transmit: Blinks LEDs fast on a push button module:
 
 
 
-                                            VMBDMI PROTOCOL – edition 2                                       3
+                                           VMBDMI-R PROTOCOL – edition 2                                      3
 Transmits the dimmer status:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -206,7 +206,7 @@ Transmit: Bus error counter status
 
 
 
-                                     VMBDMI PROTOCOL – edition 2                4
+                                    VMBDMI-R PROTOCOL – edition 2               4
 Transmits the first part of the dimmer name:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -263,7 +263,7 @@ Transmits the memory data:
 
 
 
-                                      VMBDMI PROTOCOL – edition 2   5
+                                      VMBDMI-R PROTOCOL – edition 2   5
 Transmits memory data block (4 bytes):
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -282,7 +282,7 @@ Transmits the memory data:
 
 
 
-                                         VMBDMI PROTOCOL – edition 2   6
+                                        VMBDMI-R PROTOCOL – edition 2   6
 ‘Push button status’ received:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Address of the push button module
@@ -348,7 +348,7 @@ Transmits the memory data:
 
 
 
-                                          VMBDMI PROTOCOL – edition 2                                           7
+                                         VMBDMI-R PROTOCOL – edition 2                                          7
 ‘Start dimmer timer’ command received:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Module address
@@ -413,7 +413,7 @@ Transmits the memory data:
 
 
 
-                                           VMBDMI PROTOCOL – edition 2                                         8
+                                          VMBDMI-R PROTOCOL – edition 2                                        8
 ‘Cancel forced on’ command received:
    SID10-SID9 = 00 (highest priority)
    SID8...SID1 = Module address
@@ -476,7 +476,7 @@ Transmits the memory data:
 
 
 
-                                            VMBDMI PROTOCOL – edition 2                                            9
+                                           VMBDMI-R PROTOCOL – edition 2                                           9
 ‘Dimmer name request’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -543,7 +543,7 @@ Transmits the memory data:
 
 
 
-                                          VMBDMI PROTOCOL – edition 2                   10
+                                         VMBDMI-R PROTOCOL – edition 2                  10
 Memory map version 0:
 
     Address     Contents                                      Address    Contents
@@ -586,7 +586,7 @@ Transmits the memory data:
 
 
 
-                                             VMBDMI PROTOCOL – edition 2                                          11
+                                            VMBDMI-R PROTOCOL – edition 2                                         11
 Mode number   Action
 0             Momentary                                         -               -               -
 1             Off                                               -               -               -
@@ -641,7 +641,7 @@ Transmits the memory data:
 
 
 
-                                              VMBDMI PROTOCOL – edition 2                                       12
+                                            VMBDMI-R PROTOCOL – edition 2                                       12
       Time parameter         Time or dim time
               0              No timer or fastest dim time
               1              1s
@@ -681,8 +681,8 @@ The dim time is limited to one day
 
 
 
-                                              VMBDMI PROTOCOL – edition 2   13
-Memory map version 1 (Build 1410 or higher):
+                                            VMBDMI-R PROTOCOL – edition 2   13
+Memory map version 1 (Build 1514 or higher):
 
     Address    Contents                                             Address   Contents
     H’0000’    Push button 1 module address                         H’0001’   Push button 1 bit number
@@ -704,16 +704,16 @@ The dim time is limited to one day
     H’009C’    Preset 13 (255) dimvalue                             H’009D’   Preset 14 (255) dimvalue
     H’009E’    Preset dimvalue terminator                           H’009F’   Dimmer for resistive or inductive load
     H’00A0’    Dim start delay                                      H’00A1’   Dim switch off delay
-    H’00A2’    Transmit slider command (Build 1410 or higher)       H’00A3’   Not used (Build 1410 or higher)
-    H’00A4’    Not used (Build 1410 or higher)                      H’00A5’   Not used (Build 1410 or higher)
-    H’00A6’    Not used (Build 1410 or higher)                      H’00A7’   Module terminator (Build 1410 or higher)
-    H’00A8’    Module location id low byte (Build 1410 or higher)   H’00A9’   Module location id high byte (Build 1410 or higher)
-    H’00AA’    Module group id low byte (Build 1410 or higher)      H’00AB’   Module group id high byte (Build 1410 or higher)
-    H’00AC’    Module circuit id low byte (Build 1410 or higher)    H’00AD’   Module circuit id high byte (Build 1410 or higher)
-    H’00AE’    Module load id low byte (Build 1410 or higher)       H’00AF’   Module load id high byte (Build 1410 or higher)
-    H’00B0’    Module name character 1 (Build 1410 or higher)       H’00B1’   Module name character 2 (Build 1410 or higher)
+    H’00A2’    Transmit slider command (Build 1514 or higher)       H’00A3’   Minimum dimmer offset (Build 1514 or higher)
+    H’00A4’    Not used (Build 1514 or higher)                      H’00A5’   Not used (Build 1514 or higher)
+    H’00A6’    Not used (Build 1514 or higher)                      H’00A7’   Module terminator (Build 1514 or higher)
+    H’00A8’    Module location id low byte (Build 1514 or higher)   H’00A9’   Module location id high byte (Build 1514 or higher)
+    H’00AA’    Module group id low byte (Build 1514 or higher)      H’00AB’   Module group id high byte (Build 1514 or higher)
+    H’00AC’    Module circuit id low byte (Build 1514 or higher)    H’00AD’   Module circuit id high byte (Build 1514 or higher)
+    H’00AE’    Module load id low byte (Build 1514 or higher)       H’00AF’   Module load id high byte (Build 1514 or higher)
+    H’00B0’    Module name character 1 (Build 1514 or higher)       H’00B1’   Module name character 2 (Build 1514 or higher)
     …          ..                                                   ..        ..
-    H’00EE’    Module name character 63 (Build 1410 or higher)      H’00EF’   Module name character 64 (Build 1410 or higher)
+    H’00EE’    Module name character 63 (Build 1514 or higher)      H’00EF’   Module name character 64 (Build 1514 or higher)
     H’00F0’    Dimmer name character 1                              H’00F1’   Dimmer name character 2
     ...        ...                                                  ...       ...
     H’00FE’    Dimmer name character 15                             H’00FF’   Dimmer name character 16
@@ -723,18 +723,19 @@ The dim time is limited to one day
            Preset dimvalue terminator: H’FF’
            Dimmer for resistive load: H’00’
            Dimmer for inductive load: H’01’
-           Dim start delay (default 0s) & Dim switch off delay (default 0s)
-                    Contents             Delay
-                        0                0s
-                        1                0.013s
-                        2                0.026s
-                       ...               ...
-                      255                3.315s
+              Minimum dimmer offset: 0…63% (Build 1514 or higher)
+              Dim start delay (default 0s) & Dim switch off delay (default 0s)
+                      Contents              Delay
+                           0                0s
+                           1                0.013s
+                           2                0.026s
+                          ...               ...
+                         255                3.315s
 
 
 
 
-                                              VMBDMI PROTOCOL – edition 2                                                    14
+                                             VMBDMI-R PROTOCOL – edition 2                                                   14
 Mode number   Action
 0             Momentary                                         -               -               -
 1             Off                                               -               -               -
@@ -789,7 +790,7 @@ The dim time is limited to one day
 
 
 
-                                              VMBDMI PROTOCOL – edition 2                                       15
+                                            VMBDMI-R PROTOCOL – edition 2                                       15
       Time parameter         Time or dim time
               0              No timer or fastest dim time
               1              1s
@@ -829,5 +830,5 @@ The dim time is limited to one day
 
 
 
-                                              VMBDMI PROTOCOL – edition 2   16
+                                            VMBDMI-R PROTOCOL – edition 2   16
 

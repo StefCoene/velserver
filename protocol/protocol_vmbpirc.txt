@@ -36,56 +36,56 @@ EOF7...EOF1-IFS3...IFS1>
 
 
 The module can transmit the following messages:
- • Channel status
- • Module status
- • Module type
- • Bus error counter status
- • Memory data
- • Memory data block (4 bytes)
- • Real-time clock status
- • Date status
- • Daylight savings status
- • Real-time clock status request
- • Clear linked push button led
- • Set linked push button led
- • Slow blink linked push button led
+  Channel status
+  Module status
+  Module type
+  Bus error counter status
+  Memory data
+  Memory data block (4 bytes)
+  Real-time clock status
+  Date status
+  Daylight savings status
+  Real-time clock status request
+  Clear linked push button led
+  Set linked push button led
+  Slow blink linked push button led
 
 The module can receive the following commands:
- • Linked push button status
- • Module type request
- • Module status request
- • Light value request
- • Set or clear test mode
- • Clear channel led
- • Set channel led
- • Slow blink channel led
- • Fast blink channel led
- • Very fast channel led
- • Update channel leds
- • Read memory data
- • Read memory data block (4 bytes)
- • Memory dump request
- • Write memory data
- • Write memory data block (4 bytes)
+  Linked push button status
+  Module type request
+  Module status request
+  Light value request
+  Set or clear test mode
+  Clear channel led
+  Set channel led
+  Slow blink channel led
+  Fast blink channel led
+  Very fast channel led
+  Update channel leds
+  Read memory data
+  Read memory data block (4 bytes)
+  Memory dump request
+  Write memory data
+  Write memory data block (4 bytes)
 
 
 
 
                                           VMBPIRC PROTOCOL – edition 2                           2
-•   Bus error counter status request
-•   Real-time clock status request
-•   Set real-time clock
-•   Set date
-•   Set daylight savings
-•   Enable/disable global sunrise/sunset related actions
-•   Enable/disable local sunrise/sunset related actions
-•   Set local alarm clock
-•   Set global alarm clock
-•   Lock channel
-•   Unlock channel
-•   Disable channel program
-•   Enable channel program
-•   Select program
+   Bus error counter status request
+   Real-time clock status request
+   Set real-time clock
+   Set date
+   Set daylight savings
+   Enable/disable global sunrise/sunset related actions
+   Enable/disable local sunrise/sunset related actions
+   Set local alarm clock
+   Set global alarm clock
+   Lock channel
+   Unlock channel
+   Disable channel program
+   Enable channel program
+   Select program
 
 
 
@@ -177,7 +177,7 @@ Transmits the module status:
     DLC3...DLC0 = 8 databytes to send
     DATABYTE1 = COMMAND_MODULE_STATUS (H’ED’)
     DATABYTE2 = channel status (1 = pressed / 0 = released)
-                      Contents          Channel status
+                      Contents           Channel status
                     B’xxxxxxx0’          Dark output off
                     B’xxxxxxx1’          Dark output on
                     B’xxxxxx0x’          Light output off
@@ -195,7 +195,7 @@ Transmits the module status:
     DATABYTE3 = light sensor value high byte
     DATABYTE4 = light sensor value low byte
     DATABYTE5 = test modus or locked channel status (0 = unlocked / 1 = locked)
-                      Contents          Test modus or locked status
+                      Contents           Test modus or locked status
                     B’xxxxxxx0’          Dark output unlocked
                     B’xxxxxxx1’          Dark output locked
                     B’xxxxxx0x’          Light output unlocked
@@ -398,13 +398,13 @@ Transmit: Blinks LEDs slowly on a linked push button module:
                     B’xxxxxx1x’              Enable sunset related actions
 
 ‘Enable/disable local sunrise/sunset related actions’ command received:
-   SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
-   RTR = 0
-   DLC3...DLC0 = 3 databytes to send
-   DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
-   DATABYTE2 = Channel (FF)
-   DATABYTE3 = enable/disable flags
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 databytes to send
+    DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (H’AE’)
+    DATABYTE2 = Channel (FF)
+    DATABYTE3 = enable/disable flags
                        Contents               Description
                      B’xxxxxxx0’              Disable sunrise related actions
                      B’xxxxxxx1’              Enable sunrise related actions

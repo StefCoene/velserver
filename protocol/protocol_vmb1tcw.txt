@@ -1,15 +1,15 @@
-   VMB1TC
+ VMB1TCW
 TemperatureController Module
         PROTOCOL
 
 
 
 
-        VMB1TC PROTOCOL – edition 1 _ rev4   1
+         VMB1TCW PROTOCOL – edition 1   1
 Binary format
 
-<SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-
-ACK-ACKDEL-EOF7...EOF1-IFS3...IFS1>
+<SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-ACK-ACKDEL-
+EOF7...EOF1-IFS3...IFS1>
 
      bits                              Description
      SOF                               Start Of Frame (always 0)
@@ -69,8 +69,7 @@ The temperature controller module can transmit the following commands:
      Set sensor heating mode
      Set sensor cooling mode
 
-
-                                    VMB1TC PROTOCOL – edition 1 _ rev4                                  2
+                                             VMB1TCW PROTOCOL – edition 1                               2
     Set sensor default sleep time
     Switch sensor into comfort mode
     Switch sensor into day mode
@@ -130,7 +129,7 @@ The temperature controller module can receive the following commands:
 
 
 
-                                   VMB1TC PROTOCOL – edition 1 _ rev4   3
+                                            VMB1TCW PROTOCOL – edition 1   3
 Transmits real time clock status request:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = H’00’
@@ -145,7 +144,7 @@ Transmits the real time clock status:
    DLC3...DLC0 = 4 databytes to send
    DATABYTE1 = COMMAND_REALTIME_CLOCK_STATUS (H’D8’)
    DATABYTE2 = Day
-                      Contents   Day
+                     Contents Day
                          0       Monday
                          1       Tuesday
                          2       Wednesday
@@ -177,7 +176,7 @@ Transmits set sensor program location:
    DATABYTE1 = COMMAND_SET_SENSOR_PROGRAM_LOCATION (H’BF’)
    DATABYTE2 = Module address
    DATABYTE3 = Program type
-                    Contents     Day
+                    Contents Day
                        0…32      Sensor program
                         33       All rooms program
                         34       Zone 1 program
@@ -193,7 +192,7 @@ Transmits set sensor program location:
 
 
 
-                               VMB1TC PROTOCOL – edition 1 _ rev4     4
+                                        VMB1TCW PROTOCOL – edition 1   4
 Transmits set sensor program availability:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = H’00’
@@ -202,7 +201,7 @@ Transmits set sensor program location:
    DATABYTE1 = COMMAND_SENSOR_PROGRAM_AVAILABILITY (H’BC’)
    DATABYTE2 = Program availabitlity (0 = no program ; 1 = program available)
    DATABYTE3 = Program type
-                    Contents     Day
+                    Contents Day
                        0…32      Sensor program
                         33       All rooms program
                         34       Zone 1 program
@@ -215,11 +214,7 @@ Transmits set sensor program location:
                      40…255      Not valid
    DATABYTE4 = Sensor address
 
-
-
-
-                               VMB1TC PROTOCOL – edition 1 _ rev4               5
-Transmits the memory data:
+Transmits the memory data:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
    RTR = 0
@@ -252,7 +247,11 @@ Transmit bus error counter status
    DATABYTE3 = Receive error counter
    DATABYTE4 = Bus off counter
 
-Transmits the first part of the module name:
+
+
+
+                                        VMB1TCW PROTOCOL – edition 1            5
+Transmits the first part of the module name:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
    RTR = 0
@@ -280,11 +279,7 @@ Transmits the second part of the module name:
    DATABYTE7 = Character 11 of the sensor name
    DATABYTE8 = Character 12 of the sensor name
 
-
-
-
-                             VMB1TC PROTOCOL – edition 1 _ rev4       6
-Transmits the third part of the module name:
+Transmits the third part of the module name:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
    RTR = 0
@@ -296,8 +291,7 @@ Transmits the second part of the module name:
    DATABYTE5 = Character 15 of the sensor name
    DATABYTE6 = Character 16 of the sensor name
 
-  Remarks:
-  Unused characters contain H’FF’.
+  Remarks: Unused characters contain H’FF’.
 
 Transmit the module status:
    SID10-SID9 = 11 (lowest priority)
@@ -316,64 +310,46 @@ Transmit the module status:
    DATABYTE5 = Go to bed hour (0…23)
    DATABYTE6 = Go to bed minute (0…59)
    DATABYTE7 = Module configuration settings
-                   Contents      Configuration
-                   Xxxxxxx0 Battery backup disabled
-                   Xxxxxxx1 Battery backup enabled
-                   Xxxxxx0x Master clock disabled
-                   Xxxxxx1x Master clock enabled
-                   Xxxxx0xx Clock alarm disabled
-                   xxxxx1xx Clock alarm enabled
-                   Xxxx0xxx Celsius readout
-                   Xxxx1xxx Fahrenheit readout
-                   Xxx0xxxx Local clock alarm
-                   Xxx1xxxx Global clock alarm
-   DATABYTE8 = Language
-                   Contents      Language
-                        0        English
-                        1        French
-                        2        Dutch
-                        3        Spanish
-                        4        German
 
-Transmits the module type (Build 1001 or lower):
+                  Contents    Configuration
+                  Xxxxxxx0    Battery backup disabled
+                  Xxxxxxx1    Battery backup enabled
+                  Xxxxxx0x    Master clock disabled
+                  Xxxxxx1x    Master clock enabled
+                  Xxxxx0xx    Clock alarm disabled
+
+                                      VMB1TCW PROTOCOL – edition 1   6
+                xxxxx1xx       Clock alarm enabled
+                Xxxx0xxx       Celsius readout
+                Xxxx1xxx       Fahrenheit readout
+                Xxx0xxxx       Local clock alarm
+                Xxx1xxxx       Global clock alarm
+   DATABYTE8 = Language
+                Contents       Language
+                    0          English
+                    1          French
+                    2          Dutch
+                    3          Spanish
+                    4          German
+
+Transmits the module type:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
    RTR = 0
    DLC3...DLC0 = 4 databytes to send
    DATABYTE1 = COMMAND_MODULE_TYPE (H’FF’)
    DATABYTE2 = NODETYPE_TEMPERATURE_CONTROLLER (H’0E’)
-   DATABYTE3 = Build year
-   DATABYTE4 = Build week
+   DATABYTE4 = Build year
+   DATABYTE5 = Build week
 
-
-
-
-                             VMB1TC PROTOCOL – edition 1 _ rev4   7
-Transmits the module type (Build 1233 or higher):
-   SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
-   RTR = 0
-   DLC3...DLC0 = 7 databytes to send
-   DATABYTE1 = COMMAND_MODULE_TYPE (H’FF’)
-   DATABYTE2 = NODETYPE_TEMPERATURE_CONTROLLER (H’0E’)
-   DATABYTE3 = Serial number high
-   DATABYTE4 = Serial number low
-   DATABYTE5 = Memory map version
-   DATABYTE6 = Build year
-   DATABYTE7 = Build week
-
-
-
-
-                       VMB1TC PROTOCOL – edition 1 _ rev4   8
-Transmits program step info:
+Transmits program step info:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
    RTR = 0
    DLC3...DLC0 = 8 databytes to send
    DATABYTE1 = COMMAND_PROGRAM_STEP_INFO (H’C1’)
    DATABYTE2 = Zone number
-                    Contents     Zone
+                    Contents Zone
                         0        All rooms
                         1        Zone 1
                         2        Zone 2
@@ -386,28 +362,30 @@ Transmits the module type (Build 1001 or lower):
    DATABYTE3 = Sensor address
    DATABYTE4 = Program step number (0…30)
    DATABYTE5 = Program step time reference, mode & day
-                    Contents     Program step time reference
+                    Contents Program step time reference
                    00xxxxxx Program step hour & minute
                    01xxxxxx Wake up alarm time + relative time
                    10xxxxxx Go to bed alarm time + relative time
                    11xxxxxx Not valid
 
-                    Contents    Program mode
-                   xx00xxxx     Anti frost or cooler standby mode
-                   xx01xxxx     Night mode
-                   xx10xxxx     Day mode
-                   xx11xxxx     Comfort mode
-                 Contents    Program step day
-                Xxxx0000 Monday
-                Xxxx0001 Tuesday
-                Xxxx0010 Wednesday
-                Xxxx0011 Thursday
-                Xxxx0100 Friday
-                Xxxx0101 Saturday
-                Xxxx0110 Sunday
-                Xxxx0111 Saturday & Sunday
-                Xxxx1000 Monday … Friday
-                Xxxx1001 Monday … Saturday
+                    Contents   Program mode
+                   xx00xxxx    Anti frost or cooler standby mode
+                   xx01xxxx    Night mode
+                   xx10xxxx    Day mode
+                   xx11xxxx    Comfort mode
+                    Contents   Program step day
+                   Xxxx0000    Monday
+                   Xxxx0001    Tuesday
+                   Xxxx0010    Wednesday
+                   Xxxx0011    Thursday
+                   Xxxx0100    Friday
+                   Xxxx0101    Saturday
+                   Xxxx0110    Sunday
+                   Xxxx0111    Saturday & Sunday
+                   Xxxx1000    Monday … Friday
+
+                                       VMB1TCW PROTOCOL – edition 1   7
+                Xxxx1001 Monday … Saturday
                 Xxxx1010 Every day
                 Xxxx1011 Never
                 Xxxx1100 Never
@@ -417,22 +395,18 @@ Transmits the module type (Build 1001 or lower):
    DATABYTE6 = Program step hour (0…23)
    DATABYTE7 = Program step minute (0…59)
    DATABYTE8 = Program step relative time
-                 Contents    Program step time
+                 Contents Program step time
                 00010000 Alarm time + 4h
                 00001111 Alarm time + 3h45m
-                    ...      …
+                   ...       …
                 00000001 Alarm time + 15m
                 00000000 Alarm time
                 10000001 Alarm time +15m
-                    ...      …
+                   ...       …
                 10001111 Alarm time – 3h15m
                 10010000 Alarm time – 4h
 
-
-
-
-                               VMB1TC PROTOCOL – edition 1 _ rev4   9
-Transmits the module output status:
+Transmits the module output status:
    SID10-SID9 = 00 (highest priority)
    SID8...SID1 = Module address
    RTR = 0
@@ -451,18 +425,14 @@ Transmits the module type (Build 1001 or lower):
                    xxx1xxxx Link wake up alarm output
                    Xx1xxxxx Link go to bed alarm output
 
-
-
-
-                             VMB1TC PROTOCOL – edition 1 _ rev4       10
-Transmits write program step:
+Transmits write program step:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Program location address
    RTR = 0
    DLC3...DLC0 = 8 databytes to send
    DATABYTE1 = COMMAND_WRITE_PROGRAM_STEP (H’C2’)
    DATABYTE2 = Zone number
-                     Contents    Zone
+                    Contents Zone
                         0        All rooms
                         1        Zone 1
                         2        Zone 2
@@ -471,64 +441,65 @@ Transmits the module type (Build 1001 or lower):
                         5        Zone 5
                         6        Zone 6
                         7        Zone 7
-                      8…255      No zone
+                     8…255       No zone
    DATABYTE3 = Sensor address
    DATABYTE4 = Program step number (0…30)
    DATABYTE5 = Program step time reference, mode & day
-                     Contents    Program step time reference
-                    00xxxxxx Program step hour & minute
-                    01xxxxxx Wake up alarm time + relative time
-                    10xxxxxx Go to bed alarm time + relative time
-                    11xxxxxx Not valid
-
-                    Contents    Program mode
-                   xx00xxxx     Anti frost or cooler standby mode
-                   xx01xxxx     Night mode
-                   xx10xxxx     Day mode
-                   xx11xxxx     Comfort mode
-                 Contents    Program step day
-                Xxxx0000 Monday
-                Xxxx0001 Tuesday
-                Xxxx0010 Wednesday
-                Xxxx0011 Thursday
-                Xxxx0100 Friday
-                Xxxx0101 Saturday
-                Xxxx0110 Sunday
-                Xxxx0111 Saturday & Sunday
-                Xxxx1000 Monday … Friday
-                Xxxx1001 Monday … Saturday
-                Xxxx1010 Every day
-                Xxxx1011 Never
-                Xxxx1100 Never
-                Xxxx1101 Never
-                Xxxx1110 Never
-                Xxxx1111 Never
-   DATABYTE6 = Program step hour (0…23)
-   DATABYTE7 = Program step minute (0…59)
-   DATABYTE8 = Program step relative time
-                 Contents    Program step time
-                00010000 Alarm time + 4h
-                00001111 Alarm time + 3h45m
-                    ...      …
-                00000001 Alarm time + 15m
-                00000000 Alarm time
-                10000001 Alarm time +15m
-                    ...      …
-                10001111 Alarm time – 3h15m
-                10010000 Alarm time – 4h
 
 
 
 
-                               VMB1TC PROTOCOL – edition 1 _ rev4   11
-Transmits read program step:
+                                      VMB1TCW PROTOCOL – edition 1    8
+                Contents   Program step time reference
+               00xxxxxx    Program step hour & minute
+               01xxxxxx    Wake up alarm time + relative time
+               10xxxxxx    Go to bed alarm time + relative time
+               11xxxxxx    Not valid
+                Contents   Program mode
+               xx00xxxx    Anti frost or cooler standby mode
+               xx01xxxx    Night mode
+               xx10xxxx    Day mode
+               xx11xxxx    Comfort mode
+                Contents Program step day
+               Xxxx0000 Monday
+               Xxxx0001 Tuesday
+               Xxxx0010 Wednesday
+               Xxxx0011 Thursday
+               Xxxx0100 Friday
+               Xxxx0101 Saturday
+               Xxxx0110 Sunday
+               Xxxx0111 Saturday & Sunday
+               Xxxx1000 Monday … Friday
+               Xxxx1001 Monday … Saturday
+               Xxxx1010 Every day
+               Xxxx1011 Never
+               Xxxx1100 Never
+               Xxxx1101 Never
+               Xxxx1110 Never
+               Xxxx1111 Never
+  DATABYTE6 = Program step hour (0…23)
+  DATABYTE7 = Program step minute (0…59)
+  DATABYTE8 = Program step relative time
+                Contents Program step time
+               00010000 Alarm time + 4h
+               00001111 Alarm time + 3h45m
+                  ...       …
+               00000001 Alarm time + 15m
+               00000000 Alarm time
+               10000001 Alarm time +15m
+                  ...       …
+               10001111 Alarm time – 3h15m
+               10010000 Alarm time – 4h
+
+
+Transmits read program step:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Program location address
    RTR = 0
    DLC3...DLC0 = 4 databytes to send
    DATABYTE1 = COMMAND_READ_PROGRAM_STEP (H’C0’)
    DATABYTE2 = Zone number
-                    Contents     Zone
+                    Contents Zone
                         0        All rooms
                         1        Zone 1
                         2        Zone 2
@@ -543,26 +514,21 @@ Transmits the module type (Build 1001 or lower):
 
 
 
-
-                       VMB1TC PROTOCOL – edition 1 _ rev4   12
+                                   VMB1TCW PROTOCOL – edition 1   9
 Transmits the module type request:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = module scan address
    RTR = 1
    DLC3...DLC0 = 0 databytes to send
 
-
-
-
-                             VMB1TC PROTOCOL – edition 1 _ rev4   13
-Transmits set sensor zone number:
+Transmits set sensor zone number:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
    DLC3...DLC0 = 2 databytes to send
    DATABYTE1 = COMMAND_SET_SENSOR_ZONE_NUMBER (H’C5’)
    DATABYTE2 = Zone number
-                    Contents     Zone
+                    Contents Zone
                         0        Sensor not assigned to a zone
                         1        Sensor assigned to zone 1
                         2        Sensor assigned to zone 2
@@ -613,7 +579,11 @@ Transmits unlock sensor local control:
    DATABYTE1 = COMMAND_UNLOCK_LOCAL_CONTROL (H’E2’)
    DATABYTE2 = Sensor number (1)
 
-Transmits set sensor heating mode:
+
+
+
+                                       VMB1TCW PROTOCOL – edition 1   10
+Transmits set sensor heating mode:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -621,10 +591,7 @@ Transmits set sensor heating mode:
    DATABYTE1 = COMMAND_SET_HEATING_MODE (H’E0’)
    DATABYTE2 = Sensor number (1)
 
-
-
-                           VMB1TC PROTOCOL – edition 1 _ rev4    14
-Transmits set sensor cooling mode:
+Transmits set sensor cooling mode:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -681,19 +648,18 @@ Transmits switch sensor into comfort mode:
    DATABYTE2 = High byte of the sleep time
    DATABYTE3 = Low byte of the sleep time into minutes
 
-   Remark:
+
+
+                                        VMB1TCW PROTOCOL – edition 1      11
+   Remark:
    If the sleep time contains H’FF00’, the command is a program step.
-   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and
-   program steps will not be executed during that time.
-   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed
-   anymore and local control is disabled.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps
+   will not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore and local
+   control is disabled.
    A value of zero for the sleep time cancels the manual mode or sleep timer.
 
-
-
-
-                               VMB1TC PROTOCOL – edition 1 _ rev4                                 15
-Transmits switch sensor into day mode:
+Transmits switch sensor into day mode:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -704,10 +670,10 @@ Transmits switch sensor into comfort mode:
 
    Remark:
    If the sleep time contains H’FF00’, the command is a program step.
-   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and
-   program steps will not be executed during that time.
-   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed
-   anymore and local control is disabled.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps
+   will not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore and local
+   control is disabled.
    A value of zero for the sleep time cancels the manual mode or sleep timer.
 
 Transmits switch sensor into night mode:
@@ -721,10 +687,10 @@ Transmits switch sensor into night mode:
 
    Remark:
    If the sleep time contains H’FF00’, the command is a program step.
-   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and
-   program steps will not be executed during that time.
-   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed
-   anymore and local control is disabled.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps
+   will not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore and local
+   control is disabled.
    A value of zero for the sleep time cancels the manual mode or sleep timer.
 
 Transmits switch into anti frost or cooler standby mode:
@@ -738,13 +704,17 @@ Transmits switch into anti frost or cooler standby mode:
 
    Remark:
    If the sleep time contains H’FF00’, the command is a program step.
-   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and
-   program steps will not be executed during that time.
-   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed
-   anymore and local control is disabled.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps
+   will not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore and local
+   control is disabled.
    A value of zero for the sleep time cancels the manual mode or sleep timer.
 
-Transmits set sensor target temperature:
+
+
+
+                                         VMB1TCW PROTOCOL – edition 1                                           12
+Transmits set sensor target temperature:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -755,14 +725,12 @@ Transmits set sensor target temperature:
                    Contents      Temperature set
                    01101100 54°C
 
-                    00000000     0°C
-                    11111111     -0.5°C
+                   00000000    0°C
+                   11111111    -0.5°C
 
-                    11000000     -32°C
+                   11000000    -32°C
 
-
-                               VMB1TC PROTOCOL – edition 1 _ rev4                                 16
-Transmits set sensor heating comfort temperature:
+Transmits set sensor heating comfort temperature:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -773,10 +741,10 @@ Transmits set sensor target temperature:
                    Contents      Temperature set
                    01101100 54°C
 
-                    00000000    0°C
-                    11111111    -0.5°C
+                   00000000    0°C
+                   11111111    -0.5°C
 
-                    11000000    -32°C
+                   11000000    -32°C
 
 Transmits set sensor heating day temperature:
    SID10-SID9 = 11 (lowest priority)
@@ -789,10 +757,10 @@ Transmits set sensor heating day temperature:
                    Contents      Temperature set
                    01101100 54°C
 
-                    00000000    0°C
-                    11111111    -0.5°C
+                   00000000    0°C
+                   11111111    -0.5°C
 
-                    11000000    -32°C
+                   11000000    -32°C
 
 Transmits set sensor heating night temperature:
    SID10-SID9 = 11 (lowest priority)
@@ -805,12 +773,14 @@ Transmits set sensor heating night temperature:
                    Contents      Temperature set
                    01101100 54°C
 
-                    00000000    0°C
-                    11111111    -0.5°C
+                   00000000    0°C
+                   11111111    -0.5°C
 
-                    11000000    -32°C
+                   11000000    -32°C
 
-Transmits set sensor heating anti frost temperature:
+
+                                        VMB1TCW PROTOCOL – edition 1   13
+Transmits set sensor heating anti frost temperature:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -826,10 +796,7 @@ Transmits set sensor heating anti frost temperature:
 
                     11000000    -32°C
 
-
-
-                               VMB1TC PROTOCOL – edition 1 _ rev4   17
-Transmits set sensor temperature difference:
+Transmits set sensor temperature difference:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -840,11 +807,11 @@ Transmits set sensor heating anti frost temperature:
                    Contents      Temperature set
                    00010100 10°C
 
-                   00000001    0.5°C
-                   00000000    0°C
-                   11111111    -0.5°C
+                    00000001    0.5°C
+                    00000000    0°C
+                    11111111    -0.5°C
 
-                   11110110    -10°C
+                    11110110    -10°C
 
 Transmits set sensor hysteresis:
    SID10-SID9 = 11 (lowest priority)
@@ -857,9 +824,9 @@ Transmits set sensor hysteresis:
                    Contents      Temperature set
                    00011111 15.5°C
 
-                   00000010    1°C
-                   00000001    0.5°C
-                   00000000    0°C
+                    00000010    1°C
+                    00000001    0.5°C
+                    00000000    0°C
 
 Transmits set sensor cooling comfort temperature:
    SID10-SID9 = 11 (lowest priority)
@@ -872,12 +839,14 @@ Transmits set sensor cooling comfort temperature:
                    Contents      Temperature set
                    01101100 54°C
 
-                   00000000    0°C
-                   11111111    -0.5°C
+                    00000000    0°C
+                    11111111    -0.5°C
 
-                   11000000    -32°C
+                    11000000    -32°C
 
-Transmits set sensor cooling day temperature:
+
+                                         VMB1TCW PROTOCOL – edition 1   14
+Transmits set sensor cooling day temperature:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -888,16 +857,12 @@ Transmits set sensor cooling day temperature:
                    Contents      Temperature set
                    01101100 54°C
 
-                   00000000    0°C
-                   11111111    -0.5°C
+                    00000000    0°C
+                    11111111    -0.5°C
 
-                   11000000    -32°C
+                    11000000    -32°C
 
-
-
-
-                              VMB1TC PROTOCOL – edition 1 _ rev4   18
-Transmits set sensor cooling night temperature:
+Transmits set sensor cooling night temperature:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -946,7 +911,8 @@ Transmits set sensor calibration factor:
 
                     11110000    -8°C
 
-Transmits reset sensor minimum/maximum temperature:
+                                         VMB1TCW PROTOCOL – edition 1   15
+Transmits reset sensor minimum/maximum temperature:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -959,11 +925,7 @@ Transmits reset sensor minimum/maximum temperature:
                    00000010 Reset maximum temperature
                    00000011 Reset minimum & maximum temperature
 
-
-
-
-                               VMB1TC PROTOCOL – edition 1 _ rev4   19
-Transmits reset sensor time statistics:
+Transmits reset sensor time statistics:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -1013,7 +975,10 @@ Transmits set sensor low temperature alarm:
 
                    11000000    -32°C
 
-Transmits set sensor high temperature alarm:
+
+
+                                        VMB1TCW PROTOCOL – edition 1                 16
+Transmits set sensor high temperature alarm:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -1024,14 +989,12 @@ Transmits set sensor high temperature alarm:
                    Contents      Temperature set
                    01111000 60°C
 
-                   00000000    0°C
-                   11111111    -0.5°C
+                    00000000     0°C
+                    11111111     -0.5°C
 
-                   11000000    -32°C
+                    11000000     -32°C
 
-
-                              VMB1TC PROTOCOL – edition 1 _ rev4                     20
-Transmits set lower cool temperature limit:
+Transmits set lower cool temperature limit:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Sensor address
    RTR = 0
@@ -1079,13 +1042,15 @@ Transmits write to sensor memory data:
    DLC3...DLC0 = 4 databytes to send
    DATABYTE1 = COMMAND_MEMORY_DATA (H’FC’)
    DATABYTE2 = High memory address (H’00’)
-   DATABYTE3 = LOW memory address (H’00’...H’FF’)
-   DATABYTE4 = memory data
+
+                                          VMB1TCW PROTOCOL – edition 1        17
+DATABYTE3 = LOW memory address (H’00’...H’FF’)
+DATABYTE4 = memory data
 
 
 
 
-                                VMB1TC PROTOCOL – edition 1 _ rev4            21
+                                 VMB1TCW PROTOCOL – edition 1   18
 ‘Real time clock status request’ command received:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = H’00’
@@ -1100,7 +1065,7 @@ Transmits write to sensor memory data:
    DLC3...DLC0 = 4 databytes received
    DATABYTE1 = COMMAND_REALTIME_CLOCK_STATUS (H’D8’)
    DATABYTE2 = Day
-                      Contents   Day
+                      Contents Day
                           0      Monday
                           1      Tuesday
                           2      Wednesday
@@ -1119,7 +1084,7 @@ Transmits write to sensor memory data:
     DATABYTE1 = COMMAND_SET_SENSOR_PROGRAM_LOCATION (H’BF’)
     DATABYTE2 = program location address
     DATABYTE3 = Program type
-                     Contents     Day
+                     Contents Day
                         0…32      Sensor program
                          33       All rooms program
                          34       Zone 1 program
@@ -1148,7 +1113,7 @@ Transmits write to sensor memory data:
 
 
 
-                               VMB1TC PROTOCOL – edition 1 _ rev4      22
+                                        VMB1TCW PROTOCOL – edition 1   19
 ‘Module type request’ command received:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
@@ -1216,8 +1181,7 @@ Transmits write to sensor memory data:
    Remark:
    Wait for ‘memory data block’ feedback before sending a next command on the velbus.
 
-
-                              VMB1TC PROTOCOL – edition 1 _ rev4                        23
+                                        VMB1TCW PROTOCOL – edition 1                    20
 ‘Module status request’ command received:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
@@ -1241,7 +1205,7 @@ Transmits write to sensor memory data:
    DLC3...DLC0 = 4 databytes to send
    DATABYTE1 = COMMAND_READ_PROGRAM_STEP (H’C0’)
    DATABYTE2 = Zone number
-                    Contents     Zone
+                    Contents Zone
                         0        All rooms
                         1        Zone 1
                         2        Zone 2
@@ -1270,7 +1234,7 @@ Transmits write to sensor memory data:
 
 
 
-                               VMB1TC PROTOCOL – edition 1 _ rev4      24
+                                        VMB1TCW PROTOCOL – edition 1   21
 ‘Write program step’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -1291,7 +1255,7 @@ Transmits write to sensor memory data:
     DATABYTE3 = Sensor address
     DATABYTE4 = Program step number (0…30)
     DATABYTE5 = Program step time reference, mode & day
-                     Contents     Program step time reference
+                     Contents Program step time reference
                     00xxxxxx Program step hour & minute
                     01xxxxxx Wake up alarm time + relative time
                     10xxxxxx Go to bed alarm time + relative time
@@ -1302,7 +1266,7 @@ Transmits write to sensor memory data:
                    xx01xxxx     Night mode
                    xx10xxxx     Day mode
                    xx11xxxx     Comfort mode
-                 Contents    Program step day
+                 Contents Program step day
                 Xxxx0000 Monday
                 Xxxx0001 Tuesday
                 Xxxx0010 Wednesday
@@ -1322,21 +1286,20 @@ Transmits write to sensor memory data:
    DATABYTE6 = Program step hour (0…23)
    DATABYTE7 = Program step minute (0…59)
    DATABYTE8 = Program step relative time
-                 Contents    Program step time
+                 Contents Program step time
                 00010000 Alarm time + 4h
                 00001111 Alarm time + 3h45m
-                    ...      …
+                   ...       …
                 00000001 Alarm time + 15m
                 00000000 Alarm time
                 10000001 Alarm time +15m
-                    ...      …
+                   ...       …
                 10001111 Alarm time – 3h15m
                 10010000 Alarm time – 4h
 
 
 
-
-                               VMB1TC PROTOCOL – edition 1 _ rev4   25
+                                        VMB1TCW PROTOCOL – edition 1   22
 ‘Program step info’ received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -1344,7 +1307,7 @@ Transmits write to sensor memory data:
     DLC3...DLC0 = 8 databytes to send
     DATABYTE1 = COMMAND_PROGRAM_STEP_INFO (H’C1’)
     DATABYTE2 = Zone number
-                     Contents     Zone
+                     Contents Zone
                          0        All rooms
                          1        Zone 1
                          2        Zone 2
@@ -1357,7 +1320,7 @@ Transmits write to sensor memory data:
     DATABYTE3 = Sensor address
     DATABYTE4 = Program step number (0…30)
     DATABYTE5 = Program step time reference, mode & day
-                     Contents     Program step time reference
+                     Contents Program step time reference
                     00xxxxxx Program step hour & minute
                     01xxxxxx Wake up alarm time + relative time
                     10xxxxxx Go to bed alarm time + relative time
@@ -1368,7 +1331,7 @@ Transmits write to sensor memory data:
                    xx01xxxx     Night mode
                    xx10xxxx     Day mode
                    xx11xxxx     Comfort mode
-                 Contents    Program step day
+                 Contents Program step day
                 Xxxx0000 Monday
                 Xxxx0001 Tuesday
                 Xxxx0010 Wednesday
@@ -1388,21 +1351,19 @@ Transmits write to sensor memory data:
    DATABYTE6 = Program step hour (0…23)
    DATABYTE7 = Program step minute (0…59)
    DATABYTE8 = Program step relative time
-                 Contents    Program step time
+                 Contents Program step time
                 00010000 Alarm time + 4h
                 00001111 Alarm time + 3h45m
-                    ...      …
+                   ...       …
                 00000001 Alarm time + 15m
                 00000000 Alarm time
                 10000001 Alarm time +15m
-                    ...      …
+                   ...       …
                 10001111 Alarm time – 3h15m
                 10010000 Alarm time – 4h
 
 
-
-
-                               VMB1TC PROTOCOL – edition 1 _ rev4   26
+                                        VMB1TCW PROTOCOL – edition 1   23
 ‘First part of the sensor settings’ received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Sensor address
@@ -1467,7 +1428,7 @@ Transmits write to sensor memory data:
 
 
 
-                             VMB1TC PROTOCOL – edition 1 _ rev4                27
+                                        VMB1TCW PROTOCOL – edition 1           24
 ‘Second part of the sensor settings’ received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Sensor address
@@ -1513,11 +1474,7 @@ Transmits write to sensor memory data:
                 (1…9 = autosend when temperature changed)
                 (0 = autosend disabled)
 
-
-
-
-                               VMB1TC PROTOCOL – edition 1 _ rev4                        28
-‘Third part of the sensor settings’ received:
+‘Third part of the sensor settings’ received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Sensor address
     RTR = 0
@@ -1527,11 +1484,16 @@ Transmits write to sensor memory data:
                      Contents     Comfort temperature set
                      01111000 60°C
 
-                   00000000     0°C
-                   11111111     -0.5°C
+                    00000000    0°C
+                    11111111    -0.5°C
 
-                11000000 -32°C
-   DATABYTE3 = High temperature alarm setting (resolution 0.5°)
+                    11000000    -32°C
+
+
+
+
+                                         VMB1TCW PROTOCOL – edition 1                    25
+   DATABYTE3 = High temperature alarm setting (resolution 0.5°)
                 Contents     Comfort temperature set
                 01111000 60°C
 
@@ -1566,11 +1528,7 @@ Transmits write to sensor memory data:
                 11110000 Calibration factor -8°C
    DATABYTE7 = Differential (slave) sensor address (H’FF’: no slave sensor)
 
-
-
-
-                               VMB1TC PROTOCOL – edition 1 _ rev4             29
-‘Sensor temperature’ received:
+‘Sensor temperature’ received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Sensor address
     RTR = 0
@@ -1585,20 +1543,23 @@ Transmits write to sensor memory data:
                     High byte     Low byte  Current sensor temperature
                     01111111 11100000 63.5°C
 
-                    00000001      000xxxxx     0.5°C
-                    00000000      100xxxxx     0.25°C
-                    00000000      010xxxxx     0.125°C
-                    00000000      001xxxxx     0.0625°C
-                    00000000      000xxxxx     0°C
-                    11111111      110xxxxx     -0.0625°C
-                    11111111      100xxxxx     -0.125°C
-                    11111111      010xxxxx     -0.25°C
-                    11111110      000xxxxx     -0.5°C
+                   00000001     000xxxxx     0.5°C
+                   00000000     100xxxxx     0.25°C
+                   00000000     010xxxxx     0.125°C
+                   00000000     001xxxxx     0.0625°C
+                   00000000     000xxxxx     0°C
+                   11111111     110xxxxx     -0.0625°C
+                   11111111     100xxxxx     -0.125°C
+                   11111111     010xxxxx     -0.25°C
+                   11111110     000xxxxx     -0.5°C
 
-                    10010010      000xxxxx     -55°C
+                   10010010     000xxxxx     -55°C
 
-   Remark:
-   The 5 least significant bits of the low byte are always zero.
+
+
+
+                                         VMB1TCW PROTOCOL – edition 1                             26
+   Remark:The 5 least significant bits of the low byte are always zero.
    The low order bytes are not sending with the data length of 4 bytes (resolution 0.5°C)
 
 ‘First part of the sensor name’ received:
@@ -1629,11 +1590,7 @@ Transmits write to sensor memory data:
     DATABYTE7 = Character 11 of the sensor name
     DATABYTE8 = Character 12 of the sensor name
 
-
-
-
-                                VMB1TC PROTOCOL – edition 1 _ rev4                          30
-‘Third part of the sensor name’ received:
+‘Third part of the sensor name’ received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Sensor address
     RTR = 0
@@ -1667,68 +1624,72 @@ Transmits write to sensor memory data:
                     x001xxxx Night mode
                     x000xxxx Safe temp mode (anti frost)
                     1000xxxx Cooler mode
-                    0xxxxxxx Heater mode
-    DATABYTE3 = Program step mode
-                    Contents      Program step mode
-                    xxxxx0xx No sensor program
-                    xxxxx1xx Sensor program available
-                    xxxx0xxx No zone program
-                    xxxx1xxx Zone program available
-                    0xxxxxxx No all rooms program
-                    1xxxxxxx All rooms program available
-                    x100xxxx Comfort program step received
-                    x010xxxx Day program step received
-                    x001xxxx Night program step received
-                    X000xxxx Safe temperature program step received
-                    xxxxxx1x Enable unjamming heater valve
-                    xxxxxx0x Disable unjamming heater valve
-                    xxxxxxx1 Enable unjamming pump
-                    xxxxxxx0 Disable unjamming pump
-    DATABYTE4 = Output status (1 = activated)
-                    Contents      Output channel
-                    0xx0xxx0 Heater/pump off
-                    0xx1xxx1 Heater/pump on
-                    0xxxxx0x Turbo heater/cooler off
-                    0xxxxx1x Turbo heater/cooler on
-                    0xxxx0xx Comfort and day mode off
-                    0xxxx1xx Comfort or day mode on
-                    0xxx0xxx Cooler off
-                    0xxx1xxx Cooler on
-                    0x0xxxxx Low alarm off
-                    0x1xxxxx Low alarm on
-                    00xxxxxx High alarm off
-                    01xxxxxx High alarm on
 
-                              VMB1TC PROTOCOL – edition 1 _ rev4      31
-   DATABYTE5 = Current sensor temperature into two’s complement format (resolution 0.5°)
-                Contents     Current sensor temperature
-                01111111 63.5°C
+                                          VMB1TCW PROTOCOL – edition 1                      27
+             0xxxxxxx Heater mode
+DATABYTE3 = Program step mode
+             Contents      Program step mode
+             xxxxx0xx No sensor program
+             xxxxx1xx Sensor program available
+             xxxx0xxx No zone program
+             xxxx1xxx Zone program available
+             0xxxxxxx No all rooms program
+             1xxxxxxx All rooms program available
+             x100xxxx Comfort program step received
+             x010xxxx Day program step received
+             x001xxxx Night program step received
+             X000xxxx Safe temperature program step received
+             xxxxxx1x Enable unjamming heater valve
+             xxxxxx0x Disable unjamming heater valve
+             xxxxxxx1 Enable unjamming pump
+             xxxxxxx0 Disable unjamming pump
+DATABYTE4 = Output status (1 = activated)
+             Contents      Output channel
+             0xx0xxx0 Heater/pump off
+             0xx1xxx1 Heater/pump on
+             0xxxxx0x Turbo heater/cooler off
+             0xxxxx1x Turbo heater/cooler on
+             0xxxx0xx Comfort and day mode off
+             0xxxx1xx Comfort or day mode on
+             0xxx0xxx Cooler off
+             0xxx1xxx Cooler on
+             0x0xxxxx Low alarm off
+             0x1xxxxx Low alarm on
+             00xxxxxx High alarm off
+             01xxxxxx High alarm on
+DATABYTE5 = Current sensor temperature into two’s complement format (resolution 0.5°)
+             Contents      Current sensor temperature
+             01111111 63.5°C
 
-                    00000001      0.5°C
-                    00000000      0°C
-                    11111111      -0.5°C
+                 00000001     0.5°C
+                 00000000     0°C
+                 11111111     -0.5°C
 
-                10010010 -55°C
-   DATABYTE6 = Current temperature set (resolution 0.5°)
-                Contents     Current temperature set
-                01101100 54°C
+             10010010 -55°C
+DATABYTE6 = Current temperature set (resolution 0.5°)
+             Contents     Current temperature set
+             01101100 54°C
 
-                    00000001      0.5°C
-                    00000000      0°C
-                    11111111      -0.5°C
+                 00000001     0.5°C
+                 00000000     0°C
+                 11111111     -0.5°C
 
-                11000000 -32°C
-   DATABYTE7 = High byte of the sleep timer
-   DATABYTE8 = Low byte of the sleep timer into minutes
+             11000000 -32°C
+DATABYTE7 = High byte of the sleep timer
+DATABYTE8 = Low byte of the sleep timer into minutes
 
-   Remark:
-   [DATABYTE7][DATABYTE8] contains a 16-bit sleep timer into minutes (1 to 65.279min).
-   If the sleep timer contains H’0000’, the sleep timer is deactivated.
-   If the sleep timer contains a value between H’0001’ and H’FEFF’ (1 to 65.279min), the sleep timer
-   is running for that time.
-   If the sleep timer contains H’FFFF’, the sensor is in manual mode.
+Remark:
+[DATABYTE7][DATABYTE8] contains a 16-bit sleep timer into minutes (1 to 65.279min).
+If the sleep timer contains H’0000’, the sleep timer is deactivated.
+If the sleep timer contains a value between H’0001’ and H’FEFF’ (1 to 65.279min), the sleep timer is running for
+that time.
+If the sleep timer contains H’FFFF’, the sensor is in manual mode.
 
-‘Sensor time statistics’ received
+
+
+
+                                       VMB1TCW PROTOCOL – edition 1                                            28
+‘Sensor time statistics’ received
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Sensor address
     RTR = 0
@@ -1758,18 +1719,14 @@ Transmits write to sensor memory data:
    Databytes 3, 4 & 5 gives the total ‘ON’ time of the heater or cooler in the corresponding mode.
    Databytes 6, 7 & 8 gives the total time of selected mode.
 
-
-
-
-                                VMB1TC PROTOCOL – edition 1 _ rev4                                   32
-‘Set sensor zone number’ command received:
+‘Set sensor zone number’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Sensor address
     RTR = 0
     DLC3...DLC0 = 2 databytes to send
     DATABYTE1 = COMMAND_SET_SENSOR_ZONE_NUMBER (H’C5’)
     DATABYTE2 = Zone number
-                     Contents     Zone
+                     Contents Zone
                          0        Sensor not assigned to a zone
                          1        Sensor assigned to zone 1
                          2        Sensor assigned to zone 2
@@ -1797,136 +1754,135 @@ Transmits write to sensor memory data:
 
 
 
-                             VMB1TC PROTOCOL – edition 1 _ rev4             33
+                                          VMB1TCW PROTOCOL – edition 1                               29
 Memory map:
 
-   Address    Contents                             Address   Contents
-   H’0000’    Zone 1 name character 1              H’0001’   Zone 1 name character 2
-   ...        ...                                  ...       ...
-   H’000E’    Zone 1 name character 15             H’000F’   Zone 1 name character 16
-   H’0010’    Zone 2 name character 1              H’0011’   Zone 2 name character 2
-   ...        ...                                  ...       ...
-   H’001E’    Zone 2 name character 15             H’001F’   Zone 2 name character 16
-   H’0020’    Zone 3 name character 1              H’0021’   Zone 3 name character 2
-   ...        ...                                  ...       ...
-   H’002E’    Zone 3 name character 15             H’002F’   Zone 3 name character 16
-   H’0030’    Zone 4 name character 1              H’0031’   Zone 4 name character 2
-   ...        ...                                  ...       ...
-   H’003E’    Zone 4 name character 15             H’003F’   Zone 4 name character 16
-   H’0040’    Zone 5 name character 1              H’0041’   Zone 5 name character 2
-   ...        ...                                  ...       ...
-   H’004E’    Zone 5 name character 15             H’004F’   Zone 5 name character 16
-   H’0050’    Zone 6 name character 1              H’0051’   Zone 6 name character 2
-   ...        ...                                  ...       ...
-   H’005E’    Zone 6 name character 15             H’005F’   Zone 6 name character 16
-   H’0060’    Zone 7 name character 1              H’0061’   Zone 7 name character 2
-   ...        ...                                  ...       ...
-   H’006E’    Zone 7 name character 15             H’006F’   Zone 7 name character 16
-   H’0070’    Serial number high (Build >1232)     H’0071’   Serial number low (Build >1232)
-   H’0072’    Not used                             H’0073’   Not used
-              …                                              …
-   H’00DC’    Not used                             H’00DD’   Backlight 1 hour (0…23)
-   H’00DE’    Backlight 1 minutes (0…59)           H’00DF’   Backlight 1 (0…74)
-   H’00E0’    Backlight 2 hour (0…23)              H’00E1’   Backlight 2 minutes (0…59)
-   H’00E2’    Backlight 2 (0…74)                   H’00E3’   Pin code digit 1 (0…9)
-   H’00E4’    Pin code digit 2 (0…9)               H’00E5’   Pin code digit 3 (0…9)
-   H’00E6’    Pin code digit 4 (0…9)               H’00E7’   Wake up hour (0…23)
-   H’00E8’    Wake up minutes (0…59)               H’00E9’   Go to bed hour (0…23)
-   H’00EA’    Go to bed minutes (0…59)             H’00EB’   Configuration flags
-   H’00EC’    Oscillator tune factor (0…63)        H’00ED’   Language (0…4)
-   H’00EE’    Contrast (0…74)                      H’00EF’   Controller address (H’01’…H’FE’)
-   H’00F0’    Module name character 1              H’00F1’   Module name character 2
-   ...        ...                                  ...       ...
-   H’00FE’    Module name character 15             H’00FF’   Module name character 16
+   Address    Contents                              Address   Contents
+   H’0000’    Zone 1 name character 1               H’0001’   Zone 1 name character 2
+   ...        ...                                   ...       ...
+   H’000E’    Zone 1 name character 15              H’000F’   Zone 1 name character 16
+   H’0010’    Zone 2 name character 1               H’0011’   Zone 2 name character 2
+   ...        ...                                   ...       ...
+   H’001E’    Zone 2 name character 15              H’001F’   Zone 2 name character 16
+   H’0020’    Zone 3 name character 1               H’0021’   Zone 3 name character 2
+   ...        ...                                   ...       ...
+   H’002E’    Zone 3 name character 15              H’002F’   Zone 3 name character 16
+   H’0030’    Zone 4 name character 1               H’0031’   Zone 4 name character 2
+   ...        ...                                   ...       ...
+   H’003E’    Zone 4 name character 15              H’003F’   Zone 4 name character 16
+   H’0040’    Zone 5 name character 1               H’0041’   Zone 5 name character 2
+   ...        ...                                   ...       ...
+   H’004E’    Zone 5 name character 15              H’004F’   Zone 5 name character 16
+   H’0050’    Zone 6 name character 1               H’0051’   Zone 6 name character 2
+   ...        ...                                   ...       ...
+   H’005E’    Zone 6 name character 15              H’005F’   Zone 6 name character 16
+   H’0060’    Zone 7 name character 1               H’0061’   Zone 7 name character 2
+   ...        ...                                   ...       ...
+   H’006E’    Zone 7 name character 15              H’006F’   Zone 7 name character 16
+   H’0070’    Not used                              H’0071’   Not used
+              …                                               …
+   H’00DC’    Not used                              H’00DD’   Backlight 1 hour (0…23)
+   H’00DE’    Backlight 1 minutes (0…59)            H’00DF’   Backlight 1 (0…74)
+   H’00E0’    Backlight 2 hour (0…23)               H’00E1’   Backlight 2 minutes (0…59)
+   H’00E2’    Backlight 2 (0…74)                    H’00E3’   Pin code digit 1 (0…9)
+   H’00E4’    Pin code digit 2 (0…9)                H’00E5’   Pin code digit 3 (0…9)
+   H’00E6’    Pin code digit 4 (0…9)                H’00E7’   Wake up hour (0…23)
+   H’00E8’    Wake up minutes (0…59)                H’00E9’   Go to bed hour (0…23)
+   H’00EA’    Go to bed minutes (0…59)              H’00EB’   Configuration flags
+   H’00EC’    Oscillator tune factor (0…63)         H’00ED’   Language (0…4)
+   H’00EE’    Contrast (0…74)                       H’00EF’   Controller address (H’01’…H’FE’)
+   H’00F0’    Module name character 1               H’00F1’   Module name character 2
+   ...        ...                                   ...       ...
+   H’00FE’    Module name character 15              H’00FF’   Module name character 16
 
- All rooms program memory map
-   Address Contents                                Address   Contents
-   H’0100’    H’FF’                                H’0101’   H’FF’
-   H’0102’    All rooms program location address   H’0103’   H’FF’
-   H’0104’    Prog step 1 : time ref/mode/day      H’0105’   Prog step 1 : hour (0…23)
-   H’0106’    Prog step 1 : minutes (0…59)         H’0107’   Prog step 1 : relative time
-   ...        ...                                  ...       ...
-   H’017C’    Prog step 31 : time ref/mode/day     H’017D’   Prog step 31 : hour (0…23)
-   H’017E’    Prog step 31 : minutes (0…59)        H’017F’   Prog step 31 : relative time
+  All rooms program memory map
+    Address Contents                                Address   Contents
+    H’0100’    H’FF’                                H’0101’   H’FF’
+    H’0102’    All rooms program location address   H’0103’   H’FF’
+    H’0104’    Prog step 1 : time ref/mode/day      H’0105’   Prog step 1 : hour (0…23)
+    H’0106’    Prog step 1 : minutes (0…59)         H’0107’   Prog step 1 : relative time
+    ...        ...                                  ...       ...
+    H’017C’    Prog step 31 : time ref/mode/day     H’017D’   Prog step 31 : hour (0…23)
+    H’017E’    Prog step 31 : minutes (0…59)        H’017F’   Prog step 31 : relative time
 
- Zone 1 program memory map
-   Address Contents                                Address   Contents
-   H’0180’    H’FF’                                H’0181’   H’FF’
-   H’0182’    Zone 1 program location address      H’0183’   H’FF’
-   H’0184’    Prog step 1 : time ref/mode/day      H’0185’   Prog step 1 : hour (0…23)
-   H’0186’    Prog step 1 : minutes (0…59)         H’0187’   Prog step 1 : relative time
-   ...        ...                                  ...       ...
-   H’01FC’ Prog step 31 : time ref/mode/day        H’01FD’   Prog step 31 : hour (0…23)
-   H’01FE’    Prog step 31 : minutes (0…59)        H’01FF’   Prog step 31 : relative time
-
+  Zone 1 program memory map
+    Address Contents                                Address   Contents
+    H’0180’    H’FF’                                H’0181’   H’FF’
+    H’0182’    Zone 1 program location address      H’0183’   H’FF’
+    H’0184’   Prog step 1 : time ref/mode/day       H’0185’   Prog step 1 : hour (0…23)
+    H’0186’    Prog step 1 : minutes (0…59)         H’0187’   Prog step 1 : relative time
+    ...        ...                                  ...       ...
+    H’01FC’ Prog step 31 : time ref/mode/day        H’01FD’   Prog step 31 : hour (0…23)
+    H’01FE’    Prog step 31 : minutes (0…59)        H’01FF’   Prog step 31 : relative time
 
 
 
-                             VMB1TC PROTOCOL – edition 1 _ rev4                             34
+
+                                        VMB1TCW PROTOCOL – edition 1                             30
 Zone 2 program memory map
-  Address Contents                              Address    Contents
-  H’0200’    H’FF’                              H’0201’    H’FF’
-  H’0202’    Zone 2 program location address    H’0203’    H’FF’
-  H’0204’    Prog step 1 : time ref/mode/day    H’0205’    Prog step 1 : hour (0…23)
-  H’0206’    Prog step 1 : minutes (0…59)       H’0207’    Prog step 1 : relative time
-  ...        ...                                ...        ...
-  H’027C’    Prog step 31 : time ref/mode/day   H’027D’    Prog step 31 : hour (0…23)
-  H’027E’    Prog step 31 : minutes (0…59)      H’027F’    Prog step 31 : relative time
+  Address Contents                             Address    Contents
+  H’0200’    H’FF’                             H’0201’    H’FF’
+  H’0202’    Zone 2 program location address   H’0203’    H’FF’
+  H’0204’   Prog step 1 : time ref/mode/day    H’0205’    Prog step 1 : hour (0…23)
+  H’0206’    Prog step 1 : minutes (0…59)      H’0207’    Prog step 1 : relative time
+  ...        ...                               ...        ...
+  H’027C’   Prog step 31 : time ref/mode/day   H’027D’    Prog step 31 : hour (0…23)
+  H’027E’    Prog step 31 : minutes (0…59)     H’027F’    Prog step 31 : relative time
 
 Zone 3 program memory map
-  Address Contents                              Address    Contents
-  H’0280’    H’FF’                              H’0281’    H’FF’
-  H’0282’    Zone 3 program location address    H’0283’    H’FF’
-  H’0284’    Prog step 1 : time ref/mode/day    H’0285’    Prog step 1 : hour (0…23)
-  H’0286’    Prog step 1 : minutes (0…59)       H’0287’    Prog step 1 : relative time
-  ...        ...                                ...        ...
-  H’02FC’ Prog step 31 : time ref/mode/day      H’02FD’    Prog step 31 : hour (0…23)
-  H’02FE’    Prog step 31 : minutes (0…59)      H’02FF’    Prog step 31 : relative time
+  Address Contents                             Address    Contents
+  H’0280’    H’FF’                             H’0281’    H’FF’
+  H’0282’    Zone 3 program location address   H’0283’    H’FF’
+  H’0284’   Prog step 1 : time ref/mode/day    H’0285’    Prog step 1 : hour (0…23)
+  H’0286’    Prog step 1 : minutes (0…59)      H’0287’    Prog step 1 : relative time
+  ...        ...                               ...        ...
+  H’02FC’ Prog step 31 : time ref/mode/day     H’02FD’    Prog step 31 : hour (0…23)
+  H’02FE’    Prog step 31 : minutes (0…59)     H’02FF’    Prog step 31 : relative time
 
 Zone 4 program memory map
-  Address Contents                              Address    Contents
-  H’0300’    H’FF’                              H’0301’    H’FF’
-  H’0302’    Zone 4 program location address    H’0303’    H’FF’
-  H’0304’    Prog step 1 : time ref/mode/day    H’0305’    Prog step 1 : hour (0…23)
-  H’0306’    Prog step 1 : minutes (0…59)       H’0307’    Prog step 1 : relative time
-  ...        ...                                ...        ...
-  H’037C’    Prog step 31 : time ref/mode/day   H’037D’    Prog step 31 : hour (0…23)
-  H’037E’    Prog step 31 : minutes (0…59)      H’037F’    Prog step 31 : relative time
+  Address Contents                             Address    Contents
+  H’0300’    H’FF’                             H’0301’    H’FF’
+  H’0302’    Zone 4 program location address   H’0303’    H’FF’
+  H’0304’   Prog step 1 : time ref/mode/day    H’0305’    Prog step 1 : hour (0…23)
+  H’0306’    Prog step 1 : minutes (0…59)      H’0307’    Prog step 1 : relative time
+  ...        ...                               ...        ...
+  H’037C’   Prog step 31 : time ref/mode/day   H’037D’    Prog step 31 : hour (0…23)
+  H’037E’    Prog step 31 : minutes (0…59)     H’037F’    Prog step 31 : relative time
 
 Zone 5 program memory map
-  Address Contents                              Address    Contents
-  H’0380’    H’FF’                              H’0381’    H’FF’
-  H’0382’    Zone 5 program location address    H’0383’    H’FF’
-  H’0384’    Prog step 1 : time ref/mode/day    H’0385’    Prog step 1 : hour (0…23)
-  H’0386’    Prog step 1 : minutes (0…59)       H’0387’    Prog step 1 : relative time
-  ...        ...                                ...        ...
-  H’03FC’ Prog step 31 : time ref/mode/day      H’03FD’    Prog step 31 : hour (0…23)
-  H’03FE’    Prog step 31 : minutes (0…59)      H’03FF’    Prog step 31 : relative time
+  Address Contents                             Address    Contents
+  H’0380’    H’FF’                             H’0381’    H’FF’
+  H’0382’    Zone 5 program location address   H’0383’    H’FF’
+  H’0384’   Prog step 1 : time ref/mode/day    H’0385’    Prog step 1 : hour (0…23)
+  H’0386’    Prog step 1 : minutes (0…59)      H’0387’    Prog step 1 : relative time
+  ...        ...                               ...        ...
+  H’03FC’ Prog step 31 : time ref/mode/day     H’03FD’    Prog step 31 : hour (0…23)
+  H’03FE’    Prog step 31 : minutes (0…59)     H’03FF’    Prog step 31 : relative time
 
 Zone 6 program memory map
-  Address Contents                              Address    Contents
-  H’0400’    H’FF’                              H’0401’    H’FF’
-  H’0402’    Zone 6 program location address    H’0403’    H’FF’
-  H’0404’    Prog step 1 : time ref/mode/day    H’0405’    Prog step 1 : hour (0…23)
-  H’0406’    Prog step 1 : minutes (0…59)       H’0407’    Prog step 1 : relative time
-  ...        ...                                ...        ...
-  H’047C’    Prog step 31 : time ref/mode/day   H’047D’    Prog step 31 : hour (0…23)
-  H’047E’    Prog step 31 : minutes (0…59)      H’047F’    Prog step 31 : relative time
+  Address Contents                             Address    Contents
+  H’0400’    H’FF’                             H’0401’    H’FF’
+  H’0402’    Zone 6 program location address   H’0403’    H’FF’
+  H’0404’   Prog step 1 : time ref/mode/day    H’0405’    Prog step 1 : hour (0…23)
+  H’0406’    Prog step 1 : minutes (0…59)      H’0407’    Prog step 1 : relative time
+  ...        ...                               ...        ...
+  H’047C’   Prog step 31 : time ref/mode/day   H’047D’    Prog step 31 : hour (0…23)
+  H’047E’    Prog step 31 : minutes (0…59)     H’047F’    Prog step 31 : relative time
 
 Zone 7 program memory map
-  Address Contents                              Address    Contents
-  H’0480’    H’FF’                              H’0481’    H’FF’
-  H’0482’    Zone 7 program location address    H’0483’    H’FF’
-  H’0484’    Prog step 1 : time ref/mode/day    H’0485’    Prog step 1 : hour (0…23)
-  H’0486’    Prog step 1 : minutes (0…59)       H’0487’    Prog step 1 : relative time
-  ...        ...                                ...        ...
-  H’04FC’ Prog step 31 : time ref/mode/day      H’04FD’    Prog step 31 : hour (0…23)
-  H’04FE’    Prog step 31 : minutes (0…59)      H’04FF’    Prog step 31 : relative time
+  Address Contents                             Address    Contents
+  H’0480’    H’FF’                             H’0481’    H’FF’
+  H’0482’    Zone 7 program location address   H’0483’    H’FF’
+  H’0484’   Prog step 1 : time ref/mode/day    H’0485’    Prog step 1 : hour (0…23)
+  H’0486’    Prog step 1 : minutes (0…59)      H’0487’    Prog step 1 : relative time
+  ...        ...                               ...        ...
+  H’04FC’ Prog step 31 : time ref/mode/day     H’04FD’    Prog step 31 : hour (0…23)
+  H’04FE’    Prog step 31 : minutes (0…59)     H’04FF’    Prog step 31 : relative time
 
 
 
 
-                            VMB1TC PROTOCOL – edition 1 _ rev4                            35
+                                     VMB1TCW PROTOCOL – edition 1                        31
 Sensor 1 program memory map
  Address Contents                                Address   Contents
  H’0500’     Sensor 1 address                    H’0501’   Sensor 1 type
@@ -1934,7 +1890,7 @@ Zone 7 program memory map
  H’0504’     Prog step 1 : time ref/mode/day     H’0505’   Prog step 1 : hour (0…23)
  H’0506’     Prog step 1 : minutes (0…59)        H’0507’   Prog step 1 : relative time
  ...         ...                                 ...       ...
- H’057C’     Prog step 31 : time ref/mode/day    H’057D’   Prog step 31 : hour (0…23)
+ H’057C’    Prog step 31 : time ref/mode/day     H’057D’   Prog step 31 : hour (0…23)
  H’057E’     Prog step 31 : minutes (0…59)       H’057F’   Prog step 31 : relative time
 
 Sensor 2 program memory map
@@ -1954,7 +1910,7 @@ Sensor 3 program memory map
  H’0604’     Prog step 1 : time ref/mode/day     H’0605’   Prog step 1 : hour (0…23)
  H’0606’     Prog step 1 : minutes (0…59)        H’0607’   Prog step 1 : relative time
  ...         ...                                 ...       ...
- H’067C’     Prog step 31 : time ref/mode/day    H’067D’   Prog step 31 : hour (0…23)
+ H’067C’    Prog step 31 : time ref/mode/day     H’067D’   Prog step 31 : hour (0…23)
  H’067E’     Prog step 31 : minutes (0…59)       H’067F’   Prog step 31 : relative time
 
 Sensor 4 program memory map
@@ -1974,7 +1930,7 @@ Sensor 5 program memory map
  H’0704’     Prog step 1 : time ref/mode/day     H’0705’   Prog step 1 : hour (0…23)
  H’0706’     Prog step 1 : minutes (0…59)        H’0707’   Prog step 1 : relative time
  ...         ...                                 ...       ...
- H’077C’     Prog step 31 : time ref/mode/day    H’077D’   Prog step 31 : hour (0…23)
+ H’077C’    Prog step 31 : time ref/mode/day     H’077D’   Prog step 31 : hour (0…23)
  H’077E’     Prog step 31 : minutes (0…59)       H’077F’   Prog step 31 : relative time
 
 Sensor 6 program memory map
@@ -1990,7 +1946,7 @@ Sensor 6 program memory map
 
 
 
-                            VMB1TC PROTOCOL – edition 1 _ rev4                            36
+                                     VMB1TCW PROTOCOL – edition 1                         32
 Sensor 7 program memory map
  Address Contents                                 Address   Contents
  H’0800’     Sensor 7 address                     H’0801’   Sensor 7 type
@@ -1998,7 +1954,7 @@ Sensor 6 program memory map
  H’0804’     Prog step 1 : time ref/mode/day      H’0805’   Prog step 1 : hour (0…23)
  H’0806’     Prog step 1 : minutes (0…59)         H’0807’   Prog step 1 : relative time
  ...         ...                                  ...       ...
- H’087C’     Prog step 31 : time ref/mode/day     H’087D’   Prog step 31 : hour (0…23)
+ H’087C’    Prog step 31 : time ref/mode/day      H’087D’   Prog step 31 : hour (0…23)
  H’087E’     Prog step 31 : minutes (0…59)        H’087F’   Prog step 31 : relative time
 
 Sensor 8 program memory map
@@ -2018,7 +1974,7 @@ Sensor 9 program memory map
  H’0904’     Prog step 1 : time ref/mode/day      H’0905’   Prog step 1 : hour (0…23)
  H’0906’     Prog step 1 : minutes (0…59)         H’0907’   Prog step 1 : relative time
  ...         ...                                  ...       ...
- H’097C’     Prog step 31 : time ref/mode/day     H’097D’   Prog step 31 : hour (0…23)
+ H’097C’    Prog step 31 : time ref/mode/day      H’097D’   Prog step 31 : hour (0…23)
  H’097E’     Prog step 31 : minutes (0…59)        H’097F’   Prog step 31 : relative time
 
 Sensor 10 program memory map
@@ -2054,7 +2010,7 @@ Sensor 12 program memory map
 
 
 
-                            VMB1TC PROTOCOL – edition 1 _ rev4                             37
+                                     VMB1TCW PROTOCOL – edition 1                          33
 Sensor 13 program memory map
  Address Contents                                 Address   Contents
  H’0B00’     Sensor 13 address                    H’0B01’   Sensor 13 type
@@ -2118,7 +2074,7 @@ Sensor 18 program memory map
 
 
 
-                            VMB1TC PROTOCOL – edition 1 _ rev4                             38
+                                     VMB1TCW PROTOCOL – edition 1                          34
 Sensor 19 program memory map
  Address Contents                                 Address   Contents
  H’0E00’     Sensor 19 address                    H’0E01’   Sensor 19 type
@@ -2182,7 +2138,7 @@ Sensor 24 program memory map
 
 
 
-                            VMB1TC PROTOCOL – edition 1 _ rev4                             39
+                                     VMB1TCW PROTOCOL – edition 1                          35
 Sensor 25 program memory map
  Address Contents                                 Address   Contents
  H’1100’     Sensor 25 address                    H’1101’   Sensor 25 type
@@ -2246,35 +2202,33 @@ Sensor 30 program memory map
 
 
 
-                            VMB1TC PROTOCOL – edition 1 _ rev4                             40
+                                     VMB1TCW PROTOCOL – edition 1                          36
 Sensor 31 program memory map
- Address Contents                                 Address    Contents
- H’1400’     Sensor 31 address                    H’1401’    Sensor 31 type
- H’1402’     Sensor 31 program location address   H’1403’    Sensor 31 zone number
- H’1404’     Prog step 1 : time ref/mode/day      H’1405’    Prog step 1 : hour (0…23)
- H’1406’     Prog step 1 : minutes (0…59)         H’1407’    Prog step 1 : relative time
- ...         ...                                  ...        ...
- H’147C’     Prog step 31 : time ref/mode/day     H’147D’    Prog step 31 : hour (0…23)
- H’147E’     Prog step 31 : minutes (0…59)        H’147F’    Prog step 31 : relative time
+ Address Contents                                   Address    Contents
+ H’1400’     Sensor 31 address                      H’1401’    Sensor 31 type
+ H’1402’     Sensor 31 program location address     H’1403’    Sensor 31 zone number
+ H’1404’     Prog step 1 : time ref/mode/day        H’1405’    Prog step 1 : hour (0…23)
+ H’1406’     Prog step 1 : minutes (0…59)           H’1407’    Prog step 1 : relative time
+ ...         ...                                    ...        ...
+ H’147C’     Prog step 31 : time ref/mode/day       H’147D’    Prog step 31 : hour (0…23)
+ H’147E’     Prog step 31 : minutes (0…59)          H’147F’    Prog step 31 : relative time
 
 Sensor 32 program memory map
- Address Contents                                 Address    Contents
- H’1480’     Sensor 32 address                    H’1481’    Sensor 32 type
- H’1482’     Sensor 32 program location address   H’1483’    Sensor 32 zone number
- H’1484’     Prog step 1 : time ref/mode/day      H’1485’    Prog step 1 : hour (0…23)
- H’1486’     Prog step 1 : minutes (0…59)         H’1487’    Prog step 1 : relative time
- ...         ...                                  ...        ...
- H’14FC’ Prog step 31 : time ref/mode/day         H’14FD’    Prog step 31 : hour (0…23)
- H’14FE’     Prog step 31 : minutes (0…59)        H’14FF’    Prog step 31 : relative time
+ Address Contents                                   Address    Contents
+ H’1480’     Sensor 32 address                      H’1481’    Sensor 32 type
+ H’1482’     Sensor 32 program location address     H’1483’    Sensor 32 zone number
+ H’1484’     Prog step 1 : time ref/mode/day        H’1485’    Prog step 1 : hour (0…23)
+ H’1486’     Prog step 1 : minutes (0…59)           H’1487’    Prog step 1 : relative time
+ ...         ...                                    ...        ...
+ H’14FC’ Prog step 31 : time ref/mode/day           H’14FD’    Prog step 31 : hour (0…23)
+ H’14FE’     Prog step 31 : minutes (0…59)          H’14FF’    Prog step 31 : relative time
 
 
 Remarks:
-Addresses 0x0070, 0x0071, 0x00EC & 0x00EF are write protected
-
 An unused location contains H’FF’.
 
 Configuration flags
-      Contents     configuration
+      Contents configuration
      xxxxxxx0 Battery backup disabled
      xxxxxxx1 Battery backup enabled
      xxxxxx0x Master clock disabled
@@ -2306,11 +2260,7 @@ Language index:
         3         Spanish
         4         German
 
-
-
-
-                              VMB1TC PROTOCOL – edition 1 _ rev4                            41
-Sensor address
+Sensor address
    A value of H’FF’ for the sensor address mains there are no more valid sensors available.
 
 Sensor type
@@ -2318,11 +2268,12 @@ Sensor type
        H’0C’      Temperature Sensor
        H’0D’      Thermostat with build-in sensor
 
-Sensor program location
-             Contents              Type
-    H’FF’ or Controller address    Use the local program stored in the controller
-        Address different of       Skip the local program and use the program stored
-    H’FF’ or Controller address    in the controller at the specified address location
+                                      VMB1TCW PROTOCOL – edition 1                            37
+Sensor program location
+             Contents             Type
+    H’FF’ or Controller address   Use the local program stored in the controller
+        Address different of      Skip the local program and use the program stored
+    H’FF’ or Controller address   in the controller at the specified address location
 
 Sensor zone number
       Contents     Zone
@@ -2368,12 +2319,7 @@ Program step time reference, mode & day
 Program step hour: 0…23
 
 Program step minute: 0…59
-
-
-
-
-                            VMB1TC PROTOCOL – edition 1 _ rev4                                42
-Program step relative time
+Program step relative time
        Contents      Program step time
       00010000       Alarm time + 4h
       00001111       Alarm time + 3h45m
@@ -2386,7 +2332,5 @@ Program step minute: 0…59
       11110000       Alarm time – 4h
 
 
-
-
-                           VMB1TC PROTOCOL – edition 1 _ rev4   43
+                                      VMB1TCW PROTOCOL – edition 1                      38
 

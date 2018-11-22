@@ -1,10 +1,15 @@
-    VMB1BL
-Blind Control Module PROTOCOL
+                  VMB1BL
+        Blind Control Module PROTOCOL
 
 
 
 
-         VMB1BL PROTOCOL – edition 1 _ rev4   1
+Binairy format:
+
+
+
+
+                   VMB1BL PROTOCOL – edition 1 _ rev4   1
 Binairy format
 
 <SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-ACK-ACKDEL-
@@ -38,45 +43,45 @@ EOF7...EOF1-IFS3...IFS1>
 
 
 The blind module can transmit the following commands:
- • Updates LEDs on a push button module
- • Clears LEDs on a push button module
- • Sets LEDs on a push button module
- • Blinks LEDs fast on a push button module
- • Blinks LEDs very fast on a push button module
+  Updates LEDs on a push button module
+  Clears LEDs on a push button module
+  Sets LEDs on a push button module
+  Blinks LEDs fast on a push button module
+  Blinks LEDs very fast on a push button module
 
 
 The blind module can transmit the following messages:
- • Blind status
- • Local Push buttons & blind relays switch status (Build 0815 or higher)
- • Module type
- • Bus error counter status (Build 0648 or higher)
- • First, second and third part of the blind name
- • First, second and third part of the local push button names (Build 0815 or higher)
- • Memory data
- • Memory data block (4 bytes) (Build 0735 or higher)
+  Blind status
+  Local Push buttons & blind relays switch status (Build 0815 or higher)
+  Module type
+  Bus error counter status (Build 0648 or higher)
+  First, second and third part of the blind name
+  First, second and third part of the local push button names (Build 0815 or higher)
+  Memory data
+  Memory data block (4 bytes) (Build 0735 or higher)
 
 
 The blind module can receive the following messages:
- • Push button status
+  Push button status
 
 
 
 
-                                           VMB1BL PROTOCOL – edition 1 _ rev4                            2
+                                             VMB1BL PROTOCOL – edition 1 _ rev4                          2
 The blind module can receive the following commands:
- • Switch blind off
- • Switch blind up
- • Switch blind down
- • Blind status request
- • Clear Push button Led (Build 0815 or higher)
- • Module type request
- • Bus error counter status request (Build 0648 or higher)
- • Blind and /or push button name request (Build 0815 or higher)
- • Read memory data
- • Read memory data block (4 bytes) (Build 0743 or higher)
- • Memory dump request (Build 0735 or higher)
- • Write memory data
- • Write memory data block (4 bytes) (Build 0743 or higher)
+  Switch blind off
+  Switch blind up
+  Switch blind down
+  Blind status request
+  Clear Push button Led (Build 0815 or higher)
+  Module type request
+  Bus error counter status request (Build 0648 or higher)
+  Blind and /or push button name request (Build 0815 or higher)
+  Read memory data
+  Read memory data block (4 bytes) (Build 0743 or higher)
+  Memory dump request (Build 0735 or higher)
+  Write memory data
+  Write memory data block (4 bytes) (Build 0743 or higher)
 
 
 Transmits the local push buttons & blind relays switch status: (Build 0815 or higher)
@@ -122,16 +127,16 @@ Transmit: Clears LEDs on a push button module:
     DLC3...DLC0 = 2 databytes to send
     DATABYTE1 = COMMAND_CLEAR_LED (H’F5’)
     DATABYTE2 = LED bit numbers (1 = clear LED)
-Transmit: Sets LEDs on a push button module:
+
+
+
+
+                                             VMB1BL PROTOCOL – edition 1 _ rev4                                      3
+Transmit: Sets LEDs on a push button module:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address of the push button module for setting LEDs on
     RTR = 0
-
-
-
-
-                                           VMB1BL PROTOCOL – edition 1 _ rev4                                        3
-    DLC3...DLC0 = 2 databytes to send
+    DLC3...DLC0 = 2 databytes to send
     DATABYTE1 = COMMAND_SET_LED (H’F6’)
     DATABYTE2 = LED bit numbers (1 = set LED)
 
@@ -181,7 +186,7 @@ Transmits memory data block (4 bytes) (Build 0735 or higher):
 
 
 
-                                         VMB1BL PROTOCOL – edition 1 _ rev4       4
+                                           VMB1BL PROTOCOL – edition 1 _ rev4     4
 Transmits the blind status:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address set by hex switches
@@ -237,7 +242,7 @@ Transmits the module type:
 
 
 
-                                        VMB1BL PROTOCOL – edition 1 _ rev4     5
+                                          VMB1BL PROTOCOL – edition 1 _ rev4   5
 Transmits the first part of the blind name:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address set by hex switches
@@ -299,7 +304,7 @@ Transmits the first part of the local up or down push button name: (Build 0815 o
 
 
 
-                                         VMB1BL PROTOCOL – edition 1 _ rev4                 6
+                                            VMB1BL PROTOCOL – edition 1 _ rev4              6
 Transmits the second part of the local up or down push button name: (Build 0815 or higher)
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address set by hex switches
@@ -361,12 +366,12 @@ Transmit: Bus error counter status (Build 0648 or higher)
 
 
 
-                                         VMB1BL PROTOCOL – edition 1 _ rev4                  7
+                                           VMB1BL PROTOCOL – edition 1 _ rev4                7
 ‘Switch blind off’ command received:
-   SID10-SID9 = 00 (highest priority)
-   SID8...SID1 = Address set by hex switches
-   RTR = 0
-   DLC3...DLC0 = 2 databytes received
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Address set by hex switches
+    RTR = 0
+    DLC3...DLC0 = 2 databytes received
     DATABYTE1 = COMMAND_SWITCH_BLIND_OFF (H’04’)
     DATABYTE2 = Blind channel (B‘00000011’)
 
@@ -405,7 +410,7 @@ Transmit: Bus error counter status (Build 0648 or higher)
 
 
 
-                                          VMB1BL PROTOCOL – edition 1 _ rev4                              8
+                                            VMB1BL PROTOCOL – edition 1 _ rev4                            8
 ‘Blind status request’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address set by hex switches
@@ -465,7 +470,7 @@ Transmit: Bus error counter status (Build 0648 or higher)
 
 
 
-                                        VMB1BL PROTOCOL – edition 1 _ rev4                             9
+                                          VMB1BL PROTOCOL – edition 1 _ rev4                           9
 ‘Write data to memory’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address set by hex switches
@@ -497,14 +502,14 @@ Transmit: Bus error counter status (Build 0648 or higher)
 
 
 
-                                        VMB1BL PROTOCOL – edition 1 _ rev4                      10
+                                          VMB1BL PROTOCOL – edition 1 _ rev4                    10
 Memory map (build 0743 or lower):
 
     Address   Contents                        Address    Contents
     H’0000’   Push button module address      H’0001’    Up push button 1 bit numbers
     ...       ...                             ...        ...
     H’001A’ Push button module address        H’001B’    Up push button 14 bit numbers
-    H’001C’ Push button module address        H’001D’    Immediately up push button 1 bit numbers
+    H’001C’   Push button module address      H’001D’    Immediately up push button 1 bit numbers
     ...       ...                             ...        ...
     H’0036’   Push button module address      H’0037’    Immediately up push button 14 bit numbers
     H’0038’   Push button module address      H’0039’    Down push button 1 bit numbers
@@ -530,7 +535,7 @@ Memory map (build 0804):
     H’0016’   Push button module address      H’0017’    Immediately up push button 1 bit numbers
     ...       ...                             ...        ...
     H’002A’ Push button module address        H’002B’    Immediately up push button 11 bit numbers
-    H’002C’ Push button module address        H’002D’    Down push button 1 bit numbers
+    H’002C’   Push button module address      H’002D’    Down push button 1 bit numbers
     ...       ...                             ...        ...
     H’0040’   Push button module address      H’0041’    Down push button 11 bit numbers
     H’0042’   Push button module address      H’0043’    Immediately down push button 1 bit numbers
@@ -538,7 +543,7 @@ Memory map (build 0804):
     H’0056’   Push button module address      H’0057’    Immediately down push button 11 bit numbers
     H’0058’   Push button module address      H’0059’    Up/down push button 1 bit numbers
     ...       ...                             ...        ...
-    H’006C’ Push button module address        H’006D’    Up/down push button 11 bit numbers
+    H’006C’   Push button module address      H’006D’    Up/down push button 11 bit numbers
     H’006E’   Not used                        H’006F’    Not used
     H’0070’   Blind name character 1          H’0071’    Blind name character 1
     ...       ...                             ...        ...
@@ -548,7 +553,7 @@ Memory map (build 0804):
 
 
 
-                                      VMB1BL PROTOCOL – edition 1 _ rev4                               11
+                                        VMB1BL PROTOCOL – edition 1 _ rev4                             11
 Memory map (build 0815):
 
     Address   Contents                                   Address    Contents
@@ -581,5 +586,5 @@ Memory map (build 0804):
 
 
 
-                                     VMB1BL PROTOCOL – edition 1 _ rev4                                    12
+                                       VMB1BL PROTOCOL – edition 1 _ rev4                                        12
 

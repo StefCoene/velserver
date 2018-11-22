@@ -1,0 +1,3376 @@
+   VMBELO
+Edge-lit touch panel with Oled
+            display
+    for VELBUS system
+
+
+
+
+          VMBELO PROTOCOL – edition 1   1
+Binairy format:
+
+<SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-ACK-ACKDEL-
+EOF7...EOF1-IFS3...IFS1>
+  bits                          Description
+  SOF                           Start Of Frame (always 0)
+  SID10 & SID9                  Priority (00: highest … 11: lowest priority)
+  SID8…SID1                     Address
+  SID0                          Always 0
+  RTR                           Remote Transmit Request
+  IDE                           Identifier Extension (always 0)
+  r0                            reserved (always 0)
+  DLC3…DLC0                     Data Length Code (0…8)
+  Databyte1                     Command
+  Databyte2                     Parameter
+  Databyte3                     Parameter
+  Databyte4                     Parameter
+  Databyte5                     Parameter
+  Databyte6                     Parameter
+  Databyte7                     Parameter
+  Databyte8                     Parameter
+  CRC15…CRC1                    Cyclic Redundancy Checksum
+  CRCDEL                        CRC Delimiter (always 1)
+  ACK                           Acknowledge slot (transmit 1 readback 0 if received correctly)
+  ACKDEL                        Acknowledge Delimiter (always 1)
+  EOF7...EOF1                   End Of Frame (always 1111111)
+  IFS3...IFS1                   InterFrame Space (always 111)
+
+The module can transmit the following messages:
+ • Channel status
+ • Sensor output status
+ • Module status
+ • Sensor status
+ • Sensor temperature
+ • Sensor settings
+ • Module type and subtype
+ • Bus error counter status
+ • First, second and third part of the channel names
+ • Memory data
+ • Memory data block (4 bytes)
+ • Real-time clock status
+ • Date status
+ • Daylight savings status
+ • Program step
+ • Power up
+
+The module can transmit the following commands:
+ • Real-time clock status request
+ • Clear linked push button led
+ • Set linked push button led
+ • Slow blink linked push button led
+ • Fast blink linked push button led
+ • Counter status request
+ • Remote sensor status request
+ • Remote sensor temperature request
+ • Remote sensor settings request
+ • Remote sensor set temperature settings
+ • Remote sensor set heating mode
+ • Remote sensor set cooling mode
+
+
+
+
+                                             VMBELO PROTOCOL – edition 1                         2
+  •   Remote sensor set comfort mode
+  •   Remote sensor set day mode
+  •   Remote sensor set night mode
+  •   Remote sensor set safe mode
+  •   Remote sensor set default sleep time
+  •   Remote Analog Sensor readout request
+
+The module can receive the following messages:
+ • Linked push button status
+ • Power up
+ • Module type request
+ • Module status request
+ • Channel name request
+ • Clear channel led
+ • Set channel led
+ • Slow blink channel led
+ • Fast blink channel led
+ • Very fast channel led
+ • Update channel leds
+ • Read memory data
+ • Read memory data block (4 bytes)
+ • Memory dump request
+ • Counter log dump request
+ • Counter status
+ • Write memory data
+ • Write memory data block (4 bytes)
+ • Bus error counter status request
+ • Real-time clock status request
+ • Set real-time clock
+ • Set date
+ • Set daylight savings
+ • Enable/disable global sunrise/sunset related actions
+ • Enable/disable local sunrise/sunset related actions
+ • Set local alarm clock
+ • Set global alarm clock
+ • Lock channel
+ • Unlock channel
+ • Disable channel program
+ • Enable channel program
+ • Select program
+ • Read program step
+ • Write program step
+ • Sensor temperature request
+ • Sensor settings request
+ • Set sensor zone
+ • Set heating mode
+ • Set cooling mode
+ • Set default sleep time
+ • Set thermostat default sleep time
+ • Set thermostat target, safe, night, day, comfort and alarm1 to alarm 4 temperature set
+ • Set thermostat hysteresis
+ • Set thermostat temperature difference for boost output
+ • Set temperature sensor calibration offset and gain
+ • Enable/disable valve and pump unjamming
+ • Reset minimum and maximum temperature
+ • Set thermostat temperature range
+ • Set thermostat minimum switching time
+ • Switch to comfort mode
+ • Switch to day mode
+ • Switch to night mode
+ • Switch to safe temperature mode
+
+
+
+
+                                              VMBELO PROTOCOL – edition 1                   3
+•   Counter status
+•   Remote sensor module status
+•   Remote sensor status
+•   Remote Sensor temperature
+•   Remote sensor settings
+•   Readout of the remote analog sensor
+•   Memo text
+•   Switch the open collector output off or on
+•   Start a timer on the open collector output
+•   Set edge custom palette colors
+•   Set edge color
+
+
+
+
+                                                 VMBELO PROTOCOL – edition 1   4
+  • Transmits power up message:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = 0x00
+    RTR = 0
+    DLC3...DLC0 = 2 data byte to send
+    DATABYTE1 = COMMAND_POWER_UP (0xAB)
+    DATABYTE2 = module address
+
+Transmits real time clock status request:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = 0x00
+    RTR = 0
+    DLC3...DLC0 = 1 data byte to send
+    DATABYTE1 = COMMAND_REALTIME_CLOCK_STATUS_REQUEST (0xD7)
+
+Transmits local real time clock status request:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 1 data byte to send
+    DATABYTE1 = COMMAND_REALTIME_CLOCK_STATUS_REQUEST (0xD7)
+
+Transmits the global real time clock status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = 0x00
+    RTR = 0
+    DLC3...DLC0 = 4 data bytes to send
+    DATABYTE1 = COMMAND_REALTIME_CLOCK_STATUS (0xD8)
+    DATABYTE2 = Day
+                        Contents     Day
+                            0        Monday
+                            1        Tuesday
+                            2        Wednesday
+                            3        Thursday
+                            4        Friday
+                            5        Saturday
+                            6        Sunday
+    DATABYTE3 = Hour (0…23)
+    DATABYTE4 = Minute (0…59)
+
+Transmits the global date status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = 0x00
+    RTR = 0
+    DLC3...DLC0 = 5 data bytes to send
+    DATABYTE1 = COMMAND_DATE_STATUS (0xB7)
+    DATABYTE2 = Day (1…31)
+    DATABYTE3 = Month (1…12)
+    DATABYTE4 = High byte of Year
+    DATABYTE5 = Low byte of Year
+
+Transmits the date status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 5 data bytes to send
+    DATABYTE1 = COMMAND_DATE_STATUS (0xB7)
+    DATABYTE2 = Day (1…31)
+    DATABYTE3 = Month (1…12)
+    DATABYTE4 = High byte of Year
+    DATABYTE5 = Low byte of Year
+
+Transmits the real time clock status:
+    SID10-SID9 = 11 (lowest priority)
+
+
+
+
+                                        VMBELO PROTOCOL – edition 1   5
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 4 data bytes to send
+    DATABYTE1 = COMMAND_REALTIME_CLOCK_STATUS (0xD8)
+    DATABYTE2 = Day
+                      Contents      Day
+                          0         Monday
+                          1         Tuesday
+                          2         Wednesday
+                          3         Thursday
+                          4         Friday
+                          5         Saturday
+                          6         Sunday
+    DATABYTE3 = Hour (0…23)
+    DATABYTE4 = Minute (0…59)
+
+Transmits the date status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 5 data bytes to send
+    DATABYTE1 = COMMAND_DATE_STATUS (0xB7)
+    DATABYTE2 = Day (1…31)
+    DATABYTE3 = Month (1…12)
+    DATABYTE4 = High byte of Year
+    DATABYTE5 = Low byte of Year
+
+Transmits the daylight savings status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes to send
+    DATABYTE1 = COMMAND_DAYLIGHT_SAVING_STATUS (0xAF)
+    DATABYTE2 = 0 =disabled / 1 = enabled
+
+Transmits the channel switch status:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Module address, sub-address1, sub-address2 or sub-address3
+    RTR = 0
+    DLC3...DLC0 = 4 data bytes to send
+    DATABYTE1 = COMMAND_PUSH_BUTTON_STATUS (0x00)
+    DATABYTE2 = Channel just pressed
+    DATABYTE3 = Channel just released
+    DATABYTE4 = Channel long pressed
+
+
+
+
+                                           VMBELO PROTOCOL – edition 1         6
+Transmits the sensor output switch status:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Sub-address 4
+    RTR = 0
+    DLC3...DLC0 = 4 data bytes to send
+    DATABYTE1 = COMMAND_OUTPUT_STATUS (0x00)
+    DATABYTE2 = Output channel just activated (1 = just activated)
+                      Contents       Output channel
+                      xxxxxxx1       Heater just activated
+                      xxxxxx1x       Boost heater/cooler just activated
+                      xxxxx1xx       Pump just activated
+                      xxxx1xxx       Cooler just activated
+                      xxx1xxxx       Temperature alarm 1 just activated
+                      xx1xxxxx       Temperature alarm 2 alarm activated
+                      x1xxxxxx       Temperature alarm 3 just activated
+                      1xxxxxxx       Temperature alarm 4 alarm activated
+    DATABYTE3 = Outputs just deactivated (1 = just deactivated)
+                      Contents       Output channel
+                      xxxxxxx1       Heater just deactivated
+                      xxxxxx1x       Boost heater/cooler just deactivated
+                      xxxxx1xx       Pump just deactivated
+                      xxxx1xxx       Cooler just deactivated
+                      xxx1xxxx       Temperature alarm 1 just deactivated
+                      xx1xxxxx       Temperature alarm 2 alarm deactivated
+                      x1xxxxxx       Temperature alarm 3 just deactivated
+                      1xxxxxxx       Temperature alarm 4 alarm deactivated
+    DATABYTE4 = always zero
+
+Transmits the module type:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send
+    DATABYTE1 = COMMAND_MODULE_TYPE (0xFF)
+    DATABYTE2 = VMBELO type (0x37)
+    DATABYTE3 = High byte of serial number
+    DATABYTE4 = Low byte of serial number
+    DATABYTE5 = Memory map version
+    DATABYTE6 = Build year
+    DATABYTE7 = Build week
+    DATABYTE8 = Termination (0 = open , 1 = closed)
+
+Transmits the module subtype:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send
+    DATABYTE1 = COMMAND_SUBTYPE (0xB0)
+    DATABYTE2 = VMBELO type (0x37)
+    DATABYTE3 = High byte of serial number
+    DATABYTE4 = Low byte of serial number
+    DATABYTE5 = Subaddress1 (0xFF sub-address disabled)
+    DATABYTE6 = Subaddress2 (0xFF sub-address disabled)
+    DATABYTE7 = Subaddress3 (0xFF sub-address disabled)
+    DATABYTE8 = Subaddress4 (0xFF sub-address disabled)
+
+
+
+
+                                           VMBELO PROTOCOL – edition 1       7
+Transmit: Bus error counter status
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 4 data bytes to send
+    DATABYTE1 = COMMAND_BUSERROR_COUNTER_STATUS (0xDA)
+    DATABYTE2 = Transmit error counter
+    DATABYTE3 = Receive error counter
+    DATABYTE4 = Bus off counter
+
+Transmits the memory data:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 4 data bytes to send
+    DATABYTE1 = COMMAND_MEMORY_DATA (0xFE)
+    DATABYTE2 = High memory address
+    DATABYTE3 = LOW memory address
+    DATABYTE4 = memory data
+
+    Remark:   address range: 0x0000 to 0x4FFF
+
+Transmits memory data block (4 bytes):
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 7 data bytes to send
+    DATABYTE1 = COMMAND_MEMORY_DATA_BLOCK (0xCC)
+    DATABYTE2 = High start address of memory block
+    DATABYTE3 = LOW start address of memory block
+    DATABYTE4 = memory data1
+    DATABYTE5 = memory data2
+    DATABYTE6 = memory data3
+    DATABYTE7 = memory data4
+
+    Remark:
+    address range: 0x0000 to 0x4FFC = memory map
+
+Transmits the first part of channel name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send
+    DATABYTE1 = COMMAND_CHANNEL_NAME_PART1 (0xF0)
+    DATABYTE2 = channel number 1…33 or 42 (channel 33 = temperature sensor name, 18 for output name)
+    DATABYTE3 = Character 1 of the channel name
+    DATABYTE4 = Character 2 of the channel name
+    DATABYTE5 = Character 3 of the channel name
+    DATABYTE6 = Character 4 of the channel name
+    DATABYTE7 = Character 5 of the channel name
+    DATABYTE8 = Character 6 of the channel name
+
+Transmits the second part of the channel name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send
+    DATABYTE1 = COMMAND_CHANNEL_NAME_PART2 (0xF1)
+    DATABYTE2 = Channel number 1…33 or 42 (channel 33 = temperature sensor name, 18 for output name)
+    DATABYTE3 = Character 7 of the channel name
+    DATABYTE4 = Character 8 of the channel name
+    DATABYTE5 = Character 9 of the channel name
+    DATABYTE6 = Character 10 of the channel name
+    DATABYTE7 = Character 11 of the channel name
+    DATABYTE8 = Character 12 of the channel name
+
+
+
+
+                                          VMBELO PROTOCOL – edition 1                                  8
+Transmits the third part of the channel name:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 6 data bytes to send
+    DATABYTE1 = COMMAND_CHANNEL_NAME_PART3 (0xF2)
+    DATABYTE2 = channel number 1…33 or 42 (channel 33 = temperature sensor name, 18 for output name)
+    DATABYTE3 = Character 13 of the channel name
+    DATABYTE4 = Character 14 of the channel name
+    DATABYTE5 = Character 15 of the channel name
+    DATABYTE6 = Character 16 of the channel name
+
+    Remarks:
+    Unused characters contain 0xFF.
+
+Transmits the module status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address, sub address1, sub address2 or sub address3
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send for master address, 7 data bytes to send for sub addresses
+    DATABYTE1 = COMMAND_MODULE_STATUS (0xED)
+    DATABYTE2 = channel 1 to 8 status (1 = pressed / 0 = released)
+    DATABYTE3 = enabled/disable channel status (1 = enabled / 0 = disabled)
+    DATABYTE4 = open collector locked & temperature sensor
+                       Contents        Display status & open collector
+                  B’xxxx0xxx’          Edge color not inhibited
+                  B’xxxx1xxx’          Edge color inhibited
+                  B’xxx0xxxx’          Temperature sensor program enabled
+                  B’xxx1xxxx’          Temperature sensor program disabled
+                  B’xx0xxxxx’          Open collector output program enabled
+                  B’xx1xxxxx’          Open collector output program disabled
+                  B’x0xxxxxx’          Open collector output unlocked
+                  B’x1xxxxxx’          Open collector output locked
+                  B’0xxxxxxx’          Open collector output off
+                  B’1xxxxxxx’          Open collector output on
+    DATABYTE5 = locked channel status (0 = unlocked / 1 = locked)
+    DATABYTE6 = disabled channel program status (0 = program enabled / 1 = program disabled)
+    DATABYTE7 = alarm & program selection
+                       Contents        Alarm /Selected program
+                  B’xxxxxx00’          None
+                  B’xxxxxx01’          Program group 1 (summer)
+                  B’xxxxxx10’          Program group 2 (winter)
+                  B’xxxxxx11’          Program group 3 (holiday)
+                  B’xxxxx0xx’          Alarm 1 off
+                  B’xxxxx1xx’          Alarm 1 on
+                  B’xxxx0xxx’          Local alarm 1
+                  B’xxxx1xxx’          Global alarm 1
+                  B’xxx0xxxx’          Alarm 2 off
+                  B’xxx1xxxx’          Alarm 2 on
+                  B’xx0xxxxx’          Local alarm 2
+                  B’xx1xxxxx’          Global alarm 2
+                  B’x0xxxxxx’          Sunrise disabled
+                  B’x1xxxxxx’          Sunrise enabled
+                  B’0xxxxxxx’          Sunset disabled
+                  B’1xxxxxxx’          Sunset enabled
+
+
+
+
+                                            VMBELO PROTOCOL – edition 1                                9
+    DATABYTE8 = oled display status (only for master address)
+                   Contents          Display status
+              B’xx000000’            Button page 1
+                    …                …
+              B’xx000111’            Button page 8
+              B’xx001000’            Counter 1 page
+                    …                …
+              B’xx001011’            Counter 4 page
+              B’xx001100’            Local temperature page
+              B’xx001101’            Remote temperature 1 page
+                    …                …
+              B’xx011000’            Remote temperature 12 page
+              B’xx011001’            Analog sensor 1 page
+                    …                …
+              B’xx011100’            Analog sensor 4 page
+              B’xx011101’            Clock page
+              B’xx1xxxxx’            Menu pages
+              B’x0xxxxxx’            Screensaver off
+              B’x1xxxxxx’            Screensaver on
+              B’0xxxxxxx’            Display off
+              B’1xxxxxxx’            Display on
+
+Transmit the sensor status:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_STATUS (0xEA)
+    DATABYTE2 = Operating mode
+                       Contents     Operating mode
+                       xxxxxxx1     Mode push button locked (not used)
+                       xxxxxxx0     Mode push button unlocked (not used)
+                       xxxxx11x     Forced to safe mode (locked)
+                       xxxxx01x     Manual mode
+                       xxxxx10x     Sleep timer mode
+                       xxxxx00x     Run mode
+                       xxxx1xxx     Auto send sensor temperature enabled
+                       xxxx0xxx     Auto send sensor temperature disabled
+                       x100xxxx     Comfort mode
+                       x010xxxx     Day mode
+                       x001xxxx     Night mode
+                       x000xxxx     Safe temp mode (anti frost)
+                       1xxxxxxx     Cooler mode
+                       0xxxxxxx     Heater mode
+    DATABYTE3 = Program step mode
+                       Contents     Program step mode
+                       xxxxx0xx     No sensor program group 1
+                       xxxxx1xx     Sensor program group 1 available
+                       xxxx0xxx     No sensor program group 2
+                       xxxx1xxx     Sensor program group 2 available
+                       0xxxxxxx     No sensor program group 3
+                       1xxxxxxx     Sensor program group 3 available
+                       x100xxxx     Comfort program step received
+                       x010xxxx     Day program step received
+                       x001xxxx     Night program step received
+                       x000xxxx     Safe temperature program step received
+                       xxxxxx1x     Enable unjamming heater valve
+                       xxxxxx0x     Disable unjamming heater valve
+                       xxxxxxx1     Enable unjamming pump
+                       xxxxxxx0     Disable unjamming pump
+    DATABYTE4 = Output status (1 = activated)
+                       Contents     Output channel
+
+
+
+
+                                           VMBELO PROTOCOL – edition 1       10
+                 xxxxxxx0        Heater off
+                 xxxxxxx1        Heater on
+                 xxxxxx0x        Boost heater/cooler off
+                 xxxxxx1x        Boost heater/cooler on
+                 xxxxx0xx        Pump off
+                 xxxxx1xx        Pump on
+                 xxxx0xxx        Cooler off
+                 xxxx1xxx        Cooler on
+                 xxx0xxxx        Temperature alarm 1 off
+                 xxx1xxxx        Temperature alarm 1 on
+                 xx0xxxxx        Temperature alarm 2 off
+                 xx1xxxxxx Temperature alarm 2 on
+                 x0xxxxxx        Temperature alarm 3 off
+                 x1xxxxxx        Temperature alarm 3 on
+                 0xxxxxxx        Temperature alarm 4 off
+                 1xxxxxxx        Temperature alarm 4 on
+    DATABYTE5 = Current sensor temperature into two’s complement format (resolution 0.5°)
+                 Contents        Current sensor temperature
+                 01111111        63.5°C
+
+                       00000001      0.5°C
+                       00000000      0°C
+                       11111111      -0.5°C
+
+                       10010010      -55°C
+
+    DATABYTE6 = Current temperature set (resolution 0.5°)
+                 Contents       Current temperature set
+                 01101100       54°C
+
+                       00101000      20°C
+
+                       00000010      1°C
+                       00000001      0.5°C
+                       00000000      0°C
+                       11111111      -0.5°C
+
+                 11000000        -32°C
+    DATABYTE7 = High byte of the sleep timer
+    DATABYTE8 = Low byte of the sleep timer into minutes
+
+    Remark:
+    [DATABYTE7][DATABYTE8] contains a 16-bit sleep timer into minutes (1 to 65.279min).
+    If the sleep timer contains H’0000’, the sleep timer is deactivated.
+    If the sleep timer contains a value between H’0001’ and H’FEFF’ (1 to 65.279min), the sleep timer is running for that
+    time.
+    If the sleep timer contains 0xFFFF, manual mode is selected.
+
+Transmit the sensor temperature:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 7 data bytes to send
+    DATABYTE1 = COMMAND_SENSOR_TEMPERATURE (0xE6)
+    DATABYTE2 = High byte current sensor temperature
+    DATABYTE3 = Low byte current sensor temperature into two’s complement format (resolution 0.0625°)
+    DATABYTE4 = High byte minimum sensor temperature
+    DATABYTE5 = Low byte minimum sensor temperature into two’s complement format (resolution 0.0625°)
+    DATABYTE6 = High byte maximum sensor temperature
+    DATABYTE7 = Low byte maximum sensor temperature into two’s complement format (resolution 0.0625°)
+                      High byte     Low byte  Current sensor temperature
+                      01111111      111xxxxx  63.5°C
+
+
+
+
+                                              VMBELO PROTOCOL – edition 1                                                   11
+                        00000001       000xxxxx        0.5°C
+                        00000000       100xxxxx        0.25°C
+                        00000000       010xxxxx        0.125°C
+                        00000000       001xxxxx        0.0625°C
+                        00000000       000xxxxx        0°C
+                        11111111       111xxxxx        -0.0625°C
+                        11111111       110xxxxx        -0.125°C
+                        11111111       100xxxxx        -0.25°C
+                        11111110       000xxxxx        -0.5°C
+
+                        10010010       000xxxxx        -55°C
+
+    Remark:
+    The 5 least significant bits of the low byte are don’t care.
+
+Transmit the first part of the sensor settings:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART1 (0xE8)
+    DATABYTE2 = Current temperature set (resolution 0.5°)
+    DATABYTE3 = Comfort temperature set for heating mode (resolution 0.5°)
+    DATABYTE4 = Day temperature set for heating mode (resolution 0.5°)
+    DATABYTE5 = Night temperature set for heating mode (resolution 0.5°)
+    DATABYTE6 = Anti frost temperature set for heating mode (resolution 0.5°)
+    DATABYTE7 = Boost temperature difference set (resolution 0.5°)
+    DATABYTE8 = Hysteresis temperature set
+                        Contents       Hysteresis
+                        xxx11111       15.5°C
+
+                        Xxx00001       0.5°C
+                        Xxx00000       0°C
+
+Transmit the second part of the sensor settings:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART2 (0xE9)
+    DATABYTE2 = Comfort temperature set for cooling mode (resolution 0.5°)
+    DATABYTE3 = Day temperature set for cooling mode (resolution 0.5°)
+    DATABYTE4 = Night temperature set for cooling mode (resolution 0.5°)
+    DATABYTE5 = Safe temperature set for cooling mode (resolution 0.5°)
+    DATABYTE6 = High byte of the default sleep timer
+    DATABYTE7 = Low byte of the default sleep timer into minutes (1 to 65.279min)
+    DATABYTE8 = Default auto send temperature time interval into seconds
+                     (Valid range: 10…255s)
+                     (5…9 = auto send on temperature change with min interval 5…9s)
+                     (<4 = auto send disabled)
+
+Transmit the third part of the sensor settings:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART3 (0xC6)
+    DATABYTE2 = Temperature alarm 1 setting (resolution 0.5°)
+    DATABYTE3 = Temperature alarm 4 setting (resolution 0.5°)
+    DATABYTE4 = Lower temperature range cool mode (resolution 0.5°)
+    DATABYTE5 = Upper temperature range heat mode (resolution 0.5°)
+    DATABYTE6 = Calibration offset factor (resolution 0.5°)
+                       Contents        Calibration factor
+                       00001111        Calibration factor +7.5°C
+
+
+
+                                                VMBELO PROTOCOL – edition 1           12
+                      00000001      Calibration factor +0.5°C
+                      00000000      Calibration factor +0°C
+                      11111111      Calibration factor -0.5°C
+
+                 11110000        Calibration factor -8°C
+    DATABYTE7 = Zone number
+    DATABYTE8 = Calibration gain factor
+
+Transmit the fourth part of the sensor settings:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART4 (0xB9)
+    DATABYTE2 = Minimum switching time (0…255s)
+    DATABYTE3 = Pump delayed on time (0…255s)
+    DATABYTE4 = Pump delayed off time (0…255s)
+    DATABYTE5 = Temperature alarm 2 setting (resolution 0.5°)
+    DATABYTE6 = Temperature alarm 3 setting (resolution 0.5°)
+    DATABYTE7 = Lower temperature range heat mode (resolution 0.5°)
+    DATABYTE8 = Upper temperature range cool mode (resolution 0.5°)
+
+Transmit: Clears LEDs on a linked push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the linked push button module for clearing LEDs
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes to send
+    DATABYTE1 = COMMAND_CLEAR_LED (0xF5)
+    DATABYTE2 = LED bit numbers (1 = clear LED)
+
+Transmit: Sets LEDs on a linked push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the linked push button module for setting LEDs on
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes to send
+    DATABYTE1 = COMMAND_SET_LED (0xF6)
+    DATABYTE2 = LED bit numbers (1 = set LED)
+
+Transmit: Blinks LEDs slowly on a linked push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the linked push button module for slowly blinking LEDs
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes to send
+    DATABYTE1 = COMMAND_SLOW_BLINKING_LED (0xF7)
+    DATABYTE2 = LED bit numbers (1 = slow blink LED)
+
+Transmit: Blinks LEDs fast on a linked push button module:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Address of the linked push button module for fast blinking LEDs
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes to send
+    DATABYTE1 = COMMAND_FAST_BLINKING_LED (0xF8)
+    DATABYTE2 = LED bit numbers (1 = fast blink LED)
+
+Transmits program step info:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes to send
+    DATABYTE1 = COMMAND_PROGRAM_STEP_INFO (0xC1)
+    DATABYTE2 = Program step number (1…162 / 255 step not found)
+    DATABYTE3 = Program reference
+                          Contents     Description
+
+
+
+
+                                            VMBELO PROTOCOL – edition 1               13
+                     000xxxxx       Disable program step
+                     001xxxxx       Absolute time
+                     010xxxxx       Wake up time 1 + relative time
+                     011xxxxx       Go to bed time 1 + relative time
+                     100xxxxx       Wake up time 2 + relative time
+                     101xxxxx       Go to bed time 2 + relative time
+                     110xxxxx       Sunrise + relative time
+                     111xxxxx       Sunset + relative time
+                     xxx01111       Rel. time = 3h45min
+                        …
+                     xxx00001       Rel. time = 15min
+                     xxx00000       Rel. time = 0
+                     xxx11111       Rel. time = -15min
+                        …
+                     xxx10000       Rel. time = -4h
+
+DATABYTE4 = Program step month & four least significant bits of day
+                  Contents                           Description
+                 xxxx0000       Weekly program
+                 xxxx0001       January
+                 xxxx0010       February
+                 xxxx0011       March
+                 xxxx0100       April
+                 xxxx0101       May
+                 xxxx0110       June
+                 xxxx0111       July
+                 xxxx1000       August
+                 xxxx1001       September
+                 xxxx1010       October
+                 xxxx1011       November
+                 xxxx1100       December
+                 xxxx1101       Monthly program
+                 xxxx1110       Monthly program
+                 xxxx1111       Monthly program
+
+                  Contents byte6     Contents byte4      Description
+                    00xxxxxx           0000xxxx          Never
+                    00xxxxxx           0001xxxx          Day 1of the month
+                    00xxxxxx           0010xxxx          Day 2of the month
+                       …                  ...            …
+                    01xxxxxx           1111xxxx          Day 31of the month
+                    10xxxxxx           0000xxxx          Never
+                    10xxxxxx           0001xxxx          Every Monday
+                    10xxxxxx           0010xxxx          Every Tuesday
+                        ...               …              …
+                    10xxxxxx           0111xxxx          Every Sunday
+                    10xxxxxx           1000xxxx          Every weekend (sa & su)
+                    10xxxxxx           1001xxxx          Every working day (mo…fr)
+                    10xxxxxx           1010xxxx          Every day except Sunday
+                    10xxxxxx           1011xxxx          Every day
+                    10xxxxxx           1100xxxx          Never
+                       …                  …              …
+                    11xxxxxx           1111xxxx          Never
+
+DATABYTE5 = Program step hour & group number
+                  Contents      Description
+                 xxx00000       0h
+                 xxx00001       1h
+                    …           …
+                 xxx10111       23h
+                 xx1xxxxx       Program group 1 (Summer program)
+
+
+
+
+                                      VMBELO PROTOCOL – edition 1                    14
+                    x1xxxxxx      Program group 2 (Winter program)
+                    1xxxxxxx      Program group 3 (Holiday program)
+
+DATABYTE6 = Program step minute & every flag & msb of day
+                  Contents      Description
+                 xx000000       0min
+                 xx000001       1min
+                    …           …
+                 xx111011       59min
+
+                 Contents byte6    Contents byte4    Description
+                   00xxxxxx          0000xxxx        Never
+                   00xxxxxx          0001xxxx        Day 1of the month
+                   00xxxxxx          0010xxxx        Day 2of the month
+                      …                 ...          …
+                   01xxxxxx          1111xxxx        Day 31of the month
+                   10xxxxxx          0000xxxx        Never
+                   10xxxxxx          0001xxxx        Every Monday
+                   10xxxxxx          0010xxxx        Every Tuesday
+                       ...              …            …
+                   10xxxxxx          0111xxxx        Every Sunday
+                   10xxxxxx          1000xxxx        Every weekend (sa & su)
+                   10xxxxxx          1001xxxx        Every working day (mo…fr)
+                   10xxxxxx          1010xxxx        Every day except Sunday
+                   10xxxxxx          1011xxxx        Every day
+                   10xxxxxx          1100xxxx        Never
+                      …                 …            …
+                   11xxxxxx          1111xxxx        Never
+
+DATABYTE7 = Program step action
+                  Contents        Action
+                      0           0s25 Pulse
+                      1           1s Pulse
+                      2           2s Pulse
+                     ...          ...
+                    119           1min59s Pulse
+                    120           2min Pulse
+                    121           2min15s Pulse
+                     ...          ...
+                    131           4min45s Pulse
+                    132           5min Pulse
+                    133           5min30s Pulse
+                     ...          ...
+                    181           29min30s Pulse
+                    182           30min Pulse
+                    183           31min Pulse
+                     ...          ...
+                    211           59min Pulse
+                    212           1h Pulse
+                    213           1h15min Pulse
+                     ...          ...
+                    227           4h45min Pulse
+                    228           5h Pulse
+                    229           5h30min Pulse
+                     ...          ...
+                    237           9h30min Pulse
+                    238           10h Pulse
+                    239           11h Pulse
+                     ...          …
+                    245           17h Pulse
+                    246           Press
+                    247           Long Press
+
+
+
+                                    VMBELO PROTOCOL – edition 1                  15
+                             248          Release
+                             249          Lock
+                             250          Unlock
+                             251          Set color
+                             252          Thermostat safe mode
+                             253          Thermostat night mode
+                             254          Thermostat day mode
+                             255          Thermostat comfort mode
+
+    DATABYTE8 = Channel
+                     Contents             Channel
+                         1                Channel 1
+                         2                Channel 2
+                        ...               …
+                        31                Channel 7
+                        32                Channel 8
+                        33                Temperature sensor
+                        42                Open collector output
+
+Transmit ‘counter status request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Counter address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes received
+    DATABYTE1 = COMMAND_ENERGY_COUNTER_STATUS_RQ (0xBD)
+    DATABYTE2 = counter channel 1 to 4
+                       Contents        Description
+                   B’xxxxxxx1’         Channel 1
+                   B’xxxxxx1x’         Channel 2
+                   B’xxxxx1xx’         Channel 3
+                   B’xxxx1xxx’         Channel 4
+    DATABYTE3 = auto send interval
+                       10…255s fixed interval
+                       5…9 = auto send on change with 5s as minimum interval
+                       1…4 = auto send on change disabled
+                       0 = no change on auto send interval
+
+    Remark: the auto send interval is common for all channels
+
+Transmit ‘Remote Sensor status request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_MODULE_STATUS_REQUEST (0xFA)
+    DATABYTE2 = don’t care
+
+Transmit ‘Remote Sensor temperature request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes to send
+    DATABYTE1 = COMMAND_SENSOR_TEMP_REQUEST (0xE5)
+    DATABYTE2 = Auto send time interval into seconds
+                    (valid range: 10…255s)
+                    (5…9 = auto send on temperature change >=0.5°)
+                    (1…4 = auto send disabled)
+                    (0 = no change on auto send interval)
+
+
+
+
+                                            VMBELO PROTOCOL – edition 1        16
+Transmit ‘Remote Sensor settings request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes to send
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_REQUEST (0xE7)
+    DATABYTE2 = don’t care
+
+Transmit ‘Remote Sensor Set temperature’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes to send
+    DATABYTE1 = COMMAND_SET_TEMP (0xE4)
+    DATABYTE2 = Pointer to temperature variable (0…20)
+                     Contents       Temperature variable
+                          0         Target temperature set
+                          1         Comfort temperature set for heating
+                          2         Day temperature set for heating
+                          3         Night temperature set for heating
+                          4         Safe temperature set for heating
+                          7         Comfort temperature set for cooling
+                          8         Day temperature set for cooling
+                          9         Night temperature set for cooling
+                         10         Safe temperature set for cooling
+
+    DATABYTE3 = Temperature set (resolution 0.5°)
+                 Contents       Temperature set
+                 01111111       63.5°C
+
+                      00101000      20°C
+
+                      00000010      1°C
+                      00000001      0.5°C
+                      00000000      0°C
+                      11111111      -0.5°C
+
+                      10010010      -55°C
+
+    Remark: Wait at least 100ms for sending a next command on the velbus.
+
+Transmit ‘Remote Sensor Set heating mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes to send
+    DATABYTE1 = COMMAND_SET_HEATING_MODE (0xE0)
+    DATABYTE2 = don’t care
+
+Transmit ‘Remote Sensor Set cooling mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes to send
+    DATABYTE1 = COMMAND_SET_COOLING_MODE (0xDF)
+    DATABYTE2 = don’t care
+
+Transmit ‘Remote Sensor Switch to comfort mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes to send
+    DATABYTE1 = COMMAND_SWITCH_TO_COMFORT_MODE (0xDB)
+    DATABYTE2 = High byte of the sleep time
+
+
+
+
+                                             VMBELO PROTOCOL – edition 1    17
+   DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains 0xFF00, the command is a program step.
+   A sleep time between 0x0001 and 0xFEFF (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of 0xFFFF puts the sensor into manual mode. Program steps will not be executed anymore and local control
+   is disabled.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+Transmit ‘Remote Sensor Switch to day mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes to send
+    DATABYTE1 = COMMAND_SWITCH_TO_DAY_MODE (0xDC)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains 0xFF00, the command is a program step.
+   A sleep time between 0x0001 and 0xFEFF (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of 0xFFFF puts the sensor into manual mode. Program steps will not be executed anymore and local control
+   is disabled.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+Transmit ‘Remote Sensor Switch to night mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes to send
+    DATABYTE1 = COMMAND_SWITCH_TO_NIGHT_MODE (0xDD)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains 0xFF00, the command is a program step.
+   A sleep time between 0x0001 and 0xFEFF (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of 0xFFFF puts the sensor into manual mode. Program steps will not be executed anymore and local control
+   is disabled.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+Transmit ‘Remote Sensor Switch to safe temperature mode’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master Address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes to send
+    DATABYTE1 = COMMAND_SWITCH_TO_SAFE_MODE (0xDE)
+    DATABYTE7 = High byte of the sleep time
+    DATABYTE8 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains 0xFF00, the command is a program step.
+   A sleep time between 0x0001 and 0xFEFF (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of 0xFFFF puts the sensor into manual mode. Program steps will not be executed anymore and local control
+   is disabled.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+
+
+
+                                           VMBELO PROTOCOL – edition 1                                               18
+Transmit ‘Set default sleep time’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes to send
+    DATABYTE1 = COMMAND_SET_DEFAULT_SLEEP_TIME (0xE3)
+    DATABYTE2 = High byte of the default sleep time
+    DATABYTE3 = Low byte of the default sleep time into minutes
+                      (valid range 0x0001 to 0xFEFF or 1min to 65.279min)
+
+    Remark: Wait at least 100ms for sending a next command on the velbus.
+
+Transmit ‘Remote Analog Sensor readout request’ command:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Analog Sensor Address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes to send
+    DATABYTE1 = COMMAND_SENSOR_TEMP_REQUEST (0xE5)
+    DATABYTE2 = Remote analog sensor channel
+                     (9 = analog sensor 1)
+                     (10 = analog sensor 2)
+                     (11 = analog sensor 3)
+                     (12 = analog sensor 4)
+    DATABYTE3 = Auto send time interval into seconds
+                    (valid range: 10…255s)
+                    (5…9 = auto send on temperature change)
+                    (1…4 = auto send disabled)
+                    (0 = no change on auto send interval)
+
+
+
+
+                                           VMBELO PROTOCOL – edition 1      19
+‘Linked push button status’ received:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Address of the linked push button module
+    RTR = 0
+    DLC3...DLC0 = 4 data bytes received
+    DATABYTE1 = COMMAND_PUSH_BUTTON_STATUS (0x00)
+    DATABYTE2 = Linked push buttons just pressed (1 = just pressed)
+    DATABYTE3 = Linked push buttons just released (1 = just released)
+    DATABYTE4 = linked push buttons long pressed (1 = longer than 0.85s pressed)
+
+‘Power up message’ received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = 0x00
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_POWER_UP (0xAB)
+    DATABYTE2 = module address
+
+‘Real time clock status request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = 0x00
+    RTR = 0
+    DLC3...DLC0 = 1 data byte received
+    DATABYTE1 = COMMAND_REALTIME_CLOCK_STATUS_REQUEST (0xD7)
+
+‘Set real time clock’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = 0x00
+    RTR = 0
+    DLC3...DLC0 = 4 data bytes received
+    DATABYTE1 = COMMAND_SET_REALTIME_CLOCK (0xD8)
+    DATABYTE2 = Day of week
+                 Contents day of week’  Description
+                        H’00’           Monday
+                        H’01’           Tuesday
+                        H’02’           Wednesday
+                        H’03’           Thursday
+                        H’04’           Friday
+                        H’05’           Saterday
+                        H’06’           Sunday
+    DATABYTE3 = Hours (0…23)
+    DATABYTE4 = Minutes (0…59)
+
+‘Set date’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = 0x00
+     RTR = 0
+     DLC3...DLC0 = 5 data bytes received
+     DATABYTE1 = COMMAND_SET_REALTIME_DATE (0xB7)
+     DATABYTE2 = Day (1…31)
+     DATABYTE3 = Month (1…12)
+     DATABYTE4 = High byte of Year
+     DATABYTE5 = Low byte of Year
+
+‘Set daylight savings’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = 0x00
+     RTR = 0
+     DLC3...DLC0 = 2 data bytes received
+     DATABYTE1 = COMMAND_SET_DAYLIGHT_SAVING (0xAF)
+     DATABYTE2 = 0 =disabled / 1 = enabled
+
+
+
+
+                                           VMBELO PROTOCOL – edition 1             20
+‘Enable/disable global sunrise/sunset related actions’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = 0x00
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes received
+    DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (0xAE)
+    DATABYTE2 = Channel (0xFF)
+    DATABYTE3 = enable/disable flags
+                       Contents              Description
+                    B’xxxxxxx0’              Disable sunrise related actions
+                    B’xxxxxxx1’              Enable sunrise related actions
+                    B’xxxxxx0x’              Disable sunset related actions
+                    B’xxxxxx1x’              Enable sunset related actions
+
+‘Enable/disable local sunrise/sunset related actions’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes received
+    DATABYTE1 = COMMAND_ENA_DIS_SUNRISE_SUNSET (0xAE)
+    DATABYTE2 = Channel (0xFF)
+    DATABYTE3 = enable/disable flags
+                       Contents               Description
+                     B’xxxxxxx0’              Disable sunrise related actions
+                     B’xxxxxxx1’              Enable sunrise related actions
+                     B’xxxxxx0x’              Disable sunset related actions
+                     B’xxxxxx1x’              Enable sunset related actions
+
+‘Set global clock alarm’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = 0x00
+    RTR = 0
+    DLC3...DLC0 = 7 data bytes received
+    DATABYTE1 = COMMAND_SET_ALARM_CLOCK (0xC3)
+    DATABYTE2 = Alarm number (1 or 2)
+    DATABYTE3 = Wake up hour (0…23)
+    DATABYTE4 = Wake up minute (0…59)
+    DATABYTE5 = Go to bed hour (0…23)
+    DATABYTE6 = Go to bed minute (0…59)
+    DATABYTE7 = Clock alarm enable flag (0 = disabled / 1 = enabled)
+
+‘Set local clock alarm’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 7 data bytes received
+     DATABYTE1 = COMMAND_SET_ALARM_CLOCK (0xC3)
+     DATABYTE2 = Alarm number (1 or 2)
+     DATABYTE3 = Wake up hour (0…23)
+     DATABYTE4 = Wake up minute (0…59)
+     DATABYTE5 = Go to bed hour (0…23)
+     DATABYTE6 = Go to bed minute (0…59)
+     DATABYTE7 = Clock alarm enable flag (0 = disabled / 1 = enabled)
+
+‘Module type request’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 1
+   DLC3...DLC0 = 0 data bytes received
+
+
+
+
+                                              VMBELO PROTOCOL – edition 1       21
+‘Module status request’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 2 data bytes received
+   DATABYTE1 = COMMAND_MODULE_STATUS_REQUEST (0xFA)
+   DATABYTE2 = don’t care
+
+‘Channel name request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_CHANNEL_NAME_REQUEST (0xEF)
+    DATABYTE2 = channel number 1…33 or 42 (channel 33 = temperature sensor name, 18 for output name)
+
+    Remark: channel = 0xFF for all 32 channel names, temperature sensor name & output channel name
+
+‘Clear channel LED’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_CLEAR_LED (0xF5)
+    DATABYTE2 = LEDs to clear (a one clears the corresponding LED of the channel)
+
+‘Set channel LED’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+     RTR = 0
+     DLC3...DLC0 = 2 data bytes received
+     DATABYTE1 = COMMAND_SET_LED (0xF6)
+     DATABYTE2 = LEDs to set (a one sets the corresponding LED of the channel)
+
+‘Slow blink channel LED’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_SLOW_BLINK_LED (0xF7)
+    DATABYTE2 = LEDs to blink slow (a one blinks slow the corresponding LED of the channel)
+
+‘Fast blink channel LED’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_FAST_BLINK_LED (0xF8)
+    DATABYTE2 = LEDs to blink fast (a one blinks fast the corresponding LED of the channel)
+
+‘Very fast blink channel LED’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_VERY_FAST_BLINK_LED (0xF9)
+    DATABYTE2 = LEDs to blink very fast (a one blinks very fast the corresponding LED of the channel)
+
+
+
+
+                                           VMBELO PROTOCOL – edition 1                                  22
+‘Update channel LEDs’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address, subaddress1, subaddress2 or subaddress3
+   RTR = 0
+   DLC3...DLC0 = 4 data bytes received
+   DATABYTE1 = COMMAND_UPDATE_LED_STATUS (0xF4)
+   DATABYTE2 = LEDs to set (a one sets the corresponding LED of the channel)
+   DATABYTE3 = LEDs to blink slow (a one blinks slow the corresponding LED of the channel)
+   DATABYTE4 = LEDs to blink fast (a one blinks very fast the corresponding LED of the channel)
+
+    Remark:
+    The ‘LEDs to set’ status overrides the blinking modes.
+    Very fast blinking if slow & fast blinking are set.
+
+‘Read data from memory’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes received
+    DATABYTE1 = COMMAND_READ_DATA_FROM_MEMORY (0xFD)
+    DATABYTE2 = High memory address
+    DATABYTE3 = LOW memory address
+
+    Remark: address range: 0x0000 to 0x4FFF
+
+‘Read data block from memory’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 3 data bytes received
+   DATABYTE1 = COMMAND_READ_MEMORY_BLOCK (0xC9)
+   DATABYTE2 = High memory address
+   DATABYTE3 = LOW memory address
+
+    Remark: address range: 0x0000 to 0x4FFC
+
+‘Memory dump request’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 1 data bytes received
+   DATABYTE1 = COMMAND_MEMORY_DUMP_REQUEST (0xCB)
+
+‘Write data to memory’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 4 data bytes received
+    DATABYTE1 = COMMAND_WRITE_DATA_TO_MEMORY (0xFC)
+    DATABYTE2 = High memory address
+    DATABYTE3 = LOW memory address
+    DATABYTE4 = memory data to write
+    Remark:
+    Wait for ‘data memory byte’ feedback before sending a next command on the velbus.
+    Address range: 0x0000 to 0x4FFF
+    Terminate always with a write command at the last memory location .
+
+‘Write memory block’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 7 data bytes received
+    DATABYTE1 = COMMAND_WRITE_MEMORY_BLOCK (0xCA)
+    DATABYTE2 = High memory address
+    DATABYTE3 = LOW memory address
+
+
+
+                                             VMBELO PROTOCOL – edition 1                          23
+    DATABYTE4 = memory data byte1 to write
+    DATABYTE5 = memory data byte2 to write
+    DATABYTE6 = memory data byte3 to write
+    DATABYTE7 = memory data byte4 to write
+
+    Remark:
+    Wait for ‘memory data block’ feedback before sending a next command on the velbus.
+    Address range: 0x0000 to 0x4FFC
+    Terminate always with a write command at the last memory location .
+
+‘Bus error counter status request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 1 data bytes received
+    DATABYTE1 = COMMAND_BUS_ERROR_COUNTER_STATUS_REQUEST (0xD9)
+
+‘Unlock channel’ command received:
+   SID10-SID9 = 00 (highest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_CANCEL_FORCED_OFF (0x13)
+    DATABYTE2 = Channel number 1…32, 33 or 42 (33 for temperature sensor, 42 for open collector output
+
+    Remark: channel number = 0xFF for all channels
+
+‘Lock channel’ command received:
+   SID10-SID9 = 00 (highest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 5 data bytes received
+   DATABYTE1 = COMMAND_FORCED_OFF (0x12)
+   DATABYTE2 = Channel number 1…32, 33 or 42 (33 for temperature sensor, 42 foe open collector output)
+   DATABYTE3 = high byte of delay time
+   DATABYTE4 = mid byte of delay time
+   DATABYTE5 = low byte of delay time
+
+    Remark:
+    Channel number = 0xFF for all channels
+    [DATABYTE3][DATABYTE4][DATABYTE5] contain a 24-bit time in seconds
+    The command will be skipped when the time parameter contains zero.
+    When the time parameter contains 0xFFFFFF then the channel will be permanently locked.
+
+‘Enable Channel Program’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 2 data bytes received
+   DATABYTE1 = COMMAND_ENABLE_PROGRAM (0xB2)
+   DATABYTE2 = Channel number 1…32, 33 or 42 (33 for temperature sensor, 42 foe open collector output)
+
+    Remark: channel number = 0xFF for all channels
+
+
+
+
+                                           VMBELO PROTOCOL – edition 1                                   24
+‘Disable Channel Program’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 5 data bytes received
+    DATABYTE1 = COMMAND_DISABLE_PROGRAM (0xB1)
+    DATABYTE2 = Channel number 1…32, 33 or 42 (33 for temperature sensor, 42 foe open collector output)
+    DATABYTE3 = high byte of delay time
+    DATABYTE4 = mid byte of delay time
+    DATABYTE5 = low byte of delay time
+
+    Remark:
+    Channel number = 0xFF for all channels
+    [DATABYTE3][DATABYTE4][DATABYTE5] contain a 24-bit time in seconds
+    The command will be skipped when the time parameter contains zero.
+    When the time parameter contains 0xFFFFFF then the channel program will be permanently disabled.
+
+‘Select Program’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_SELECT_PROGRAM (0xB3)
+    DATABYTE2 = Program mode
+                     Contents         Selected program
+                       0              None
+                       1              Group 1 (Summer)
+                       2              Group 2 (Winter)
+                       3              Group 3 (Holiday)
+
+‘Sensor temperature request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_SENSOR_TEMP_REQUEST (0xE5)
+    DATABYTE2 = Auto send time interval into seconds
+                     (valid range: 10…255s)
+                     (5…9 = auto send on temperature change >= 0.5°)
+                     (1…4 = auto send disabled)
+                     (0 = no change on auto send interval)
+
+‘Sensor settings request’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_REQUEST (0xE7)
+    DATABYTE2 = don’t care
+
+‘Set heating mode’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 2 data bytes received
+     DATABYTE1 = COMMAND_SET_HEATING_MODE (0xE0)
+     DATABYTE2 = don’t care
+
+
+
+
+                                           VMBELO PROTOCOL – edition 1                                    25
+‘Set cooling mode’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 2 data bytes received
+     DATABYTE1 = COMMAND_SET_COOLING_MODE (0xDF)
+     DATABYTE2 = don’t care
+
+‘Set sensor zone number’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 2 data bytes received
+     DATABYTE1 = COMMAND_SET_SENSOR_ZONE_NUMBER (0xC5)
+     DATABYTE2 = Zone number (0= no zone / 1…7 = valid zone)
+
+‘Set default sleep time’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 3 data bytes received
+     DATABYTE1 = COMMAND_SET_DEFAULT_SLEEP_TIME (H’E3’)
+     DATABYTE2 = High byte of the default sleep time
+     DATABYTE3 = Low byte of the default sleep time into minutes
+                       (valid range H’0001’ to H’FEFF’ or 1min to 65.279min)
+
+    Remark: Wait at least 20ms for sending a next command on the velbus
+
+‘Set temperature’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 3 data bytes received
+     DATABYTE1 = COMMAND_SET_TEMP (0xE4)
+     DATABYTE2 = Pointer to temperature variable (0…20)
+                      Contents       Temperature variable
+                            0        Target temperature set
+                            1        Comfort temperature set for heating
+                            2        Day temperature set for heating
+                            3        Night temperature set for heating
+                            4        Safe temperature set for heating
+                            5        Temperature difference for turbo output
+                            6        Hysteresis (0°…15.5°C)
+                            7        Comfort temperature set for cooling
+                            8        Day temperature set for cooling
+                            9        Night temperature set for cooling
+                           10        Safe temperature set for cooling
+                           11        Calibration offset factor (-8°…+7.5°C)
+                           12        Reset minimum/maximum temperature
+                           13        Reset time statistics
+                           14        enable/disable anti-block valve/pump
+                           15        Temperature alarm 1 set
+                           16        Temperature alarm 4 set
+                           17        Lower temperature range cool mode
+                           18        Upper temperature range heat mode
+                           19        Differential sensor address (H’FF’ = no diff. sensor)
+                           20        Target temperature set for the differential sensor
+                           21        Minimum switching time
+                           22        Pump delayed on time
+                           23        Pump delayed off time
+                           24        Temperature alarm 2 set
+                           25        Temperature alarm 3 set
+                           26        Lower temperature range heat mode
+                           27        Upper temperature range cool mode
+
+
+
+                                             VMBELO PROTOCOL – edition 1                     26
+                    28         Calibration gain factor
+   DATABYTE3 = Temperature set (resolution 0.5°)
+                Contents       Temperature set
+                01111111       63.5°C
+
+                     00101000      20°C
+
+                     00000010      1°C
+                     00000001      0.5°C
+                     00000000      0°C
+                     11111111      -0.5°C
+
+                10010010       -55°C
+   DATABYTE3 = Reset minimum/maximum temperature
+                Contents       Reset temperature
+                xxxxxxx1       Reset minimum temperature
+                xxxxxx1x       Reset maximum temperature
+   DATABYTE3 = Enable/disable unjamming heater valve & pump
+                Contents       Enable/disable unjamming valve and pump
+                xxxxxx00       Disable unjamming heater valve & pump
+                xxxxxx01       Disable unjamming heater valve & enable unjamming pump
+                xxxxxx10       Enable unjamming heater valve & disable unjamming pump
+                xxxxxx11       Enable unjamming heater valve & pump
+   DATABYTE3 = Minimum switching time:
+                Contents       Operating mode
+                00000000       No switching time protection
+                00000001       1 minute switching time protection
+                00000010       2 minute switching time protection
+                …              …
+                11111110       254 minute switching time protection
+                11111111       Default 1 minute switching time protection
+
+   Remark:
+   Valid hysteresis range = 0 …15.5°C
+   Valid calibration factor range = -8 …7.5°C
+   Wait at least 10ms for sending a next command on the velbus.
+
+‘Switch to comfort mode’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_COMFORT_MODE (0xDB)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains 0xFF00, the command is a program step.
+   A sleep time between 0x0001 and 0xFEFF (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of 0xFFFF puts the sensor into manual mode. Program steps will not be executed anymore and local control
+   is disabled.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+‘Switch to day mode’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_DAY_MODE (0xDC)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+
+
+
+                                            VMBELO PROTOCOL – edition 1                                              27
+   If the sleep time contains 0xFF00, the command is a program step.
+   A sleep time between 0x0001 and 0xFEFF (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of 0xFFFF puts the sensor into manual mode. Program steps will not be executed anymore and local control
+   is disabled.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+‘Switch to night mode’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_NIGHT_MODE (0xDD)
+    DATABYTE2 = High byte of the sleep time
+    DATABYTE3 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains 0xFF00, the command is a program step.
+   A sleep time between 0x0001 and 0xFEFF (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of 0xFFFF puts the sensor into manual mode. Program steps will not be executed anymore and local control
+   is disabled.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+‘Switch to safe temperature mode’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 3 data bytes received
+    DATABYTE1 = COMMAND_SWITCH_TO_SAFE_MODE (0xDE)
+    DATABYTE7 = High byte of the sleep time
+    DATABYTE8 = Low byte of the sleep time into minutes
+
+   Remark:
+   If the sleep time contains 0xFF00, the command is a program step.
+   A sleep time between 0x0001 and 0xFEFF (1 to 65.279min) starts the sleep timer for that time and program steps will
+   not be executed during that time.
+   A sleep time of 0xFFFF puts the sensor into manual mode. Program steps will not be executed anymore and local control
+   is disabled.
+   A value of zero for the sleep time cancels the manual mode or sleep timer.
+
+‘Switch open collector output off’ command received:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_SWITCH_RELAY_OFF (0x01)
+    DATABYTE2 = channel bit = don’t care
+
+‘Switch open collector output on’ command received:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 2 data bytes received
+    DATABYTE1 = COMMAND_SWITCH_RELAY_ON (0x02)
+    DATABYTE2 = channel bit = don’t care
+
+‘Start open collector timer’ command received:
+    SID10-SID9 = 00 (highest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 5 data bytes received
+    DATABYTE1 = COMMAND_START_RELAY_TIMER (0x03)
+    DATABYTE2 = channel bit = don’t care
+    DATABYTE3 = high byte of delay time
+
+
+
+
+                                           VMBELO PROTOCOL – edition 1                                               28
+    DATABYTE4 = mid byte of delay time
+    DATABYTE5 = low byte of delay time
+
+    Remark:
+    [DATABYTE3][DATABYTE4][DATABYTE5] contain a 24-bit time in seconds
+    The command will be skipped when the time parameter contains zero.
+    When the time parameter contains 0xFFFFFF then the open collector output are permanently switched on.
+
+‘Set Custom Color’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 6 data bytes received
+     DATABYTE1 = COMMAND_SET_PB_BACKLIGHT (0xD4)64
+     DATABYTE2 = custom palette index (0…31)
+     DATABYTE3 = white/saturation
+                          Contents       Description
+                          0xxxxxxx       RGB-color
+                          1xxxxxxx       White (r=g=b)
+                          x0000000       Minimum saturation
+                              ...        …
+                          x1111111       Maximum saturation
+
+    DATABYTE4 = red value (0…255)
+    DATABYTE5 = green value (0…255)
+    DATABYTE6 = blue value (0…255)
+
+‘Set Edge Color’ command received:
+     SID10-SID9 = 11 (lowest priority)
+     SID8...SID1 = Module address
+     RTR = 0
+     DLC3...DLC0 = 4 data bytes received
+     DATABYTE1 = COMMAND_SET_PB_BACKLIGHT (0xD4)
+     DATABYTE2 = background/feedback color
+                          Contents       Description
+                          xxxxxxx0       do not apply to background color
+                          xxxxxxx1       apply to background color
+                          xxxxxx0x       do not apply to continuous feedback color
+                          xxxxxx1x       apply to continuous feedback color
+                          xxxxx0xx       do not apply to slow blinking feedback color
+                          xxxxx1xx       apply to slow blinking feedback color
+                          xxxx0xxx       do not apply to fast blinking feedback color
+                          xxxx1xxx       apply to fast blinking feedback color
+                          0xxxxxxx       Default color palette
+                          1xxxxxxx       Custom color palette
+
+    DATABYTE3 = Page/edge
+                      Contents            Description
+                     xxxxxxx0             do not apply to left edge
+                     xxxxxxx1             apply to left edge
+                     xxxxxx0x             do not apply to top edge
+                     xxxxxx1x             apply to top edge
+                     xxxxx0xx             do not apply to right edge
+                     xxxxx1xx             apply to right edge
+                     xxxx0xxx             do not apply to bottom edge
+                     xxxx1xxx             apply to bottom edge
+                     0000xxxx             apply to button page 1 (only for feedback light)
+                     0001xxxx             apply to button page 2 (only for feedback light)
+                     0010xxxx             apply to button page 3 (only for feedback light)
+                     0011xxxx             apply to button page 4 (only for feedback light)
+                     0100xxxx             apply to button page 5 (only for feedback light)
+                     0101xxxx             apply to button page 6 (only for feedback light)
+                     0110xxxx             apply to button page 7 (only for feedback light)
+
+
+
+                                            VMBELO PROTOCOL – edition 1                                     29
+                          0111xxxx       apply to button page 8 (only for feedback light)
+                          1000xxxx       Apply to all button pages (only for feedback light)
+                             ...         …
+                          1111xxxx       Apply to all button pages (only for feedback light)
+
+    DATABYTE4 = blink/priority/color palette index
+                      Contents         Description
+                      0xxxxxxx         Background not blinking/Feedback blinking disabled
+                      1xxxxxxx         Background blinking/Feedback blinking enabled
+                      x00xxxxx         Default color palette & feedback blinking mode
+                      x01xxxxx         Custom color with lowest priority
+                      x10xxxxx         Custom color with mid priority
+                      x11xxxxx         Custom color with highest priority
+                      xxx00000         Color palette index 0
+                      xxx00001         Color palette index 1
+                          …            …1
+                      xxx11111         Color palette index 31
+
+‘Read program step’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 5 data bytes received
+    DATABYTE1 = COMMAND_READ_PROGRAM_STEP (0xC0)
+    DATABYTE2 = Start program step number (1…162)
+    DATABYTE3 = Program group number (1…3)
+    DATABYTE4 = Channel number1…32,33 or 42 (33 for temperature sensor name, 42 for open collector output)
+    DATABYTE5 = Search direction (1 = search for next matched step / 0 = search for previous matched program step)
+
+‘Write program step’ command received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Module address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes received
+    DATABYTE1 = COMMAND_WRITE_PROGRAM_STEP (0xC2)
+    DATABYTE2 = Program step number (1…162)
+    DATABYTE3 = Program reference
+                         Contents       Description
+                         000xxxxx       Disable program step
+                         001xxxxx       Absolute time
+                         010xxxxx       Wake up time 1 + relative time
+                         011xxxxx       Go to bed time 1 + relative time
+                         100xxxxx       Wake up time 2 + relative time
+                         101xxxxx       Go to bed time 2 + relative time
+                         110xxxxx       Sunrise + relative time
+                         111xxxxx       Sunset + relative time
+                         xxx01111       Rel. time = 3h45min
+                             …
+                         xxx00001       Rel. time = 15min
+                         xxx00000       Rel. time = 0
+                         xxx11111       Rel. time = -15min
+                             …
+                         xxx10000       Rel. time = -4h
+
+    DATABYTE4 = Program step month & four least significant bits of day
+                      Contents                           Description
+                     xxxx0000       Weekly program
+                     xxxx0001       January
+                     xxxx0010       February
+                     xxxx0011       March
+                     xxxx0100       April
+                     xxxx0101       May
+
+
+
+
+                                            VMBELO PROTOCOL – edition 1                                              30
+                    xxxx0110      June
+                    xxxx0111      July
+                    xxxx1000      August
+                    xxxx1001      September
+                    xxxx1010      October
+                    xxxx1011      November
+                    xxxx1100      December
+                    xxxx1101      Monthly program
+                    xxxx1110      Monthly program
+                    xxxx1111      Monthly program
+
+                 Contents byte6    Contents byte4   Description
+                   00xxxxxx          0000xxxx       Never
+                   00xxxxxx          0001xxxx       Day 1of the month
+                   00xxxxxx          0010xxxx       Day 2of the month
+                      …                 ...         …
+                   01xxxxxx          1111xxxx       Day 31of the month
+                   10xxxxxx          0000xxxx       Never
+                   10xxxxxx          0001xxxx       Every Monday
+                   10xxxxxx          0010xxxx       Every Tuesday
+                       ...              …           …
+                   10xxxxxx          0111xxxx       Every Sunday
+                   10xxxxxx          1000xxxx       Every weekend (sa & su)
+                   10xxxxxx          1001xxxx       Every working day (mo…fr)
+                   10xxxxxx          1010xxxx       Every day except Sunday
+                   10xxxxxx          1011xxxx       Every day
+                   10xxxxxx          1100xxxx       Never
+                      …                 …           …
+                   11xxxxxx          1111xxxx       Never
+
+DATABYTE5 = Program step hour & group number
+                  Contents      Description
+                 xxx00000       0h
+                 xxx00001       1h
+                    …           …
+                 xxx10111       23h
+                 xx1xxxxx       Program group 1 (Summer program)
+                 x1xxxxxx       Program group 2 (Winter program)
+                 1xxxxxxx       Program group 3 (Holiday program)
+
+DATABYTE6 = Program step minute & msb of day & every flag
+                  Contents      Description
+                 xx000000       0min
+                 xx000001       1min
+                    …           …
+                 xx111011       59min
+
+                 Contents byte6    Contents byte4   Description
+                   00xxxxxx          0000xxxx       Never
+                   00xxxxxx          0001xxxx       Day 1of the month
+                   00xxxxxx          0010xxxx       Day 2of the month
+                      …                 ...         …
+                   01xxxxxx          1111xxxx       Day 31of the month
+                   10xxxxxx          0000xxxx       Never
+                   10xxxxxx          0001xxxx       Every Monday
+                   10xxxxxx          0010xxxx       Every Tuesday
+                       ...              …           …
+                   10xxxxxx          0111xxxx       Every Sunday
+                   10xxxxxx          1000xxxx       Every weekend (sa & su)
+                   10xxxxxx          1001xxxx       Every working day (mo…fr)
+                   10xxxxxx          1010xxxx       Every day except Sunday
+
+
+
+
+                                    VMBELO PROTOCOL – edition 1                 31
+                       10xxxxxx            1011xxxx           Every day
+                       10xxxxxx            1100xxxx           Never
+                          …                   …               …
+                       11xxxxxx            1111xxxx           Never
+
+DATABYTE7 = Program step action
+                  Contents             Action
+                      0                0s25 Pulse
+                      1                1s Pulse
+                      2                2s Pulse
+                     ...               ...
+                    119                1min59s Pulse
+                    120                2min Pulse
+                    121                2min15s Pulse
+                     ...               ...
+                    131                4min45s Pulse
+                    132                5min Pulse
+                    133                5min30s Pulse
+                     ...               ...
+                    181                29min30s Pulse
+                    182                30min Pulse
+                    183                31min Pulse
+                     ...               ...
+                    211                59min Pulse
+                    212                1h Pulse
+                    213                1h15min Pulse
+                     ...               ...
+                    227                4h45min Pulse
+                    228                5h Pulse
+                    229                5h30min Pulse
+                     ...               ...
+                    237                9h30min Pulse
+                    238                10h Pulse
+                    239                11h Pulse
+                     ...               …
+                    246                18h Pulse
+                    247                Press
+                    248                Long Press
+                    249                Release
+                    250                Lock
+                    251                Unlock
+                    252                Thermostat safe mode
+                    253                Thermostat night mode
+                    254                Thermostat day mode
+                    255                Thermostat comfort mode
+
+
+DATABYTE8 = Channel
+                 Contents              Channel
+                     1                 Channel 1
+                     2                 Channel 2
+                    ...                …
+                     7                 Channel 7
+                     8                 Channel 8
+                     9                 Temperature sensor
+                    18                 Open collector output
+
+Remark:
+Erase program step if channel parameter is equal with zero.
+
+
+
+
+                                         VMBELO PROTOCOL – edition 1      32
+‘Counter status’ command received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Counter Module address
+   RTR = 0
+   DLC3...DLC0 = 8 data bytes received
+   DATABYTE1 = COMMAND_ENERGY_COUNTER_STATUS (0xBE)
+   DATABYTE2 = counter channel 1 to 4 & number of pulses/Unit (kWh-l-m3) divide by 100
+                      Contents       Description
+                   B’xxxxxx00’       Channel 1
+                   B’xxxxxx01’       Channel 2
+                   B’xxxxxx10’       Channel 3
+                   B’xxxxxx11’       Channel 4
+                   B’000001xx’       100 pulses/Unit
+                   B’000010xx’       200 pulses/Unit
+                       …             …
+                   B’001000xx’       800 pulses/Unit
+                       …             …
+                   B’001010xx’       1000 pulses/Unit
+                       …             …
+                   B’010100xx’       2000 pulses/Unit
+                       …             …
+   DATABYTE3 = most significant byte of pulse counter
+   DATABYTE4 = upper byte of pulse counter
+   DATABYTE5 = high byte of pulse counter
+   DATABYTE6 = low byte of pulse counter
+   DATABYTE7 = high byte of period in ms between 2 pulses
+   DATABYTE8 = low byte of period in ms between 2 pulses
+
+    Remark: a period counter contents of 0xFFFF means overflow
+            Counter pulses in Units (kWh-l-m3) = DATABYTE[3…6] / (DATABYTE2[pulses/Unit factor] * Multiplier)
+            Power in W = 1000 * 1000 * 3600 / (DATABYTE[7..8] * DATABYTE2[pulses/Unit factor] * Multiplier)
+
+Remote sensor module status received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Sensor Master address
+   RTR = 0
+   DLC3...DLC0 = 7 data bytes to send or 8 data bytes received
+   DATABYTE1 = COMMAND_MODULE_STATUS (0xED)
+   DATABYTE2 = channel 1 to 8 status (1 = pressed / 0 = released)
+   DATABYTE3 = enabled/disable channel status (1 = enabled / 0 = disabled)
+   DATABYTE4 = normal or inverted mode for VMBGPx
+   DATABYTE4 = open collector locked & temperature sensor for VMBELx
+                      Contents        open collector & temperature sensor
+                 B’xxx0xxxx’          Temperature sensor program enabled
+                 B’xxx1xxxx’          Temperature sensor program disabled
+                 B’xx0xxxxx’          Open collector output program enabled
+                 B’xx1xxxxx’          Open collector output program disabled
+                 B’x0xxxxxx’          Open collector output unlocked
+                 B’x1xxxxxx’          Open collector output locked
+                 B’0xxxxxxx’          Open collector output off
+                 B’1xxxxxxx’          Open collector output on
+   DATABYTE5 = locked channel status (0 = unlocked / 1 = locked)
+   DATABYTE6 = disabled channel program status (0 = program enabled / 1 = program disabled)
+   DATABYTE7 = alarm & program selection
+                      Contents        Selected program
+                 B’xxxxxx00’          None
+                 B’xxxxxx01’          Program group 1 (Summer)
+                 B’xxxxxx10’          Program group 2 (Winter)
+                 B’xxxxxx11’          Program group 3 (Holiday)
+                 B’xxxxx0xx’          Clock alarm 1 off
+                 B’xxxxx1xx’          Clock alarm 1 on
+
+
+
+                                          VMBELO PROTOCOL – edition 1                                       33
+              B’xxxx0xxx’            Local clock alarm 1
+              B’xxxx1xxx’            Global clock alarm 1
+              B’xxx0xxxx’            Clock alarm 2 off
+              B’xxx1xxxx’            Clock alarm 2 on
+              B’xx0xxxxx’            Local clock alarm 2
+              B’xx1xxxxx’            Global clock alarm 2
+              B’x0xxxxxx’            Sunrise disabled
+              B’x1xxxxxx’            Sunrise enabled
+              B’0xxxxxxx’            Sunset disabled
+              B’1xxxxxxx’            Sunset enabled
+    DATABYTE8 = oled display status for VMBELO
+                   Contents          Display status
+              B’xx000000’            Button page 1
+                    …                …
+              B’xx000111’            Button page 8
+              B’xx001000’            Counter 1 page
+                    …                …
+              B’xx001011’            Counter 4 page
+              B’xx001100’            Local temperature page
+              B’xx001101’            Remote temperature 1 page
+                    …                …
+              B’xx011000’            Remote temperature 12 page
+              B’xx011001’            Analog sensor 1 page
+                    …                …
+              B’xx011100’            Analog sensor 4 page
+              B’xx011101’            Clock page
+              B’xx1xxxxx’            Menu pages
+              B’x0xxxxxx’            Screensaver off
+              B’x1xxxxxx’            Screensaver on
+              B’0xxxxxxx’            Display off
+              B’1xxxxxxx’            Display on
+
+Remote Sensor status received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Sensor Master address
+   RTR = 0
+   DLC3...DLC0 = 8 data bytes received
+   DATABYTE1 = COMMAND_TEMP_SENSOR_STATUS (0xEA)
+   DATABYTE2 = Operating mode
+                      Contents     Operating mode
+                      xxxxxxx1     Mode push button locked
+                      xxxxxxx0     Mode push button unlocked
+                      Xxxxx11x     Disable mode
+                      xxxxx01x     Manual mode
+                      xxxxx10x     Sleep timer mode
+                      xxxxx00x     Run mode
+                      xxxx1xxx     Auto send sensor temperature enabled
+                      xxxx0xxx     Auto send sensor temperature disabled
+                      x100xxxx     Comfort mode
+                      x010xxxx     Day mode
+                      x001xxxx     Night mode
+                      x000xxxx     Safe temp mode (anti frost)
+                      1xxxxxxx     Cooler mode
+                      0xxxxxxx     Heater mode
+   DATABYTE3 = Program step mode
+                      Contents     Program step mode
+                      xxxxx0xx     No sensor program group 1
+                      xxxxx1xx     Sensor program group 1available
+                      xxxx0xxx     No sensor program group 2
+                      0xxxx1xxx Sensor program group 2 available
+                      0xxxxxxx     No sensor program group 3
+                      1xxxxxxx     Sensor program group 3 available
+
+
+
+                                           VMBELO PROTOCOL – edition 1     34
+                x100xxxx        Comfort program step received
+                x010xxxx        Day program step received
+                x001xxxx        Night program step received
+                X000xxxx        Safe temperature program step received
+                xxxxxx1x        Enable unjamming heater valve
+                xxxxxx0x        Disable unjamming heater valve
+                xxxxxxx1        Enable unjamming pump
+                xxxxxxx0        Disable unjamming pump
+   DATABYTE4 = Output status (1 = activated)
+                Contents        Output channel
+                xxxxxxx0        Heater off
+                xxxxxxx1        Heater on
+                xxxxxx0x        Boost heater/cooler off
+                xxxxxx1x        Boost heater/cooler on
+                xxxxx0xx        Pump off
+                xxxxx1xx        Pump on
+                xxxx0xxx        Cooler off
+                xxxx1xxx        Cooler on
+                xxx0xxxx        Temperature alarm 1 off
+                xxx1xxxx        Temperature alarm 1 on
+                xx0xxxxx        Temperature alarm 2 off
+                xx1xxxxxx Temperature alarm 2 on
+                x0xxxxxx        Temperature alarm 3 off
+                x1xxxxxx        Temperature alarm 3 on
+                0xxxxxxx        Temperature alarm 4 off
+                1xxxxxxx        Temperature alarm 4 on
+   DATABYTE5 = Current sensor temperature into two’s complement format (resolution 0.5°)
+                Contents        Current sensor temperature
+                01111111        63.5°C
+
+                      00000001      0.5°C
+                      00000000      0°C
+                      11111111      -0.5°C
+
+                 10010010       -55°C
+   DATABYTE6 = target temperature set (resolution 0.5°)
+                 Contents       Current temperature set
+                 01101100       54°C
+
+                      00101000      20°C
+
+                      00000010      1°C
+                      00000001      0.5°C
+                      00000000      0°C
+                      11111111      -0.5°C
+
+                11000000        -32°C
+   DATABYTE7 = High byte of the sleep timer
+   DATABYTE8 = Low byte of the sleep timer into minutes
+
+   Remark:
+   [DATABYTE7][DATABYTE8] contains a 16-bit sleep timer into minutes (1 to 65.279min).
+   If the sleep timer contains 0x0000, the sleep timer is deactivated.
+   If the sleep timer contains a value between 0x0001 and 0xFEFF (1 to 65.279min), the sleep timer is running for that time.
+   If the sleep timer contains 0xFFFF, the sensor is in manual mode.
+
+Remote Sensor temperature received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Sensor Master address
+   RTR = 0
+   DLC3...DLC0 = 7 data bytes received
+   DATABYTE1 = COMMAND_SENSOR_TEMPERATURE (0xE6)
+   DATABYTE2 = High byte current sensor temperature
+
+
+
+                                             VMBELO PROTOCOL – edition 1                                                 35
+    DATABYTE3 = Low byte current sensor temperature into two’s complement format (resolution 0.0625°)
+    DATABYTE4 = High byte minimum sensor temperature
+    DATABYTE5 = Low byte minimum sensor temperature into two’s complement format (resolution 0.0625°)
+    DATABYTE6 = High byte maximum sensor temperature
+    DATABYTE7 = Low byte maximum sensor temperature into two’s complement format (resolution 0.0625°)
+                 High byte     Low byte      Current sensor temperature
+                 01111111      111xxxxx      63.5°C
+                 …             …
+                 00000001      000xxxxx      0.5°C
+                 00000000      100xxxxx      0.25°C
+                 00000000      010xxxxx      0.125°C
+                 00000000      001xxxxx      0.0625°C
+                 00000000      000xxxxx      0°C
+                 11111111      111xxxxx      -0.0625°C
+                 11111111      110xxxxx      -0.125°C
+                 11111111      100xxxxx      -0.25°C
+                 11111110      000xxxxx      -0.5°C
+                 …             …
+                 10010010      000xxxxx      -55°C
+
+    Remark:
+    The 5 least significant bits are don’t care
+
+First part of the remote sensor settings received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes received
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART1 (0xE8)
+    DATABYTE2 = Current temperature set (resolution 0.5°)
+    DATABYTE3 = Comfort temperature set for heating mode (resolution 0.5°)
+    DATABYTE4 = Day temperature set for heating mode (resolution 0.5°)
+    DATABYTE5 = Night temperature set for heating mode (resolution 0.5°)
+    DATABYTE6 = Anti frost temperature set for heating mode (resolution 0.5°)
+    DATABYTE7 = Boost temperature difference set (resolution 0.5°)
+    DATABYTE8 = Hysteresis temperature set
+                        Contents       Hysteresis
+                        xxx11111       15.5°C
+
+                        Xxx00001       0.5°C
+                        Xxx00000       0°C
+
+Second part of the remote sensor settings received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes received
+    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART2 (0xE9)
+    DATABYTE2 = Comfort temperature set for cooling mode (resolution 0.5°)
+    DATABYTE3 = Day temperature set for cooling mode (resolution 0.5°)
+    DATABYTE4 = Night temperature set for cooling mode (resolution 0.5°)
+    DATABYTE5 = Safe temperature set for cooling mode (resolution 0.5°)
+    DATABYTE6 = High byte of the default sleep timer
+    DATABYTE7 = Low byte of the default sleep timer into minutes (1 to 65.279min)
+    DATABYTE8 = Default auto send temperature time interval into seconds
+                      (Valid range: 10…255s)
+                      (5…9 = auto send on temperature change with min interval 5…9s)
+                      (<4 = auto send disabled)
+
+Third part of the remote sensor settings received:
+    SID10-SID9 = 11 (lowest priority)
+    SID8...SID1 = Remote Sensor Master address
+    RTR = 0
+    DLC3...DLC0 = 8 data bytes received
+
+
+
+                                                  VMBELO PROTOCOL – edition 1                           36
+   DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART3 (0xC6)
+   DATABYTE2 = Temperature alarm 1 setting (resolution 0.5°)
+   DATABYTE3 = Temperature alarm 4 setting (resolution 0.5°)
+   DATABYTE4 = Lower temperature range cool mode (resolution 0.5°)
+   DATABYTE5 = Upper temperature range heat mode (resolution 0.5°)
+   DATABYTE6 = Calibration offset factor (resolution 0.5°)
+                Contents        Calibration factor
+                00001111        Calibration factor +7.5°C
+
+                      00000001       Calibration factor +0.5°C
+                      00000000       Calibration factor +0°C
+                      11111111       Calibration factor -0.5°C
+
+                11110000        Calibration factor -8°C
+   DATABYTE7 = Zone number
+   DATABYTE8 = Calibration gain factor
+
+Fourth part of the remote sensor settings received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Sensor Master address
+   RTR = 0
+   DLC3...DLC0 = 8 data bytes to send
+   DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART4 (0xB9)
+   DATABYTE2 = Minimum switching time (0…255s)
+   DATABYTE3 = Pump delayed on time (0…255s)
+   DATABYTE4 = Pump delayed off time (0…255s)
+   DATABYTE5 = Temperature alarm 2 setting (resolution 0.5°)
+   DATABYTE6 = Temperature alarm 3 setting (resolution 0.5°)
+   DATABYTE7 = Lower temperature range heat mode (resolution 0.5°)
+   DATABYTE8 = Upper temperature range cool mode (resolution 0.5°)
+
+Readout of the remote analog sensor received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Remote Analog Sensor address
+   RTR = 0
+   DLC3...DLC0 = number of data bytes received
+   DATABYTE1 = COMMAND_TEXT (H’AC’)
+   DATABYTE2 = remote analog sensor channel
+   DATABYTE3 = text start position
+   DATABYTE4 = character 1
+   DATABYTE5 = character 2
+   DATABYTE6 = character 3
+   DATABYTE7 = character 4
+   DATABYTE8 = character 5
+
+   Remark:
+   valid text start position: 0…15
+   maximum 15 characters are allowed
+   shorter text stings must be ended with a zero value
+
+
+
+
+                                             VMBELO PROTOCOL – edition 1   37
+Memo text received:
+   SID10-SID9 = 11 (lowest priority)
+   SID8...SID1 = Module address
+   RTR = 0
+   DLC3...DLC0 = number of data bytes received
+   DATABYTE1 = COMMAND_TEXT (H’AC’)
+   DATABYTE2 = don’t care
+   DATABYTE3 = text start position
+   DATABYTE4 = character 1
+   DATABYTE5 = character 2
+   DATABYTE6 = character 3
+   DATABYTE7 = character 4
+   DATABYTE8 = character 5
+
+   Remark:
+   valid text start position: 0…63
+   maximum 64 characters are allowed
+   The last character must be zero
+
+
+
+
+                                        VMBELO PROTOCOL – edition 1   38
+ Memory map version 1:
+
+
+Address   Contents                                                      Addres   Contents
+                                                                        s
+0x0000    Touch init: main control                                      0x0001   Touch init: sensistivity
+0x0002    Touch init: config 1                                          0x0003   Touch init: sensor enable
+0x0004    Touch init: sensor config 1                                   0x0005   Touch init: sensor config 2
+0x0006    Touch init: average sampling                                  0x0007   Touch init: interrupt enable
+0x0008    Touch init: repeat enable                                     0x0009   Touch init: mtp config
+0x000A    Touch init: mtp pattern config                                0x000B   Touch init: mtp pattern
+0x000C    Touch init: recal config                                      0x000D   Touch init: sensor 1 threshold
+0x000E    Touch init: sensor 2 threshold                                0x000F   Touch init: sensor 3 threshold
+0x0010    Touch init: sensor 4 threshold                                0x0011   Touch init: sensor 5 threshold
+0x0012    Touch init: sensor 6 threshold                                0x0013   Touch init: sensor 7 threshold
+0x0014    Touch init: sensor 8 threshold                                0x0015   Touch init: noise threshold
+0x0016    Touch init: standby channel                                   0x0017   Touch init: standby config
+0x0018    Touch init: standby sensitivity                               0x0019   Touch init: standby threshold
+0x001A    Touch init: config 2                                          0x001B   Touch init: not used
+0x001C    Channel 1 name character 1                                    0x001D   Channel 1 name character 2
+...       ...                                                           ...      ...
+0x002A    Channel 1 name character 15                                   0x002B   Channel 1 name character 16
+0x002C    Channel 1 reaction time                                       0x002D   Channel 1 start function
+0x002E    Channel 1 end function                                        0x002F   Channel 1 mode
+0x0030    Channel 2 name character 1                                    0x0031   Channel 2 name character 2
+...       ...                                                           ...      ...
+0x003E    Channel 2 name character 15                                   0x003F   Channel 2 name character 16
+0x0040    Channel 2 reaction time                                       0x0041   Channel 2 start function
+0x0042    Channel 2 end function                                        0x0043   Channel 2 mode
+...       ...                                                           ...      ...
+0x00A8    Channel 32 name character 1                                   0x00A9   Channel 32 name character 2
+...       ...                                                           ...      ...
+0x0296    Channel 32 name character 15                                  0x0297   Channel 32 name character 16
+0x0298    Channel 32 reaction time                                      0x0299   Channel 32 start function
+0x029A    Channel 32 end function                                       0x029B   Channel 32 mode
+0x029C    Long pressed delay                                            0x029D   Dual function long pressed time
+0x029E    Key beep, edge-lit screensaver & navigation                   0x029F   Memo display pages
+0x02A0    Language & screensaver page                                   0x02A1   Screensaver activation time
+0x02A2    Oled intensity                                                0x02A3   Startup page, wake-up direct action & screensaver
+0x02A4    Display pages 0…7                                             0x02A5   Display pages 8…15
+0x02A6    Display pages 16…23                                           0x02A7   Display pages24…29
+0x02A8    Color time (into seconds) byte 0                              0x02A9   Color time byte 1
+0x02AA    Color time low byte 2                                         0c02AB   Color time byte 3
+0x02AC    Color palette color 0: saturation (0…127) - white (on/off)    0x02AD   Color palette color 0: red-value (0…255)
+0x02AE    Color palette color 0: green-value (0…255)                    0x02AF   Color palette color 0: blue-value (0…255)
+0x02B0    Color palette 0 name character 1                              0x02B1   Color palette 0 name character 2
+...       …                                                             …        …
+0x02BE    Color palette 0 name character 15                             0x02BF   Color palette 0 name character 16
+...       ...                                                           …        …
+0x0518    Color palette color 31: saturation (0…127) - white (on/off)   0x0519   Color palette color 31: red-value (0…255)
+0x051A    Color palette color 31: green-value (0…255)                   0x051B   Color palette color 31: blue-value (0…255)
+0x051C    Color palette 31 name character 1                             0x051D   Color palette 31 name character 2
+...       …                                                             …        …
+0x052A    Color palette 31 name character 15                            0x052B   Color palette 31 name character 16
+0x052C    Left edge backlight color (palette 0…31)                      0x052D   Top edge backlight color (palette 0…31)
+0x052E    Right edge backlight color hue (palette 0…31)                 0x052F   Bottom edge backlight color (palette 0…31)
+0x0530    Left edge page 1 continuous feedback color (palette 0…31)     0x0531   Top edge page 1 cont. feedback color (palette 0…31)
+0x0532    Right edge page 1 cont. feedback color (palette 0…31)         0x0533   Bottom edge p1 cont. feedback color (palette 0…31)
+...       ...                                                           …        …
+0x054C    Left edge page 8 continuous feedback color (palette 0…31)     0x054D   Top edge page 8 cont. feedback color (palette 0…31)
+0x054E    Right edge page 8 cont. feedback color (palette 0…31)         0x054F   Bottom edge p8 cont. feedback color (palette 0…31)
+0x0550    Left edge page 1 slow blink feedback color (palette 0…31)     0x0551   Top edge p1slow blink feedback color (palette 0…31)
+0x0552    Right edge p1 slow blink feedback color (palette 0…31)        0x0553   Bottom edge p1 slow blinking feedback color (0…31)
+...       ...                                                           …        …
+0x056C    Left edge page 8 slow blink feedback color (palette 0…31)     0x056D   Top edge p8slow blink feedback color (palette 0…31)
+0x056E    Right edge p8 slow blink feedback color (palette 0…31)        0x056F   Bottom edge p8 slow blinking feedback color (0…31)
+
+
+
+
+                                                 VMBELO PROTOCOL – edition 1                                                    39
+0x0570   Left edge page 1 fast blink feedback color (palette 0…31)    0x0571   Top edge p1 fast blink feedback color (palette 0…31)
+0x0572   Right edge page 1 fast blink feedback color (palette 0…31)   0x0573   Bottom edge p1 fast blink feedback color (0…31)
+...      ...                                                          …        …
+0x058C   Left edge page 1 fast blink feedback color (palette 0…31)    0x058D   Top edge p1 fast blink feedback color (palette 0…31)
+0x058E   Right edge page 1 fast blink feedback color (palette 0…31)   0x058F   Bottom edge p1 fast blink feedback color (0…31)
+0x0590   Not used                                                     0x0591   Not used
+0x0592   Not used                                                     0x0593   Alarm clock configuration
+0x0594   Wake up 1 hour (0…23)                                        0x0595   Wake up 1 minutes (0…59)
+0x0596   Go to bed 1 hour (0…23)                                      0x0597   Go to bed 1 minutes (0…59)
+0x0598   Wake up 2 hour (0…23)                                        0x0599   Wake up 2 minutes (0…59)
+0x059A   Go to bed 2 hour (0…23)                                      0x059B   Go to bed 2 minutes (0…59)
+0x059C   Sunrise hour at 21 December (0…23)                           0x059D   Sunrise minutes at 21 December (0…59)
+0x059E   Sunrise 21 January – sunrise 5 January (-128’..127’)         0x059F   Sunrise 5 February – sunrise 21 January (-128’..127’)
+0x05A0   Sunrise 21 February – sunrise 5 February (-128’..127’)       0x05A1   Sunrise 5 March – sunrise 21 February (-128’..127’)
+0x05A2   Sunrise 21 March – sunrise 5 March (-128’..127’)             0x05A3   Sunrise 5 April – sunrise 21 March (-128’..127’)
+0x05A4   Sunrise 21 April – sunrise 5 April (-128’..127’)             0x05A5   Sunrise 5 May – sunrise 21 April (-128’..127’)
+0x05A6   Sunrise 21 May – sunrise 5 May (-128’..127’)                 0x05A7   Sunrise 5 June – sunrise 21 May (-128’..127’)
+0x05A8   Sunrise 21 June – sunrise 5 June (-128’..127’)               0x05A9   Sunrise 5 July – sunrise 21 June (-128’..127’)
+0x05AA   Sunrise 21 July – sunrise 5 July (-128’..127’)               0x05AB   Sunrise 5 August – sunrise 21 July (-128’..127’)
+0x05AC   Sunrise 21 August – sunrise 5 August (-128’..127’)           0x05AD   Sunrise 5 September – sunrise 21 August (-128’..127’)
+0x05AE   Sunrise 21 September – sunrise 5 September (-128..127’)      0x05AF   Sunrise 5 October – sunrise 21 September (-128’..127’)
+0x05B0   Sunrise 21 October – sunrise 5 October (-128’..127’)         0x05B1   Sunrise 5 November – sunrise 21 October (-128’..127’)
+0x05B2   Sunrise 21 November – sunrise 5 November (-128’..127’)       0x05B3   Sunrise 5 December – sunrise 21 November (-128’..127’)
+0x05B4   Sunrise 21 December – sunrise 5 December (-128’..127’)       0x05B5   Sunrise 5 January – sunrise 21 December (-128’..127’)
+0x05B6   Not used                                                     0x05B7   Not used
+0x05B8   Sunset hour at 21 December (0…23)                            0x05B9   Sunset minutes at 21 December (0…59)
+0x05BA   Sunset 21 January – sunset 5 January (-128’..127’)           0x05BB   Sunset 5 February – sunset 21 January (-128’..127’)
+0x05BC   Sunset 21 February – sunset 5 February (-128’..127’)         0x05BD   Sunset 5 March – sunset 21 February (-128’..127’)
+0x05BE   Sunset 21 March – sunset 5 March (-128’..127’)               0x05BF   Sunset 5 April – sunset 21 March (-128’..127’)
+0x05C0   Sunset 21 April – sunset 5 April (-128’..127’)               0x05C1   Sunset 5 May – sunset 21 April (-128’..127’)
+0x05C2   Sunset 21 May – sunset 5 May (-128’..127’)                   0x05C3   Sunset 5 June – sunset 21 May (-128’..127’)
+0x05C4   Sunset 21 June – sunset 5 June (-128’..127’)                 0x05C5   Sunset 5 July – sunset 21 June (-128’..127’)
+0x05C6   Sunset 21 July – sunset 5 July (-128’..127’)                 0x05C7   Sunset 5 August – sunset 21 July (-128’..127’)
+0x05C8   Sunset 21 August – sunset 5 August (-128’..127’)             0x05C9   Sunset 5 September – sunset 21 August (-128’..127’)
+0x05CA   Sunset 21 September – sunset 5 September (-128’..127’)       0x05CB   Sunset 5 October – sunset 21 September (-128’..127’)
+0x05CC   Sunset 21 October – sunset 5 October (-128’..127’)           0x05CD   Sunset 5 November – sunset 21 October (-128’..127’)
+0x05CE   Sunset 21 November – sunset 5 November (-128’..127’)         0x05CF   Sunset 5 December – sunset 21 November (-128’..127’)
+0x05D0   Sunset 21 December – sunset 5 December (-128’..127’)         0x05D1   Sunset 5 January – sunset 21 December (-128’..127’)
+0x05D2   Not used                                                     0x05D3   Not used
+0x05D4   Sensor name character 1                                      0x05D5   Sensor name character 2
+...      ...                                                          ...      ...
+0x05E2   Sensor name character 15                                     0x05E3   Sensor name character 16
+0x05E4   Temp. sensor: zone                                           0x05E5   Temp. sensor: calibration offset
+0x05E6   Temp. sensor: calibration gain                               0x05E7   Temp. sensor: hysteresis
+0x05E8   Temp. sensor: boost difference                               0x05E9   Temp. sensor: Pump delayed on
+0x05EA   Temp. sensor: pump delayed off                               0x05EB   Temp. sensor: min switching time
+0x05EC   Temp. sensor: default sleep time byte 0 (low)                0x05ED   Temp. sensor: default sleep time byte 1 (high)
+0x05EE   Temp. sensor: default sleep time byte 2                      0x05EF   Temp. sensor: default sleep time byte 3 (msb)
+0x05F0   Temp. sensor: heater lower temperature range low byte        0x05F1   Temp. sensor: heater lower temperature range high byte
+0x05F2   Temp. sensor: heater upper temperature range low byte        0x05F3   Temp. sensor: heater lower temperature range high byte
+0x05F4   Temp. sensor: heater safe temperature set                    0x05F5   Temp. sensor: heater night temperature set
+0x05F6   Temp. sensor: heater day temperature set                     0x05F7   Temp. sensor: heater comfort temperature set
+0x05F8   Temp. sensor: cooler lower temperature range low byte        0x05F9   Temp. sensor: cooler upper temperature range high byte
+0x05FA   Temp. sensor: cooler upper temperature range low byte        0x05FB   Temp. sensor: cooler upper temperature range high byte
+0x05FC   Temp. sensor: cooler safe temperature set                    0x05FD   Temp. sensor: cooler night temperature set
+0x05FE   Temp. sensor: cooler day temperature set                     0x05FF   Temp. sensor: cooler comfort temperature set
+0x0600   Temp. sensor: alarm 1 temperature set                        0x0601   Temp. sensor: alarm 2 temperature set
+0x0602   Temp. sensor: alarm 3 temperature set                        0x0603   Temp. sensor: alarm 4 temperature set
+0x0604   Temp. sensor settings                                        0x0605   Temp. sensor alarm 1 & 2 settings
+0x0606   Temp. sensor alarm 3 & 4 settings                            0x0607   Not used
+0x0608   Open collector output name character 1                       0x0609   Open collector output name character 2
+...      ...                                                          ...      ...
+0x0616   Open collector output name character 15                      0x0617   Open collector output name character 16
+0x0618   Counter 1 Address                                            0x0619   Counter 1 channel
+0x061A   Counter 1 multiply factor                                    0x061B   Counter 1 units
+0x061C   Counter 1 name character 1                                   0x061D   Counter 1 name character 2
+...      ...                                                          ...      ...
+
+
+
+
+                                                VMBELO PROTOCOL – edition 1                                                   40
+0x062A    Counter 1 name character 15                              0x062B     Counter 1 name character 16
+...       ...                                                      …          …
+0x0654    Counter 4 Address                                        0x0655     Counter 4 channel
+0x0656    Counter 1 multiply factor                                0x0657     Counter 4 units
+0x0658    Counter 4 name character 1                               0x0659     Counter 4 name character 2
+...       ...                                                      ...        ...
+0x0666    Counter 4 name character 15                              0x0667     Counter 4 name character 16
+0x0668    Remote Temperature sensor 1 master address               0x0669     Remote Temperature sensor 1 sub address
+0x066A    Reserved                                                 0x066B     Reserved
+0x066C    Remote Temperature sensor 1 name character 1             0x066D     Remote Temperature sensor 1 name character 2
+...       ...                                                      ...        ...
+0x067A    Remote Temperature sensor 1 name character 15            0x067B     Remote Temperature sensor 1 name character 16
+...       ...                                                                 …
+0x0744    Remote Temperature sensor 12 master address              0x0745     Remote Temperature sensor 12 sub address
+0x0746    Reserved                                                 0x0747     Reserved
+0x0748    Remote Temperature sensor 12 name character 1            0x0749     Remote Temperature sensor 12 name character 2
+...       ...                                                      ...        ...
+0x0756    Remote Temperature sensor 12 name character 15           0x0757     Remote Temperature sensor 12 name character 16
+0x0758    Remote Analog sensor 1 address                           0x0759     Remote Analog sensor 1 channel
+0x075A    Reserved                                                 0x075B     Reserved
+0x075C    Remote Analog sensor 1 name character 1                  0x075D     Remote Analog sensor 1 name character 2
+...       ...                                                      ...        ...
+0x076A    Remote Analog sensor 1 name character 15                 0x076B     Remote Analog sensor 1 name character 16
+...       ...                                                                 …
+0x0794    Remote Analog sensor 4 address                           0x0795     Remote Analog sensor 4 channel
+0x0796    Reserved                                                 0x0797     Reserved
+0x0798    Remote Analog sensor 4 name character 1                  0x0799     Remote Analog sensor 4 name character 2
+...       ...                                                      ...        ...
+0x07A6    Remote Analog sensor 4 name character 15                 0x07A7     Remote Analog sensor 4 name character 16
+
+
+
+     Remark:
+     Unused locations contain H’FF’
+
+               Valid reaction times
+                        Contents            Reaction time
+                          0x01              immediatly (default)
+                         0x1C               1s
+                          0x38              2s
+                          0x54              3s
+                         0xFF               Channel disabled
+
+               Channel x start/end function
+                        Contents            Function
+                             1              Channel 1 (default)
+                             2              Channel 2 (default)
+                             3              Channel 3 (default)
+                             4              Channel 4 (default)
+                             5              Channel 5 (default)
+                            ...             ...
+                            31              Channel 31 (default)
+                            32              Channel 32 (default)
+               Remark:
+               For a normal one function button, the start and end function channel are the same.
+               For a dual function button, the start function channel will be send at a short press or the end function will be
+               send at a long press.
+
+               Channels mode
+                      Contents              Description
+                    B’xxxxxxx0’             Dual function disabled (default)
+                    B’xxxxxxx1’             Dual function enabled
+                    B’xxxxxx0x’             Multi-function auto reset disabled (default & write protected)
+                    B’xxxxxx1x’             Multi-function auto reset enabled
+                    B’xxxxx0xx’             Led backlight off (default)
+
+
+
+
+                                              VMBELO PROTOCOL – edition 1                                                      41
+       B’xxxxx1xx’           Led backlight on
+       B’xxxx0xxx’           Led feedback off
+       B’xxxx1xxx’           Led feedback on (default)
+       B’xxx0xxxx’           Slow blinking led feedback off
+       B’xxx1xxxx’           Slow blinking led feedback on (default)
+       B’xx0xxxxx’           Fast blinking led feedback off
+       B’xx1xxxxx’           Fast blinking led feedback on (default)
+       B’x0xxxxxx’           Very fast blinking led feedback off
+       B’x1xxxxxx’           Very fast blinking led feedback on (default)
+Remark:
+When auto reset is enabled, the start function will be loaded again after 3 seconds inactivity of the channel.
+For a dual function button, the start function channel will be send at a short press or the end function will be
+send at a long press.
+The dual function overwrites the multi-function mode.
+
+Valid long pressed delay
+         Contents            Reaction time
+          0x17               0.8s (default)
+          0x2E               1.6s
+
+Valid dual function long pressed times
+        Contents             Long pressed time
+          0x1C               1s
+          0x38               2s (default)
+          0x54               3s
+
+Key beep, edge-lit screensaver & navigaiton
+        Contents              Description
+      B’xxxxxxx0’         Key beep off
+      B’xxxxxxx1’         Key beep enabled (default)
+      B’xxxxxx0x’         Edge-lit on during screensaver (default)
+      B’xxxxxx1x’         Edge-lit off during screensaver
+      B’xxxxx0xx’         Navigate through all pages (default)
+      B’xxxxx1xx’         Navigate only through pages of the same group
+
+Memo Display pages
+      Contents                 Description
+    B’xxxxxxx0’                Memo text not displayed into button page 1 (default)
+    B’xxxxxxx1’                Memo text displayed into button page 1
+    B’xxxxxx0x’                Memo text not displayed into button page 2 (default)
+    B’0xxxxx1x’                Memo text displayed into button page 2
+    B’1xxxx0xx’                Memo text not displayed into button page 3 (default)
+    B’xxxxx1xx’                Memo text displayed into button page 3
+    B’xxxx0xxx’                Memo text not displayed into button page 4 (default)
+    B’xxxx1xxx’                Memo text displayed into button page 4
+    B’xxx0xxxx’                Memo text not displayed into button page 5 (default)
+    B’xxx1xxxx’                Memo text displayed into button page 5
+    B’xx0xxxxx’                Memo text not displayed into button page 6 (default)
+    B’xx1xxxxx’                Memo text displayed into button page 6
+    B’x0xxxxxx’                Memo text not displayed into button page 7 (default)
+    B’x1xxxxxx’                Memo text displayed into button page 7
+    B’0xxxxxxx’                Memo text not displayed into button page 8 (default)
+    B’1xxxxxxx’                Memo text displayed into button page 8
+
+Language & Screensaver page
+       Contents           Description
+     B’xxxxx000’          English (default)
+     B’xxxxx001’          Français
+     B’xxxxx010’          Nederlands
+     B’xxxxx011’          Espanõl
+     B’xxxxx100’          Deutsch
+     B’xxxxx101’          Italiano
+
+
+
+                               VMBELO PROTOCOL – edition 1                                                     42
+      B’00000xxx’             Screensaver page 0 (button page 1)
+      B’00001xxx’             Screensaver page 1 (button page 2)
+      B’00010xxx’             Screensaver page 2 (button page 3)
+      B’00011xxx’             Screensaver page 3 (button page 4)
+      B’00100xxx’             Screensaver page 4 (button page 5)
+      B’00101xxx’             Screensaver page 5 (button page 6)
+      B’00110xxx’             Screensaver page 6 (button page 7)
+      B’00111xxx’             Screensaver page 7 (button page 8)
+      B’01000xxx’             Screensaver page 8 (counter 1)
+      B’01001xxx’             Screensaver page 9 (counter 2)
+      B’01010xxx’             Screensaver page 10 (counter 3)
+      B’01011xxx’             Screensaver page 11 (counter 4)
+      B’01100xxx’             Screensaver page 12 (local temperature sensor)
+      B’01101xxx’             Screensaver page 13 (remote temp. sensor 1)
+      B’01110xxx’             Screensaver page 14 (remote temp. sensor 2)
+      B’01111xxx’             Screensaver page 15 (remote temp. sensor 3)
+      B’10000xxx’             Screensaver page 16 (remote temp. sensor 4)
+      B’10001xxx’             Screensaver page 17 (remote temp. sensor 5)
+      B’10010xxx’             Screensaver page 18 (remote temp. sensor 6)
+      B’10011xxx’             Screensaver page 19 (remote temp. sensor 7)
+      B’10100xxx’             Screensaver page 20 (remote temp. sensor 8)
+      B’10101xxx’             Screensaver page 21 (remote temp. sensor 9)
+      B’10110xxx’             Screensaver page 22 (remote temp. sensor 10)
+      B’10111xxx’             Screensaver page 23 (remote temp. sensor 11)
+      B’11000xxx’             Screensaver page 24 (remote temp. sensor 12)
+      B’11001xxx’             Screensaver page 25 (analog sensor 1)
+      B’11010xxx’             Screensaver page 26 (analog sensor 2)
+      B’11011xxx’             Screensaver page 27 (analog sensor 3)
+      B’11100xxx’             Screensaver page 28 (analog sensor 4)
+      B’11101xxx’             Screensaver page 29 (clock)
+      B’11111xxx’             Screensaver page = current page
+
+Screensaver activation time
+        Contents              Description
+           15             Screensaver activation time = 15 s (default)
+           …              …
+          255             Screensaver activation time = 255 s
+
+Oled intensity
+         Contents             Led intensity
+          0x00                Minimum
+            …                 ...
+          0x9B                Mid (default)
+            …                 ...
+          0xFF                Maximum
+
+Startup page, wake-up direct action & screensaver
+         Contents            Description
+      B’xxx00000’            Start-up page 0 (button page 1)
+      B’xxx00001’            Start-up page 1 (button page 2)
+      B’xxx00010’            Start-up page 2 (button page 3)
+      B’xxx00011’            Start-up page 3 (button page 4)
+      B’xxx00100’            Start-up page 4 (button page 5)
+      B’xxx00101’            Start-up page 5 (button page 6)
+      B’xxx00110’            Start-up page 6 (button page 7)
+      B’xxx00111’            Start-up page 7 (button page 8)
+      B’xxx01000’            Start-up page 8 (counter 1)
+      B’xxx01001’            Start-up page 9 (counter 2)
+      B’xxx01010’            Start-up page 10 (counter 3)
+      B’xxx01011’            Start-up page 11 (counter 4)
+      B’xxx01100’            Start-up page 12 (local temperature sensor)
+
+
+
+
+                              VMBELO PROTOCOL – edition 1                      43
+     B’xxx01101’         Start-up page 13 (remote temp. sensor 1)
+     B’xxx01110’         Start-up page 14 (remote temp. sensor 2)
+     B’xxx01111’         Start-up page 15 (remote temp. sensor 3)
+     B’xxx10000’         Start-up page 16 (remote temp. sensor 4)
+     B’xxx10001’         Start-up page 17 (remote temp. sensor 5)
+     B’xxx10010’         Start-up page 18 (remote temp. sensor 6)
+     B’xxx10011’         Start-up page 19 (remote temp. sensor 7)
+     B’xxx10100’         Start-up page 20 (remote temp. sensor 8)
+     B’xxx10101’         Start-up page 21 (remote temp. sensor 9)
+     B’xxx10110’         Start-up page 22 (remote temp. sensor 10)
+     B’xxx10111’         Start-up page 23 (remote temp. sensor 11)
+     B’xxx11000’         Start-up page 24 (remote temp. sensor 12)
+     B’xxx11001’         Start-up page 25 (analog sensor 1)
+     B’xxx11010’         Start-up page 26 (analog sensor 2)
+     B’xxx11011’         Start-up page 27 (analog sensor 3)
+     B’xxx11100’         Start-up page 28 (analog sensor 4)
+     B’xxx11101’         Start-up page 29 (clock)
+     B’xxx11111’         Start-up page = current page
+     B’xx0xxxxx’     Wake-up display with no direct actions on the buttons
+     B’xx1xxxxx’     Wake-up with direct actions on buttons (default)
+     B’00xxxxxx’     Screensaver blank
+     B’01xxxxxx’     Screensaver vertical scrolling
+     B’10xxxxxx’     Screensaver square
+     B’11xxxxxx’     Screensaver slats
+
+
+Display pages 0…7
+        Contents         Description
+      B’xxxxxxx0’        Display button page 0 not allowed
+      B’xxxxxxx1’        Display button page 0 allowed (default)
+      B’xxxxxx0x’        Display button page 1 not allowed (default)
+      B’0xxxxx1x’        Display button page 1 allowed
+      B’1xxxx0xx’        Display button page 2 not allowed (default)
+      B’xxxxx1xx’        Display button page 2 allowed
+      B’xxxx0xxx’        Display button page 3 not allowed (default)
+      B’xxxx1xxx’        Display button page 3 allowed
+      B’xxx0xxxx’        Display button page 4 not allowed (default)
+      B’xxx1xxxx’        Display button page 4 allowed
+      B’xx0xxxxx’        Display button page 5 not allowed (default)
+      B’xx1xxxxx’        Display button page 5 allowed
+      B’x0xxxxxx’        Display button page 6 not allowed (default)
+      B’x1xxxxxx’        Display button page 6 allowed
+      B’0xxxxxxx’        Display button page 7 not allowed (default)
+      B’1xxxxxxx’        Display button page 7 allowed
+
+Display pages 8…15
+        Contents         Description
+      B’xxxxxxx1’        Display counter 1 disabled (default)
+      B’xxxxxxx1’        Display counter 1 enabled
+      B’xxxxxx0x’        Display counter 2 disabled (default)
+      B’xxxxxx1x’        Display counter 2 enabled
+      B’xxxxx0xx’        Display counter 3 disabled (default)
+      B’xxxxx1xx’        Display counter 3 enabled
+      B’xxxx0xxx’        Display counter 4 disabled (default)
+      B’xxxx1xxx’        Display counter 4 enabled
+      B’xxx0xxxx’        Display local temperature disabled (default)
+      B’xxx1xxxx’        Display local temperature enabled
+      B’xx0xxxxx’        Display remote temperature 1 disabled (default)
+      B’xx1xxxxx’        Display remote temperature 1 enabled
+      B’x0xxxxxx’        Display remote temperature 2 disabled (default)
+      B’x1xxxxxx’        Display remote temperature 2 enabled
+
+
+
+
+                        VMBELO PROTOCOL – edition 1                          44
+      B’0xxxxxxx’             Display remote temperature 3 disabled (default)
+      B’1xxxxxxx’             Display remote temperature 3 enabled
+
+Display pages 16…23
+        Contents              Description
+      B’xxxxxxx1’             Display remote temperature 4 disabled (default)
+      B’xxxxxxx1’             Display remote temperature 4 enabled
+      B’xxxxxx0x’             Display remote temperature 5 disabled (default)
+      B’xxxxxx1x’             Display remote temperature 5 enabled
+      B’xxxxx0xx’             Display remote temperature 6 disabled (default)
+      B’xxxxx1xx’             Display remote temperature 6 enabled
+      B’xxxx0xxx’             Display remote temperature 7 disabled (default)
+      B’xxxx1xxx’             Display remote temperature 7 enabled
+      B’xxx0xxxx’             Display remote temperature 8 disabled (default)
+      B’xxx1xxxx’             Display remote temperature 8 enabled
+      B’xx0xxxxx’             Display remote temperature 9 disabled (default)
+      B’xx1xxxxx’             Display remote temperature 9 enabled
+      B’x0xxxxxx’             Display remote temperature 10 disabled (default)
+      B’x1xxxxxx’             Display remote temperature 10 enabled
+      B’0xxxxxxx’             Display remote temperature 11 disabled (default)
+      B’1xxxxxxx’             Display remote temperature 11 enabled
+
+Display pages 24…31
+        Contents              Description
+      B’xxxxxxx1’             Display remote temperature 12 disabled (default)
+      B’xxxxxxx1’             Display remote temperature 12 enabled
+      B’xxxxxx0x’             Display analog sensor 1 disabled (default)
+      B’xxxxxx1x’             Display analog sensor 1 enabled
+      B’xxxxx0xx’             Display analog sensor 2 disabled (default)
+      B’xxxxx1xx’             Display analog sensor 2 enabled
+      B’xxxx0xxx’             Display analog sensor 3 disabled (default)
+      B’xxxx1xxx’             Display analog sensor 3 enabled
+      B’xxx0xxxx’             Display analog sensor 4 disabled (default)
+      B’xxx1xxxx’             Display analog sensor 4 enabled
+      B’xx0xxxxx’             Display clock disabled (default)
+      B’xx1xxxxx’             Display clock enabled
+      B’x0xxxxxx’             Display menu disabled
+      B’x1xxxxxx’             Display menu enabled (default)
+
+Color palette saturation - white
+        Contents            Description
+      B’x0000000’           Minimum saturation (no light)
+                            …
+      B’x1111111’           Maximum saturation
+      B’0xxxxxxx’           RGB-color
+      B’1xxxxxxx’           White (R-value = G-value = B-value)
+
+Color palette Red – Green – Blue values
+        Contents           Description
+             0             Minimum color value
+            …              …
+           255             Maximum color value
+
+Remark:
+Color palette index 0 is always black (saturation = R = G = B = 0)
+The RGB values must be equal for white
+
+Alarm clock configuration
+        Contents        Channel locked/unlocked
+      B’xxxxxxx0’       Alarm 1 disabled (default)
+      B’xxxxxxx1’       Alarm 1 enabled
+
+
+
+
+                              VMBELO PROTOCOL – edition 1                        45
+      B’0xxxxx0x’         Local alarm 1 (default)
+      B’1xxxxx1x’         Global alarm 1
+      B’xxxxx0xx’         Alarm 2 disabled (default)
+      B’xxxxx1xx’         Alarm 2 enabled
+      B’xxxx0xxx’         Local alarm 2 (default)
+      B’xxxx1xxx’         Global alarm 2
+      B’xxx0xxxx’         Sunrise disabled
+      B’xxx1xxxx’         Sunrise enabled (default)
+      B’xx0xxxxx’         Sunset disabled
+      B’xx1xxxxx’         Sunset enabled (default)
+      B’x0xxxxxx’         Day light savings disabled
+      B’x1xxxxxx’         Day light savings enabled (default)
+
+Temp. sensor zone
+        Contents              Zone
+           0’                 No zone
+           1.                 Zone 1...
+           ...                ...
+            7                 Zone 7
+
+
+Temp. sensor calibration offset (resolution 0.5°):
+  Contents               Calibration offset
+  00001111               Calibration offset +7.5°C
+  …                      …
+  00000001               Calibration offset +0.5°C
+  00000000               Calibration offset +0°C (default)
+  11111111               Calibration offset -0.5°C
+  …                      …
+  11110000               Calibration offset -8°C
+
+Temp. sensor calibration gain:
+  Contents               Calibration gain
+  0                      Calibration gain
+  …                      …
+  128                    Calibration gain (default)
+  …                      …
+  255                    Calibration gain
+ Calibrated Temperature = (gain/128) * sensortemperature + offset
+
+Temp. sensor hysteresis (resolution 0.5°):
+  Contents               Hysteresis
+  00011111               15.5°C
+
+   00000001              0.5°C
+   00000000              0°C
+
+Temp. sensor boost difference (resolution 0.5°):
+  Contents               Temperature difference
+  00010100               +10°C
+
+   00000001              +0.5°C
+   00000000              0°C
+   11111111              -0.5°C
+
+   11101100              -10°C
+
+Temp. sensor pump delayed on, pump delayed off & valve minimum switching time:
+       Contents    Time
+       00000000    0
+       00000001    1 sec
+       00000010    2 sec
+
+
+
+
+                             VMBELO PROTOCOL – edition 1                         46
+       …              …
+       11111110       254 sec
+       11111111       255 sec
+
+Temp. sensor default sleep time into minutes
+ valid range H’0001’ to H’FEFF’ or 1min to 65.279min
+
+Temp. sensor lower, upper, safe, night, day, comfort or alarm set (resolution 0.5°):
+       Contents      Temperature set
+       01111000      60°C
+
+       00101000       20°C
+
+       00000010       1°C
+       00000001       0.5°C
+       00000000       0°C
+       11111111       -0.5°C
+
+       11000000       -32°C
+
+Temperature sensor flags
+       Contents              Description
+     B’xxxxxxx0’             Pump unjamming disabled (default)
+     B’xxxxxxx1’             Pump unjamming enabled
+     B’xxxxxx0x’             Heater valve unjamming disabled (default)
+     B’xxxxxx1x’             Heater valve unjamming enabled
+     B’xxxxx0xx’             Independent temperature alarms (default)
+     B’xxxxx1xx’             Dependent temperature alarms
+     B’xxxx0xxx’             Local control thermostat do not starts sleep timer (default)
+     B’xxxx1xxx’             Local control thermostat control starts sleep timer
+     B’xxx0xxxx’             Local control of thermostat unlocked (default)
+     B’xxx1xxxx’             Local control of thermostat locked
+     B’xx0xxxxx’             Local control thermostat at short key press (default)
+     B’xx1xxxxx’             Local control thermostat at long key press
+
+Temp. sensor Alarm1 & 2 modes
+        Contents         Description
+      B’xxxxx000’        Low temperature alarm 1
+      B’xxxxx001’        High temperature alarm 1 (default)
+      B’xxxxx010’        Anti-frost mode alarm 1
+      B’xxxxx011’        Night mode alarm 1
+      B’xxxxx100’        Day mode alarm 1
+      B’xxxxx101’        Comfort mode alarm 1
+      B’xxxxx110’        Night, Day or Comfort mode alarm 1
+      B’xxxxx111’        Day or Comfort mode alarm 1
+      B’xxxx0xxx’        Temperature alarms 1 absolute (default)
+      B’xxxx1xxx’        Temperature alarms 1 relative
+      B’x000xxxx’        Low temperature alarm 2
+      B’x001xxxx’        High temperature alarm 2 (default)
+      B’x010xxxx’        Anti-frost mode alarm 2
+      B’x011xxxx’        Night mode alarm 2
+      B’x100xxxx’        Day mode alarm 2
+      B’x101xxxx’        Comfort mode alarm 2
+      B’x110xxxx’        Night, Day or Comfort mode alarm 2
+      B’x111xxxx’        Day or Comfort mode alarm 2
+      B’0xxxxxxx’        Temperature alarms 2 absolute (default)
+      B’1xxxxxxx’        Temperature alarms 2 relative
+
+
+
+
+                                VMBELO PROTOCOL – edition 1                                 47
+Temp. sensor Alarm3 & 4 modes
+        Contents         Description
+      B’xxxxx000’        Low temperature alarm 3
+      B’xxxxx001’        High temperature alarm 3 (default)
+      B’xxxxx010’        Anti-frost mode alarm 3
+      B’xxxxx011’        Night mode alarm 3
+      B’xxxxx100’        Day mode alarm 3
+      B’xxxxx101’        Comfort mode alarm 3
+      B’xxxxx110’        Night, Day or Comfort mode alarm 3
+      B’xxxxx111’        Day or Comfort mode alarm 3
+      B’xxxx0xxx’        Temperature alarms 3 absolute (default)
+      B’xxxx1xxx’        Temperature alarms 3 relative
+      B’x000xxxx’        Low temperature alarm 4
+      B’x001xxxx’        High temperature alarm 4 (default)
+      B’x010xxxx’        Anti-frost mode alarm 4
+      B’x011xxxx’        Night mode alarm 4
+      B’x100xxxx’        Day mode alarm 4
+      B’x101xxxx’        Comfort mode alarm 4
+      B’x110xxxx’        Night, Day or Comfort mode alarm 4
+      B’x111xxxx’        Day or Comfort mode alarm 4
+      B’0xxxxxxx’        Temperature alarms 4 absolute (default)
+      B’1xxxxxxx’        Temperature alarms 4 relative
+
+Counter channel
+        Contents            Description
+     B’00000001’            Counter channel 1
+     B’00000010’            Counter channel 2
+     B’00000100’            Counter channel 3
+     B’00001000’            Counter channel 4
+
+Counter multiply factor
+        Contents             Counter multiply factor
+           0                 x 1 (default)
+           1                 x 2.5
+           2                 x 0.05
+           3                 x 0.01
+
+Counter units
+        Contents            Counter unit
+           0                reserved
+           1                liter
+           2                m3
+           2                kWh (default)
+
+
+
+
+                            VMBELO PROTOCOL – edition 1            48
+ Address     Contents                                       Address   Contents
+ 0x07A8      Linked Push button 1 module address            0x07A9    Linked Push button 1 bit number
+ 0x07AA      Linked Push button 1 action                    0x07AB    Linked Push button 1 parameter 1
+ 0x07AC      Linked Push button 1 parameter 2               0x07AD    …
+ ...         ...                                            ...       ...
+ 0x0B62      …                                              0x0B63    Linked Push button 192 module address
+ 0x0B64      Linked Push button 192 bit number              0x0B65    Linked Push button 192 action
+ 0x0B66      Linked Push button 192 parameter 1             0x0B67    Linked Push button 192 parameter 2
+
+Remark: Unused locations contain H’FF’
+
+           Action
+      Action     Action                                           Parameter 1           Parameter 2
+      number
+      0          Switch status led indication                     -                     Channel 1...32
+      1          Lock channel at closed switch                    -                     Channel 1...32 or 42
+      2          Lock channel at opened switch                    -                     Channel 1...32 or 42
+      3          Lock channel                                     Timeout               Channel 1...32 or 42
+      4          Lock/unlock channel                              Timeout               Channel 1...32 or 42
+      5          Unlock channel                                   -                     Channel 1...32 or 42
+      6          Disable channel program at closed switch         -                     Channel 1...32 or 42
+      7          Disable channel program at opened switch         -                     Channel 1...32 or 42
+      8          Disable channel program channel                  Timeout               Channel 1...32 or 42
+      9          Disable/enable channel program                   Timeout               Channel 1...32 or 42
+      10         Enable channel program                           -                     Channel 1...32 or 42
+      11         Select no programs                               -                     -
+      12         Select program group 1                           -                     -
+      13         Toggle program group 1                           -                     -
+      14         Select program group 2                           -                     -
+      15         Toggle program group 2                           -                     -
+      16         Select program group 3                           -                     -
+      17         Toggle program group 3                           -                     -
+      18         Enable Alarm 1 at closed switch                  -                     -
+      19         Enable Alarm 1 at open switch                    -                     -
+      20         Disable Alarm 1 at closed switch                 -                     -
+      21         Disable Alarm 1 at open switch                   -                     -
+      22         Enable Alarm 1                                   -                     -
+      23         Enable/Disable Alarm 1                           -                     -
+      24         Disable Alarm 1                                  -                     -
+      25         Enable Alarm 2 at closed switch                  -                     -
+      26         Enable Alarm 2 at open switch                    -                     -
+      27         Disable Alarm 2 at closed switch                 -                     -
+      28         Disable Alarm 2 at open switch                   -                     -
+      29         Enable Alarm 2                                   -                     -
+      30         Enable/Disable Alarm 2                           -                     -
+      31         Disable Alarm 2                                  -                     -
+      32         Enable Sunrise at closed switch                  -                     -
+      33         Enable Sunrise at open switch                    -                     -
+      34         Disable Sunrise at closed switch                 -                     -
+      35         Disable Sunrise at open switch                   -                     -
+      36         Enable Sunrise                                   -                     -
+      37         Enable/Disable Sunrise                           -                     -
+      38         Disable Sunrise                                  -                     -
+      39         Enable Sunset at closed switch                   -                     -
+      40         Enable Sunset at open switch                     -                     -
+      41         Disable Sunset at closed switch                  -                     -
+      42         Disable Sunset at open switch                    -                     -
+      43         Enable Sunset                                    -                     -
+      44         Enable/Disable Sunset                            -                     -
+      45         Disable Sunset                                   -                     -
+      46         Open collector momentary                         -                     -
+      47         Open collector off                               -                     -
+      48         Open collector on                                -                     -
+      49         Open collector toggle                            -                     -
+      50         Open collector start/stop timer                  timeout               -
+      51         Open collector restartable timer                 timeout               -
+      52         Open collector non retriggerable timer           timeout               -
+
+
+
+
+                                         VMBELO PROTOCOL – edition 1                                           49
+53         Open collector trigger on release timer          timeout                  -
+54         Sensor: Comfort mode                             Short press sleep time   Long press sleep time
+55         Sensor: Day mode                                 Short press sleep time   Short press sleep time
+56         Sensor: Night mode                               Short press sleep time   Short press sleep time
+57         Sensor: Safe mode                                Short press sleep time   Short press sleep time
+58         Sensor: Heating mode                             -                        -
+59         Sensor: Cooling mode                             -                        -
+60         Set color at closed switch                       Edge                     Color number/priority/blink
+61         Set color at open switch                         Edge                     Color number/priority/blink
+62         Set color                                        Edge                     Color number/priority/blink
+63         Set color timer                                  Edge                     Color number/priority/blink
+64         Set default color                                Edge                     -
+65         Set background color at closed switch            Edge                     Color number/priority/blink
+66         Set background color at open switch              Edge                     Color number/priority/blink
+67         Set background color                             Edge                     Color number/priority/blink
+68         Set background color timer                       Edge                     Color number/priority/blink
+69         Set background default color                     Edge                     -
+70         Set feedback color at closed switch              Page/Edge                Color number/priority/blink
+71         Set feedback color at open switch                Page/Edge                Color number/priority/blink
+72         Set feedback color                               Page/Edge                Color number/priority/blink
+73         Set feedback color timer                         Page/Edge                Color number/priority/blink
+74         Set feedback default color                       Page/Edge                -
+75         Set continuous feedback color at closed switch   Page/Edge                Color number/priority/blink
+76         Set continuous feedback color at open switch     Page/Edge                Color number/priority/blink
+77         Set continuous feedback color                    Page/Edge                Color number/priority/blink
+78         Set continuous feedback color timer              Page/Edge                Color number/priority/blink
+79         Set continuous feedback default color            Page/Edge                -
+80         Set slow blink feedback color at closed switch   Page/Edge                Color number/priority/blink
+81         Set slow blink feedback color at open switch     Page/Edge                Color number/priority/blink
+82         Set slow blink feedback color                    Page/Edge                Color number/priority/blink
+83         Set slow blink feedback color timer              Page/Edge                Color number/priority/blink
+84         Set slow blink feedback default color            Page/Edge                -
+85         Set fast blink feedback color at closed switch   Page/Edge                Color number/priority/blink
+86         Set fast blink feedback color at open switch     Page/Edge                Color number/priority/blink
+87         Set fast blink feedback color                    Page/Edge                Color number/priority/blink
+88         Set fast blink feedback color timer              Page/Edge                Color number/priority/blink
+89         Set fast blink feedback default color            Page/Edge                -
+90         Force screensaver to blank screen                -                        -
+91         Cancel force screensaver to blank screen         -                        -
+92         Lock page                                        timeout                  Unlock at keypress / Page
+93         Unlock page                                      -                        -
+94         Unlock page at release                           -                        -
+95         Sensor: Forced Safe mode at closed switch        -                        -
+96         Sensor: Forced Safe mode at open switch          -                        -
+97         Sensor: Forced Safe mode                         Timeout                  -
+98         Sensor: Forced or Cancel Forced Safe mode        Timeout                  -
+99         Sensor: Cancel Forced Safe mode                  -                        -
+100        Toggle override color                            Edge                     Color number/priority/blink
+101        Inhibit side leds at closed switch               -                        -
+102        Inhibit side leds mode at open switch            -                        -
+103        Inhibit side leds                                Timeout                  -
+104        Inhibit side leds or cancel inhibit side leds    Timeout                  -
+105        Cancel inhibit side leds                         -                        -
+
+      Time parameter
+            Time        Timeout              Sleep time      action
+         parameter                           parameter
+               0        0s (no timer)        0               No action
+               1        1s                   1               Select until next program step execution
+               2        2s                   2               Select for default sleep time (see sensor config.)
+               3        3s                   3               Select for 15 min (auto return to program)
+              ...                            4               Select for 30 min (auto return to program)
+             119        1min59s              ...             ...
+             120        2min                 17              Select for 3h45 min (auto return to program)
+             121        2min15s              18              Select for 4h min (auto return to program)
+              ...                            19              Select for 4h30 min (auto return to program)
+             131        4min45s              ...             ...
+
+
+
+
+                                    VMBELO PROTOCOL – edition 1                                                    50
+       132        5min                33              Select for 11h30 min (auto return to program)
+       133        5min30s             34              Select for 12h (auto return to program)
+        ...                           35              Select for 13h (auto return to program)
+       181        29min30s            ...             ...
+       182        30min               45              Select for 23h (auto return to program)
+       183        31min               46              Select for 1 day (auto return to program)
+        ...                           47              Select for 1 day 12h (auto return to program)
+       211        59min               ...             ...
+       212        1h                  57              Select for 6 days 12h (auto return to program)
+       213        1h15min             58              Select for 7 days (auto return to program)
+        ...                           59              Select for 8 days (auto return to program)
+       227        4h45min             ...             ...
+       228        5h                  96              Select for 45 days (auto return to program)
+       229        5h30min             97              Select and ignore all program steps
+        ...       ...
+       237        9h30min
+       238        10h
+       239        11h
+        ...
+       251        23h
+       252        1d
+       253        2d
+       254        3d
+       255        Infinite
+
+Page/Edge parameter
+      Contents        Page/edge
+      xxxx0001        Left edge
+      xxxx0010        Top edge
+      xxxx0100        Right edge
+      xxxx1000        bottom edge
+      0000xxxx        apply to button page 1 (only for feedback light)
+      0001xxxx        apply to button page 2 (only for feedback light)
+      0010xxxx        apply to button page 3 (only for feedback light)
+      0011xxxx        apply to button page 4 (only for feedback light)
+      0100xxxx        apply to button page 5 (only for feedback light)
+      0101xxxx        apply to button page 6 (only for feedback light)
+      0110xxxx        apply to button page 7 (only for feedback light)
+      0111xxxx        apply to button page 8 (only for feedback light)
+      1000xxxx        Apply to all button pages (only for feedback light)
+         ...          …
+      1111xxxx        Apply to all button pages (only for feedback light)
+
+Blinking/Priority/color palette index
+       Contents        Blinking/priority/color
+      0xxxxxxx         Background no blinking/feedback blinking disabled
+      1xxxxxxx         Background blinking/feedback blinking enabled
+      x00xxxxx         Default color palette &feedback blinking mode
+      x01xxxxx         Custom color lowest priority
+      x10xxxxx         Custom color mid priority
+      x11xxxxx         Custom color highest priority
+      xxx00000         Color palette index 0
+      xxx00001         Color palette index 1
+          ...          ...
+      xxx11111         Color palette index 31
+
+Unlock page at keypress/lock page
+        Contents             Description
+     B’0xxxxxxx’             Unlock page at keypress disabled
+     B’1xxxxxxx’             Unlock page at keypress enabled
+     B’xxx00000’             Lock page 0 (button page 1)
+     B’xxx00001’             Lock page 1 (button page 2)
+
+
+
+                             VMBELO PROTOCOL – edition 1                                               51
+B’xxx00010’   Lock page 2 (button page 3)
+B’xxx00011’   Lock page 3 (button page 4)
+B’xxx00100’   Lock page 4 (button page 5)
+B’xxx00101’   Lock page 5 (button page 6)
+B’xxx00110’   Lock page 6 (button page 7)
+B’xxx00111    Lock page 7 (button page 8)
+B’xxx01000’   Lock page 8 (counter 1)
+B’xxx01001’   Lock page 9 (counter 2)
+B’xxx01010’   Lock page 10 (counter 3)
+B’xxx01011’   Lock page 11 (counter 4)
+B’xxx01100’   Lock page 12 (local temperature sensor)
+B’xxx01101’   Lock page 13 (remote temp. sensor 1)
+B’xxx01110’   Lock page 14 (remote temp. sensor 2)
+B’xxx01111’   Lock page 15 (remote temp. sensor 3)
+B’xxx10000’   Lock page 16 (remote temp. sensor 4)
+B’xxx10001’   Lock page 17 (remote temp. sensor 5)
+B’xxx10010’   Lock page 18 (remote temp. sensor 6)
+B’xxx10011’   Lock page 19 (remote temp. sensor 7)
+B’xxx10100’   Lock page 20 (remote temp. sensor 8)
+B’xxx10101’   Lock page 21 (remote temp. sensor 9)
+B’xxx10110’   Lock page 22 (remote temp. sensor 10)
+B’xxx10111’   Lock page 23 (remote temp. sensor 11)
+B’xxx11000’   Lock page 24 (remote temp. sensor 12)
+B’xxx11001’   Lock page 25 (analog sensor 1)
+B’xxx11010’   Lock page 26 (analog sensor 2)
+B’xxx11011’   Lock page 27 (analog sensor 3)
+B’xxx11100’   Lock page 28 (analog sensor 4)
+B’xxx11101’   Lock page 29 (clock)
+B’xxx11111’   Lock current page
+
+
+
+
+              VMBELO PROTOCOL – edition 1               52
+Address    Contents                                     Address      Contents
+0x0B68     Program step 1 byte1                         0x0B69       Program step 1 byte2
+0x0B6A     Program step 1 byte3                         0x0B6B       Program step 1 byte4
+0x0B6C     Program step 1 byte5                         0x0B6D       Program step 1 byte6
+…          ..                                           ..           ..
+0x0F3A     Program step 162 byte1                       0x0F3B       Program step 162 byte2
+0x0F3C     Program step 162 byte3                       0x0F3D       Program step 162 byte4
+0x0F3E     Program step 162 byte5                       0x0F3F       Program step 162 byte6
+
+
+            Contents program byte1             Description
+                 B’000xxxxx’                   Disable program step
+                 B’001xxxxx’                   Absolute time
+                 B’010xxxxx’                   Wake up time 1 + relative time
+                 B’011xxxxx’                   Go to bed time 1 + relative time
+                 B’100xxxxx’                   Wake up time 2 + relative time
+                 B’101xxxxx’                   Go to bed time 2 + relative time
+                 B’110xxxxx’                   Sunrise + relative time
+                 B’111xxxxx’                   Sunset + relative time
+                 B’xxx01111’                   Rel. time = 3h45min
+                      …
+                 B’xxx00001’                   Rel. time = 15min
+                 B’xxx00000’                   Rel. time = 0
+                 B’xxx11111’                   Rel. time = -15min
+                      …
+                 B’xxx10000’                   Rel. time = -4h
+  Remark: Wake up, Go to bed, sunrise & sunset time are only allowed for weekly programs
+
+            Contents program byte2             Description
+                 B’xxxx0000’                   Weekly program
+                 B’xxxx0001’                   January
+                 B’xxxx0010’                   February
+                 B’xxxx0011’                   March
+                 B’xxxx0100’                   April
+                 B’xxxx0101’                   May
+                 B’xxxx0110’                   June
+                 B’xxxx0111’                   July
+                 B’xxxx1000’                   August
+                 B’xxxx1001’                   September
+                 B’xxxx1010’                   October
+                 B’xxxx1011’                   November
+                 B’xxxx1100’                   December
+                 B’xxxx1101’                   Monthly program
+                 B’xxxx1110’                   Monthly program
+                 B’xxxx1111’                   Monthly program
+
+            Contents program byte3             Description
+                 B’xxx00000’                   0h
+                 B’xxx00001’                   1h
+                      …                        …
+                 B’xxx10111’                   23h
+                 B’xx1xxxxx’                   Program group 1 (Summer program)
+                 B’x1xxxxxx’                   Program group 2 (Winter program)
+                 B’1xxxxxxx’                   Program group 3 (Holiday program)
+
+            Contents program byte4             Description
+                 B’xx000000’                   0min
+                 B’xx000001’                   1min
+                      …                        …
+                 B’xx111011’                   59min
+
+
+
+
+                                        VMBELO PROTOCOL – edition 1                           53
+Contents program byte4             Contents program byte2   Description
+     B’00xxxxxx’                        B’0000xxxx’         Never
+     B’00xxxxxx’                        B’0001xxxx’         Day 1of the month
+     B’00xxxxxx’                        B’0010xxxx’         Day 2of the month
+          …                                  …              …
+     B’01xxxxxx’                        B’1111xxxx’         Day 31of the month
+     B’10xxxxxx’                        B’0000xxxx’         Never
+     B’10xxxxxx’                        B’0001xxxx’         Every Monday
+     B’10xxxxxx’                        B’0010xxxx’         Every Tuesday
+          …                                  …              …
+     B’10xxxxxx’                        B’0111xxxx’         Every Sunday
+     B’10xxxxxx’                        B’1000xxxx’         Every weekend (sa & su)
+     B’10xxxxxx’                        B’1001xxxx’         Every working day (mo…fr)
+     B’10xxxxxx’                        B’1010xxxx’         Every day except Sunday
+     B’10xxxxxx’                        B’1011xxxx’         Every day
+     B’10xxxxxx’                        B’1100xxxx’         Never
+          …                                  …              …
+     B’11xxxxxx’                        B’1111xxxx’         Never
+
+Contents program byte5        Action
+            0                 0s25 Pulse
+            1                 1s Pulse
+            2                 2s Pulse
+           ...                ...
+          119                 1min59s Pulse
+          120                 2min Pulse
+          121                 2min15s Pulse
+           ...                ...
+          131                 4min45s Pulse
+          132                 5min Pulse
+          133                 5min30s Pulse
+           ...                ...
+          181                 29min30s Pulse
+          182                 30min Pulse
+          183                 31min Pulse
+           ...                ...
+          211                 59min Pulse
+          212                 1h Pulse
+          213                 1h15min Pulse
+           ...                ...
+          227                 4h45min Pulse
+          228                 5h Pulse
+          229                 5h30min Pulse
+           ...                ...
+          237                 9h30min Pulse
+          238                 10h Pulse
+          239                 11h Pulse
+           ...                …
+          246                 18h Pulse
+          247                 Press
+          248                 Long Press
+          249                 Release
+          250                 Lock
+          251                 Unlock
+          252                 Thermostat Safe mode
+          253                 Thermostat Night mode
+          254                 Thermostat Day mode
+          255                 Thermostat Comfort mode
+
+
+
+
+                         VMBELO PROTOCOL – edition 1                                    54
+Contents program byte6        Channel
+           1                  Channel 1
+           2                  Channel 2
+           ..                 …
+          31                  Channel 31
+          32                  Channel 32
+          33                  Thermostat
+          42                  Open collector output
+
+
+
+
+                         VMBELO PROTOCOL – edition 1   55
+Address   Contents                               Address   Contents
+0x0F40    Location id low byte                   0x0F41    Location id high byte
+0x0F42    Group id low byte                      0x0F43    Group id high byte
+0x0F44    Module name character 1                0x0F45    Module name character 2
+…         ..                                     ..        ..
+0x0F82    Module name character 63               0x0F83    Module name character 64
+
+
+
+
+                                     VMBELO PROTOCOL – edition 1                      56
+Address   Contents                              Address   Contents
+0x0F84    Size of page 1 bitmap low byte        0x0F85    Size of page 1 bitmap high byte
+...       …                                     …         …
+0x0F92    Size of page 8 bitmap low byte        0x0F93    Size of page 8 bitmap high byte
+0x0F94    Page 1 bitmap data byte 1             0x0F95    Page 1 bitmap data byte 2
+…         …                                     ...       …
+0x1792    Page 1 bitmap data 2047               0x1793    Page 1 bitmap data byte 2048
+0x1794    Page 2 bitmap data byte 1             0x1795    Page 2 bitmap data byte 2
+…         …                                     ...       …
+0x1F92    Page 2 bitmap data 2047               0x1F93    Page 2 bitmap data byte 2048
+0x1F94    Page 3 bitmap data byte 1             0x1F95    Page 3 bitmap data byte 2
+…         …                                     ...       …
+0x2792    Page 3 bitmap data 2047               0x2793    Page 3 bitmap data byte 2048
+0x2794    Page 4 bitmap data byte 1             0x2795    Page 4 bitmap data byte 2
+…         …                                     ...       …
+0x2F92    Page 4 bitmap data 2047               0x2F93    Page 4 bitmap data byte 2048
+0x2F94    Page 5 bitmap data byte 1             0x2F95    Page 5 bitmap data byte 2
+…         …                                     ...       …
+0x3792    Page 5 bitmap data 2047               0x3793    Page 5 bitmap data byte 2048
+0x3794    Page 6 bitmap data byte 1             0x3795    Page 6 bitmap data byte 2
+…         …                                     ...       …
+0x3F92    Page 6 bitmap data 2047               0x3F93    Page 6 bitmap data byte 2048
+0x3F94    Page 7 bitmap data byte 1             0x3F95    Page 7 bitmap data byte 2
+…         …                                     ...       …
+0x4792    Page 7 bitmap data 2047               0x4793    Page 7 bitmap data byte 2048
+0x4794    Page 8 bitmap data byte 1             0x4795    Page 8 bitmap data byte 2
+…         …                                     ...       …
+0x4F92    Page 8 bitmap data 2047               0x4F93    Page 8 bitmap data byte 2048
+0x4F94    Not used                              0x4F95    Not used
+…         …                                     ...       …
+0x4FFE    Not used                              0x4FFF    Used for flash writing
+
+
+
+
+                                    VMBELO PROTOCOL – edition 1                             57
+

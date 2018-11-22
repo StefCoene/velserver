@@ -5,7 +5,7 @@
 
 
 
-             VMB4DC PROTOCOL – edition 6   1
+             VMB4DC PROTOCOL – edition 8   1
 Binairy format:
 
 <SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-ACK-ACKDEL-
@@ -69,7 +69,7 @@ The dimmer module can receive the following commands:
 
 
 
-                                            VMB4DC PROTOCOL – edition 6                          2
+                                            VMB4DC PROTOCOL – edition 8                          2
      Clear Push button Led
      Module type request
      Bus error counter status request
@@ -133,7 +133,7 @@ Transmit: Sets LEDs on a push button module:
 
 
 
-                                            VMB4DC PROTOCOL – edition 6                                       3
+                                            VMB4DC PROTOCOL – edition 8                                       3
 Transmit: Blinks LEDs slowly on a push button module:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address of the push button module for slowly blinking LEDs
@@ -200,7 +200,7 @@ Transmits the module type:
 
 
 
-                                            VMB4DC PROTOCOL – edition 6          4
+                                            VMB4DC PROTOCOL – edition 8          4
 Transmit: Bus error counter status
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address of the module
@@ -211,18 +211,18 @@ Transmits the module type:
     DATABYTE3 = Receive error counter
     DATABYTE4 = Bus off counter
 
-Transmits the first part of the dimmerchannel name:
+Transmits the first part of the dimmer channel name:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address of the module
     RTR = 0
     DLC3...DLC0 = 8 databytes to send
     DATABYTE1 = COMMAND_DIMMER_NAME_PART1 (H’F0’)
     DATABYTE2 = Dimmer channel
-                        Contents        Dimmer channel
-                   B’00000001’          Channel 1
-                   B’00000010’          Channel 2
-                   B’00000100’          Channel 3
-                   B’00001000’          Channel 4
+                        Contents         Dimmer channel
+                    B’00000001’          Channel 1
+                    B’00000010’          Channel 2
+                    B’00000100’          Channel 3
+                    B’00001000’          Channel 4
     DATABYTE3 = Character 1 of the dimmer name
     DATABYTE4 = Character 2 of the dimmer name
     DATABYTE5 = Character 3 of the dimmer name
@@ -268,7 +268,7 @@ Transmits the third part of the dimmer channel name:
 
 
 
-                                  VMB4DC PROTOCOL – edition 6   5
+                                   VMB4DC PROTOCOL – edition 8   5
    Remarks:
    Unused characters contain H’FF’.
 
@@ -305,7 +305,7 @@ Transmits memory data block (4 bytes):
 
 
 
-                                         VMB4DC PROTOCOL – edition 6   6
+                                         VMB4DC PROTOCOL – edition 8   6
 ‘Push button status’ received:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Address of the push button module
@@ -373,7 +373,7 @@ Transmits memory data block (4 bytes):
 
 
 
-                                          VMB4DC PROTOCOL – edition 6                                            7
+                                          VMB4DC PROTOCOL – edition 8                                            7
 ‘Stop channel dimming’ command received (build 1005 or higher):
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Address of the module
@@ -431,7 +431,7 @@ Transmits memory data block (4 bytes):
 
 
 
-                                            VMB4DC PROTOCOL – edition 6                                  8
+                                            VMB4DC PROTOCOL – edition 8                                  8
 ‘Cancel forced off’ command received (Build 1105 or higher):
    SID10-SID9 = 00 (highest priority)
    SID8...SID1 = Module address
@@ -499,7 +499,7 @@ Transmits memory data block (4 bytes):
 
 
 
-                                            VMB4DC PROTOCOL – edition 6                                         9
+                                            VMB4DC PROTOCOL – edition 8                                         9
     Remark:
     [DATABYTE3][DATABYTE4][DATABYTE5] contain a 24-bit time in seconds
     The command will be skipped when the time parameter contains zero or the channels are already forced off/on.
@@ -560,7 +560,7 @@ Transmits memory data block (4 bytes):
 
 
 
-                                            VMB4DC PROTOCOL – edition 6                                            10
+                                            VMB4DC PROTOCOL – edition 8                                            10
 ‘Read data from memory’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address of the module
@@ -628,7 +628,7 @@ Transmits memory data block (4 bytes):
 
 
 
-                                           VMB4DC PROTOCOL – edition 6                  11
+                                           VMB4DC PROTOCOL – edition 8                  11
 Memory map:
 
    Address    Contents                                    Address   Contents
@@ -649,7 +649,7 @@ Transmits memory data block (4 bytes):
    H’00E6’    Preset 9 (255) dimvalue for channel 1       H’00E7’   Preset 10 (255) dimvalue for channel 1
    H’00E8’    Preset 11 (255) dimvalue for channel 1      H’00E9’   Preset 12 (255) dimvalue for channel 1
    H’00EA’    Preset 13 (255) dimvalue for channel 1      H’00EB’   Preset dimvalue terminator for channel 1
-   H’00EC’    Lineair or logaritmic curve for channel 1   H’00ED’   0 to 10V or 1 to 10V setting for channel 1
+   H’00EC’    Linear or logarithmic curve for channel 1   H’00ED’   0 to 10V or 1 to 10V setting for channel 1
    H’00EE’    Dim start delay for channel 1               H’00EF’   Dim switch off delay for channel 1
    H’00F0’    Dimmer channel 1 name character 1           H’00F1’   Dimmer channel 1 name character 2
    ...        ...                                         ...       ...
@@ -673,7 +673,7 @@ Transmits memory data block (4 bytes):
    H’01E6’    Preset 9 (255) dimvalue for channel 2       H’01E7’   Preset 10 (255) dimvalue for channel 2
    H’01E8’    Preset 11 (255) dimvalue for channel 2      H’01E9’   Preset 12 (255) dimvalue for channel 2
    H’01EA’    Preset 13 (255) dimvalue for channel 2      H’01EB’   Preset dimvalue terminator for channel 2
-   H’01EC’    Lineair or logaritmic curve for channel 2   H’01ED’   0 to 10V or 1 to 10V setting for channel 2
+   H’01EC’    Linear or logarithmic curve for channel 2   H’01ED’   0 to 10V or 1 to 10V setting for channel 2
    H’01EE’    Dim start delay for channel 2               H’01EF’   Dim switch off delay for channel 2
    H’01F0’    Dimmer channel 2 name character 1           H’01F1’   Dimmer channel 2 name character 2
    ...        ...                                         ...       ...
@@ -682,7 +682,7 @@ Transmits memory data block (4 bytes):
 
 
 
-                                             VMB4DC PROTOCOL – edition 6                                         12
+                                            VMB4DC PROTOCOL – edition 8                                          12
  Address     Contents                                    Address   Contents
  H’0200’     Push button 1 module address                H’0201’   Push button 1 bit number
  H’0202’     Push button 1 action for channel 3          H’0203’   Push button 1 first time parameter
@@ -701,7 +701,7 @@ Transmits memory data block (4 bytes):
  H’02E6’     Preset 9 (255) dimvalue for channel 3       H’02E7’   Preset 10 (255) dimvalue for channel 3
  H’02E8’     Preset 11 (255) dimvalue for channel 3      H’02E9’   Preset 12 (255) dimvalue for channel 3
  H’02EA’     Preset 13 (255) dimvalue for channel 3      H’02EB’   Preset dimvalue terminator for channel 3
- H’02EC’     Lineair or logaritmic curve for channel 3   H’02ED’   0 to 10V or 1 to 10V setting for channel 3
+ H’02EC’     Linear or logarithmic curve for channel 3   H’02ED’   0 to 10V or 1 to 10V setting for channel 3
  H’02EE’     Dim start delay for channel 3               H’02EF’   Dim switch off delay for channel 3
  H’02F0’     Dimmer channel 3 name character 1           H’02F1’   Dimmer channel 3 name character 2
  ...         ...                                         ...       ...
@@ -725,7 +725,7 @@ Transmits memory data block (4 bytes):
  H’03E6’     Preset 9 (255) dimvalue for channel 4       H’03E7’   Preset 10 (255) dimvalue for channel 4
  H’03E8’     Preset 11 (255) dimvalue for channel 4      H’03E9’   Preset 12 (255) dimvalue for channel 4
  H’03EA’     Preset 13 (255) dimvalue for channel 4      H’03EB’   Preset dimvalue terminator for channel 4
- H’03EC’     Lineair or logaritmic curve for channel 4   H’03ED’   0 to 10V or 1 to 10V setting for channel 4
+ H’03EC’     Linear or logarithmic curve for channel 4   H’03ED’   0 to 10V or 1 to 10V setting for channel 4
  H’03EE’     Dim start delay for channel 4               H’03EF’   Dim switch off delay for channel 4
  H’03F0’     Dimmer channel 4 name character 1           H’03F1’   Dimmer channel 4 name character 2
  ...         ...                                         ...       ...
@@ -734,8 +734,8 @@ Transmits memory data block (4 bytes):
 
 
 Remark: Unused locations contain H’FF’
-        Lineair dim curve: H’FF’
-        Logaritmic dim curve: H’00’
+        Linear dim curve: H’FF’
+        Logarithmic dim curve: H’00’
         0 to 10V dimmer: 0
         1 to 10V dimmer: 1
         Preset dimvalues: 0…100% or 255 for end of preset table
@@ -751,7 +751,7 @@ Remark: Unused locations contain H’FF’
 
 
 
-                                            VMB4DC PROTOCOL – edition 6                                         13
+                                           VMB4DC PROTOCOL – edition 8                                          13
 Mode number   Action
 0             Momentary                                         -               -               -
 1             Off                                               -               -               -
@@ -806,11 +806,11 @@ Remark: Unused locations contain H’FF’
 
 
 
-                                              VMB4DC PROTOCOL – edition 6                                       14
+                                              VMB4DC PROTOCOL – edition 8                                       14
       Time parameter         Time or dim time
-               0             No timer or fastest dim time
-               1             1s
-               2             2s
+              0              No timer or fastest dim time
+              1              1s
+              2              2s
               ...
              119             1min59s
              120             2min
@@ -846,5 +846,545 @@ The dim time is limited to one day
 
 
 
-                                              VMB4DC PROTOCOL – edition 6   15
+                                              VMB4DC PROTOCOL – edition 8   15
+Memory map version 2 (Build 1434 or higher):
+
+    Address   Contents                                    Address   Contents
+    H’0000’   Push button 1 module address                H’0001’   Push button 1 bit number
+    H’0002’   Push button 1 action for channel 1          H’0003’   Push button 1 first time parameter
+    H’0004’   Push button 1 second time parameter         H’0005’   Push button 1 third time parameter
+    H’0006’   Push button 2 module address                H’0007’   Push button 2 bit number
+    H’0008’   Push button 2 action for channel 1          H’0009’   Push button 2 first time parameter
+    H’000A’   Push button 2 second time parameter         H’000B’   Push button 2 third time parameter
+    ...       ...                                         ...       ...
+    H’00BA’   Push button 32 module address               H’00BB’   Push button 32 bit number
+    H’00BC’   Push button 32 action for channel 1         H’00BD    Push button 32 first time parameter
+    H’00BE’   Push button 32 second time parameter        H’00BF’   Push button 32 third time parameter
+    H’00C0’   Preset 1 (25%) dimvalue for channel 1       H’00C1’   Preset 2 (50%) dimvalue for channel 1
+    H’00C2’   Preset 3 (75%) dimvalue for channel 1       H’00C3’   Preset 4 (100%) dimvalue for channel 1
+    H’00C4’   Preset 5 (75%) dimvalue for channel 1       H’00C5’   Preset 6 (50%) dimvalue for channel 1
+    H’00C6’   Preset 7 (25%) dimvalue for channel 1       H’00C7’   Preset 8 (255) dimvalue for channel 1
+    H’00C8’   Preset 9 (255) dimvalue for channel 1       H’00C9’   Preset 10 (255) dimvalue for channel 1
+    H’00CA’   Preset 11 (255) dimvalue for channel 1      H’00CB’   Preset 12 (255) dimvalue for channel 1
+    H’00CC’   Preset 13 (255) dimvalue for channel 1      H’00CD’   Preset dimvalue terminator for channel 1
+    H’00CE’   Linear or logarithmic curve for channel 1   H’00CF’   0 to 10V or 1 to 10V setting for channel 1
+    H’00D0’   Dim start delay for channel 1               H’00D1’   Dim switch off delay for channel 1
+    H’00D2’   Transmit slider command for channel 1       H’00D3’   Not used
+    H’00D4’   Not used                                    H’00D5’   Terminator
+    H’00D6’   Channel 1 location id low byte              H’00D7’   Channel 1 location id high byte
+    H’00D8’   Channel 1 group id low byte                 H’00D9’   Channel 1 group id high byte
+    H’00DA’   Channel 1 circuit id low byte               H’00DB’   Channel 1 circuit id high byte
+    H’00DC’   Channel 1 load id low byte                  H’00DD’   Channel 1 load id high byte
+    H’00DE’   Module location id low byte                 H’00DF’   Module location id high byte
+    H’00E0’   Module name character 1                     H’00E1’   Module name character 2
+    ...       …                                           …         …
+    H’00EE’   Module name character 15                    H’00EF’   Module name character 16
+    H’00F0’   Dimmer channel 1 name character 1           H’00F1’   Dimmer channel 1 name character 2
+    ...       ...                                         ...       ...
+    H’00FE’   Dimmer channel 1name character 15           H’00FF’   Dimmer channel 1 name character 16
+
+
+
+
+                                            VMB4DC PROTOCOL – edition 8                                          16
+Address   Contents                                    Address   Contents
+H’0100’   Push button 1 module address                H’0101’   Push button 1 bit number
+H’0102’   Push button 1 action for channel 2          H’0103’   Push button 1 first time parameter
+H’0104’   Push button 1 second time parameter         H’0105’   Push button 1 third time parameter
+H’0106’   Push button 2 module address                H’0107’   Push button 2 bit number
+H’0108’   Push button 2 action for channel 2          H’0109’   Push button 2 first time parameter
+H’010A’   Push button 2 second time parameter         H’010B’   Push button 2 third time parameter
+...       ...                                         ...       ...
+H’01BA’   Push button 32 module address               H’01BB’   Push button 32 bit number
+H’01BC’   Push button 32 action for channel 2         H’01BD    Push button 32 first time parameter
+H’01BE’   Push button 32 second time parameter        H’01BF’   Push button 32 third time parameter
+H’01C0’   Preset 1 (25%) dimvalue for channel 2       H’01C1’   Preset 2 (50%) dimvalue for channel 2
+H’01C2’   Preset 3 (75%) dimvalue for channel 2       H’01C3’   Preset 4 (100%) dimvalue for channel 2
+H’01C4’   Preset 5 (75%) dimvalue for channel 2       H’01C5’   Preset 6 (50%) dimvalue for channel 2
+H’01C6’   Preset 7 (25%) dimvalue for channel 2       H’01C7’   Preset 8 (255) dimvalue for channel 2
+H’01C8’   Preset 9 (255) dimvalue for channel 2       H’01C9’   Preset 10 (255) dimvalue for channel 2
+H’01CA’   Preset 11 (255) dimvalue for channel 2      H’01CB’   Preset 12 (255) dimvalue for channel 2
+H’01CC’   Preset 13 (255) dimvalue for channel 2      H’01CD’   Preset dimvalue terminator for channel 2
+H’01CE’   Linear or logarithmic curve for channel 2   H’01CF’   0 to 10V or 1 to 10V setting for channel 2
+H’01D0’   Dim start delay for channel 2               H’01D1’   Dim switch off delay for channel 2
+H’01D2’   Transmit slider command for channel 2       H’01D3’   Not used
+H’01D4’   Not used                                    H’01D5’   Not used
+H’01D6’   Channel 2 location id low byte              H’01D7’   Channel 2 location id high byte
+H’01D8’   Channel 2 group id low byte                 H’01D9’   Channel 2 group id high byte
+H’01DA’   Channel 2 circuit id low byte               H’01DB’   Channel 2 circuit id high byte
+H’01DC’   Channel 2 load id low byte                  H’01DD’   Channel 2 load id high byte
+H’01DE’   Module group id low byte                    H’01DF’   Module group id high byte
+H’01E0’   Module name character 17                    H’01E1’   Module name character 18
+...       …                                           …         …
+H’01EE’   Module name character 31                    H’01EF’   Module name character 32
+H’01F0’   Dimmer channel 2 name character 1           H’01F1’   Dimmer channel 2 name character 2
+...       ...                                         ...       ...
+H’01FE’   Dimmer channel 2 name character 15          H’01FF’   Dimmer channel 2 name character 16
+
+
+
+
+                                        VMB4DC PROTOCOL – edition 8                                          17
+Address   Contents                                    Address   Contents
+H’0200’   Push button 1 module address                H’0201’   Push button 1 bit number
+H’0202’   Push button 1 action for channel 3          H’0203’   Push button 1 first time parameter
+H’0204’   Push button 1 second time parameter         H’0205’   Push button 1 third time parameter
+H’0206’   Push button 2 module address                H’0207’   Push button 2 bit number
+H’0208’   Push button 2 action for channel 3          H’0209’   Push button 2 first time parameter
+H’020A’   Push button 2 second time parameter         H’020B’   Push button 2 third time parameter
+...       ...                                         ...       ...
+H’02BA’   Push button 32 module address               H’02BB’   Push button 32 bit number
+H’02BC’   Push button 32 action for channel 3         H’02BD    Push button 32 first time parameter
+H’02BE’   Push button 32 second time parameter        H’02BF’   Push button 32 third time parameter
+H’02C0’   Preset 1 (25%) dimvalue for channel 3       H’02C1’   Preset 2 (50%) dimvalue for channel 3
+H’02C2’   Preset 3 (75%) dimvalue for channel 3       H’02C3’   Preset 4 (100%) dimvalue for channel 3
+H’02C4’   Preset 5 (75%) dimvalue for channel 3       H’02C5’   Preset 6 (50%) dimvalue for channel 3
+H’02C6’   Preset 7 (25%) dimvalue for channel 3       H’02C7’   Preset 8 (255) dimvalue for channel 3
+H’02C8’   Preset 9 (255) dimvalue for channel 3       H’02C9’   Preset 10 (255) dimvalue for channel 3
+H’02CA’   Preset 11 (255) dimvalue for channel 3      H’02CB’   Preset 12 (255) dimvalue for channel 3
+H’02CC’   Preset 13 (255) dimvalue for channel 3      H’02CD’   Preset dimvalue terminator for channel 3
+H’02CE’   Linear or logarithmic curve for channel 3   H’02CF’   0 to 10V or 1 to 10V setting for channel 3
+H’02D0’   Dim start delay for channel 3               H’02D1’   Dim switch off delay for channel 3
+H’02D2’   Transmit slider command for channel 3       H’02D3’   Not used
+H’02D4’   Not used                                    H’02D5’   Not used
+H’02D6’   Channel 3 location id low byte              H’02D7’   Channel 3 location id high byte
+H’02D8’   Channel 3 group id low byte                 H’02D9’   Channel 3 group id high byte
+H’02DA’   Channel 3 circuit id low byte               H’02DB’   Channel 3 circuit id high byte
+H’02DC’   Channel 3 load id low byte                  H’02DD’   Channel 3 load id high byte
+H’02DE’   Module circuit id low byte                  H’02DF’   Module circuit id high byte
+H’02E0’   Module name character 33                    H’02E1’   Module name character 34
+...       …                                           …         …
+H’02EE’   Module name character 47                    H’02EF’   Module name character 48
+H’02F0’   Dimmer channel 3 name character 1           H’02F1’   Dimmer channel 3 name character 2
+...       ...                                         ...       ...
+H’02FE’   Dimmer channel 3name character 15           H’02FF’   Dimmer channel 3 name character 16
+
+
+
+
+                                        VMB4DC PROTOCOL – edition 8                                          18
+ Address     Contents                                    Address    Contents
+ H’0300’     Push button 1 module address                H’0301’    Push button 1 bit number
+ H’0302’     Push button 1 action for channel 4          H’0303’    Push button 1 first time parameter
+ H’0304’     Push button 1 second time parameter         H’0305’    Push button 1 third time parameter
+ H’0306’     Push button 2 module address                H’0307’    Push button 2 bit number
+ H’0308’     Push button 2 action for channel 4          H’0309’    Push button 2 first time parameter
+ H’030A’     Push button 2 second time parameter         H’030B’    Push button 2 third time parameter
+ ...         ...                                         ...        ...
+ H’03BA’     Push button 32 module address               H’03BB’    Push button 32 bit number
+ H’03BC’     Push button 32 action for channel 4         H’03BD     Push button 32 first time parameter
+ H’03BE’     Push button 32 second time parameter        H’03BF’    Push button 32 third time parameter
+ H’03C0’     Preset 1 (25%) dimvalue for channel 4       H’03C1’    Preset 2 (50%) dimvalue for channel 4
+ H’03C2’     Preset 3 (75%) dimvalue for channel 4       H’03C3’    Preset 4 (100%) dimvalue for channel 4
+ H’03C4’     Preset 5 (75%) dimvalue for channel 4       H’03C5’    Preset 6 (50%) dimvalue for channel 4
+ H’03C6’     Preset 7 (25%) dimvalue for channel 4       H’03C7’    Preset 8 (255) dimvalue for channel 4
+ H’03C8’     Preset 9 (255) dimvalue for channel 4       H’03C9’    Preset 10 (255) dimvalue for channel 4
+ H’03CA’     Preset 11 (255) dimvalue for channel 4      H’03CB’    Preset 12 (255) dimvalue for channel 4
+ H’03CC’     Preset 13 (255) dimvalue for channel 4      H’03CD’    Preset dimvalue terminator for channel 4
+ H’03CE’     Linear or logarithmic curve for channel 4   H’03CF’    0 to 10V or 1 to 10V setting for channel 4
+ H’03D0’     Dim start delay for channel 4               H’03D1’    Dim switch off delay for channel 4
+ H’03D2’     Transmit slider command for channel 4       H’03D3’    Not used
+ H’03D4’     Not used                                    H’03D5’    Not used
+ H’03D6’     Channel 4 location id low byte              H’03D7’    Channel 4 location id high byte
+ H’03D8’     Channel 4 group id low byte                 H’03D9’    Channel 4 group id high byte
+ H’03DA’     Channel 4 circuit id low byte               H’03DB’    Channel 4 circuit id high byte
+ H’03DC’     Channel 4 load id low byte                  H’03DD’    Channel 4 load id high byte
+ H’03DE’     Module load id low byte                     H’03DF’    Module load id high byte
+ H’03E0’     Module name character 49                    H’03E1’    Module name character 50
+ ...         …                                           …          …
+ H’03EE’     Module name character 63                    H’03EF’    Module name character 64
+ H’03EE’     Dim start delay for channel 4               H’03EF’    Dim switch off delay for channel 4
+ H’03F0’     Dimmer channel 4 name character 1           H’03F1’    Dimmer channel 4 name character 2
+ ...         ...                                         ...        ...
+ H’03FE’     Dimmer channel 4 name character 15          H’03FF’    Dimmer channel 4 name character 16
+
+
+
+Remark: Unused locations contain H’FF’
+        Linear dim curve: H’FF’
+        Logarithmic dim curve: H’00’
+        0 to 10V dimmer: 0
+        1 to 10V dimmer: 1
+           Do not transmit slider dimvalue command: 0
+           Transmit slider dimvalue command: 1
+           Preset dimvalues: 0…100% or 255 for end of preset table
+           Preset dimvalue terminator: H’FF’
+           Dim start delay (default 0s) & Dim switch off delay (default 0s)
+                    Contents             Delay
+                        0                0s
+                        1                0.013s
+                        2                0.026s
+                       ...               ...
+                      255                3.315s
+
+
+
+
+                                           VMB4DC PROTOCOL – edition 8                                           19
+Mode number   Action
+0             Momentary                                         -               -               -
+1             Off                                               -               -               -
+2             ‘Off’ with timers disabled                        -               -               -
+3             ‘Off’ with timers disabled at short press         -               -               -
+4             ‘Off’ with timers disabled at long press          -               -               -
+5             Slow off                                          Dim down time   -               -
+6             On                                                -               -               -
+7             ‘On’ with timers disabled                         -               -               -
+8             ‘On’ with timers disabled at short press          -               -               -
+9             ‘On’ with timers disabled at long press           -               -               -
+10            Slow on                                           Dim up time     -               -
+11            Toggle                                            -               -               -
+12            ‘Toggle’ with timers disabled                     -               -               -
+13            ‘Toggle’ with timers disabled at short press      -               -               -
+14            ‘Toggle’ with timers disabled at long press       -               -               -
+15            Slow on/off                                       Dim up time     Dim down time   -
+16            Start/stop timer                                  Timeout         -               -
+17            Start/stop timer with slow on/off                 Timeout         Dim up time     Dim down time
+18            Restartable timer                                 Timeout         -               -
+19            Restartable timer with slow on/off                Timeout         Dim up time     Dim down time
+20            Non restartable timer                             Timeout         -               -
+21            Non restartable timer with slow on/off            Timeout         Dim up time     Dim down time
+22            Slow on at press, slow off at release + timeout   Timeout         Dim up time     Dim down time
+23            Dim up                                            Timeout         -               -
+24            Dim up at long press, on at short press           Timeout         -               -
+25            Dim up at long press, memory at short press       Timeout         -               -
+26            Dim down                                          Timeout         -               -
+27            Dim down at long press, off at short press        Timeout         -               -
+28            Dim                                               Timeout         -               -
+29            Dim at long press, on or off at short press       Timeout         -               -
+30            Dim at long press, memory or off at short press   Timeout         -               -
+31            Atmospheric dimvalue                              Timeout         Dim time        Dim value
+32            Slider dimmer                                     -               -               -
+33            Multi step dimmer                                 Timeout         Dim time        -
+34            Disable at closed switch                          -               -               -
+35            Disable at opened switch                          -               -               -
+36            Disable at pressing push button                   Timeout         -               -
+37            Toggle disable at pressing push button            Timeout         -               -
+38            Cancel disable at pressing push button            -               -               -
+39            Forced ‘On’ at closed switch                      -               -               -
+40            Forced ‘On’ at opened switch                      -               -               -
+41            Forced ‘On’ at pressing push button               Timeout         -               -
+42            Toggle forced ‘On’ at pressing push button        Timeout         -               -
+43            Cancel Forced ‘On’ at pressing push button        -               -               -
+44            Inhibit at closed switch                          -               -               -
+45            Inhibit at opened switch                          -               -               -
+46            Inhibit at pressing push button                   Timeout         -               -
+47            Toggle inhibit at pressing push button            Timeout         -               -
+48            Cancel inhibit at pressing push button            -               -               -
+
+
+
+
+                                              VMB4DC PROTOCOL – edition 8                                       20
+      Time parameter         Time or dim time
+              0              No timer or fastest dim time
+              1              1s
+              2              2s
+              ...
+             119             1min59s
+             120             2min
+             121             2min15s
+              ...
+             131             4min45s
+             132             5min
+             133             5min30s
+              ...
+             181             29min30s
+             182             30min
+             183             31min
+              ...
+             211             59min
+             212             1h
+             213             1h15min
+              ...
+             227             4h45min
+             228             5h
+             229             5h30min
+              ...
+             237             9h30min
+             238             10h
+             239             11h
+              ...
+             251             23h
+             252             1d
+             253             2d
+             254             3d
+             255             infinite
+The dim time is limited to one day
+
+
+
+
+                                              VMB4DC PROTOCOL – edition 8   21
+Memory map version 3 (Build 1509 or higher):
+
+    Address   Contents                                    Address   Contents
+    H’0000’   Push button 1 module address                H’0001’   Push button 1 bit number
+    H’0002’   Push button 1 action for channel 1          H’0003’   Push button 1 first time parameter
+    H’0004’   Push button 1 second time parameter         H’0005’   Push button 1 third time parameter
+    H’0006’   Push button 2 module address                H’0007’   Push button 2 bit number
+    H’0008’   Push button 2 action for channel 1          H’0009’   Push button 2 first time parameter
+    H’000A’   Push button 2 second time parameter         H’000B’   Push button 2 third time parameter
+    ...       ...                                         ...       ...
+    H’00BA’   Push button 32 module address               H’00BB’   Push button 32 bit number
+    H’00BC’   Push button 32 action for channel 1         H’00BD    Push button 32 first time parameter
+    H’00BE’   Push button 32 second time parameter        H’00BF’   Push button 32 third time parameter
+    H’00C0’   Preset 1 (25%) dimvalue for channel 1       H’00C1’   Preset 2 (50%) dimvalue for channel 1
+    H’00C2’   Preset 3 (75%) dimvalue for channel 1       H’00C3’   Preset 4 (100%) dimvalue for channel 1
+    H’00C4’   Preset 5 (75%) dimvalue for channel 1       H’00C5’   Preset 6 (50%) dimvalue for channel 1
+    H’00C6’   Preset 7 (25%) dimvalue for channel 1       H’00C7’   Preset 8 (255) dimvalue for channel 1
+    H’00C8’   Preset 9 (255) dimvalue for channel 1       H’00C9’   Preset 10 (255) dimvalue for channel 1
+    H’00CA’   Preset 11 (255) dimvalue for channel 1      H’00CB’   Preset 12 (255) dimvalue for channel 1
+    H’00CC’   Preset 13 (255) dimvalue for channel 1      H’00CD’   Preset dimvalue terminator for channel 1
+    H’00CE’   Linear or logarithmic curve for channel 1   H’00CF’   0 to 10V or 1 to 10V setting for channel 1
+    H’00D0’   Dim start delay for channel 1               H’00D1’   Dim switch off delay for channel 1
+    H’00D2’   Transmit slider command for channel 1       H’00D3’   Minumum control factor
+    H’00D4’   Not used                                    H’00D5’   Terminator
+    H’00D6’   Channel 1 location id low byte              H’00D7’   Channel 1 location id high byte
+    H’00D8’   Channel 1 group id low byte                 H’00D9’   Channel 1 group id high byte
+    H’00DA’   Channel 1 circuit id low byte               H’00DB’   Channel 1 circuit id high byte
+    H’00DC’   Channel 1 load id low byte                  H’00DD’   Channel 1 load id high byte
+    H’00DE’   Module location id low byte                 H’00DF’   Module location id high byte
+    H’00E0’   Module name character 1                     H’00E1’   Module name character 2
+    ...       …                                           …         …
+    H’00EE’   Module name character 15                    H’00EF’   Module name character 16
+    H’00F0’   Dimmer channel 1 name character 1           H’00F1’   Dimmer channel 1 name character 2
+    ...       ...                                         ...       ...
+    H’00FE’   Dimmer channel 1name character 15           H’00FF’   Dimmer channel 1 name character 16
+
+
+
+
+                                            VMB4DC PROTOCOL – edition 8                                          22
+Address   Contents                                    Address   Contents
+H’0100’   Push button 1 module address                H’0101’   Push button 1 bit number
+H’0102’   Push button 1 action for channel 2          H’0103’   Push button 1 first time parameter
+H’0104’   Push button 1 second time parameter         H’0105’   Push button 1 third time parameter
+H’0106’   Push button 2 module address                H’0107’   Push button 2 bit number
+H’0108’   Push button 2 action for channel 2          H’0109’   Push button 2 first time parameter
+H’010A’   Push button 2 second time parameter         H’010B’   Push button 2 third time parameter
+...       ...                                         ...       ...
+H’01BA’   Push button 32 module address               H’01BB’   Push button 32 bit number
+H’01BC’   Push button 32 action for channel 2         H’01BD    Push button 32 first time parameter
+H’01BE’   Push button 32 second time parameter        H’01BF’   Push button 32 third time parameter
+H’01C0’   Preset 1 (25%) dimvalue for channel 2       H’01C1’   Preset 2 (50%) dimvalue for channel 2
+H’01C2’   Preset 3 (75%) dimvalue for channel 2       H’01C3’   Preset 4 (100%) dimvalue for channel 2
+H’01C4’   Preset 5 (75%) dimvalue for channel 2       H’01C5’   Preset 6 (50%) dimvalue for channel 2
+H’01C6’   Preset 7 (25%) dimvalue for channel 2       H’01C7’   Preset 8 (255) dimvalue for channel 2
+H’01C8’   Preset 9 (255) dimvalue for channel 2       H’01C9’   Preset 10 (255) dimvalue for channel 2
+H’01CA’   Preset 11 (255) dimvalue for channel 2      H’01CB’   Preset 12 (255) dimvalue for channel 2
+H’01CC’   Preset 13 (255) dimvalue for channel 2      H’01CD’   Preset dimvalue terminator for channel 2
+H’01CE’   Linear or logarithmic curve for channel 2   H’01CF’   0 to 10V or 1 to 10V setting for channel 2
+H’01D0’   Dim start delay for channel 2               H’01D1’   Dim switch off delay for channel 2
+H’01D2’   Transmit slider command for channel 2       H’01D3’   Minumum control factor
+H’01D4’   Not used                                    H’01D5’   Not used
+H’01D6’   Channel 2 location id low byte              H’01D7’   Channel 2 location id high byte
+H’01D8’   Channel 2 group id low byte                 H’01D9’   Channel 2 group id high byte
+H’01DA’   Channel 2 circuit id low byte               H’01DB’   Channel 2 circuit id high byte
+H’01DC’   Channel 2 load id low byte                  H’01DD’   Channel 2 load id high byte
+H’01DE’   Module group id low byte                    H’01DF’   Module group id high byte
+H’01E0’   Module name character 17                    H’01E1’   Module name character 18
+...       …                                           …         …
+H’01EE’   Module name character 31                    H’01EF’   Module name character 32
+H’01F0’   Dimmer channel 2 name character 1           H’01F1’   Dimmer channel 2 name character 2
+...       ...                                         ...       ...
+H’01FE’   Dimmer channel 2 name character 15          H’01FF’   Dimmer channel 2 name character 16
+
+
+
+
+                                        VMB4DC PROTOCOL – edition 8                                          23
+Address   Contents                                    Address   Contents
+H’0200’   Push button 1 module address                H’0201’   Push button 1 bit number
+H’0202’   Push button 1 action for channel 3          H’0203’   Push button 1 first time parameter
+H’0204’   Push button 1 second time parameter         H’0205’   Push button 1 third time parameter
+H’0206’   Push button 2 module address                H’0207’   Push button 2 bit number
+H’0208’   Push button 2 action for channel 3          H’0209’   Push button 2 first time parameter
+H’020A’   Push button 2 second time parameter         H’020B’   Push button 2 third time parameter
+...       ...                                         ...       ...
+H’02BA’   Push button 32 module address               H’02BB’   Push button 32 bit number
+H’02BC’   Push button 32 action for channel 3         H’02BD    Push button 32 first time parameter
+H’02BE’   Push button 32 second time parameter        H’02BF’   Push button 32 third time parameter
+H’02C0’   Preset 1 (25%) dimvalue for channel 3       H’02C1’   Preset 2 (50%) dimvalue for channel 3
+H’02C2’   Preset 3 (75%) dimvalue for channel 3       H’02C3’   Preset 4 (100%) dimvalue for channel 3
+H’02C4’   Preset 5 (75%) dimvalue for channel 3       H’02C5’   Preset 6 (50%) dimvalue for channel 3
+H’02C6’   Preset 7 (25%) dimvalue for channel 3       H’02C7’   Preset 8 (255) dimvalue for channel 3
+H’02C8’   Preset 9 (255) dimvalue for channel 3       H’02C9’   Preset 10 (255) dimvalue for channel 3
+H’02CA’   Preset 11 (255) dimvalue for channel 3      H’02CB’   Preset 12 (255) dimvalue for channel 3
+H’02CC’   Preset 13 (255) dimvalue for channel 3      H’02CD’   Preset dimvalue terminator for channel 3
+H’02CE’   Linear or logarithmic curve for channel 3   H’02CF’   0 to 10V or 1 to 10V setting for channel 3
+H’02D0’   Dim start delay for channel 3               H’02D1’   Dim switch off delay for channel 3
+H’02D2’   Transmit slider command for channel 3       H’02D3’   Minumum control factor
+H’02D4’   Not used                                    H’02D5’   Not used
+H’02D6’   Channel 3 location id low byte              H’02D7’   Channel 3 location id high byte
+H’02D8’   Channel 3 group id low byte                 H’02D9’   Channel 3 group id high byte
+H’02DA’   Channel 3 circuit id low byte               H’02DB’   Channel 3 circuit id high byte
+H’02DC’   Channel 3 load id low byte                  H’02DD’   Channel 3 load id high byte
+H’02DE’   Module circuit id low byte                  H’02DF’   Module circuit id high byte
+H’02E0’   Module name character 33                    H’02E1’   Module name character 34
+...       …                                           …         …
+H’02EE’   Module name character 47                    H’02EF’   Module name character 48
+H’02F0’   Dimmer channel 3 name character 1           H’02F1’   Dimmer channel 3 name character 2
+...       ...                                         ...       ...
+H’02FE’   Dimmer channel 3name character 15           H’02FF’   Dimmer channel 3 name character 16
+
+
+
+
+                                        VMB4DC PROTOCOL – edition 8                                          24
+ Address     Contents                                    Address    Contents
+ H’0300’     Push button 1 module address                H’0301’    Push button 1 bit number
+ H’0302’     Push button 1 action for channel 4          H’0303’    Push button 1 first time parameter
+ H’0304’     Push button 1 second time parameter         H’0305’    Push button 1 third time parameter
+ H’0306’     Push button 2 module address                H’0307’    Push button 2 bit number
+ H’0308’     Push button 2 action for channel 4          H’0309’    Push button 2 first time parameter
+ H’030A’     Push button 2 second time parameter         H’030B’    Push button 2 third time parameter
+ ...         ...                                         ...        ...
+ H’03BA’     Push button 32 module address               H’03BB’    Push button 32 bit number
+ H’03BC’     Push button 32 action for channel 4         H’03BD     Push button 32 first time parameter
+ H’03BE’     Push button 32 second time parameter        H’03BF’    Push button 32 third time parameter
+ H’03C0’     Preset 1 (25%) dimvalue for channel 4       H’03C1’    Preset 2 (50%) dimvalue for channel 4
+ H’03C2’     Preset 3 (75%) dimvalue for channel 4       H’03C3’    Preset 4 (100%) dimvalue for channel 4
+ H’03C4’     Preset 5 (75%) dimvalue for channel 4       H’03C5’    Preset 6 (50%) dimvalue for channel 4
+ H’03C6’     Preset 7 (25%) dimvalue for channel 4       H’03C7’    Preset 8 (255) dimvalue for channel 4
+ H’03C8’     Preset 9 (255) dimvalue for channel 4       H’03C9’    Preset 10 (255) dimvalue for channel 4
+ H’03CA’     Preset 11 (255) dimvalue for channel 4      H’03CB’    Preset 12 (255) dimvalue for channel 4
+ H’03CC’     Preset 13 (255) dimvalue for channel 4      H’03CD’    Preset dimvalue terminator for channel 4
+ H’03CE’     Linear or logarithmic curve for channel 4   H’03CF’    0 to 10V or 1 to 10V setting for channel 4
+ H’03D0’     Dim start delay for channel 4               H’03D1’    Dim switch off delay for channel 4
+ H’03D2’     Transmit slider command for channel 4       H’03D3’    Minumum control factor
+ H’03D4’     Not used                                    H’03D5’    Not used
+ H’03D6’     Channel 4 location id low byte              H’03D7’    Channel 4 location id high byte
+ H’03D8’     Channel 4 group id low byte                 H’03D9’    Channel 4 group id high byte
+ H’03DA’     Channel 4 circuit id low byte               H’03DB’    Channel 4 circuit id high byte
+ H’03DC’     Channel 4 load id low byte                  H’03DD’    Channel 4 load id high byte
+ H’03DE’     Module load id low byte                     H’03DF’    Module load id high byte
+ H’03E0’     Module name character 49                    H’03E1’    Module name character 50
+ ...         …                                           …          …
+ H’03EE’     Module name character 63                    H’03EF’    Module name character 64
+ H’03EE’     Dim start delay for channel 4               H’03EF’    Dim switch off delay for channel 4
+ H’03F0’     Dimmer channel 4 name character 1           H’03F1’    Dimmer channel 4 name character 2
+ ...         ...                                         ...        ...
+ H’03FE’     Dimmer channel 4 name character 15          H’03FF’    Dimmer channel 4 name character 16
+
+
+
+Remark: Unused locations contain H’FF’
+        Linear dim curve: H’FF’
+        Logarithmic dim curve: H’00’
+        0 to 10V dimmer: 0
+        1 to 10V dimmer: 1
+           Do not transmit slider dimvalue command: 0
+           Transmit slider dimvalue command: 1
+           Preset dimvalues: 0…100% or 255 for end of preset table
+           Preset dimvalue terminator: H’FF’
+           Dim start delay (default 0s) & Dim switch off delay (default 0s)
+                    Contents             Delay
+                        0                0s
+                        1                0.013s
+                        2                0.026s
+                       ...               ...
+                      255                3.315s
+
+           Minumum control factor = 255 – (min% * 255/100)
+
+
+
+
+                                           VMB4DC PROTOCOL – edition 8                                           25
+Mode number   Action
+0             Momentary                                         -               -               -
+1             Off                                               -               -               -
+2             ‘Off’ with timers disabled                        -               -               -
+3             ‘Off’ with timers disabled at short press         -               -               -
+4             ‘Off’ with timers disabled at long press          -               -               -
+5             Slow off                                          Dim down time   -               -
+6             On                                                -               -               -
+7             ‘On’ with timers disabled                         -               -               -
+8             ‘On’ with timers disabled at short press          -               -               -
+9             ‘On’ with timers disabled at long press           -               -               -
+10            Slow on                                           Dim up time     -               -
+11            Toggle                                            -               -               -
+12            ‘Toggle’ with timers disabled                     -               -               -
+13            ‘Toggle’ with timers disabled at short press      -               -               -
+14            ‘Toggle’ with timers disabled at long press       -               -               -
+15            Slow on/off                                       Dim up time     Dim down time   -
+16            Start/stop timer                                  Timeout         -               -
+17            Start/stop timer with slow on/off                 Timeout         Dim up time     Dim down time
+18            Restartable timer                                 Timeout         -               -
+19            Restartable timer with slow on/off                Timeout         Dim up time     Dim down time
+20            Non restartable timer                             Timeout         -               -
+21            Non restartable timer with slow on/off            Timeout         Dim up time     Dim down time
+22            Slow on at press, slow off at release + timeout   Timeout         Dim up time     Dim down time
+23            Dim up                                            Timeout         -               -
+24            Dim up at long press, on at short press           Timeout         -               -
+25            Dim up at long press, memory at short press       Timeout         -               -
+26            Dim down                                          Timeout         -               -
+27            Dim down at long press, off at short press        Timeout         -               -
+28            Dim                                               Timeout         -               -
+29            Dim at long press, on or off at short press       Timeout         -               -
+30            Dim at long press, memory or off at short press   Timeout         -               -
+31            Atmospheric dimvalue                              Timeout         Dim time        Dim value
+32            Slider dimmer                                     -               -               -
+33            Multi step dimmer                                 Timeout         Dim time        -
+34            Disable at closed switch                          -               -               -
+35            Disable at opened switch                          -               -               -
+36            Disable at pressing push button                   Timeout         -               -
+37            Toggle disable at pressing push button            Timeout         -               -
+38            Cancel disable at pressing push button            -               -               -
+39            Forced ‘On’ at closed switch                      -               -               -
+40            Forced ‘On’ at opened switch                      -               -               -
+41            Forced ‘On’ at pressing push button               Timeout         -               -
+42            Toggle forced ‘On’ at pressing push button        Timeout         -               -
+43            Cancel Forced ‘On’ at pressing push button        -               -               -
+44            Inhibit at closed switch                          -               -               -
+45            Inhibit at opened switch                          -               -               -
+46            Inhibit at pressing push button                   Timeout         -               -
+47            Toggle inhibit at pressing push button            Timeout         -               -
+48            Cancel inhibit at pressing push button            -               -               -
+
+
+
+
+                                              VMB4DC PROTOCOL – edition 8                                       26
+      Time parameter         Time or dim time
+              0              No timer or fastest dim time
+              1              1s
+              2              2s
+              ...
+             119             1min59s
+             120             2min
+             121             2min15s
+              ...
+             131             4min45s
+             132             5min
+             133             5min30s
+              ...
+             181             29min30s
+             182             30min
+             183             31min
+              ...
+             211             59min
+             212             1h
+             213             1h15min
+              ...
+             227             4h45min
+             228             5h
+             229             5h30min
+              ...
+             237             9h30min
+             238             10h
+             239             11h
+              ...
+             251             23h
+             252             1d
+             253             2d
+             254             3d
+             255             infinite
+The dim time is limited to one day
+
+
+
+
+                                              VMB4DC PROTOCOL – edition 8   27
 

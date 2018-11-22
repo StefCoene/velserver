@@ -4,7 +4,7 @@ VMB1BLS
 
 
 
-      VMB1BLS PROTOCOL – edition 1   1
+      VMB1BLS PROTOCOL – edition 2   1
 Binairy format:
 <SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC14...CRC1-CRCDEL-ACK-ACKDEL-
 EOF7...EOF1-IFS3...IFS1>
@@ -33,70 +33,70 @@ EOF7...EOF1-IFS3...IFS1>
    IFS3...IFS1                  InterFrame Space (always 111)
 
 The blind module can transmit the following commands:
-  Clears LEDs on a push button module
-  Sets LEDs on a push button module
-  Blinks LEDs fast on a push button module
+ • Clears LEDs on a push button module
+ • Sets LEDs on a push button module
+ • Blinks LEDs fast on a push button module
 
 The blind module can transmit the following messages:
-  Blind status
-  Blind switch status
-  Module type
-  Bus error counter status
-  First, second and third part of the blind name
-  Memory data
-  Memory data block (4 bytes)
-  Real-time clock status
-  Date status
-  Daylight savings status
-  Real-time clock status request
+ • Blind status
+ • Blind switch status
+ • Module type
+ • Bus error counter status
+ • First, second and third part of the blind name
+ • Memory data
+ • Memory data block (4 bytes)
+ • Real-time clock status
+ • Date status
+ • Daylight savings status
+ • Real-time clock status request
 
 The blind module can receive the following messages:
-  Linked push button status
+ • Linked push button status
 
 The blind module can receive the following commands:
-  Switch blind off
-  Switch blind up
-  Switch blind down
-  Set blind position
-  Forced up
-  Cancel forced up
-  Forced down
-  Cancel forced down
-  Inhibit
-  Inhibit preset up
-  Inhibit preset down
-  Cancel inhibit
-  Lock
+ • Switch blind off
+ • Switch blind up
+ • Switch blind down
+ • Set blind position
+ • Forced up
+ • Cancel forced up
+ • Forced down
+ • Cancel forced down
+ • Inhibit
+ • Inhibit preset up
+ • Inhibit preset down
+ • Cancel inhibit
+ • Lock
 
 
 
-                                           VMB1BLS PROTOCOL – edition 1                          2
-   Unlock
-   Blind status request
-   Clear Push button Led
-   Module type request
-   Bus error counter status request
-   Blind name request
-   Read memory data
-   Read memory data block (4 bytes)
-   Memory dump request
-   Write memory data
-   Write memory data block (4 bytes)
-   Write module address and serial number
-   Real-time clock status request
-   Set real-time clock
-   Set date
-   Set daylight savings
-   Enable/disable global sunrise/sunset related actions
-   Enable/disable local sunrise/sunset related actions
-   Set local alarm clock
-   Set global alarm clock
-   Select auto mode
+                                           VMB1BLS PROTOCOL – edition 2                          2
+•   Unlock
+•   Blind status request
+•   Clear Push button Led
+•   Module type request
+•   Bus error counter status request
+•   Blind name request
+•   Read memory data
+•   Read memory data block (4 bytes)
+•   Memory dump request
+•   Write memory data
+•   Write memory data block (4 bytes)
+•   Write module address and serial number
+•   Real-time clock status request
+•   Set real-time clock
+•   Set date
+•   Set daylight savings
+•   Enable/disable global sunrise/sunset related actions
+•   Enable/disable local sunrise/sunset related actions
+•   Set local alarm clock
+•   Set global alarm clock
+•   Select auto mode
 
 
 
 
-                                              VMB1BLS PROTOCOL – edition 1   3
+                                              VMB1BLS PROTOCOL – edition 2   3
 Transmits real time clock status request:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = H’00’
@@ -164,7 +164,7 @@ Transmits the blind relays switch status:
 
 
 
-                                          VMB1BLS PROTOCOL – edition 1                                       4
+                                          VMB1BLS PROTOCOL – edition 2                                       4
 Transmit: Clears LEDs on a push button module:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Address of the push button module for clearing LEDs
@@ -225,7 +225,7 @@ Transmits the memory data:
 
 
 
-                                           VMB1BLS PROTOCOL – edition 1      5
+                                           VMB1BLS PROTOCOL – edition 2      5
 Transmits memory data block (4 bytes):
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -294,7 +294,7 @@ Transmits the third part of the blind name:
 
 
 
-                                        VMB1BLS PROTOCOL – edition 1   6
+                                        VMB1BLS PROTOCOL – edition 2   6
 Transmits the blind status:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -354,7 +354,7 @@ Transmits the third part of the blind name:
 
 
 
-                                          VMB1BLS PROTOCOL – edition 1   7
+                                          VMB1BLS PROTOCOL – edition 2   7
 ‘Linked push button status’ received:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Address of linked push button module
@@ -413,7 +413,7 @@ Transmits the third part of the blind name:
 
 
 
-                                          VMB1BLS PROTOCOL – edition 1             8
+                                          VMB1BLS PROTOCOL – edition 2             8
 ‘Enable/disable global sunrise/sunset related actions’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = H’00’
@@ -469,7 +469,7 @@ Transmits the third part of the blind name:
 
 
 
-                                             VMB1BLS PROTOCOL – edition 1       9
+                                             VMB1BLS PROTOCOL – edition 2       9
 ‘Set local clock alarm’ command received:
      SID10-SID9 = 11 (lowest priority)
      SID8...SID1 = Module address
@@ -532,7 +532,7 @@ Transmits the third part of the blind name:
 
 
 
-                                            VMB1BLS PROTOCOL – edition 1                           10
+                                            VMB1BLS PROTOCOL – edition 2                           10
 ‘Set blind position’ command received:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Module address
@@ -593,7 +593,7 @@ Transmits the third part of the blind name:
 
 
 
-                                            VMB1BLS PROTOCOL – edition 1                                  11
+                                            VMB1BLS PROTOCOL – edition 2                                  11
 ‘Cancel forced up’ command received:
    SID10-SID9 = 00 (highest priority)
    SID8...SID1 = Module address
@@ -655,7 +655,7 @@ Transmits the third part of the blind name:
 
 
 
-                                            VMB1BLS PROTOCOL – edition 1                                                12
+                                            VMB1BLS PROTOCOL – edition 2                                                12
 ‘Inhibit preset up’ command received:
     SID10-SID9 = 00 (highest priority)
     SID8...SID1 = Module address
@@ -717,7 +717,7 @@ Transmits the third part of the blind name:
 
 
 
-                                           VMB1BLS PROTOCOL – edition 1                                               13
+                                           VMB1BLS PROTOCOL – edition 2                                               13
 ‘Module type request’ command received:
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Module address
@@ -776,7 +776,7 @@ Transmits the third part of the blind name:
 
 
 
-                                           VMB1BLS PROTOCOL – edition 1                                                14
+                                           VMB1BLS PROTOCOL – edition 2                                                14
 ‘Write memory block’ command received:
     SID10-SID9 = 11 (lowest priority)
     SID8...SID1 = Module address
@@ -834,7 +834,7 @@ Transmits the third part of the blind name:
 
 
 
-                                          VMB1BLS PROTOCOL – edition 1                  15
+                                          VMB1BLS PROTOCOL – edition 2                  15
  Memory map version 1:
 
 Address   Contents                                                  Address   Contents
@@ -906,7 +906,7 @@ H’00DA’   Sunset 21 August – sunrise 5 August (-128’..127’)         H�
 
 
 
-                                               VMB1BLS PROTOCOL – edition 1                                                  16
+                                               VMB1BLS PROTOCOL – edition 2                                                  16
 H’00DC’   Sunset 21 September – sunrise 5 September (-128’..127’)   H’00DC’    Sunset 5 October – sunrise 21 September (-128’..127’)
 H’00DE’   Sunset 21 October – sunrise 5 October (-128’..127’)       H’00DF’    Sunset 5 November – sunrise 21 October (-128’..127’)
 H’00E0’   Sunset 21 November – sunrise 5 November (-128’..127’)     H’00E1’    Sunset 5 December – sunrise 21 November (-128’..127’)
@@ -975,7 +975,7 @@ H’00FE’   Serial number high                                        H’00FF
 
 
 
-                                                VMB1BLS PROTOCOL – edition 1                                                  17
+                                                VMB1BLS PROTOCOL – edition 2                                                  17
       B’xxxxxxx1’            Blind 1 inhibit
       B’xxxxxx0x’            Blind 2 inhibit cancelled
       B’xxxxxx1x’            Blind 2 inhibit
@@ -1028,7 +1028,7 @@ Blind Alarm clock configuration
 
 
 
-                             VMB1BLS PROTOCOL – edition 1           18
+                             VMB1BLS PROTOCOL – edition 2           18
  Address     Contents                                Address   Contents
  H’0100’     Push button 1 module address            H’0101’   Push button 1 bit number
  H’0102’     Push button 1 action for channel 1      H’0103’   Push button 1 first time parameter
@@ -1047,7 +1047,7 @@ Unused locations contain H’FF’
 
 
 
-                                         VMB1BLS PROTOCOL – edition 1                                19
+                                         VMB1BLS PROTOCOL – edition 2                                19
 Action   Description                                           First time          Second time
                                                                parameter           parameter
 H’00’    Up                                                    H’FF’               H’FF’
@@ -1121,7 +1121,7 @@ H’42’    Cancel inhibit                                        H’FF’    
 
 
 
-                                                    VMB1BLS PROTOCOL – edition 1                          20
+                                                    VMB1BLS PROTOCOL – edition 2                          20
 H’43’   Inhibit but preset up at closed switch               H’FF’            H’FF’
 H’44’   Inhibit but preset up at open switch                 H’FF’            H’FF’
 H’45’   Inhibit but preset up                                Timeout          H’FF’
@@ -1164,7 +1164,7 @@ H’68’   Disable sunset                                       H’FF’      
 
 
 
-                                               VMB1BLS PROTOCOL – edition 1           21
+                                               VMB1BLS PROTOCOL – edition 2           21
 Time parameter   Time
 0                0s or No timer
 1                1s
@@ -1203,5 +1203,381 @@ H’68’   Disable sunset                                       H’FF’      
 
 
 
-                                  VMB1BLS PROTOCOL – edition 1   22
+                                  VMB1BLS PROTOCOL – edition 2   22
+ Memory map version 2 (build 1809 or higher):
+
+Address   Contents                                                  Address   Contents
+H’0000’   Blind 1 name character 1                                  H’0001’   Blind 1 name character 2
+...       ...                                                       ...       ...
+H’000E’   Blind 1 name character 15                                 H’000F’   Blind 1 name character 16
+H’0010’   Not used                                                  H’0011’   Not used
+...       ...                                                       ...       ...
+H’001E’   Not used                                                  H’001F’   Not used
+H’0020’   Blind 1 time out                                          H’0021’   Low byte 256/(Blind 1 timeout*0.0131072)
+H’0022’   High byte 256/(Blind 1 timeout*0.0131072)                 H’0023’   Not used
+H’0024’   Not used                                                  H’0025’   Not used
+H’0026’   Blind 1 unwind delay (s)                                  H’0027’   Not used
+H’0028’   Blind 1 collapse delay (s)                                H’0029’   Not used
+H’002A’   Blind 1 slats rotate time                                 H’002B’   Not used
+...       ...                                                       ...       ...
+H’003A’   Not used                                                  H’003B’   Not used
+H’003C’   Blind 1 location id low byte                              H’003D’   Blind 1 location id high byte
+H’003E’   Blind 1 group id low byte                                 H’003F’   Blind 1group id high byte
+H’0040’   Blind 1 circuit id low byte                               H’0041’   Blind 1 circuit id high byte
+H’0042’   Blind 1 load id low byte                                  H’0043’   Blind 1 load id high byte
+H’0044’   Not used                                                  H’0045’   Not used
+...       ...                                                       ...       ...
+H’004A’   Not used                                                  H’004B’   Not used
+H’004C’   Module name character 1                                   H’004D’   Module name character 2
+…         ..                                                        ..        ..
+H’008A’   Module name character 63                                  H’008B’   Module name character 64
+H’008C’   Blind 1 Sunrise offset (-128’…127’)                       H’008D’   Blind 1 Sunset offset (-128’…127’)
+H’008E’   Not used                                                  H’008F’   Not used
+H’0090’   Blind 1 Wake up 1 offset (-128’…127’)                     H’0091’   Not used
+H’0092’   Blind 1 Go to bed 1 offset (-128’…127’)                   H’0093’   Not used
+H’0094’   Blind 1 Wake up 2 offset (-128’…127’)                     H’0095’   Not used
+H’0096’   Blind 1 Go to bed 2 offset (-128’…127’)                   H’0097’   Not used
+H’0098’   Not used                                                  H’0099’   Not used
+H’009A’   Not used                                                  H’009B’   Not used
+H’009C’   Not used                                                  H’009D’   Not used
+H’009E’   Not used                                                  H’009F’   Not used
+H’00A0’   Blind 1 Wake up 1 hour (0…23)                             H’00A1’   Blind 1 Wake up 1 minutes (0…59)
+H’00A2’   Blind 1 Go to bed 1 hour (0…23)                           H’00A3’   Blind 1 Go to bed 1 minutes (0…59)
+H’00A4’   Blind 1 Wake up 2 hour (0…23)                             H’00A5’   Blind 1 Wake up 2 minutes (0…59)
+H’00A6’   Blind 1 Go to bed 2 hour (0…23)                           H’00A7’   Blind 1 Go to bed 2 minutes (0…59)
+H’00A8’   Not used                                                  H’00A9’   Not used
+H’00AA’   Not used                                                  H’00AB’   Not used
+H’00AC’   Not used                                                  H’00AD’   Not used
+H’00AE’   Not used                                                  H’00AF’   Not used
+H’00B0’   Sunrise hour at 21 December (0…23)                        H’00B1’   Sunrise minutes at 21 December (0…59)
+H’00B2’   Sunrise 21 January – sunrise 5 January (-128’..127’)      H’00B3’   Sunrise 5 February – sunrise 21 January (-128’..127’)
+H’00B4’   Sunrise 21 February – sunrise 5 February (-128’..127’)    H’00B5’   Sunrise 5 March – sunrise 21 February (-128’..127’)
+H’00B6’   Sunrise 21 March – sunrise 5 March (-128’..127’)          H’00B7’   Sunrise 5 April – sunrise 21 March (-128’..127’)
+H’00B8’   Sunrise 21 April – sunrise 5 April (-128’..127’)          H’00B9’   Sunrise 5 May – sunrise 21 April (-128’..127’)
+H’00BA’   Sunrise 21 May – sunrise 5 May (-128’..127’)              H’00BB’   Sunrise 5 June – sunrise 21 May (-128’..127’)
+H’00BC’   Sunrise 21 June – sunrise 5 June (-128’..127’)            H’00BD’   Sunrise 5 July – sunrise 21 June (-128’..127’)
+H’00BE’   Sunrise 21 July – sunrise 5 July (-128’..127’)            H’00BF’   Sunrise 5 August – sunrise 21 July (-128’..127’)
+H’00C0’   Sunrise 21 August – sunrise 5 August (-128’..127’)        H’00C1’   Sunrise 5 September – sunrise 21 August (-128’..127’)
+H’00C2’   Sunrise 21 September – sunrise 5 September (-128..127’)   H’00C3’   Sunrise 5 October – sunrise 21 September (-128’..127’)
+H’00C4’   Sunrise 21 October – sunrise 5 October (-128’..127’)      H’00C5’   Sunrise 5 November – sunrise 21 October (-128’..127’)
+H’00C6’   Sunrise 21 November – sunrise 5 November (-128’..127’)    H’00C7’   Sunrise 5 December – sunrise 21 November (-128’..127’)
+H’00C8’   Sunrise 21 December – sunrise 5 December (-128’..127’)    H’00C9’   Sunrise 5 January – sunrise 21 December (-128’..127’)
+H’00CA’   Sunset hour at 21 December (0…23)                         H’00CB’   Sunset minutes at 21 December (0…59)
+H’00CC’   Sunset 21 January – sunrise 5 January (-128’..127’)       H’00CD’   Sunset 5 February – sunrise 21 January (-128’..127’)
+H’00CE’   Sunset 21 February – sunrise 5 February (-128’..127’)     H’00CF’   Sunset 5 March – sunrise 21 February (-128’..127’)
+H’00D0’   Sunset 21 March – sunrise 5 March (-128’..127’)           H’00D1’   Sunset 5 April – sunrise 21 March (-128’..127’)
+H’00D2’   Sunset 21 April – sunrise 5 April (-128’..127’)           H’00D3’   Sunset 5 May – sunrise 21 April (-128’..127’)
+H’00D4’   Sunset 21 May – sunrise 5 May (-128’..127’)               H’00D5’   Sunset 5 June – sunrise 21 May (-128’..127’)
+H’00D6’   Sunset 21 June – sunrise 5 June (-128’..127’)             H’00D7’   Sunset 5 July – sunrise 21 June (-128’..127’)
+H’00D8’   Sunset 21 July – sunrise 5 July (-128’..127’)             H’00D9’   Sunset 5 August – sunrise 21 July (-128’..127’)
+H’00DA’   Sunset 21 August – sunrise 5 August (-128’..127’)         H’00DA’   Sunset 5 September – sunrise 21 August (-128’..127’)
+
+
+
+
+                                               VMB1BLS PROTOCOL – edition 2                                                  23
+H’00DC’   Sunset 21 September – sunrise 5 September (-128’..127’)   H’00DC’    Sunset 5 October – sunrise 21 September (-128’..127’)
+H’00DE’   Sunset 21 October – sunrise 5 October (-128’..127’)       H’00DF’    Sunset 5 November – sunrise 21 October (-128’..127’)
+H’00E0’   Sunset 21 November – sunrise 5 November (-128’..127’)     H’00E1’    Sunset 5 December – sunrise 21 November (-128’..127’)
+H’00E2’   Sunset 21 December – sunrise 5 December (-128’..127’)     H’00E3’    Sunset 5 January – sunrise 21 December (-128’..127’)
+H’00E4’   Not used                                                  H’00E5’    Terminator
+H’00E6’   Module location id low byte                               H’00E7’    Module location id high byte
+H’00E8’   Module group id low byte                                  H’00E9’    Module group id high byte
+H’00EA’   Module circuit id low byte                                H’00EB’    Module circuit id high byte
+H’00EC’   Module load id low byte                                   H’00ED’    Module load id high byte
+H’00EE’   Channels Forced up                                        H’00EF’    Channels Forced down
+H’00F0’   Channels Inhibited                                        H’00F1’    Channels Inhibited preset up
+H’00F2’   Channels Inhibited preset down                            H’00F3’    Channels Locked/Unlocked
+H’00F4’   Blind 1 Auto mode (none , 1, 2 or 3)                      H’00F5’    Blind 1 Alarm clock configuration
+H’00F6’   Not used                                                  H’00F7’    Not used
+H’00F8’   Current day (1…31)                                        H’00F9’    Current month (1…12)
+H’00FA’   Current year high byte                                    H’00FB’    Current year low byte
+H’00FC’   Module Zone Address                                       H’00FD’    Module Address
+H’00FE’   Serial number high                                        H’00FF’    Serial number low
+
+     Remark:
+     Unused locations contain H’FF’
+     Do not overwrite the following address location:
+               H’00EE’                        Channels Forced up
+               H’00EF’                        Channels Forced down
+               H’00F0’                        Channels Inhibited
+               H’00F1’                        Channels Inhibited preset up
+               H’00F2’                        Channels Inhibited preset down
+               H’00F3’                        Channel locked/unlocked
+               H’00F4’                        Blind 1 Auto mode (none, 1, 2 or 3)
+               H’00F5’                        Blind 1 Alarm clock configuration
+               H’00F8’                        Current day of month
+               H’00F9’                        Current month
+               H’00FA’ & H’00FB’              Current year
+               H’00FC’                        Module zone address
+               H’00FD’                        Module address
+               H’00FE’ & H’00FF’              Module serial number
+
+
+                Blind timeout
+
+                         Contents           Time out
+                             0                 No timeout (continuous)
+                             1                 1.3 sec (1 *1.31072s)
+                             2                 2.6 sec (2 *1.31072s)
+                            ...                ...
+                           255                 5min 34 sec (255 *1.31072s)
+
+                Blind slats rotate time
+                         Contents           Rotate time
+                              0                No rotating slats blind (default)
+                              1                1 sec
+                              2                2 sec
+                             ...               ...
+                            255                255 sec
+
+                Channel forced up
+                       Contents             Channel forced up
+                     B’xxxxxxx0’               Blind 1 forced up cancelled
+                     B’xxxxxxx1’               Blind 1 forced up
+                     B’xxxxxx0x’               Blind 2 forced up cancelled
+                     B’xxxxxx1x’               Blind 2 forced up
+
+
+
+
+                                                VMB1BLS PROTOCOL – edition 2                                                  24
+Channel forced down
+       Contents          Channel forced down
+     B’xxxxxxx0’            Blind 1 forced down cancelled
+     B’xxxxxxx1’            Blind 1 forced down
+     B’xxxxxx0x’            Blind 2 forced down cancelled
+     B’xxxxxx1x’            Blind 2 forced down
+
+Channel inhibited
+       Contents          Channel inhibited
+     B’xxxxxxx0’            Blind 1 inhibit cancelled
+     B’xxxxxxx1’            Blind 1 inhibit
+     B’xxxxxx0x’            Blind 2 inhibit cancelled
+     B’xxxxxx1x’            Blind 2 inhibit
+
+Channel inhibited preset up
+       Contents          Channel inhibited but preset up
+     B’xxxxxxx0’            Blind 1 inhibit preset up cancelled
+     B’xxxxxxx1’            Blind 1 inhibit preset up
+     B’xxxxxx0x’            Blind 2 inhibit preset up cancelled
+     B’xxxxxx1x’            Blind 2 inhibit preset up
+
+Channel inhibited preset down
+       Contents          Channel inhibited but preset down
+     B’xxxxxxx0’            Blind 1 inhibit preset down cancelled
+     B’xxxxxxx1’            Blind 1 inhibit preset down
+     B’xxxxxx0x’            Blind 2 inhibit preset down cancelled
+     B’xxxxxx1x’            Blind 2 inhibit preset down
+
+Channel locked/unlocked
+       Contents         Channel locked/unlocked
+     B’xxxxxxx0’           Blind 1 unlocked
+     B’xxxxxxx1’           Blind 1 locked
+     B’xxxxxx0x’           Blind 2 unlocked
+     B’xxxxxx1x’           Blind 2 locked
+
+Blind Auto mode selection
+        Contents         Selected auto mode
+           0                 No auto mode activated
+           1                 Auto mode 1 activated
+           2                 Auto mode 2 activated
+           3                 Auto mode 3 activated
+
+Blind Alarm clock configuration
+       Contents         Alarm clock configuration
+      B’xxxxxxx0’           Alarm 1 disabled
+      B’xxxxxxx1’           Alarm 1 enabled
+      B’xxxxxx0x’           Local alarm 1
+      B’xxxxxx1x’           Global alarm 1
+      B’xxxxx0xx’           Alarm 2 disabled
+      B’xxxxx1xx’           Alarm 2 enabled
+      B’xxxx0xxx’           Local alarm 2
+      B’xxxx1xxx’           Global alarm 2
+      B’xxx0xxxx’           Sunrise disabled
+      B’xxx1xxxx’           Sunrise enabled
+      B’xx0xxxxx’           Sunset disabled
+      B’xx1xxxxx’           Sunset enabled
+      B’x0xxxxxx’           Summer time disabled
+      B’x1xxxxxx’           Summer time enabled
+
+
+
+
+                             VMB1BLS PROTOCOL – edition 2           25
+ Address     Contents                                Address   Contents
+ H’0100’     Push button 1 module address            H’0101’   Push button 1 bit number
+ H’0102’     Push button 1 action for channel 1      H’0103’   Push button 1 first time parameter
+ H’0104’     Push button 1 second time parameter     H’0105’   Push button 2 module address
+ H’0106’     Push button 2 bit number                H’0107’   Push button 2 action for channel 1
+ H’0108’     Push button 2 first parameter           H’0109’   Push button 2 second parameter
+ ...         ...                                     ...       ...
+ H’0178’     Push button 25 module address           H’0179’   Push button 25 bit number
+ H’017A’     Push button 25 action for channel 1     H’017B’   Push button 25 first time parameter
+ H’017C’     Push button 25 second time parameter    H’017D’   Not used
+ H’017E’     Not used                                H’017F’   Not used
+
+Remark:
+Unused locations contain H’FF’
+
+
+
+
+                                         VMB1BLS PROTOCOL – edition 2                                26
+Action   Description                                           First time          Second time
+                                                               parameter           parameter
+H’00’    Up                                                    H’FF’               H’FF’
+H’01’    Direct up                                             Delayed on time     H’FF’
+H’02’    Direct up at release                                  Delayed on time     H’FF’
+H’03’    Down                                                  H’FF’               H’FF’
+H’04’    Direct down                                           Delayed on time     H’FF’
+H’05’    Direct down at release                                Delayed on time     H’FF’
+H’06’    Up/down                                               H’FF’               H’FF’
+H’07’    Go to position                                        Delayed on time     Position (0 to 100%)
+H’08’    Go to position at release                             Delayed on time     Position (0 to 100%)
+H’09’    Up in auto mode 1                                     H’FF’               H’FF’
+H’0A’    Direct up in auto mode 1                              Delayed on time     H’FF’
+H’0B’    Direct up at release in auto mode 1                   Delayed on time     H’FF’
+H’0C’    Down in auto mode 1                                   H’FF’               H’FF’
+H’0D’    Direct down in auto mode 1                            Delayed on time     H’FF’
+H’0E’    Direct down at release in auto mode 1                 Delayed on time     H’FF’
+H’0F’    Up/down in auto mode 1                                H’FF’               H’FF’
+H’10’    Go to position in auto mode 1                         Delayed on time     Position (0 to 100%)
+H’11’    Go to position at release in auto mode 1              Delayed on time     Position (0 to 100%)
+H’12’    Select auto mode 1                                    H’FF’               H’FF’
+H’13’    Select auto mode 1 at release                         H’FF’               H’FF’
+H’14’    Select/deselect auto mode 1                           H’FF’               H’FF’
+H’15’    Deselect auto mode                                    H’FF’               H’FF’
+H’16’    Deselect auto mode at release                         H’FF’               H’FF’
+H’17’    Up in auto mode 2                                     H’FF’               H’FF’
+H’18’    Direct up in auto mode 2                              Delayed on time     H’FF’
+H’19’    Direct up at release in auto mode 2                   Delayed on time     H’FF’
+H’1A’    Down in auto mode 2                                   H’FF’               H’FF’
+H’1B’    Direct down in auto mode 2                            Delayed on time     H’FF’
+H’1C’    Direct down at release in auto mode 2                 Delayed on time     H’FF’
+H’1D’    Up/down in auto mode 2                                H’FF’               H’FF’
+H’1E’    Position in auto mode 2                               Delayed on time     Position (0 to 100%)
+H’1F’    Go to position at release in auto mode 2              Delayed on time     Position (0 to 100%)
+H’20’    Select auto mode 2                                    H’FF’               H’FF’
+H’21’    Select auto mode 2 at release                         H’FF’               H’FF’
+H’22’    Select/deselect auto mode 2                           H’FF’               H’FF’
+H’23’    Up in auto mode 3                                     H’FF’               H’FF’
+H’24’    Direct up in auto mode 3                              Delayed on time     H’FF’
+H’25’    Direct up at release in auto mode 3                   Delayed on time     H’FF’
+H’26’    Down in auto mode 3                                   H’FF’               H’FF’
+H’27’    Direct down in auto mode 3                            Delayed on time     H’FF’
+H’28’    Direct down at release in auto mode 3                 Delayed on time     H’FF’
+H’29’    Up/down in auto mode 3                                H’FF’               H’FF’
+H’2A’    Position in auto mode 3                               Delayed on time     Position (0 to 100%)
+H’2B’    Go to position at release in auto mode 3              Delayed on time     Position (0 to 100%)
+H’2C’    Select auto mode 3                                    H’FF’               H’FF’
+H’2D’    Select auto mode 3 at release                         H’FF’               H’FF’
+H’2E’    Select/deselect auto mode 3                           H’FF’               H’FF’
+H’2F’    Lock at closed switch                                 H’FF’               H’FF’
+H’30’    Lock at open switch                                   H’FF’               H’FF’
+H’31’    Lock                                                  Timeout             H’FF’
+H’32’    Lock/unlock                                           Timeout             H’FF’
+H’33’    Unlock                                                H’FF’               H’FF’
+H’34’    Forced up at closed switch                            H’FF’               H’FF’
+H’35’    Forced up at open switch                              H’FF’               H’FF’
+H’36’    Forced up                                             Timeout             H’FF’
+H’37’    Forced up/cancel forced up                            Timeout             H’FF’
+H’38’    Cancel forced up                                      H’FF’               H’FF’
+H’39’    Forced down at closed switch                          H’FF’               H’FF’
+H’3A’    Forced down at open switch                            H’FF’               H’FF’
+H’3B’    Forced down                                           Timeout             H’FF’
+H’3C’    Forced down/cancel forced down                        Timeout             H’FF’
+H’3D’    Cancel forced down                                    H’FF’               H’FF’
+H’3E’    Inhibit at closed switch                              H’FF’               H’FF’
+H’3F’    Inhibit at open switch                                H’FF’               H’FF’
+H’40’    Inhibit                                               Timeout             H’FF’
+H’41’    Inhibit /cancel inhibit                               Timeout             H’FF’
+H’42’    Cancel inhibit                                        H’FF’               H’FF’
+
+
+
+
+                                                    VMB1BLS PROTOCOL – edition 2                          27
+H’43’   Inhibit but preset up at closed switch               H’FF’            H’FF’
+H’44’   Inhibit but preset up at open switch                 H’FF’            H’FF’
+H’45’   Inhibit but preset up                                Timeout          H’FF’
+H’46’   Inhibit but preset up/cancel inhibit preset up       Timeout          H’FF’
+H’47’   Cancel inhibit but preset up                         H’FF’            H’FF’
+H’48’   Inhibit but preset down at closed switch             H’FF’            H’FF’
+H’49’   Inhibit but preset down at closed switch             H’FF’            H’FF’
+H’4A’   Inhibit but preset down                              Timeout          H’FF’
+H’4B’   Inhibit but preset down/cancel inhibit preset down   Timeout          H’FF’
+H’4C’   Cancel but inhibit preset down                       H’FF’            H’FF’
+H’4D’   Enable Alarm 1 at closed switch                      H’FF’            H’FF’
+H’4E’   Enable Alarm 1 at open switch                        H’FF’            H’FF’
+H’4F’   Disable Alarm 1 at closed switch                     H’FF’            H’FF’
+H’50’   Disable Alarm 1 at open switch                       H’FF’            H’FF’
+H’51’   Enable Alarm 1                                       H’FF’            H’FF’
+H’52’   Enable/disable Alarm 1                               H’FF’            H’FF’
+H’53’   Disable Alarm 1                                      H’FF’            H’FF’
+H’54’   Enable Alarm 2 at closed switch                      H’FF’            H’FF’
+H’55’   Enable Alarm 2 at open switch                        H’FF’            H’FF’
+H’56’   Disable Alarm 2 at closed switch                     H’FF’            H’FF’
+H’57’   Disable Alarm 2 at open switch                       H’FF’            H’FF’
+H’58’   Enable Alarm 2                                       H’FF’            H’FF’
+H’59’   Enable/disable Alarm 2                               H’FF’            H’FF’
+H’5A’   Disable Alarm 2                                      H’FF’            H’FF’
+H’5B’   Enable sunrise at closed switch                      H’FF’            H’FF’
+H’5C’   Enable sunrise at open switch                        H’FF’            H’FF’
+H’5D’   Disable sunrise at closed switch                     H’FF’            H’FF’
+H’5E’   Disable sunrise at open switch                       H’FF’            H’FF’
+H’5F’   Enable sunrise                                       H’FF’            H’FF’
+H’60’   Enable/disable sunrise                               H’FF’            H’FF’
+H’61’   Disable sunrise                                      H’FF’            H’FF’
+H’62’   Enable sunset at closed switch                       H’FF’            H’FF’
+H’63’   Enable sunset at open switch                         H’FF’            H’FF’
+H’64’   Disable sunset at closed switch                      H’FF’            H’FF’
+H’65’   Disable sunset at open switch                        H’FF’            H’FF’
+H’66’   Enable sunset                                        H’FF’            H’FF’
+H’67’   Enable/disable sunset                                H’FF’            H’FF’
+H’68’   Disable sunset                                       H’FF’            H’FF’
+
+
+
+
+                                               VMB1BLS PROTOCOL – edition 2           28
+Time parameter   Time
+0                0s or No timer
+1                1s
+2                2s
+...
+119              1min59s
+120              2min
+121              2min15s
+...
+131              4min45s
+132              5min
+133              5min30s
+...
+181              29min30s
+182              30min
+183              31min
+...
+211              59min
+212              1h
+213              1h15min
+...
+227              4h45min
+228              5h
+229              5h30min
+...
+237              9h30min
+238              10h
+239              11h
+...
+251              23h
+252              1d
+253              2d
+254              3d
+255              infinite
+
+
+
+
+                                  VMB1BLS PROTOCOL – edition 2   29
 

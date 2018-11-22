@@ -1,15 +1,15 @@
-  VMB1TS
+VMB1TSW
 Temperature Sensor Module
        PROTOCOL
 
 
 
 
-       VMB1TS PROTOCOL – edition 1 _ rev4   1
+        VMB1TSW PROTOCOL – edition 1   1
 Binary format
 
-<SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-
-ACK-ACKDEL-EOF7...EOF1-IFS3...IFS1>
+<SOF-SID10...SID0-RTR-IDE-r0-DLC3...0-DATABYTE1...DATABYTEn-CRC15...CRC1-CRCDEL-ACK-ACKDEL-
+EOF7...EOF1-IFS3...IFS1>
 
   bits                          Description
   SOF                           Start Of Frame (always 0)
@@ -69,7 +69,7 @@ The temperature sensor module can receive the following message:
 
 
 
-                             VMB1TS PROTOCOL – edition 1 _ rev4                                  2
+                                      VMB1TSW PROTOCOL – edition 1                               2
 The temperature sensor module can receive the following commands:
   Update output LED
   Clear output LED
@@ -110,10 +110,10 @@ The temperature sensor module can receive the following message:
 
 
 
-                            VMB1TS PROTOCOL – edition 1 _ rev4      3
+                                     VMB1TSW PROTOCOL – edition 1   3
 Transmits the sensor output status:
    SID10-SID9 = 00 (highest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 4 databytes to send
    DATABYTE1 = COMMAND_OUTPUT_STATUS (H’00’)
@@ -137,7 +137,7 @@ The temperature sensor module can receive the following message:
 
 Transmits the manual push button status:
    SID10-SID9 = 00 (highest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 4 databytes to send
    DATABYTE1 = COMMAND_PUSHBUTTON_STATUS (H’00’)
@@ -172,10 +172,10 @@ Transmits the manual push button status:
 
 
 
-                              VMB1TS PROTOCOL – edition 1 _ rev4            4
+                                      VMB1TSW PROTOCOL – edition 1          4
 Transmit the sensor status (Build 0949):
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 8 databytes to send
    DATABYTE1 = COMMAND_TEMP_SENSOR_STATUS (H’EA’)
@@ -238,7 +238,7 @@ Transmits the manual push button status:
 
 
 
-                               VMB1TS PROTOCOL – edition 1 _ rev4                          5
+                                         VMB1TSW PROTOCOL – edition 1                      5
    DATABYTE6 = Current temperature set (resolution 0.5°)
                 Contents     Current temperature set
                 01101100 54°C
@@ -257,26 +257,23 @@ Transmits the manual push button status:
    Remark:
    [DATABYTE7][DATABYTE8] contains a 16-bit sleep timer into minutes (1 to 65.279min).
    If the sleep timer contains H’0000’, the sleep timer is deactivated.
-   If the sleep timer contains a value between H’0001’ and H’FEFF’ (1 to 65.279min), the sleep timer
-   is running for that time.
+   If the sleep timer contains a value between H’0001’ and H’FEFF’ (1 to 65.279min), the sleep timer is running for
+   that time.
    If the sleep timer contains H’FFFF’, the sensor is in manual mode.
 
 Transmit the sensor temperature:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 7 databytes to send
    DATABYTE1 = COMMAND_SENSOR_TEMPERATURE (H’E6’)
    DATABYTE2 = High byte current sensor temperature
-   DATABYTE3 = Low byte current sensor temperature into two’s complement format (resolution
-   0.0625°)
+   DATABYTE3 = Low byte current sensor temperature into two’s complement format (resolution 0.0625°)
    DATABYTE4 = High byte minimum sensor temperature
-   DATABYTE5 = Low byte minimum sensor temperature into two’s complement format (resolution
-   0.0625°)
+   DATABYTE5 = Low byte minimum sensor temperature into two’s complement format (resolution 0.0625°)
    DATABYTE6 = High byte maximum sensor temperature
-   DATABYTE7 = Low byte maximum sensor temperature into two’s complement format (resolution
-   0.0625°)
-                   High byte     Low byte  Current sensor temperature
+   DATABYTE7 = Low byte maximum sensor temperature into two’s complement format (resolution 0.0625°)
+                   High byte     Low byte    Current sensor temperature
                    01111111 11100000 63.5°C
 
                     00000001      00000000     0.5°C
@@ -298,10 +295,10 @@ Transmit the sensor temperature:
 
 
 
-                                VMB1TS PROTOCOL – edition 1 _ rev4                                     6
+                                           VMB1TSW PROTOCOL – edition 1                                               6
 Transmit time statistics
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 8 databytes to send
    DATABYTE1 = COMMAND_TIME_STATISTICS (H’C8’)
@@ -331,7 +328,7 @@ Transmit the sensor temperature:
 
 Transmit the first part of the sensor settings (Build 0949):
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 8 databytes to send
    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART1 (H’E8’)
@@ -350,7 +347,7 @@ Transmit the first part of the sensor settings (Build 0949):
 
 Transmit the second part of the sensor settings:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 8 databytes to send
    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART2 (H’E9’)
@@ -361,16 +358,15 @@ Transmit the second part of the sensor settings:
    DATABYTE6 = High byte of the default sleep timer
    DATABYTE7 = Low byte of the default sleep timer into minutes (1 to 65.279min)
    DATABYTE8 = Default auto send temperature time interval into seconds
-                  (valid range: 10…255s)
-                  (1…9 = autosend when temperature changed)
-                  (0 = autosend disabled)
+                   (valid range: 10…255s)
+                   (1…9 = autosend when temperature changed)
+                   (0 = autosend disabled)
 
 
-
-                                VMB1TS PROTOCOL – edition 1 _ rev4                                   7
+                                          VMB1TSW PROTOCOL – edition 1                               7
 Transmit the third part of the sensor settings:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 7 databytes to send
    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART3 (H’C6’)
@@ -391,7 +387,7 @@ Transmit the second part of the sensor settings:
 
 Transmit the fourth part of the sensor settings (Build 0949):
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 2 databytes to send
    DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_PART4 (H’B9’)
@@ -406,7 +402,7 @@ Transmit the fourth part of the sensor settings (Build 0949):
 
 Transmit the sensor configuration data:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 8 databytes to send
    DATABYTE1 = COMMAND_SENSOR_CONFIG_DATA (H’BB’)
@@ -434,13 +430,12 @@ Transmit the sensor configuration data:
    DATABYTE6 = Sensor hysteresis set low byte (bits 3…0 always zero)
    DATABYTE7 = Sensor output status (0 = low / 1 = high)
 
-
-                               VMB1TS PROTOCOL – edition 1 _ rev4             8
+                                        VMB1TSW PROTOCOL – edition 1          8
    DATABYTE8 = Output time-out timer (0 = timed out)
 
-Transmits the module type (Build 1001 or lower):
+Transmits the module type:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 5 databytes to send
    DATABYTE1 = COMMAND_MODULE_TYPE (H’FF’)
@@ -449,23 +444,9 @@ Transmits the module type (Build 1001 or lower):
    DATABYTE4 = Build year
    DATABYTE5 = Build week
 
-Transmits the module type (Build 1233 or higher):
-   SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
-   RTR = 0
-   DLC3...DLC0 = 8 databytes to send
-   DATABYTE1 = COMMAND_MODULE_TYPE (H’FF’)
-   DATABYTE2 = NODETYPE_TEMPERATURE_SENSOR (H’0C’)
-   DATABYTE3 = Sensor zone number
-   DATABYTE4 = Memory map version
-   DATABYTE5 = Serial number high
-   DATABYTE6 = Serial number low
-   DATABYTE7 = Build year
-   DATABYTE8 = Build week
-
 Transmits the first part of the sensor name:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 8 databytes to send
    DATABYTE1 = COMMAND_SENSOR_NAME_PART1 (H’F0’)
@@ -479,7 +460,7 @@ Transmits the first part of the sensor name:
 
 Transmits the second part of the sensor name:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 8 databytes to send
    DATABYTE1 = COMMAND_SENSOR_NAME_PART2 (H’F1’)
@@ -493,7 +474,7 @@ Transmits the second part of the sensor name:
 
 Transmits the third part of the sensor name:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 6 databytes to send
    DATABYTE1 = COMMAND_SENSOR_NAME_PART3 (H’F2’)
@@ -503,14 +484,12 @@ Transmits the third part of the sensor name:
    DATABYTE5 = Character 15 of the sensor name
    DATABYTE6 = Character 16 of the sensor name
 
-
-                              VMB1TS PROTOCOL – edition 1 _ rev4   9
-   Remarks:
+   Remarks:
    Unused characters contain H’FF’.
 
 Transmits the memory data:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 4 databytes to send
    DATABYTE1 = COMMAND_MEMORY_DATA (H’FE’)
@@ -520,8 +499,7 @@ Transmits the memory data:
 
 
 
-
-                              VMB1TS PROTOCOL – edition 1 _ rev4   10
+                                       VMB1TSW PROTOCOL – edition 1   9
 Transmits memory data block (4 bytes):
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Address of the module
@@ -582,15 +560,20 @@ Transmit: Blinks LEDs very fast on a push button module:
 
 Transmit: Bus error counter status
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 4 databytes to send
    DATABYTE1 = COMMAND_BUSERROR_COUNTER_STATUS (H’DA’)
    DATABYTE2 = Transmit error counter
    DATABYTE3 = Receive error counter
-   DATABYTE4 = Bus off counter
 
-                                 VMB1TS PROTOCOL – edition 1 _ rev4                                  11
+                                           VMB1TSW PROTOCOL – edition 1                              10
+DATABYTE4 = Bus off counter
+
+
+
+
+                              VMB1TSW PROTOCOL – edition 1   11
 Transmit: Set target temperature of the differential sensor
    SID10-SID9 = 11 (lowest priority)
    SID8...SID1 = Differential sensor address
@@ -614,7 +597,7 @@ Transmit: Bus error counter status
 
 
 
-                               VMB1TS PROTOCOL – edition 1 _ rev4   12
+                                          VMB1TSW PROTOCOL – edition 1   12
 ‘Push button status’ received:
    SID10-SID9 = 00 (highest priority)
    SID8...SID1 = Address of the push button module
@@ -635,7 +618,7 @@ Transmit: Bus error counter status
 
 ‘Update output LED status’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 4 databytes received
    DATABYTE1 = COMMAND_UPDATE_LED_STATUS (H’F4’)
@@ -656,7 +639,7 @@ Transmit: Bus error counter status
 
 ‘Clear output LED’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes received
     DATABYTE1 = COMMAND_CLEAR_LED (H’F5’)
@@ -673,10 +656,10 @@ Transmit: Bus error counter status
 
 
 
-                                  VMB1TS PROTOCOL – edition 1 _ rev4                     13
+                                            VMB1TSW PROTOCOL – edition 1                 13
 ‘Set output LED’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 2 databytes received
    DATABYTE1 = COMMAND_SET_LED (H’F6’)
@@ -692,7 +675,7 @@ Transmit: Bus error counter status
 
 ‘Slow blinking output LED’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes received
     DATABYTE1 = COMMAND_SLOW_BLINKING_LED (H’F7’)
@@ -708,7 +691,7 @@ Transmit: Bus error counter status
 
 ‘Fast blinking output LED’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes received
     DATABYTE1 = COMMAND_FAST_BLINKING_LED (H’F8’)
@@ -724,7 +707,7 @@ Transmit: Bus error counter status
 
 ‘Very fast blinking output LED’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes received
     DATABYTE1 = COMMAND_VERYFAST_BLINKING_LED (H’F9’)
@@ -740,35 +723,34 @@ Transmit: Bus error counter status
 
 
 
-
-                             VMB1TS PROTOCOL – edition 1 _ rev4   14
+                                      VMB1TSW PROTOCOL – edition 1   14
 ‘Module type request’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 1
    DLC3...DLC0 = 0 databytes received
 
 ‘Bus error counter status request’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 1 databytes to send
    DATABYTE1 = COMMAND_BUS_ERROR_CONTER_STATUS_REQUEST (H’D9’)
 
 ‘Sensor temperature request’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes to send
     DATABYTE1 = COMMAND_SENSOR_TEMP_REQUEST (H’E5’)
     DATABYTE2 = Autosend time interval into seconds
-                   (valid range: 10…255s)
-                   (1…9 = autosend when temperature changed)
-                   (0 = autosend disabled)
+                    (valid range: 10…255s)
+                    (1…9 = autosend when temperature changed)
+                    (0 = autosend disabled)
 
 ‘Sensor status request’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes to send
     DATABYTE1 = COMMAND_MODULE_STATUS_REQUEST (H’FA’)
@@ -776,7 +758,7 @@ Transmit: Bus error counter status
 
 ‘Sensor settings request’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes to send
     DATABYTE1 = COMMAND_TEMP_SENSOR_SETTINGS_REQUEST (H’E7’)
@@ -784,7 +766,7 @@ Transmit: Bus error counter status
 
 ‘Sensor configuration data request’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes to send
     DATABYTE1 = COMMAND_SENSOR_CONFIG_DATA _REQUEST (H’BA’)
@@ -792,7 +774,7 @@ Transmit: Bus error counter status
 
 ‘Sensor name request’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes received
     DATABYTE1 = COMMAND_SENSOR_NAME_REQUEST (H’EF’)
@@ -801,10 +783,10 @@ Transmit: Bus error counter status
 
 
 
-                            VMB1TS PROTOCOL – edition 1 _ rev4   15
+                                        VMB1TSW PROTOCOL – edition 1   15
 ‘Time statistics request’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes to send
     DATABYTE1 = COMMAND_TIME_STATISTICS_REQUEST (H’C7’)
@@ -823,7 +805,7 @@ Transmit: Bus error counter status
 
 ‘Lock local control’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes received
     DATABYTE1 = COMMAND_LOCK_LOCAL_CONTROL (H’E1’)
@@ -831,7 +813,7 @@ Transmit: Bus error counter status
 
 ‘Unlock local control’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes received
     DATABYTE1 = COMMAND_UNLOCK_LOCAL_CONTROL (H’E2’)
@@ -839,7 +821,7 @@ Transmit: Bus error counter status
 
 ‘Set heating mode’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes received
     DATABYTE1 = COMMAND_SET_HEATING_MODE (H’E0’)
@@ -847,7 +829,7 @@ Transmit: Bus error counter status
 
 ‘Set cooling mode’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 2 databytes received
    DATABYTE1 = COMMAND_SET_COOLING_MODE (H’DF’)
@@ -855,7 +837,7 @@ Transmit: Bus error counter status
 
 ‘Read data from memory’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 3 databytes received
    DATABYTE1 = COMMAND_READ_DATA_FROM_MEMORY (H’FD’)
@@ -865,10 +847,10 @@ Transmit: Bus error counter status
 
 
 
-                               VMB1TS PROTOCOL – edition 1 _ rev4       16
+                                        VMB1TSW PROTOCOL – edition 1    16
 ‘Read data block from memory’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 3 databytes received
    DATABYTE1 = COMMAND_READ_MEMORY_BLOCK (H’C9’)
@@ -884,7 +866,7 @@ Transmit: Bus error counter status
 
 ‘Set sensor zone number’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 2 databytes to send
     DATABYTE1 = COMMAND_SET_SENSOR_ZONE_NUMBER (H’C5’)
@@ -894,7 +876,7 @@ Transmit: Bus error counter status
 
 ‘Write data to memory’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 4 databytes received
     DATABYTE1 = COMMAND_WRITE_DATA_TO_MEMORY (H’FC’)
@@ -907,7 +889,7 @@ Transmit: Bus error counter status
 
 ‘Write memory block’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 7 databytes received
     DATABYTE1 = COMMAND_WRITE_MEMORY_BLOCK (H’CA’)
@@ -923,7 +905,7 @@ Transmit: Bus error counter status
 
 ‘Set default sleep time’ command received:
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 3 databytes received
     DATABYTE1 = COMMAND_SET_DEFAULT_SLEEP_TIME (H’E3’)
@@ -933,11 +915,11 @@ Transmit: Bus error counter status
 
     Remark: Wait at least 20ms for sending a next command on the velbus
 
-
-                                 VMB1TS PROTOCOL – edition 1 _ rev4                      17
+                                          VMB1TSW PROTOCOL – edition 1                   17
+VMB1TSW PROTOCOL – edition 1   18
 ‘Set temperature’ command received (Build 0949):
     SID10-SID9 = 11 (lowest priority)
-    SID8...SID1 = Module address
+    SID8...SID1 = Address set by hex switches
     RTR = 0
     DLC3...DLC0 = 3 databytes received
     DATABYTE1 = COMMAND_SET_TEMP (H’E4’)
@@ -1000,8 +982,7 @@ Transmit: Bus error counter status
                  00000010 Enable unjamming heater valve & disable unjamming pump
                  00000011 Enable unjamming heater valve & pump
 
-
-                                 VMB1TS PROTOCOL – edition 1 _ rev4                       18
+                                            VMB1TSW PROTOCOL – edition 1                  19
    DATABYTE3 = Minimum switching time (Build 0949):
                 Contents    Operating mode
                 00000000 No switching time protection
@@ -1018,7 +999,7 @@ Transmit: Bus error counter status
 
 ‘Switch to comfort mode’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 3 databytes received
    DATABYTE1 = COMMAND_SWITCH_TO_COMFORT_MODE (H’DB’)
@@ -1027,15 +1008,15 @@ Transmit: Bus error counter status
 
    Remark:
    If the sleep time contains H’FF00’, the command is a program step.
-   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and
-   program steps will not be executed during that time.
-   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed any
-   more and local control is disabled.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps
+   will not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed any more and
+   local control is disabled.
    A value of zero for the sleep time cancels the manual mode or sleep timer.
 
 ‘Switch to day mode’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 3 databytes received
    DATABYTE1 = COMMAND_SWITCH_TO_DAY_MODE (H’DC’)
@@ -1044,15 +1025,15 @@ Transmit: Bus error counter status
 
    Remark:
    If the sleep time contains H’FF00’, the command is a program step.
-   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and
-   program steps will not be executed during that time.
-   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed any
-   more and local control is disabled.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps
+   will not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed any more and
+   local control is disabled.
    A value of zero for the sleep time cancels the manual mode or sleep timer.
 
 ‘Switch to night mode’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 3 databytes received
    DATABYTE1 = COMMAND_SWITCH_TO_NIGHT_MODE (H’DD’)
@@ -1061,18 +1042,17 @@ Transmit: Bus error counter status
 
    Remark:
    If the sleep time contains H’FF00’, the command is a program step.
-   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and
-   program steps will not be executed during that time.
-   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed
-   anymore and local control is disabled.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps
+   will not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore and local
+   control is disabled.
    A value of zero for the sleep time cancels the manual mode or sleep timer.
 
 
-
-                               VMB1TS PROTOCOL – edition 1 _ rev4                                 19
+                                         VMB1TSW PROTOCOL – edition 1                                           20
 ‘Switch to safe temperature mode’ command received:
    SID10-SID9 = 11 (lowest priority)
-   SID8...SID1 = Module address
+   SID8...SID1 = Address set by hex switches
    RTR = 0
    DLC3...DLC0 = 3 databytes received
    DATABYTE1 = COMMAND_SWITCH_TO_SAFE_MODE (H’DE’)
@@ -1081,10 +1061,10 @@ Transmit: Bus error counter status
 
    Remark:
    If the sleep time contains H’FF00’, the command is a program step.
-   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and
-   program steps will not be executed during that time.
-   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed
-   anymore and local control is disabled.
+   A sleep time between H’0001’ and H’FEFF’ (1 to 65.279min) starts the sleep timer for that time and program steps
+   will not be executed during that time.
+   A sleep time of H’FFFF’ puts the sensor into manual mode. Program steps will not be executed anymore and local
+   control is disabled.
    A value of zero for the sleep time cancels the manual mode or sleep timer.
 
 ’Program availability’ command received:
@@ -1095,7 +1075,7 @@ Transmit: Bus error counter status
     DATABYTE1 = COMMAND_SENSOR_PROGRAM_AVAILABILITY (H’BC’)
     DATABYTE2 = Program availabitlity (0 = no program ; 1 = program available)
     DATABYTE3 = Program type
-                      Contents    Day
+                      Contents Day
                         0…32      Sensor program
                          33       All rooms program
                          34       Zone 1 program
@@ -1109,13 +1089,13 @@ Transmit: Bus error counter status
     DATABYTE4 = Sensor address
 
    Remark:
-   This command will be received every time a program step is added, modified or deleted by the
-   temperature controller VMB1TC.
+   This command will be received every time a program step is added, modified or deleted by the temperature
+   controller VMB1TC.
 
 
 
 
-                               VMB1TS PROTOCOL – edition 1 _ rev4                                 20
+                                         VMB1TSW PROTOCOL – edition 1                                           21
 Memory map Build 0927 or 0947:
 
    Address    Contents                         Addres     Contents
@@ -1169,65 +1149,8 @@ Transmit: Bus error counter status
 
 
 
-                               VMB1TS PROTOCOL – edition 1 _ rev4                                  21
+                                        VMB1TSW PROTOCOL – edition 1                                          22
 Memory map Build 0949 or Build 1001:
-
-   Address   Contents                      Addres    Contents
-                                           s
-   H’0000’   Push button module address    H’0001’   Comfort mode push button 1 bit numbers
-   ...       ...                           ...       ...
-   H’0012’   Push button module address    H’0013’   Comfort mode push button 10 bit numbers
-   H’0014’   Push button module address    H’0015’   Day mode push button 1 bit numbers
-   ...       ...                           ...       ...
-   H’0026’   Push button module address    H’0027’   Day mode push button 10 bit numbers
-   H’0028’   Push button module address    H’0029’   Night mode push button 1 bit numbers
-   ...       ...                           ...       ...
-   H’003A’   Push button module address    H’003B’   Night mode push button 10 bit numbers
-   H’003C’   Push button module address    H’003D’   Safe mode push button 1 bit numbers
-   ...       ...                           ...       ...
-   H’004E’   Push button module address    H’004F’   Safe mode push button 10 bit numbers
-   H’0050’   Push button module address    H’0051’   Heating mode push button 1 bit numbers
-   ...       ...                           ...       ...
-   H’0062’   Push button module address    H’0063’   Heating mode push button 10 bit numbers
-   H’0064’   Push button module address    H’0065’   Cooling mode push button 1 bit numbers
-   ...       ...                           ...       ...
-   H’0076’   Push button module address    H’0077’   Cooling mode push button 10 bit numbers
-   H’0078’   Push button module address    H’0079’   Lock local control push button 1 bit numbers
-   ...       ...                           ...       ...
-   H’008A’   Push button module address    H’008B’   Lock local control push button 10 bit numbers
-   H’008C’   Push button module address    H’008D’   Unlock local control push button 1 bit numbers
-   ...       ...                           ...       ...
-   H’009E’   Push button module address    H’009F’   Unlock local control push button 10 bit numbers
-   H’00A0’   Push button module address    H’00A1’   Normal open disable switch 1 bit numbers
-   ...       ...                           ...       ...
-   H’00B2’   Push button module address    H’00B3’   Normal open disable switch 10 bit numbers
-   H’00B4’   Push button module address    H’00B5’   Normal closed disable switch 1 bit numbers
-   ...       ...                           ...       ...
-   H’00C6’   Push button module address    H’00C7’   Normal closed disable switch 10 bit numbers
-   H’00C8’   Not used                      H’00C9’   Not used
-             …                                       …
-   H’00D6’   Not used                      H’00D7’   Not used
-   H’00D8’   Min switching time            H’00D9’   Differential sensor address
-   H’00DA’   Calibration factor            H’00DB’   Lower temperature range cool mode
-   H’00DC’   Upper temp range heat mode    H’00DD’   Sensor zone number
-   H’00DE’   Low temperature alarm         H’00DF’   High temperature alarm
-   H’00E0’   Current program mode          H’00E1’   Current mode
-   H’00E2’   Current temperature set       H’00E3’   Comfort temp set for heating
-   H’00E4’   Day temp set for heating      H’00E5’   Night temp set for heating
-   H’00E6’   Safe temp set for heating     H’00E7’   Temp. difference for boost output or diff. sensor
-   H’00E8’   Hysteresis                    H’00E9’   Comfort temp set for cooling
-   H’00EA’   Day temp set for cooling      H’00EB’   Night temp set for cooling
-   H’00EC’   Safe temp set for cooling     H’00ED’   Default sleep time high byte
-   H’00EE’   Default sleep time low byte   H’00EF’   Auto send time interval
-   H’00F0’   Sensor name character 1       H’00F1’   Sensor name character 2
-   ...       ...                           ...       ...
-   H’00FE’   Sensor name character 15      H’00FF’   Sensor name character 16
-
-
-
-
-                            VMB1TS PROTOCOL – edition 1 _ rev4                                22
-Memory map Build 1233 & 1234:
 
    Address    Contents                         Addres     Contents
                                                s
@@ -1262,12 +1185,7 @@ Transmit: Bus error counter status
    ...        ...                              ...        ...
    H’00C6’    Push button module address       H’00C7’    Normal closed disable switch 10 bit numbers
    H’00C8’    Not used                         H’00C9’    Not used
-   H’00CA’    Not used                         H’00CB’    Not used
-   H’00CC’    Zone address                     H’00CD’    Module address
-   H’00CE’    Serial number high               H’00CF’    Serial number low
-   H’00D0’    Not used                         H’00D1’    Not used
               …                                           …
-   H’00D6’    Not used                         H’00D7’    Not used
    H’00D8’    Min switching time               H’00D9’    Differential sensor address
    H’00DA’    Calibration factor               H’00DB’    Lower temperature range cool mode
    H’00DC’    Upper temp range heat mode       H’00DD’    Sensor zone number
@@ -1284,21 +1202,20 @@ Transmit: Bus error counter status
    ...        ...                              ...        ...
    H’00FE’    Sensor name character 15         H’00FF’    Sensor name character 16
 
-
   Remark:
-  Addresses 0xCC … 0xCF are write protected
-
   Unused locations in the push button location contain H’FF’.
   Unused characters for the sensor name contain H’FF’.
 
-                               VMB1TS PROTOCOL – edition 1 _ rev4                                  23
-Differential sensor address:
-Contains the address of the slave sensor to make a differential thermostat. The target temperature
-of the slave sensor follows the measured temperature of the current sensor plus or minus the value
-definied by the temperature difference for boost output.
-The default is no differential thermostat (address set to H’FF’).
+  Differential sensor address:
+  Contains the address of the slave sensor to make a differential thermostat. The target temperature of the slave
+  sensor follows the measured temperature of the current sensor plus or minus the value definied by the
+  temperature difference for boost output.
+  The default is no differential thermostat (address set to H’FF’).
 
-Minimum switching time (Build 0949):
+
+
+                                         VMB1TSW PROTOCOL – edition 1                                               23
+Minimum switching time (Build 0949):
                 Contents      Operating mode
                 00000000 No switching time protection
                 00000001 1 minute switching time protection
@@ -1340,10 +1257,10 @@ Current mode:
                  1000xxxx      Cooler mode
                  0xxxxxxx      Heater mode
 
-Current, comfort, day, night, safe, low alarm, high alarm, lower cool, upper heat temperature set
-(resolution 0.5°) (Build 1001):
-                   Contents     Temperature set
-                   01111000 60°C
+Current, comfort, day, night, safe, low alarm, high alarm, lower cool, upper heat temperature set (resolution 0.5°)
+(Build 1001):
+                  Contents      Temperature set
+                  01111000 60°C
 
                  00101000      20°C
 
@@ -1354,36 +1271,34 @@ Current, comfort, day, night, safe, low alarm, high alarm, lower cool, upper hea
 
                  11000000      -32°C
 
-
-
-
-                             VMB1TS PROTOCOL – edition 1 _ rev4                                     24
-Hysteresis (resolution 0.5°) (Build 0949):
+Hysteresis (resolution 0.5°) (Build 0949):
                   Contents      Hysteresis
                   00011111 15.5°C
 
                  00000001      0.5°C
                  00000000      0°C
 
-Temperature difference (resolution 0.5°):
+
+                                        VMB1TSW PROTOCOL – edition 1                                             24
+Temperature difference (resolution 0.5°):
                  Contents     Temperature difference
                  00010100 +10°C
 
-                 00000001      +0.5°C
-                 00000000      0°C
-                 11111111      -0.5°C
+                 00000001     +0.5°C
+                 00000000     0°C
+                 11111111     -0.5°C
 
-                 11101100      -10°C
+                 11101100     -10°C
 
 Calibration factor (resolution 0.5°):
                    Contents      Calibration factor
                    00001111 Calibration factor +7.5°C
 
-                 00000001      Calibration factor +0.5°C
-                 00000000      Calibration factor +0°C
-                 11111111      Calibration factor -0.5°C
+                 00000001     Calibration factor +0.5°C
+                 00000000     Calibration factor +0°C
+                 11111111     Calibration factor -0.5°C
 
-                 11110000      Calibration factor -8°C
+                 11110000     Calibration factor -8°C
 
 Default sleep time into minutes: valid range H’0001’ to H’FEFF’ or 1min to 65.279min
 Auto send temperature time interval into seconds: valid range: 10…255s
@@ -1393,5 +1308,5 @@ Auto send temperature time interval into seconds: valid range: 10…255s
 
 
 
-                             VMB1TS PROTOCOL – edition 1 _ rev4                           25
+                                       VMB1TSW PROTOCOL – edition 1                       25
 
