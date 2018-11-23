@@ -511,7 +511,7 @@ sub www_print_modules () {
       $table .= "    <th>Name</th>\n" ;
       $table .= "    <th>Build</th>\n" ;
       $table .= "    <th>MemoryKey</th>\n" ;
-      $table .= "    <th>MemoryMap</th>\n" ;
+      #$table .= "    <th>MemoryMap</th>\n" ;
       $table .= "    <th>Date</th>\n" ;
       $table .= "    <th>Action</th>\n" ;
       $table .= "  </tr>\n" ;
@@ -530,12 +530,12 @@ sub www_print_modules () {
       $mail_body .= "\n" ;
       $mail_body .= "Stef Coene\n" ;
       $mail_body .= "\n" ;
-      $mail_body .= "address;type;ModuleName;Build;MemoryKey;MemoryMap;\n" ;
+      $mail_body .= "address;type;ModuleName;Build;MemoryKey;\n" ;
 
       foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}{$status}{ModuleList}}) ) {
          my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ; # Handier var
          my $MemoryKey = &module_find_MemoryKey ($address, $ModuleType) ; # Handier var
-         my $MemoryMap = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ;
+         #my $MemoryMap = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ;
          $table .= "  <tr>\n" ;
          if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
             $table .= "    <th>$address ($global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr})</th>\n" ;
@@ -558,29 +558,30 @@ sub www_print_modules () {
             $table .= "    <td>-</td>\n" ;
             $mail_body .= ";" ;
          }
-         if ( defined $MemoryMap ) {
-            if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Memory}{$MemoryMap}{ModuleName}) {
-               $table .= "    <td>$MemoryMap</td>\n" ;
-               $mail_body .= "$MemoryMap;" ;
-            } else {
-               $table .= "    <td>$MemoryMap: not found?</td>\n" ;
-               $mail_body .= "$MemoryMap not found;" ;
-            }
-         } else {
-            $table .= "    <td>No MemoryMap found!</td>\n" ;
-            $mail_body .= ";" ;
-         }
+         #if ( defined $MemoryMap ) {
+         #   if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Memory}{$MemoryMap}{ModuleName}) {
+         #      $table .= "    <td>$MemoryMap</td>\n" ;
+         #      $mail_body .= "$MemoryMap;" ;
+         #   } else {
+         #      $table .= "    <td>$MemoryMap: not found?</td>\n" ;
+         #      $mail_body .= "$MemoryMap not found;" ;
+         #   }
+         #} else {
+         #   $table .= "    <td>No MemoryMap found!</td>\n" ;
+         #   $mail_body .= ";" ;
+         #}
          $table .= "    <td>$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{'date'}</td>\n" ;
          $table .= "    <td><a href=\"?".&www_make_url("action=status","address=$address")."\">refresh status</a></td>\n" ;
          $table .= "  </tr>\n" ;
          $mail_body .= "\n" ;
       }
+
       $table .= "</tbody>\n" ;
       $table .= "</table>\n" ;
 
       $mail_body =~ s/\n/%0D%0A/g ;
       if ( $status eq "Found" ) {
-         $html .= "<p>Do you want to help? Send me <a href=\"mailto:velserver\@docum.org?subject=velserver detected modules&body=$mail_body\">an email</a> with the content of this table. Especially if there is an issue with the MemoryKey and MemoryMap column</p>\n" ;
+         $html .= "<p>Do you want to help? Send me <a href=\"mailto:velserver\@docum.org?subject=velserver detected modules&body=$mail_body\">an email</a> with the content of this table. Especially if there is an issue with the MemoryKey column and module name detection.</p>\n" ;
       }
       $html .= $table ;
    }
