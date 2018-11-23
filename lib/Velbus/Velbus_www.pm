@@ -155,7 +155,7 @@ sub www_service () {
             &send_memo ($sock, $address, $value) ;
             $json{Text} = $value ;
          } else {
-            $json{Error} = "NO_VALUE" ;
+            &send_memo ($sock, $address) ;
          }
 
       } elsif ( defined $ModuleType ) {
