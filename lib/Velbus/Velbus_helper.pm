@@ -477,6 +477,7 @@ sub process_ActionType () {
             foreach my $SetAction (sort keys %{$global{Cons}{ActionType}{$ActionType}{SetAction}}) {
                foreach my $Command (split ",", $global{Cons}{ActionType}{$ActionType}{SetAction}{$SetAction}{Command}) {
                   if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Command} ) {
+                     $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{SetAction}{$SetAction} = "yes" ;
                      $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction} = $global{Cons}{ActionType}{$ActionType}{SetAction}{$SetAction}{Command} ;
                   }
                }
