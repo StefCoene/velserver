@@ -1025,7 +1025,7 @@ sub www_print_velbus_messages_print_messages () {
 sub www_print_velbus_protocol () {
    my $html ;
    $html .= "<h1>Velbus protocol</h1>\n" ;
-   $html .= "<p>This is a list of all modules based on the published protocol files. For each module, the protocol pdf file is converted to txt and parsed. The script can found in bin/pdf2txt.pl and the result is lib/Velbus/Velbus_data_protocol_auto.pm.<br />.</p>\n" ;
+   $html .= "<p>This is a list of all modules based on the published protocol files. For each module, the protocol pdf file is converted to txt and parsed. The script can found in bin/pdf2txt.pl and the result is lib/Velbus/Velbus_data_protocol_auto.pm.<br />The Channels column is based on Velbus_data_protocol_channels.pm.<br />The Action / SetAction column is based on Velbus_data_actions.pm.</p>\n" ;
    if ( defined $global{cgi}{params}{ModuleType} ) {
       $html .= &www_print_velbus_protocol_print_moduleType($global{cgi}{params}{ModuleType}) ;
    } else {
@@ -1130,6 +1130,7 @@ sub www_print_velbus_protocol_print_modules () {
    $html .= "    <th>Memory</th>\n" ;
    $html .= "    <th>Module name</th>\n" ;
    $html .= "    <th>Channels</th>\n" ;
+   $html .= "    <th>Action / SetAction</th>\n" ;
    $html .= "  </tr>\n" ;
    $html .= "</thead>\n" ;
 
@@ -1161,6 +1162,16 @@ sub www_print_velbus_protocol_print_modules () {
       } else {
          $html .= "    <td>-</td>\n" ;
       }
+      $html .= "    <td>" ;
+      foreach my $ActionType (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{ActionType}}) {
+         foreach my $Action (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}}) {
+            $html .= "$ActionType: $Action<br />" ;
+         }
+         foreach my $SetAction (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{SetAction}}) {
+            $html .= "Set: $ActionType: $SetAction<br />" ;
+         }
+      }
+      $html .= "    </td>" ;
       $html .= "  </tr>\n" ;
    }
 
