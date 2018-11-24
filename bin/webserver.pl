@@ -66,13 +66,21 @@ sub process {
       my $path = $r->url->path ;
       if ( $path eq "/service" ) {
          my %json = &www_service ;
-         if ( %json ) {
+         if ( defined $global{cgi}{params}{html} ) {
+            $response->header(-type=>'text/html') ;
+            my $html ;
+            foreach my $key (sort keys %json) {
+               $html .= "$key: $json{$key}\n" ;
+            }
+            $response->content($html) ;
+         } else {
             $response->header('type' => 'application/json') ;
             my $encoder = JSON::XS->new();
             $encoder->allow_nonref();
             my $json = $encoder->encode(\%json);
             $response->content($json) ;
          }
+
       } elsif ( $path =~ /include\/(.+)/ ) {
          my $file = $global{BaseDir} . "/www/include/$1" ;
          $response->header('type' => 'application/javascript') ;
