@@ -801,7 +801,6 @@ sub www_print_velbus_actions () {
       $html .= "<thead>\n" ;
       $html .= "<tr>\n" ;
       $html .= "<th>Module</th>\n" ;
-      $html .= "<th>Info</th>\n" ;
       $html .= "<th>Action</th>\n" ;
       $html .= "<th>SetAction</th>\n" ;
       $html .= "</tr>\n" ;
@@ -809,8 +808,7 @@ sub www_print_velbus_actions () {
       $html .= "<tbody>\n" ;
       foreach my $ModuleType (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}} ) {
          $html .= "<tr>\n" ;
-         $html .= "<th><a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</a></th>" ;
-         $html .= "<td>$global{Cons}{ModuleTypes}{$ModuleType}{Info}</td>\n" ;
+         $html .= "<th>" . &link_ModuleType($ModuleType) . "</a></th>" ;
          $html .= "<td>\n" ;
 
          foreach my $Action (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}} ) {
@@ -903,7 +901,7 @@ sub www_print_velbus_messages_print_message () {
       $html .= "    <td>$Message</td>\n" ;
       $html .= "    <td>" ;
       foreach my $ModuleType (sort keys %{$data{Module}{$Message}{ModuleType}} ) {
-         $html .= "<a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</a>: $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Type}<br />" ;
+         $html .= "<a href=?". &link_ModuleType($ModuleType) . "<br />" ;
       }
       $html .= "</td>\n" ;
       $html .= "    <td>$Name</td>\n" ;
@@ -915,7 +913,7 @@ sub www_print_velbus_messages_print_message () {
 
       foreach my $ModuleType (sort keys %{$data{Module}{$Message}{ModuleType}} ) {
          if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data} ) {
-            $html .= "<h3><a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType) = $global{Cons}{ModuleTypes}{$ModuleType}{Info}</a></h3>\n" ;
+            $html .= "<h3>" . &link_ModuleType($ModuleType) ."</h3>\n" ;
             foreach my $byte (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}}) {
                if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$byte}{Name} ) {
                   $html .= "<h4>byte: $byte = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$byte}{Name}</h4>\n" ;
@@ -936,7 +934,7 @@ sub www_print_velbus_messages_print_message () {
                #$html .= "</pre>\n" ;
             }
          } else {
-            $html .= "<h3><a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType) = $global{Cons}{ModuleTypes}{$ModuleType}{Info}</a>: not supported</h3>\n" ;
+            $html .= "<h3>" . &link_ModuleType($ModuleType) .": not supported</h3>\n" ;
          }
       }
    } elsif ( defined $Message ) {
@@ -1010,7 +1008,7 @@ sub www_print_velbus_messages_print_messages () {
          $html         .= "    <td>$Name</td>\n" ;
          $html         .= "    <td>\n" ;
          foreach my $ModuleType (sort keys %{$data{Module}{$Message}{ModuleType}} ) {
-            $html .= "<a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</a><br />" ;
+            $html .= "<a href=?" . &link_ModuleType($ModuleType) . "<br />" ;
          }
          $html         .= "    </td>\n" ;
          $html         .= "    <td>$Info</td>\n" ;
@@ -1126,9 +1124,8 @@ sub www_print_velbus_protocol_print_modules () {
    $html .= "<table border=1 data-paging=false class=\"datatable\">\n" ;
    $html .= "<thead>\n" ;
    $html .= "  <tr>\n" ;
-   $html .= "    <th>Module</th>\n" ;
    $html .= "    <th>Type</th>\n" ;
-   $html .= "    <th>Info</th>\n" ;
+   $html .= "    <th>Module</th>\n" ;
    $html .= "    <th>Version</th>\n" ;
    $html .= "    <th>Memory</th>\n" ;
    $html .= "    <th>Module name</th>\n" ;
@@ -1138,10 +1135,9 @@ sub www_print_velbus_protocol_print_modules () {
 
    foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}})) {
       $html .= "  <tr>\n" ;
-      $html .= "    <th>$ModuleType</th>\n" ;
-      $html .= "    <td><a href=?".&www_make_url("ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type}</a></td>\n" ;
-      $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Info}</td>\n" ;
-      $html .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Version}</td>\n" ;
+      $html .= "    <td>$ModuleType</td>\n" ;
+      $html .= "    <td>" . &link_ModuleType($ModuleType) . "</td>\n" ;
+      $html .= "    <td><a href=\"protocol/$global{Cons}{ModuleTypes}{$ModuleType}{File}\">$global{Cons}{ModuleTypes}{$ModuleType}{Version}</a></td>\n" ;
       $html .= "    <td>" ;
       if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{MemoryMatch} ) {
          foreach my $Key (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{MemoryMatch}}) {
@@ -1261,4 +1257,10 @@ sub www_process_messages () {
    return %data ;
 }
 
+sub link_ModuleType () {
+   my $ModuleType = $_[0] ;
+   if ( defined $ModuleType and defined $global{Cons}{ModuleTypes}{$ModuleType} ) {
+      return "<a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</a>: $global{Cons}{ModuleTypes}{$ModuleType}{Info}" ;
+   }
+}
 return 1 ;
