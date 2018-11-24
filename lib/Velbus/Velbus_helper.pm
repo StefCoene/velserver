@@ -456,16 +456,17 @@ sub find_memory_addresses {
 
 sub process_ActionType () {
    foreach my $ActionType (sort keys %{$global{Cons}{ActionType}}) {
-      foreach my $Moduletype (sort split ",", $global{Cons}{ActionType}{$ActionType}{Modules}) {
+      foreach my $ModuleType (sort split ",", $global{Cons}{ActionType}{$ActionType}{Modules}) {
          if ( defined $global{Cons}{ActionType}{$ActionType}{Action} ) {
             foreach my $Action (sort keys %{$global{Cons}{ActionType}{$ActionType}{Action}}) {
                if ( $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command} eq "" ) {
-                  $global{Cons}{ActionType}{$ActionType}{Module}{$Moduletype}{Action}{$Action} = $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command} ;
+                  $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
+                  $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} = $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command} ;
                } else {
                   foreach my $Command (split ",", $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command}) {
-                     if ( defined $global{Cons}{ModuleTypes}{$Moduletype}{Messages}{$Command} ) {
-                        $global{Cons}{ModuleTypes}{$Moduletype}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
-                        $global{Cons}{ActionType}{$ActionType}{Module}{$Moduletype}{Action}{$Action} = $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command} ;
+                     if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Command} ) {
+                        $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
+                        $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} = $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command} ;
                      }
                   }
                }
@@ -475,8 +476,8 @@ sub process_ActionType () {
          if ( defined $global{Cons}{ActionType}{$ActionType}{SetAction} ) {
             foreach my $SetAction (sort keys %{$global{Cons}{ActionType}{$ActionType}{SetAction}}) {
                foreach my $Command (split ",", $global{Cons}{ActionType}{$ActionType}{SetAction}{$SetAction}{Command}) {
-                  if ( defined $global{Cons}{ModuleTypes}{$Moduletype}{Messages}{$Command} ) {
-                     $global{Cons}{ActionType}{$ActionType}{Module}{$Moduletype}{SetAction}{$SetAction} = $global{Cons}{ActionType}{$ActionType}{SetAction}{$SetAction}{Command} ;
+                  if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Command} ) {
+                     $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction} = $global{Cons}{ActionType}{$ActionType}{SetAction}{$SetAction}{Command} ;
                   }
                }
             }
