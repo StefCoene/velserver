@@ -58,6 +58,9 @@ foreach my $file (sort `ls protocol*.txt`) {
    } elsif ( $ModuleType eq "VMBGPO" ) { # For VMBGPO: the text is split on 3 lines
       shift @file ;
       shift @file ;
+   } elsif ( $ModuleType eq "VMBEL1" ) { # For VMBEL1: the text is split on 3 lines
+      shift @file ;
+      shift @file ;
    }
    $file{PerFile}{$file}{Info}{ModuleType} = $ModuleType ;
 
@@ -438,6 +441,22 @@ foreach my $ModuleTypeHex (sort keys %{$file{PerCommandHexLocal}}) {
             print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
             print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
          }
+         if ( $ModuleTypeHex eq "34" ) {
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
+         }
+         if ( $ModuleTypeHex eq "3C" ) {
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
+            print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
+         }
       }
    }
 }
@@ -467,6 +486,14 @@ foreach my $ModuleTypeHex (sort keys %{$file{ModuleType}}) {
       if ( $ModuleTypeHex eq "1E" ) {
          print OUTPUT "\$file{Cons}{ModuleType}{'1F'}{$info} = $file{ModuleType}{$ModuleTypeHex}{$info} ;\n" ;
          print OUTPUT "\$file{Cons}{ModuleType}{'20'}{$info} = $file{ModuleType}{$ModuleTypeHex}{$info} ;\n" ;
+      }
+      if ( $ModuleTypeHex eq "34" ) {
+         print OUTPUT "\$file{Cons}{ModuleType}{'34'}{$info} = $file{ModuleType}{$ModuleTypeHex}{$info} ;\n" ;
+         print OUTPUT "\$file{Cons}{ModuleType}{'35'}{$info} = $file{ModuleType}{$ModuleTypeHex}{$info} ;\n" ;
+      }
+      if ( $ModuleTypeHex eq "3C" ) {
+         print OUTPUT "\$file{Cons}{ModuleType}{'3A'}{$info} = $file{ModuleType}{$ModuleTypeHex}{$info} ;\n" ;
+         print OUTPUT "\$file{Cons}{ModuleType}{'3B'}{$info} = $file{ModuleType}{$ModuleTypeHex}{$info} ;\n" ;
       }
    }
 }
