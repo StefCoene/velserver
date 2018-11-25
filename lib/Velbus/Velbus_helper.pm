@@ -464,11 +464,23 @@ sub process_ActionType () {
                   $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} = $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command} ;
                } else {
                   foreach my $Command (split ",", $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command}) {
-                     if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Command} ) {
-                        $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
-                        $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} = $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Command} ;
+                     if ( $Action eq "Get" ) {
+                        if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Command} and 
+                             defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Command}{Data} ) {
+                           $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
+                           $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} .= $Command . "," ;
+                        } else {
+                           $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
+                           $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} .= "," ;
+                        }
+                     } else {
+                        if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Command} ) {
+                           $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
+                           $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} .= $Command . "," ;
+                        }
                      }
                   }
+                  $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} =~ s/,$//g if defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action}  ;
                }
             }
          }
@@ -484,9 +496,6 @@ sub process_ActionType () {
             }
          }
       }
-      #delete $global{Cons}{ActionType}{$ActionType}{Action} ;
-      #delete $global{Cons}{ActionType}{$ActionType}{SetAction} ;
-      #delete $global{Cons}{ActionType}{$ActionType}{Modules} ;
    }
 }
 

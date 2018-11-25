@@ -357,6 +357,7 @@ $global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'E6'}{Data}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # One, two or four touch buttonsmodule: VMBGP2
 $global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -364,13 +365,15 @@ $global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'E6'}{Data}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # One, two or four touch buttonsmodule: VMBGP4
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'E6'}{Data}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
 $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -378,6 +381,7 @@ $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E6'}{Data}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # Touch panel with Oled display: VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -385,6 +389,7 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'E6'}{Data}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 ################### Input: messages
 # 8-channel Push button interface module: VMB8PB
@@ -420,6 +425,7 @@ $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{General} = "ButtonPress PirOutp
 
 # Outdour PIR sensor: VMBPIRO
 $global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{General} = "ButtonPress PirOutput" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Messages}{'E6'}{Data}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 ################### General messages that can be used in different modules
 $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{'0'}{Name} = "Channel just pressed" ;
@@ -564,4 +570,17 @@ $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{'0'}{Name} = "Channel 
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{'2'}{Match}{'%..1.....'}{Info} = "Light depending motion 2 output" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{'2'}{Match}{'%.1......'}{Info} = "Absence output" ;
 
-   return 1 ;
+# Merge the {General} information
+foreach my $ModuleType (sort keys %{$global{Cons}{ModuleTypes}}) {
+   foreach my $MessageType (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}}) {
+      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$MessageType}{General} ) {
+         foreach my $GeneralType (split " ", $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$MessageType}{General} ) {
+            if ( defined $global{Cons}{ModuleGeneral}{Messages}{$GeneralType} ) {
+               %{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$MessageType}} = %{ merge( \%{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$MessageType}}, \%{$global{Cons}{ModuleGeneral}{Messages}{$GeneralType}} ) };
+            }
+         }
+      }
+   }
+}
+
+return 1 ;
