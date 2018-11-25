@@ -470,6 +470,11 @@ sub process_ActionType () {
                            $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
                            $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} .= $Command . "," ;
                         } else {
+                           if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Command} ) {
+                              $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{ActionError}{$Action}{$Command} = "No Data" ;
+                           } else {
+                              $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{ActionError}{$Action}{$Command} = "No Message" ;
+                           }
                            $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
                            $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} .= "," ;
                         }
