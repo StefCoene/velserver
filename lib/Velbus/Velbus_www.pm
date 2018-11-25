@@ -828,13 +828,20 @@ sub www_print_velbus_actions () {
                foreach my $Message (sort split ",", $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action}) {
                   push @MessageTxt, "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a>" ;
                }
-               $html .= "$Action " ;
+               my @MessageErrorTxt ;
+               foreach my $Message (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{ActionError}{$Action}}) {
+                  push @MessageErrorTxt, "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message: $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{ActionError}{$Action}{$Message}</a>" ;
+               }
+               $html .= "$Action" ;
                if ( @MessageTxt ) {
-                  $html .= "(" ;
+                  $html .= " (" ;
                   $html .= join ",", @MessageTxt ;
                   $html .= ")" ;
-               } else {
-                  $html .= ": <b>Missing Message!</b>" ;
+               }
+               if ( @MessageErrorTxt ) {
+                  $html .= " Error: (" ;
+                  $html .= join ",", @MessageErrorTxt ;
+                  $html .= ")" ;
                }
                $html .= "<br />" ;
             }
