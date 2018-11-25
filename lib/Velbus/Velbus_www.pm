@@ -901,7 +901,7 @@ sub www_print_velbus_messages_print_message () {
       $html .= "    <td>$Message</td>\n" ;
       $html .= "    <td>" ;
       foreach my $ModuleType (sort keys %{$data{Module}{$Message}{ModuleType}} ) {
-         $html .= "<a href=?". &link_ModuleType($ModuleType) . "<br />" ;
+         $html .= &link_ModuleType($ModuleType) . "<br />" ;
       }
       $html .= "</td>\n" ;
       $html .= "    <td>$Name</td>\n" ;
