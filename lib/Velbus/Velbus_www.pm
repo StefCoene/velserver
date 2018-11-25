@@ -811,27 +811,38 @@ sub www_print_velbus_actions () {
          $html .= "<th>" . &link_ModuleType($ModuleType) . "</a></th>" ;
          $html .= "<td>\n" ;
 
+         my $html_SetAction ;
          foreach my $Action (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}} ) {
-            $html .= "$Action" ;
-            my $MessageTxt ;
-            foreach my $Message (sort split " ", $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action}) {
-              $MessageTxt .= "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a>" ;
+
+            if ( $Action eq "Set" and defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction} ) {
+               $html .= "$Action: <i><b>see SetAction</b></i>" ;
+               foreach my $SetAction (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}} ) {
+                  $html_SetAction .= "$SetAction (" ;
+                  foreach my $Message (sort split ",", $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction}) {
+                     $html_SetAction .= "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a>" ;
+                  }
+                  $html_SetAction.= ")<br />" ;
+               }
+            } else {
+               my @MessageTxt ;
+               foreach my $Message (sort split ",", $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action}) {
+                  push @MessageTxt, "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a>" ;
+               }
+               $html .= "$Action " ;
+               if ( @MessageTxt ) {
+                  $html .= "(" ;
+                  $html .= join ",", @MessageTxt ;
+                  $html .= ")" ;
+               } else {
+                  $html .= ": <b>Missing Message!</b>" ;
+               }
+               $html .= "<br />" ;
             }
-            if ( defined $MessageTxt ) {
-               $html .= " ($MessageTxt)" ;
-            }
-            $html .= "<br />" ;
          }
          $html .= "</td>\n" ;
          $html .= "<td>\n" ;
-         if ( defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction} ) {
-            foreach my $SetAction (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}} ) {
-               $html .= "$SetAction (" ;
-               foreach my $Message (sort split " ", $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction}) {
-                  $html .= "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a>" ;
-               }
-               $html .= ")<br />" ;
-            }
+         if ( $html_SetAction ) {
+            $html .= $html_SetAction ;
          }
          $html .= "</td>\n" ;
          $html .= "</tr>\n" ;
