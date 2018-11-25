@@ -70,7 +70,7 @@ $global{Cons}{ActionType}{Sensor}{Action}{Get}{openHAB}{ItemType} = "Switch" ;
 
 $global{Cons}{ActionType}{SensorNumber}{Info} = "Reading the analog sensor value" ;
 $global{Cons}{ActionType}{SensorNumber}{Modules} = "32" ; # 32=VMB4AN
-$global{Cons}{ActionType}{SensorNumber}{Action}{Get}{Command} = "" ;
+$global{Cons}{ActionType}{SensorNumber}{Action}{Get}{Command} = "AC" ;
 $global{Cons}{ActionType}{SensorNumber}{Action}{Get}{openHAB}{ItemType} = "Number" ;
 
 $global{Cons}{ActionType}{Temperature}{Info} = "Reading the current temperature sensor" ;
