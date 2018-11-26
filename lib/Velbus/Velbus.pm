@@ -177,7 +177,7 @@ sub process_message {
 
             } elsif ( $message{MessageType} eq "AC" ) { # Sensor value, transmitted as text
                my $hex = shift @hex ;
-               my $Channel = &channel_id_to_number($hex,$message{address},"Sensor") ;
+               my $Channel = &channel_hex_to_id($hex,$message{address},"Sensor") ;
 
                my $start = shift @hex ; $start *= 1 ; # Start of text
 
@@ -209,7 +209,7 @@ sub process_message {
                    or $message{MessageType} eq "F2" ) {
 
                my $hex = shift @hex ;
-               my $Channel = &channel_id_to_number($hex,$message{address},"Name") ;
+               my $Channel = &channel_hex_to_id($hex,$message{address},"Name") ;
 
                # For 2C = VMBPIRO, only the sensor name is returned and this as Channel 01. But this is in reality channel 09. The other channels have fixed names.
                if ( $message{ModuleType} eq "2C" ) {
@@ -458,7 +458,7 @@ sub process_message {
                                     if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
                                        $Channel = $hex[$byte] ;
                                        next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-                                       $Channel = &channel_id_to_number($Channel,$message{address},"ConvertChannel") ; # Convert it to a number
+                                       $Channel = &channel_hex_to_id($Channel,$message{address},"ConvertChannel") ; # Convert it to a number
                                        $info{$Channel}{Button} = $Value ;
                                     }
                                  }
@@ -815,18 +815,16 @@ sub channel_number_to_id () {
 # 3: type: Name or nothing
 #     - Name
 #     - ConvertChannel
-sub channel_id_to_number () {
+sub channel_hex_to_id () {
    my $channel = $_[0] ;
    my $address = $_[1] ; # Optional
    my $type    = $_[2] ;
 
+   my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
+
    if ( $type eq "Name" ) {
-      if ( ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" ) or # VMBGP1D
-           ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" ) or # VMBGP2D
-           ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "20" ) or # VMBGP4D
-           ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "2D" ) or # VMBGP4PIR
-           ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) or # VMBGPOD
-           ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "32" ) ) { # VMB4AN
+      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} and
+         $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} eq "hex" ) {
          $channel = &hex_to_dec ($channel) ;
       } else {
          $channel = &hex_to_bin ($channel) ;

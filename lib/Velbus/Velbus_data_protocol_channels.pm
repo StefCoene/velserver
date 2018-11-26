@@ -123,6 +123,7 @@ $global{Cons}{ModuleTypes}{'2E'}{Channels}{"01"}{Name} = "Blind 1" ;
 
 ################### Touch panels: Channel names
 # VMBGP1
+$global{Cons}{ModuleTypes}{'1E'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"02"}{Name} = "Virtual button 2" ;
@@ -144,6 +145,7 @@ $global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1E'}{TemperatureChannel} = "09" ;
 
 # VMBGP2
+$global{Cons}{ModuleTypes}{'1F'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -164,6 +166,7 @@ $global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1F'}{TemperatureChannel} = "09" ;
 
 # VMBGP4
+$global{Cons}{ModuleTypes}{'20'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -254,6 +257,7 @@ $global{Cons}{ModuleTypes}{'21'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'21'}{TemperatureChannel} = "33" ;
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
+$global{Cons}{ModuleTypes}{'2D'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'2D'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -275,6 +279,7 @@ $global{Cons}{ModuleTypes}{'2D'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'2D'}{TemperatureChannel} = "09" ; 
 
 # Touch panel with Oled display: VMBGPOD
+$global{Cons}{ModuleTypes}{'28'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"02"}{Name} = "Push button 2" ;
