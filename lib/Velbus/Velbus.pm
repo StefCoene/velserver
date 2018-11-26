@@ -175,35 +175,6 @@ sub process_message {
                #}
             #print "bin = $bin\n" ;
 
-            } elsif ( $message{MessageType} eq "AC" ) { # Sensor value, transmitted as text
-               my $hex = shift @hex ;
-               my $Channel = &channel_hex_to_id($hex,$message{address},"Sensor") ;
-
-               my $start = shift @hex ; $start *= 1 ; # Start of text
-
-               if ( $start eq "0" ) { # Begin of text so reset the data
-                  delete $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}  ;
-               }
-
-               # Parsing the characters
-               foreach my $hex (@hex) {
-                  if ( $hex eq "00" or $start eq "15" ) { # String is max 15 chars, shorter text stings must be ended with a zero value -> so this is the end of the string
-                     $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} = "" ; # Reset the value
-                     foreach my $key (sort {$a <=> $b} keys %{$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}} ) {
-                        $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} .= $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}{$key} ;
-                     }
-                     &update_modules_channel_info ($message{address}, $Channel, "value", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value}) ;
-                     $openHAB_update_state{"Sensor_$message{addressMaster}_$Channel"} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
-
-                  } else {
-                     my $char = chr hex $hex ;
-                     if ( $char =~ /[\d\.]/ ) { # Only use the numeric and the dot
-                        $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}{$start} = $char ;
-                     }
-                  }
-                  $start ++ ;
-               }
-   
             } elsif ( $message{MessageType} eq "F0" # Name of channel
                    or $message{MessageType} eq "F1"
                    or $message{MessageType} eq "F2" ) {
@@ -518,6 +489,72 @@ sub process_message {
                                  push @{$info{$Channel}{$Name}{List}},    $Value if defined $Value ;
                                  push @{$info{$Channel}{$SubName}{List}}, $Value if defined $SubName ;
                               }
+                           }
+                        }
+                     }
+
+                  # Parse the message in total
+                  } elsif ( defined $Process{Data}{PerMessage} ) {
+                     if ( $Process{Data}{PerMessage}{Convert} eq "SensorText" or
+                          $Process{Data}{PerMessage}{Convert} eq "MemoText") {
+                        my $hex = shift @hex ;
+                        my $Channel = &channel_hex_to_id($hex,$message{address},"Sensor") ; # This is useless for MemoText, but we still need a $Channel for logging so we keep it here
+
+                        # First byte is the start of the text
+                        my $start = shift @hex ;
+                        $start = &hex_to_dec($start) ;
+                        $start *= 1 ;
+
+                        # start of text so reset the data
+                        if ( $start eq "0" ) {
+                           delete $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}  ;
+                           $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueStore} = "yes" ;
+                        }
+
+                        # Maximum of characters. For now, we have Sensor with 15 and Memo with 63 characters
+                        my $MaxChars ;
+                        if ( $Process{Data}{PerMessage}{Convert} eq "SensorText" ) {
+                           $MaxChars = 15 ;
+                        } else {
+                           $MaxChars = 63 ;
+                        }
+
+                        # Parsing the characters: loop the remaining message
+                        foreach my $hex (@hex) {
+
+                           # If this is set, that means we saw the start of the message and the message is not yet stored
+                           if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueStore} ) {
+
+                              # Ending with zero value or max number of characters is reached: text is complete
+                              if ( $hex eq "00" or $start eq $MaxChars ) {
+                                 delete $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueStore} ; # Remember that we have stored the message so we can ignore the remaining characters
+
+                                 # Convert the text stored in hash to string
+                                 $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} = "" ; # Reset the value
+                                 foreach my $key (sort {$a <=> $b} keys %{$global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}} ) {
+                                    $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} .= $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}{$key} ;
+                                 }
+
+                                 # Save the data
+                                 if ( $Process{Data}{PerMessage}{Convert} eq "SensorText" ) {
+                                    &update_modules_channel_info ($message{address}, $Channel, "value", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value}) ;
+                                    $openHAB_update_state{"Sensor_$message{addressMaster}_$Channel"} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
+                                    $info{$Channel}{Button} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
+                                 } else {
+                                    $info{$Channel}{Memo} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
+                                 }
+  
+                              } else {
+                                 my $char = chr hex $hex ;
+                                 if ( $Process{Data}{PerMessage}{Convert} eq "SensorText" ) {
+                                    if ( $char =~ /[\d\.]/ ) { # Only use the numeric and the dot characters
+                                       $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}{$start} = $char ;
+                                    }
+                                 } else {
+                                    $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}{$start} = $char ;
+                                 }
+                              }
+                              $start ++ ;
                            }
                         }
                      }
