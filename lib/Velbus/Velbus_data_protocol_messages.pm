@@ -501,14 +501,14 @@ $global{Cons}{ModuleTypes}{'17'}{Messages}{'00'}{General} = "ButtonPress" ;
 
 ################### PIR Sensors: Messages
 # Mini PIR detector module: VMBPIRM
-$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{General} = "ButtonPress PirOutput" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{General} = "PirOutput" ;
 
 # Outdour PIR sensor: VMBPIRO
-$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{General} = "ButtonPress PirOutput" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{General} = "PirOutput" ;
    $global{Cons}{ModuleTypes}{'2C'}{Messages}{'E6'}{Data}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMBPIRC (2B): Ceiling PIR detector module
-$global{Cons}{ModuleTypes}{'2B'}{Messages}{'00'}{General} = "ButtonPress PirOutput" ;
+$global{Cons}{ModuleTypes}{'2B'}{Messages}{'00'}{General} = "PirOutput" ;
 
 ################### Other
 # VMBMETEO (31): Meteo station
