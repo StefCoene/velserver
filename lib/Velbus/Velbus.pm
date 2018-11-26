@@ -844,12 +844,11 @@ sub channel_number_to_id () {
    return ($channel,$address) ;
 }
 
-# Convert channnel bit to channel number. 
-#  8 -> 1000 = 3
-# Used by logger.pl for the touch screens & channel names
+# Used by logger.pl for converting the channel hex value to the correct channel id
 # 1: channel
 # 2: address
 # 3: type: Name or nothing
+#     - SensorText: message AC = transmitting sensor as text
 #     - Name
 #     - ConvertChannel
 sub channel_hex_to_id () {
@@ -860,7 +859,7 @@ sub channel_hex_to_id () {
    my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
 
    if ( $type eq "Name" ) {
-      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} and
+      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} and 
          $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} eq "hex" ) {
          $channel = &hex_to_dec ($channel) ;
       } else {
@@ -871,8 +870,11 @@ sub channel_hex_to_id () {
       }
 
    # VMB4AN channel: 9 -> sensor 1, 12 -> sensor 14
-   } elsif ( $type eq "Sensor" ) {
-      $channel = &hex_to_dec ($channel) ;
+   } elsif ( $type eq "SensorText" ) {
+      $channel = 1 if $channel eq "9" ;
+      $channel = 2 if $channel eq "10" ;
+      $channel = 3 if $channel eq "11" ;
+      $channel = 4 if $channel eq "12" ;
 
    # "ConvertChannel" -> Button pressed or Sensor triggered on touch or an other input
    } else {
