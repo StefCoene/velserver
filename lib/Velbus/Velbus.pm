@@ -363,171 +363,161 @@ sub process_message {
                }
 
             } else {
-               my %Process ; # Info needed to process the message
-
-               if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}} and
-                    defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{General} ) {
-                  foreach my $GeneralType (split " ", $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{General} ) {
-                     if ( defined $global{Cons}{ModuleGeneral}{Messages}{$GeneralType} ) {
-                        %Process = %{ merge( \%Process, \%{$global{Cons}{ModuleGeneral}{Messages}{$GeneralType}} ) };
-                     }
-                  }
-               }
-
                # If we have process information for this module type and message, process the message.
                if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}} and
                     defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}} and
                     defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data} ) {
-                  %Process = %{ merge( \%Process, \%{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}} ) };
-               }
+                  my %Process = %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}} ;
 
-               if ( %Process ) {
                   my %info ;
                   my %openHAB_update_state ;
 
-                  my $Channel = "00" ; # Default value
+                  # Parse the message byte per byte
+                  if ( defined $Process{Data}{PerByte} ) {
+                     my $Channel = "00" ; # Default value
 
-                  foreach my $byte (0..8) { # Loop the 8 possible bytes
-                     # Only process when there is information about this byte
-                     if ( defined $Process{Data}{PerByte}{$byte} ) {
-                        my $bin  = &hex_to_bin ($hex[$byte]) ; # We also need the message in binary format
+                     foreach my $byte (0..8) { # Loop the 8 possible bytes
+                        # Only process when there is information about this byte
+                        if ( defined $Process{Data}{PerByte}{$byte} ) {
+                           my $bin  = &hex_to_bin ($hex[$byte]) ; # We also need the message in binary format
 
-                        # Search for a name
-                        my $Name ;
-                        if ( defined $Process{Data}{PerByte}{$byte}{Name} ) {
-                           $Name = $Process{Data}{PerByte}{$byte}{Name} ;
-                        }
+                           # Search for a name
+                           my $Name ;
+                           if ( defined $Process{Data}{PerByte}{$byte}{Name} ) {
+                              $Name = $Process{Data}{PerByte}{$byte}{Name} ;
+                           }
 
-                        # Loop the possbile values for the byte
-                        foreach my $key (sort keys(%{$Process{Data}{PerByte}{$byte}{Match}})) {
-                           my $Match ; # We set this variable if we have a match
+                           # Loop the possbile values for the byte
+                           foreach my $key (sort keys(%{$Process{Data}{PerByte}{$byte}{Match}})) {
+                              my $Match ; # We set this variable if we have a match
 
-                           # Regular exression is always binary based match
-                           if ( $key =~ /^%(.+)$/ ) {
-                              my $regex = $1 ;
-                              if ( $bin =~ /$regex/ ) {
+                              # Regular exression is always binary based match
+                              if ( $key =~ /^%(.+)$/ ) {
+                                 my $regex = $1 ;
+                                 if ( $bin =~ /$regex/ ) {
+                                    $Match = "yes" ;
+                                 }
+
+                              # The rest is a hex match or a bin match
+                              } elsif ( $key eq $hex[$byte] or
+                                        $key eq $bin ) {
                                  $Match = "yes" ;
                               }
 
-                           # The rest is a hex match or a bin match
-                           } elsif ( $key eq $hex[$byte] or
-                                     $key eq $bin ) {
-                              $Match = "yes" ;
-                           }
+                              # If we have match, process the information
+                              if ( $Match ) {
+                                 my $Value ; # To store the value of the message. This can be data found in the message or stored in {Info}
+                                 my $SubName ;
 
-                           # If we have match, process the information
-                           if ( $Match ) {
-                              my $Value ; # To store the value of the message. This can be data found in the message or stored in {Info}
-                              my $SubName ;
-
-                              if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{Info} ) {
-                                 $Value =  $Process{Data}{PerByte}{$byte}{Match}{$key}{Info} ;
-                              }
-                              if ( defined  $Process{Data}{PerByte}{$byte}{Match}{$key}{Channel} ) {
-                                 $Channel = $Process{Data}{PerByte}{$byte}{Match}{$key}{Channel} ;
-                              }
-                              if ( defined  $Process{Data}{PerByte}{$byte}{Match}{$key}{Name} ) {
-                                 $SubName = $Process{Data}{PerByte}{$byte}{Match}{$key}{Name} ;
-                              }
-
-                              # Do we have to convert the message
-                              if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} ) {
-                                 # Calculate the procent
-                                 if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Procent" ) {
-                                    $Name = "Procent" if ! defined $Name ;
-                                    $Value = hex $hex[$byte] ;
+                                 if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{Info} ) {
+                                    $Value =  $Process{Data}{PerByte}{$byte}{Match}{$key}{Info} ;
+                                 }
+                                 if ( defined  $Process{Data}{PerByte}{$byte}{Match}{$key}{Channel} ) {
+                                    $Channel = $Process{Data}{PerByte}{$byte}{Match}{$key}{Channel} ;
+                                 }
+                                 if ( defined  $Process{Data}{PerByte}{$byte}{Match}{$key}{Name} ) {
+                                    $SubName = $Process{Data}{PerByte}{$byte}{Match}{$key}{Name} ;
                                  }
 
-                                 # Calculate the temperature from the message
-                                 if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Temperature" ) {
-                                    $Name = "Temperature" if ! defined $Name ;
-                                    $Value = &hex_to_temperature ($hex[$byte]) ;
+                                 # Do we have to convert the message
+                                 if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} ) {
+                                    # Calculate the procent
+                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Procent" ) {
+                                       $Name = "Procent" if ! defined $Name ;
+                                       $Value = hex $hex[$byte] ;
+                                    }
+
+                                    # Calculate the temperature from the message
+                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Temperature" ) {
+                                       $Name = "Temperature" if ! defined $Name ;
+                                       $Value = &hex_to_temperature ($hex[$byte]) ;
+                                    }
+
+                                    # Simple Counter: first byte is divider + Channel
+                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Divider" ) {
+                                       $bin =~ /(......)(..)/ ;
+                                       $Divider = $1 ;
+                                       $Channel = $2 ;
+
+                                       $Channel = &bin_to_dec($Channel) ; $Channel ++ ;
+                                       $Channel = "0" . $Channel if $Channel < 10 ; # This is always true since the channel is 1, 2, 3 or 4
+
+                                       $Divider = &bin_to_dec($Divider) ;
+                                       $Divider *= 100 ;
+
+                                       $info{$Channel}{Divider} = $Divider ;
+                                       $Name = "Counter" if ! defined $Name ;
+                                    }
+
+                                    # Simple Counter
+                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
+                                       $info{$Channel}{Counter} .= $hex[$byte] ;
+                                    }
+
+                                    # Button pressed or Sensor triggered on touch or an other input
+                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
+                                       $Channel = $hex[$byte] ;
+                                       next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
+                                       $Channel = &channel_id_to_number($Channel,$message{address},"ConvertChannel") ; # Convert it to a number
+                                       $info{$Channel}{Button} = $Value ;
+                                    }
                                  }
 
-                                 # Simple Counter: first byte is divider + Channel
-                                 if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Divider" ) {
-                                    $bin =~ /(......)(..)/ ;
-                                    $Divider = $1 ;
-                                    $Channel = $2 ;
+                                 # Do we have to update the state in openHAB
+                                 if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ) {
+                                    my $openHAB = $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ; # Handier var
 
-                                    $Channel = &bin_to_dec($Channel) ; $Channel ++ ;
-                                    $Channel = "0" . $Channel if $Channel < 10 ; # This is always true since the channel is 1, 2, 3 or 4
-
-                                    $Divider = &bin_to_dec($Divider) ;
-                                    $Divider *= 100 ;
-
-                                    $info{$Channel}{Divider} = $Divider ;
-                                    $Name = "Counter" if ! defined $Name ;
-                                 }
-
-                                 # Simple Counter
-                                 if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
-                                    $info{$Channel}{Counter} .= $hex[$byte] ;
-                                 }
-
-                                 # Button pressed or Sensor triggered on touch or an other input
-                                 if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
-                                    $Channel = $hex[$byte] ;
-                                    next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-                                    $Channel = &channel_id_to_number($Channel,$message{address},"ConvertChannel") ; # Convert it to a number
-                                    $info{$Channel}{Button} = $Value ;
-                                 }
-                              }
-
-                              # Do we have to update the state in openHAB
-                              if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ) {
-                                 my $openHAB = $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ; # Handier var
-
-                                 if ( $openHAB =~ "(.+):Button" ) {
-                                    my $action = $1 ;
-                                    my $Type = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Channels}{$Channel}{Type} ;
-                                    # A Button is tricky: we have to do something on RELEASED, but we need to know if it was a short or a long press
-                                    # For a 7IN (=ButtonCounter) we also have to check the Divider value
-                                    if ( $Type eq "Button" or
-                                       ( $Type eq "ButtonCounter" and
-                                          defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} and
-                                                  $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
-                                       if ( $action eq "RELEASED" ) {
-                                          if ( $global{openHAB}{ButtonState}{$message{addressMaster}}{$Channel} eq "PRESSED" ) {
-                                             # PRESSED: send ON + OFF
-                                             $openHAB_update_state{"Button_$message{addressMaster}_$Channel"} = "ON OFF" ;
+                                    if ( $openHAB =~ "(.+):Button" ) {
+                                       my $action = $1 ;
+                                       my $Type = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Channels}{$Channel}{Type} ;
+                                       # A Button is tricky: we have to do something on RELEASED, but we need to know if it was a short or a long press
+                                       # For a 7IN (=ButtonCounter) we also have to check the Divider value
+                                       if ( $Type eq "Button" or
+                                          ( $Type eq "ButtonCounter" and
+                                             defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} and
+                                                     $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
+                                          if ( $action eq "RELEASED" ) {
+                                             if ( $global{openHAB}{ButtonState}{$message{addressMaster}}{$Channel} eq "PRESSED" ) {
+                                                # PRESSED: send ON + OFF
+                                                $openHAB_update_state{"Button_$message{addressMaster}_$Channel"} = "ON OFF" ;
+                                             } else {
+                                                # LONGPRESSED: send OFF
+                                                $openHAB_update_state{"ButtonLong_$message{addressMaster}_$Channel"} = "OFF" ;
+                                             }
                                           } else {
-                                             # LONGPRESSED: send OFF
-                                             $openHAB_update_state{"ButtonLong_$message{addressMaster}_$Channel"} = "OFF" ;
+                                             $global{openHAB}{ButtonState}{$message{addressMaster}}{$Channel} = $action ; # remember type: PRESSED or LONGPRESSED
+                                             if ( $action eq "PRESSED" ) {
+                                                # Don't send ON yet, wait for RELEASED. Because for a LONGPRESSED, there is also a PRESSED message first
+                                             } elsif ( $action eq "LONGPRESSED" ) {
+                                                $openHAB_update_state{"ButtonLong_$message{addressMaster}_$Channel"} = "ON" ;
+                                             }
                                           }
-                                       } else {
-                                          $global{openHAB}{ButtonState}{$message{addressMaster}}{$Channel} = $action ; # remember type: PRESSED or LONGPRESSED
-                                          if ( $action eq "PRESSED" ) {
-                                             # Don't send ON yet, wait for RELEASED. Because for a LONGPRESSED, there is also a PRESSED message first
-                                          } elsif ( $action eq "LONGPRESSED" ) {
-                                             $openHAB_update_state{"ButtonLong_$message{addressMaster}_$Channel"} = "ON" ;
+                                       } elsif ( $Type eq "Sensor" ) {
+                                          if ( $action eq "RELEASED" ) {
+                                             $openHAB_update_state{"Sensor_$message{addressMaster}_$Channel"} = "OFF" ;
+                                          } else {
+                                             $openHAB_update_state{"Sensor_$message{addressMaster}_$Channel"} = "ON" ;
                                           }
                                        }
-                                    } elsif ( $Type eq "Sensor" ) {
-                                       if ( $action eq "RELEASED" ) {
-                                          $openHAB_update_state{"Sensor_$message{addressMaster}_$Channel"} = "OFF" ;
+                                    } elsif ( $openHAB =~ /:/ ) {
+                                       my @openHAB = split ":", $openHAB ;
+                                       if ( $Channel eq "00" ) {
+                                          $openHAB_update_state{"$openHAB[1]_$message{addressMaster}"} = $openHAB[0] ;
                                        } else {
-                                          $openHAB_update_state{"Sensor_$message{addressMaster}_$Channel"} = "ON" ;
+                                          $openHAB_update_state{"$openHAB[1]_$message{addressMaster}_$Channel"} = $openHAB[0] ;
                                        }
-                                    }
-                                 } elsif ( $openHAB =~ /:/ ) {
-                                    my @openHAB = split ":", $openHAB ;
-                                    if ( $Channel eq "00" ) {
-                                       $openHAB_update_state{"$openHAB[1]_$message{addressMaster}"} = $openHAB[0] ;
                                     } else {
-                                       $openHAB_update_state{"$openHAB[1]_$message{addressMaster}_$Channel"} = $openHAB[0] ;
-                                    }
-                                 } else {
-                                    if ( $Channel eq "00" ) {
-                                       $openHAB_update_state{"$openHAB"."_"."$message{addressMaster}"} = $Value if defined $Value ;
-                                    } else {
-                                       $openHAB_update_state{"$openHAB"."_"."$message{addressMaster}_$Channel"} = $Value if defined $Value ;
+                                       if ( $Channel eq "00" ) {
+                                          $openHAB_update_state{"$openHAB"."_"."$message{addressMaster}"} = $Value if defined $Value ;
+                                       } else {
+                                          $openHAB_update_state{"$openHAB"."_"."$message{addressMaster}_$Channel"} = $Value if defined $Value ;
+                                       }
                                     }
                                  }
-                              }
    
-                              push @{$info{$Channel}{$Name}{List}},    $Value if defined $Value ;
-                              push @{$info{$Channel}{$SubName}{List}}, $Value if defined $SubName ;
+                                 push @{$info{$Channel}{$Name}{List}},    $Value if defined $Value ;
+                                 push @{$info{$Channel}{$SubName}{List}}, $Value if defined $SubName ;
+                              }
                            }
                         }
                      }
