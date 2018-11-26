@@ -389,17 +389,17 @@ sub process_message {
 
                   foreach my $byte (0..8) { # Loop the 8 possible bytes
                      # Only process when there is information about this byte
-                     if ( defined $Process{Data}{$byte} ) {
+                     if ( defined $Process{Data}{PerByte}{$byte} ) {
                         my $bin  = &hex_to_bin ($hex[$byte]) ; # We also need the message in binary format
 
                         # Search for a name
                         my $Name ;
-                        if ( defined $Process{Data}{$byte}{Name} ) {
-                           $Name = $Process{Data}{$byte}{Name} ;
+                        if ( defined $Process{Data}{PerByte}{$byte}{Name} ) {
+                           $Name = $Process{Data}{PerByte}{$byte}{Name} ;
                         }
 
                         # Loop the possbile values for the byte
-                        foreach my $key (sort keys(%{$Process{Data}{$byte}{Match}})) {
+                        foreach my $key (sort keys(%{$Process{Data}{PerByte}{$byte}{Match}})) {
                            my $Match ; # We set this variable if we have a match
 
                            # Regular exression is always binary based match
@@ -420,32 +420,32 @@ sub process_message {
                               my $Value ; # To store the value of the message. This can be data found in the message or stored in {Info}
                               my $SubName ;
 
-                              if ( defined $Process{Data}{$byte}{Match}{$key}{Info} ) {
-                                 $Value =  $Process{Data}{$byte}{Match}{$key}{Info} ;
+                              if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{Info} ) {
+                                 $Value =  $Process{Data}{PerByte}{$byte}{Match}{$key}{Info} ;
                               }
-                              if ( defined  $Process{Data}{$byte}{Match}{$key}{Channel} ) {
-                                 $Channel = $Process{Data}{$byte}{Match}{$key}{Channel} ;
+                              if ( defined  $Process{Data}{PerByte}{$byte}{Match}{$key}{Channel} ) {
+                                 $Channel = $Process{Data}{PerByte}{$byte}{Match}{$key}{Channel} ;
                               }
-                              if ( defined  $Process{Data}{$byte}{Match}{$key}{Name} ) {
-                                 $SubName = $Process{Data}{$byte}{Match}{$key}{Name} ;
+                              if ( defined  $Process{Data}{PerByte}{$byte}{Match}{$key}{Name} ) {
+                                 $SubName = $Process{Data}{PerByte}{$byte}{Match}{$key}{Name} ;
                               }
 
                               # Do we have to convert the message
-                              if ( defined $Process{Data}{$byte}{Match}{$key}{Convert} ) {
+                              if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} ) {
                                  # Calculate the procent
-                                 if ( $Process{Data}{$byte}{Match}{$key}{Convert} eq "Procent" ) {
+                                 if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Procent" ) {
                                     $Name = "Procent" if ! defined $Name ;
                                     $Value = hex $hex[$byte] ;
                                  }
 
                                  # Calculate the temperature from the message
-                                 if ( $Process{Data}{$byte}{Match}{$key}{Convert} eq "Temperature" ) {
+                                 if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Temperature" ) {
                                     $Name = "Temperature" if ! defined $Name ;
                                     $Value = &hex_to_temperature ($hex[$byte]) ;
                                  }
 
                                  # Simple Counter: first byte is divider + Channel
-                                 if ( $Process{Data}{$byte}{Match}{$key}{Convert} eq "Divider" ) {
+                                 if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Divider" ) {
                                     $bin =~ /(......)(..)/ ;
                                     $Divider = $1 ;
                                     $Channel = $2 ;
@@ -461,12 +461,12 @@ sub process_message {
                                  }
 
                                  # Simple Counter
-                                 if ( $Process{Data}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
+                                 if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
                                     $info{$Channel}{Counter} .= $hex[$byte] ;
                                  }
 
                                  # Button pressed or Sensor triggered on touch or an other input
-                                 if ( $Process{Data}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
+                                 if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
                                     $Channel = $hex[$byte] ;
                                     next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
                                     $Channel = &channel_id_to_number($Channel,$message{address},"ConvertChannel") ; # Convert it to a number
@@ -475,8 +475,8 @@ sub process_message {
                               }
 
                               # Do we have to update the state in openHAB
-                              if ( defined $Process{Data}{$byte}{Match}{$key}{openHAB} ) {
-                                 my $openHAB = $Process{Data}{$byte}{Match}{$key}{openHAB} ; # Handier var
+                              if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ) {
+                                 my $openHAB = $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ; # Handier var
 
                                  if ( $openHAB =~ "(.+):Button" ) {
                                     my $action = $1 ;
