@@ -60,26 +60,28 @@ sub www_index () {
    ) ;
 
    $content .= "<p>\n" ;
-   $content .= "<a href=?".&www_make_url("*=-","appl=print_modules").">Modules on bus</a> || " ;
-   $content .= "<a href=?".&www_make_url("*=-","appl=print_channeltags").">Channel tags</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=scan_for_modules").">Scan the bus for modules</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=print_found_modules").">Found modules</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=print_channel_tags").">Channel tags</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=generate_openHAB").">Generate openHAB items file</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=empty_database").">Empty the database</a> " ;
+   $content .= "<br />\n" ;
+
    $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_protocol").">Velbus protocol</a> || " ;
    $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_messages").">Velbus messages</a> || " ;
-   $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_actions").">Velbus actions</a> || " ;
-   $content .= "<a href=?".&www_make_url("*=-","appl=openHAB").">openHAB config</a> || " ;
-   $content .= "<a href=?".&www_make_url("*=-","appl=scan").">Scan the bus</a> || " ;
-   $content .= "<a href=?".&www_make_url("*=-","appl=clear_database").">Clear the database</a> " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_actions").">Velbus actions</a> " ;
    $content .= "</p>\n" ;
 
-   if ( $global{cgi}{params}{appl} eq "print_modules" ) {
+   if ( $global{cgi}{params}{appl} eq "print_found_modules" ) {
       if ( defined $global{cgi}{params}{action} ) {
          if ( $global{cgi}{params}{action} eq "status" ) {
             $content .= &www_update_module_status ;
          }
       }
-      $content .= &www_print_modules ;
+      $content .= &www_print_found_modules ;
    }
-   if ( $global{cgi}{params}{appl} eq "print_channeltags" ) {
-      $content .= &www_print_channeltags ;
+   if ( $global{cgi}{params}{appl} eq "print_channel_tags" ) {
+      $content .= &www_print_channel_tags ;
    }
    if ( $global{cgi}{params}{appl} eq "print_velbus_protocol" ) {
       $content .= &www_print_velbus_protocol ;
@@ -90,14 +92,17 @@ sub www_index () {
    if ( $global{cgi}{params}{appl} eq "print_velbus_actions" ) {
       $content .= &www_print_velbus_actions ;
    }
-   if ( $global{cgi}{params}{appl} eq "openHAB" ) {
-      $content .= &www_openHAB ;
+   if ( $global{cgi}{params}{appl} eq "generate_openHAB" ) {
+      $content .= &www_generate_openHAB ;
    }
-   if ( $global{cgi}{params}{appl} eq "scan" ) {
-      $content .= &www_scan ;
+   if ( $global{cgi}{params}{appl} eq "scan_for_modules" ) {
+      $content .= &www_scan_for_modules ;
    }
-   if ( $global{cgi}{params}{appl} eq "clear_database" ) {
-      $content .= &www_clear_database ;
+   if ( $global{cgi}{params}{appl} eq "empty_database" ) {
+      $content .= &www_empty_database ;
+   }
+   if ( $global{cgi}{params}{appl} eq "empty_database_DO" ) {
+      $content .= &www_empty_database ("DO") ;
    }
    if ( $global{cgi}{params}{appl} eq "debug" ) {
       $content .= "<pre>\n" ;
@@ -488,7 +493,7 @@ sub process_modules () {
    }
 }
 
-sub www_print_modules () {
+sub www_print_found_modules () {
    my $html ;
    $html .= "<h1>All modules on bus (<a href=\"?".&www_make_url("action=status")."\">refresh status</a>)</h1>\n" ;
 
@@ -667,7 +672,7 @@ sub www_print_modules () {
    return $html ;
 }
 
-sub www_print_channeltags () {
+sub www_print_channel_tags () {
    my $html ;
    $html .= "<h1>All modules and channels on the bus</h1>\n" ;
 
@@ -1199,7 +1204,7 @@ sub www_print_velbus_protocol_print_modules () {
    return $html ;
 }
 
-sub www_openHAB () {
+sub www_generate_openHAB () {
    &openHAB_parse_config () ;
    my $openHAB = &openHAB_config () ;
    $openHAB =~ s/</&lt;/g ;    # Prepare for html output
@@ -1208,22 +1213,28 @@ sub www_openHAB () {
    return "$openHAB\n" ;
 }
 
-sub www_scan () {
+sub www_scan_for_modules () {
+   my $html = "<p>Scanning for modules</p>\n" ;
    my $sock = &open_socket ;
    &scan($sock) ;
+   $html .= "<p><a href=?".&www_make_url("*=-","appl=print_found_modules").">Check the Found modules page and trigger an update of all module</a></p>\n" ;
+   return $html ;
 }
 
-sub www_clear_database  () {
+sub www_empty_database  () {
    my $html ;
+   if ( defined $_[0] and $_[0] eq "DO" ) {
+      $html .= "<p><b>Database cleared!</b></p>\n" ;
+      &empty_database() ;
+   }
    $html .= "Recommended procedure:\n" ;
    $html .= "<ul>\n" ;
    $html .= "<li>Stop logger.pl</li>\n" ;
-   $html .= "<li>Visit this page</li>\n" ;
+   $html .= "<li><a href=?".&www_make_url("*=-","appl=empty_database_DO").">Click this link to clear all data in the database</a></li>\n" ;
    $html .= "<li>Start logger.pl</li>\n" ;
-   $html .= "<li>Trigger a scan</li>\n" ;
-   $html .= "<li>Get an update of all module</li>\n" ;
+   $html .= "<li><a href=?".&www_make_url("*=-","appl=scan_for_modules").">Trigger a scan</a> </li>\n" ;
+   $html .= "<li><a href=?".&www_make_url("*=-","appl=print_found_modules").">Get an update of all module</a></li>\n" ;
    $html .= "</ul>\n" ;
-   &clear_database() ;
    return $html ;
 }
 

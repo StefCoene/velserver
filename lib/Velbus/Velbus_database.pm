@@ -69,7 +69,7 @@ sub get_all_modules_info_from_database {
 }
 
 # Truncate the tables in the database for a new start
-sub clear_database {
+sub empty_database {
    &do_query ($global{dbh},"delete from `modules`" ) ;
    &do_query ($global{dbh},"delete from `modules_info`" ) ;
    &do_query ($global{dbh},"delete from `modules_channel_info`" ) ;
