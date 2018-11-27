@@ -399,6 +399,8 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
+$global{Cons}{ModuleTypes}{'28'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "MemoText" ;
+
 # VMBEL1 (34): Edge-lit one, two or four touch buttons module
 $global{Cons}{ModuleTypes}{'34'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
@@ -483,7 +485,6 @@ $global{Cons}{ModuleTypes}{'16'}{Messages}{'00'}{General} = "ButtonPress" ;
 
 # 7 channel input module: VMB7IN
 $global{Cons}{ModuleTypes}{'22'}{Messages}{'00'}{General} = "ButtonPress" ;
-
    $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{PerByte}{'0'}{Match}{'%........'}{Convert} = "Divider" ;
    $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Counter" ;
    $global{Cons}{ModuleTypes}{'22'}{Messages}{'BE'}{Data}{PerByte}{'2'}{Match}{'%.'}{Convert} = "Counter" ;
@@ -515,7 +516,7 @@ $global{Cons}{ModuleTypes}{'2B'}{Messages}{'00'}{General} = "PirOutput" ;
 $global{Cons}{ModuleTypes}{'31'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMB4AN (32): Analog I/O module
-$global{Cons}{ModuleTypes}{'32'}{Messages}{'AC'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a sensor that tranmist text
+$global{Cons}{ModuleTypes}{'32'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "SensorText" ;
 
 ################### General messages that can be used in different modules
 $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = "Channel just pressed" ;
