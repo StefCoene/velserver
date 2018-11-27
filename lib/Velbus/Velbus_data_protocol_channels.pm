@@ -815,4 +815,22 @@ $global{Cons}{ModuleTypes}{'32'}{Channels}{"09"}{Name} = "Sensor 1" ;
    $global{Cons}{ModuleTypes}{'32'}{Channels}{"12"}{Name} = "Sensor 4" ;
    $global{Cons}{ModuleTypes}{'32'}{Channels}{"12"}{Type} = "SensorNumber" ;
 
+# VMBVP1 (33): Doorbird interface module
+$global{Cons}{ModuleTypes}{'33'}{Channels}{"01"}{Name} = "Motion 1" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"01"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"02"}{Name} = "Motion 2" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"02"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"03"}{Name} = "Bell 1" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"03"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"04"}{Name} = "Bell 2" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"04"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"05"}{Name} = "Door 1" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"05"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"06"}{Name} = "Door 2" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"06"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"07"}{Name} = "Virtual button 1" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"07"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"08"}{Name} = "Virtual button 2" ;
+   $global{Cons}{ModuleTypes}{'33'}{Channels}{"08"}{Type} = "Button" ;
+
 return 1 ;

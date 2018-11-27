@@ -518,6 +518,9 @@ $global{Cons}{ModuleTypes}{'31'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Du
 # VMB4AN (32): Analog I/O module
 $global{Cons}{ModuleTypes}{'32'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "SensorText" ;
 
+# VMBVP1 (33): Doorbird interface module
+$global{Cons}{ModuleTypes}{'33'}{Messages}{'00'}{General} = "ButtonPress" ;
+
 ################### General messages that can be used in different modules
 $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = "Channel just pressed" ;
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
