@@ -188,6 +188,7 @@ $global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'20'}{TemperatureChannel} = "09" ;
 
 # VMBGPO (21): Touch panel with Oled display
+$global{Cons}{ModuleTypes}{'21'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'21'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'21'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'21'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -349,6 +350,7 @@ $global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'28'}{TemperatureChannel} = "33" ;
 
 # VMBEL1 (34): Edge-lit one, two or four touch buttons module
+$global{Cons}{ModuleTypes}{'34'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'34'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'34'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'34'}{Channels}{"02"}{Name} = "Virtual button 2" ;
@@ -370,6 +372,7 @@ $global{Cons}{ModuleTypes}{'34'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'34'}{TemperatureChannel} = "09" ;
 
 # VMBEL1 (35): Edge-lit one, two or four touch buttons module
+$global{Cons}{ModuleTypes}{'35'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'35'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'35'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'35'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -390,6 +393,7 @@ $global{Cons}{ModuleTypes}{'35'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'35'}{TemperatureChannel} = "09" ;
 
 # VMBEL1 (36): Edge-lit one, two or four touch buttons module
+$global{Cons}{ModuleTypes}{'36'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'36'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'36'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'36'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -411,6 +415,7 @@ $global{Cons}{ModuleTypes}{'36'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'36'}{TemperatureChannel} = "09" ;
 
 # MBELO (37): Edge-lit touch panel with Oled display)
+$global{Cons}{ModuleTypes}{'37'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'37'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'37'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'37'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -480,6 +485,7 @@ $global{Cons}{ModuleTypes}{'37'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'37'}{TemperatureChannel} = "33" ;
 
 # VMBGP1-2 (3A): One, two or four touch buttons module (ed2)e
+$global{Cons}{ModuleTypes}{'3A'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'3A'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3A'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'3A'}{Channels}{"02"}{Name} = "Virtual button 2" ;
@@ -501,6 +507,7 @@ $global{Cons}{ModuleTypes}{'3A'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3A'}{TemperatureChannel} = "09" ;
 
 # VMBGP2-2 (3B): One, two or four touch buttons module (ed2)e
+$global{Cons}{ModuleTypes}{'3B'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'3B'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3B'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'3B'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -521,6 +528,7 @@ $global{Cons}{ModuleTypes}{'3B'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3B'}{TemperatureChannel} = "09" ;
 
 # VMBGP4-2 (3C): One, two or four touch buttons module (ed2)e
+$global{Cons}{ModuleTypes}{'3C'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'3C'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3C'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'3C'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -542,6 +550,7 @@ $global{Cons}{ModuleTypes}{'3C'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3C'}{TemperatureChannel} = "09" ;
 
 # VMBGPOD-2 (3D): Touch panel with Oled display (ed2)
+$global{Cons}{ModuleTypes}{'3D'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'3D'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3D'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'3D'}{Channels}{"02"}{Name} = "Push button 2" ;
@@ -611,6 +620,7 @@ $global{Cons}{ModuleTypes}{'3D'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3D'}{TemperatureChannel} = "33" ;
 
 # VMBGP4PIR-2 (3E): Four touch buttons with PIR detector module (ed2)
+$global{Cons}{ModuleTypes}{'3E'}{ChannelNumbers}{Name} = "hex" ;
 $global{Cons}{ModuleTypes}{'3E'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3E'}{Channels}{"01"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'3E'}{Channels}{"02"}{Name} = "Push button 2" ;
