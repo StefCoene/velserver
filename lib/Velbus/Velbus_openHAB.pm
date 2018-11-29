@@ -113,6 +113,7 @@ sub openHAB_loop () {
                     $Type eq "Dimmer" or
                     $Type eq "Relay" or
                     $Type eq "Sensor" or
+                    $Type eq "SensorText" or
                     $Type eq "SensorNumber" ) {
 
                   $openHAB .= &openHAB_loop_item ($LoopType, $Type, $ModuleType, $Address, $Channel) ;

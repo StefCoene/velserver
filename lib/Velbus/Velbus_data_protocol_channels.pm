@@ -815,6 +815,33 @@ $global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Name} = "Dark output" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Type} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2C'}{TemperatureChannel} = "09" ;
 
+#	VMBMETEO (31): Meteo station
+$global{Cons}{ModuleTypes}{'31'}{Channels}{"01"}{Name} = "Frost alarm" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"01"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"02"}{Name} = "Heat alarm" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"02"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"03"}{Name} = "Rain alarm" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"03"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"04"}{Name} = "Dawn alarm" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"04"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"05"}{Name} = "Dusk alarm" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"05"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"06"}{Name} = "Sun alarm" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"06"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"07"}{Name} = "Wind alarm" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"07"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"08"}{Name} = "Storm alarm" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"08"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"10"}{Name} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"10"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'31'}{TemperatureChannel} = "10" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"11"}{Name} = "Rainfall" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"11"}{Type} = "SensorText" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"12"}{Name} = "Illuminance" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"12"}{Type} = "SensorText" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"13"}{Name} = "Wind speed" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"13"}{Type} = "SensorText" ;
+
 # VMB4AN: Analog I/O module
 $global{Cons}{ModuleTypes}{'32'}{Channels}{"09"}{Name} = "Sensor 1" ;
    $global{Cons}{ModuleTypes}{'32'}{Channels}{"09"}{Type} = "SensorNumber" ;
