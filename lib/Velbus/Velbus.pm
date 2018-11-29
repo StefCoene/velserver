@@ -493,7 +493,7 @@ sub process_message {
                      if ( $Process{Data}{PerMessage}{Convert} eq "SensorText" or
                           $Process{Data}{PerMessage}{Convert} eq "MemoText") {
                         my $hex = shift @hex ;
-                        my $Channel = &channel_hex_to_id($hex,$message{address},"Sensor") ; # This is useless for MemoText, but we still need a $Channel for logging so we keep it here
+                        my $Channel = &channel_hex_to_id($hex,$message{address},"SensorText") ; # This is useless for MemoText, but needed for SensorText
 
                         # First byte is the start of the text
                         my $start = shift @hex ;
