@@ -640,6 +640,21 @@ $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = 
    $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Match}{'02'}{Info} = "Up LED fast blinking" ;
    $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Match}{'01'}{Info} = "Up LED very fast blinking" ;
 
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Name} = "Channel just pressed" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.'}{Info} = "pressed" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Name} = "Channel just released" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.'}{Info} = "released" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Name} = "Channel long pressed" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
+
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Dark output" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%......1.'}{Info} = "Light output" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{Info} = "Motion 1 output" ;
