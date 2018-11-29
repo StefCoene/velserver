@@ -220,13 +220,8 @@ sub process_message {
                   my $dec = &hex_to_dec ($hex) ; # Memory content in decimal
                   my $char = chr hex $hex ;     # Memory content in char
 
-                  # MemoryMap: reported by the module, MemoryKey: configured based on the build of the module.
-                  my $MemoryKey ;
-                  if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} ) {
-                     $MemoryKey = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} ;
-                  } else {
-                     $MemoryKey = &module_find_MemoryKey ($message{address}, $message{ModuleType}) ;
-                  }
+                  # MemoryKey: configured based on the build of the module.
+                  my $MemoryKey = &module_find_MemoryKey ($message{address}, $message{ModuleType}) ;;
 
                   if ( defined $MemoryKey ) {
                      # See if we have a Type defined for the memory
@@ -722,13 +717,8 @@ sub get_status () {
 
    # Get module name if no channel name is requested
    if ( ! defined $channel ) {
-      # MemoryMap: reported by the module, MemoryKey: configured based on the build of the module.
-      my $MemoryKey ;
-      if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ) {
-         $MemoryKey = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ;
-      } else {
-         $MemoryKey = &module_find_MemoryKey ($address, $message{ModuleType}) ;
-      }
+      # MemoryKey: configured based on the build of the module.
+      my $MemoryKey = &module_find_MemoryKey ($address, $type) ;
 
       if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{SensorNameAddress} ) {
          my @memory = split ";", $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{SensorNameAddress} ;
