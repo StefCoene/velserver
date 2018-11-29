@@ -199,20 +199,20 @@ sub www_service () {
          $json{Error} = "NO_VALUE_FOR_SET" ;
 
       } else {
-         my $Setaction ;
+         my $SetAction ;
 
          # For blinds, the value is used to set Setacion
          if ( $ActionType eq "Blind" and $action eq "Set" ) {
             if ( $value eq "UP" ) {
-               $Setaction = "Up" ;
+               $SetAction = "Up" ;
             } elsif ( $value eq "DOWN" ) {
-               $Setaction = "Down" ;
+               $SetAction = "Down" ;
             } elsif ( $value eq "STOP" ) {
-               $Setaction = "Stop" ;
+               $SetAction = "Stop" ;
             } elsif ( $value =~ /(\d+)/ ) {
                $value = $1 ;
                if ( $value >= 0 and $value <= 100 ) {
-                  $Setaction = "Position" ;
+                  $SetAction = "Position" ;
                } else {
                   undef $value ;
                }
@@ -224,7 +224,7 @@ sub www_service () {
             $json{Error} = "ACTION_NOT_SUPPORTED:$ActionType:$action" ;
 
          # If there is a SetAction, it should be supported for the type
-         } elsif ( defined $Setaction and ! $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction} ) {
+         } elsif ( defined $SetAction and ! $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction} ) {
             $json{Error} = "SETACTION_NOT_SUPPORTED:$ActionType:$action:$SetAction" ;
 
          } else {
@@ -310,16 +310,16 @@ sub www_service () {
                ###################################################
                # Get/Set Blind positoin
                if ( $ActionType eq "Blind" ) {
-                  if (      $Setaction eq "Up" ) {
+                  if (      $SetAction eq "Up" ) {
                      &blind_up   ($sock, $address, $Channel) ;
-                     $json{Status} = $Setaction ;
-                  } elsif ( $Setaction eq "Down" ) {
+                     $json{Status} = $SetAction ;
+                  } elsif ( $SetAction eq "Down" ) {
                      &blind_down ($sock, $address, $Channel) ;
-                     $json{Status} = $Setaction ;
-                  } elsif ( $Setaction eq "Stop" ) {
+                     $json{Status} = $SetAction ;
+                  } elsif ( $SetAction eq "Stop" ) {
                      &blind_stop ($sock, $address, $Channel) ;
-                     $json{Status} = $Setaction ;
-                  } elsif ( $Setaction eq "Position" and defined $value ) {
+                     $json{Status} = $SetAction ;
+                  } elsif ( $SetAction eq "Position" and defined $value ) {
                      &blind_pos  ($sock, $address, $Channel, $value) ;
                      $json{Status} = $value ;
                   } elsif ( $action eq "Get" ) {
@@ -1080,6 +1080,8 @@ sub www_print_velbus_protocol_print_moduleType () {
       }
       $html .= "</tbody>\n" ;
       $html .= "</table>\n" ;
+   } else {
+      $html .= "<h3>No channels on module (manual defined in lib/Velbus/Velbus_data_protocol.pm)</h3>\n" ;
    }
 
    if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages} ) {
@@ -1138,7 +1140,10 @@ sub www_print_velbus_protocol_print_moduleType () {
       $html .= "</tbody>\n" ;
       $html .= "</table>\n" ;
       $html .= $html2 if defined $html2 ;
+   } else {
+      $html .= "<h3>No messages (read from lib/Velbus/Velbus_data_protocol_auto.pm)</h3>\n" ;
    }
+
    return $html ;
 }
 
