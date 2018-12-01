@@ -164,45 +164,6 @@ sub hex_to_temperature {
    return $temperature ; 
 }
 
-# Convert a binary numer (8 bits) to a number
-# Used when reading temperature settings
-#   01111111  63.5°C
-#   01101100    54°C
-#   00101000    20°C
-#   00000010     1°C
-#   00000001   0.5°C
-#   00000000     0°C
-#   11111111  -0.5°C
-#   10010010   -55°C
-#   11000000   -32°C
-sub hex_to_temperature_old1 {
-   my $temperature = $_[0] ;
-   my $negative ;
-   if ( $temperature =~ s/^1/0/ ) {
-      $negative = 1 ;
-   }
-   $temperature = &hex_to_dec ($temperature) ;
-   $temperature = $temperature / 2 ;
-   if ( $negative ) {
-      $temperature = $temperature - 64 ;
-   }
-   return $temperature ;
-}
-
-# Calculate temperature from the hex values from the bus
-# Used when sensor transmits the current temperature
-sub hex_to_temperature_old2 {
-   my @data = @_ ;
-
-   @data = &message_hex_to_dec (@data) ;
-
-   my $temperature = $data[0] << 8 ;
-   $temperature |= $data[1] ;
-   $temperature /= 32 ;
-   $temperature *= 0.0625 ;
-   return $temperature ;
-}
-
 # Calculate checksum from message and return the checksum
 sub calc_checksum {
    my @check_array = @_ ;
