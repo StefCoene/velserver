@@ -347,7 +347,7 @@ sub SubAddr_Channel {
    return $Channel ;
 }
 
-# Parse and rewrite the memory addresses for ModuleName and SensorName so we now for each possible adresse what it contains.
+# Parse and rewrite the memory addresses for ModuleName and SensorName so we nnow for each possible memory address what it contains.
 sub find_memory_addresses {
    foreach my $Type (sort keys %{$global{Cons}{ModuleTypes}}) {
       if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory} ) {
