@@ -734,15 +734,8 @@ sub get_status () {
    if ( defined $channel ) {
       $channels[0] = $channel ; # Channel given as parameter
    } elsif ( defined $global{Cons}{ModuleTypes}{$type}{Channels} ) {
-      # Touch with OLED + VMBGP1D/VMBGP2D/VMBGP4D: channel FF will request the names of all channels (message type EF)
-      if ( ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) and
-            ( $type eq "1E" or # VMBGP1D
-              $type eq "1F" or # VMBGP2D
-              $type eq "20" or # VMBGP2D
-              $type eq "2D" or # VMBGP4PIR
-              $type eq "32" or # VMB4AN
-              $type eq "28" ) ) {
-         $channels[0] = "0xFF" ;
+      if ( defined $global{Cons}{ModuleTypes}{$type}{AllChannelStatus} ) { # For some modules, using FF means all channels
+         $channels[0] = "0x$global{Cons}{ModuleTypes}{$type}{AllChannelStatus}" ;
       } else {
          @channels = sort keys %{$global{Cons}{ModuleTypes}{$type}{Channels}} ;
       }

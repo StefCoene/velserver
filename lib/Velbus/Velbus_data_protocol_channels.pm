@@ -142,6 +142,7 @@ $global{Cons}{ModuleTypes}{'1E'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"08"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'1E'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'1E'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'1E'}{TemperatureChannel} = "09" ;
 
 # VMBGP2
@@ -163,6 +164,7 @@ $global{Cons}{ModuleTypes}{'1F'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"08"}{Name} = "Virtual button 8" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'1F'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'1F'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'1F'}{TemperatureChannel} = "09" ;
 
 # VMBGP4
@@ -185,6 +187,7 @@ $global{Cons}{ModuleTypes}{'20'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"08"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'20'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'20'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'20'}{TemperatureChannel} = "09" ;
 
 # VMBGPO (21): Touch panel with Oled display
@@ -255,6 +258,7 @@ $global{Cons}{ModuleTypes}{'21'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'21'}{Channels}{"32"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'21'}{Channels}{"33"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'21'}{Channels}{"33"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'21'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'21'}{TemperatureChannel} = "33" ;
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
@@ -277,6 +281,7 @@ $global{Cons}{ModuleTypes}{'2D'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"08"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2D'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'2D'}{AllChannelStatus} = "FF" ; 
    $global{Cons}{ModuleTypes}{'2D'}{TemperatureChannel} = "09" ; 
 
 # Touch panel with Oled display: VMBGPOD
@@ -347,6 +352,7 @@ $global{Cons}{ModuleTypes}{'28'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"32"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"33"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'28'}{Channels}{"33"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'28'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'28'}{TemperatureChannel} = "33" ;
 
 # VMBEL1 (34): Edge-lit one, two or four touch buttons module
@@ -369,6 +375,7 @@ $global{Cons}{ModuleTypes}{'34'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'34'}{Channels}{"08"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'34'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'34'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'34'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'34'}{TemperatureChannel} = "09" ;
 
 # VMBEL1 (35): Edge-lit one, two or four touch buttons module
@@ -390,6 +397,7 @@ $global{Cons}{ModuleTypes}{'35'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'35'}{Channels}{"08"}{Name} = "Virtual button 8" ;
    $global{Cons}{ModuleTypes}{'35'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'35'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'35'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'35'}{TemperatureChannel} = "09" ;
 
 # VMBEL1 (36): Edge-lit one, two or four touch buttons module
@@ -412,6 +420,7 @@ $global{Cons}{ModuleTypes}{'36'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'36'}{Channels}{"08"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'36'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'36'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'36'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'36'}{TemperatureChannel} = "09" ;
 
 # MBELO (37): Edge-lit touch panel with Oled display)
@@ -482,6 +491,7 @@ $global{Cons}{ModuleTypes}{'37'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'37'}{Channels}{"32"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'37'}{Channels}{"33"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'37'}{Channels}{"33"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'37'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'37'}{TemperatureChannel} = "33" ;
 
 # VMBGP1-2 (3A): One, two or four touch buttons module (ed2)e
@@ -504,6 +514,7 @@ $global{Cons}{ModuleTypes}{'3A'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3A'}{Channels}{"08"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'3A'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'3A'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'3A'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'3A'}{TemperatureChannel} = "09" ;
 
 # VMBGP2-2 (3B): One, two or four touch buttons module (ed2)e
@@ -525,6 +536,7 @@ $global{Cons}{ModuleTypes}{'3B'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3B'}{Channels}{"08"}{Name} = "Virtual button 8" ;
    $global{Cons}{ModuleTypes}{'3B'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'3B'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'3B'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'3B'}{TemperatureChannel} = "09" ;
 
 # VMBGP4-2 (3C): One, two or four touch buttons module (ed2)e
@@ -547,6 +559,7 @@ $global{Cons}{ModuleTypes}{'3C'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3C'}{Channels}{"08"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'3C'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'3C'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'3C'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'3C'}{TemperatureChannel} = "09" ;
 
 # VMBGPOD-2 (3D): Touch panel with Oled display (ed2)
@@ -617,6 +630,7 @@ $global{Cons}{ModuleTypes}{'3D'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3D'}{Channels}{"32"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'3D'}{Channels}{"33"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'3D'}{Channels}{"33"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'3D'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'3D'}{TemperatureChannel} = "33" ;
 
 # VMBGP4PIR-2 (3E): Four touch buttons with PIR detector module (ed2)
@@ -639,6 +653,7 @@ $global{Cons}{ModuleTypes}{'3E'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'3E'}{Channels}{"08"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'3E'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'3E'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'3E'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'3E'}{TemperatureChannel} = "09" ;
  
 ################### Input: Channel names
@@ -813,6 +828,7 @@ $global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Name} = "Dark output" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"08"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'2C'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'2C'}{TemperatureChannel} = "09" ;
 
 #	VMBMETEO (31): Meteo station
@@ -835,6 +851,7 @@ $global{Cons}{ModuleTypes}{'31'}{Channels}{"01"}{Name} = "Frost alarm" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"08"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"10"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"10"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'31'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'31'}{TemperatureChannel} = "10" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"11"}{Name} = "Rainfall" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"11"}{Type} = "SensorNumber" ;
