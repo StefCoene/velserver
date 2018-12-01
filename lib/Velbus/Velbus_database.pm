@@ -10,8 +10,8 @@ sub get_all_modules_from_database {
       next if $type eq '' ;
       my $status = $data{$address}{status} ; # Easier var
 
+      $global{Vars}{Modules}{ModuleList}{$address} = "yes" ; # List of all found modules
       %{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}} = %{$data{$address}} ; # List of all modules
-      $global{Vars}{Modules}{PerStatus}{$status}{ModuleList}{$address} = "yes" ; # List of all modules per status
       $global{Vars}{Modules}{PerType}{$type}{ModuleList}{$address} = "yes" ; # List of alle modules per type module
    }
 
@@ -20,7 +20,7 @@ sub get_all_modules_from_database {
 
 # Loop all found modules and load the extra info
 sub get_all_modules_info_from_database {
-   foreach my $address (sort keys (%{$global{Vars}{Modules}{PerStatus}{Found}{ModuleList}}) ) {
+   foreach my $address (sort keys (%{$global{Vars}{Modules}{ModuleList}}) ) {
       my %SubAddr ;
 
       # 1: Get the module information
