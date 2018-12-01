@@ -180,12 +180,7 @@ sub process_message {
                    or $message{MessageType} eq "F2" ) {
 
                my $hex = shift @hex ;
-               my $Channel = &channel_hex_to_id($message{address},$hex,"Name") ;
-
-               # For 2C = VMBPIRO, only the sensor name is returned and this as Channel 01. But this is in reality channel 09. The other channels have fixed names.
-               if ( $message{ModuleType} eq "2C" ) {
-                  $Channel = "09" ;
-               }
+               my ($dummy,$Channel) = &channel_hex_to_id($message{address},$hex,"Name") ;
 
                # Reset the name
                if ( $message{MessageType} eq "F0" ) {
@@ -418,7 +413,7 @@ sub process_message {
                                     if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
                                        $Channel = $hex[$byte] ;
                                        next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-                                       $Channel = &channel_hex_to_id($message{address},$Channel,"ConvertChannel") ; # Convert it to a number
+                                       ($message{address},$Channel) = &channel_hex_to_id($message{address},$Channel,"ConvertChannel") ; # Convert it to a number
                                        $info{$Channel}{Button} = $Value ;
                                     }
                                  }
@@ -487,7 +482,7 @@ sub process_message {
                      if ( $Process{Data}{PerMessage}{Convert} eq "SensorNumber" or
                           $Process{Data}{PerMessage}{Convert} eq "MemoText") {
                         my $hex = shift @hex ;
-                        my $Channel = &channel_hex_to_id($message{address},$hex,"SensorText") ; # This is useless for MemoText, but needed for SensorText
+                        my ($dummy,$Channel) = &channel_hex_to_id($message{address},$hex,"SensorNumber") ; # This is useless for MemoText (it has no channel), but needed for SensorNumber
 
                         # First byte is the start of the text
                         my $start = shift @hex ;
@@ -831,10 +826,10 @@ sub channel_id_to_hex () {
 # Used by logger.pl for converting the channel hex value to the correct channel id
 # 1: address
 # 2: channel
-# 3: type: Name or nothing
-#     - SensorText: message AC = transmitting sensor as text
-#     - Name
-#     - ConvertChannel
+# 3: type:
+#     - SensorNumber: message AC = transmitting sensor as text
+#     - Name: message that contains the name of a channel
+#     - ConvertChannel: when parsing a message, we have to decode the channel
 sub channel_hex_to_id () {
    my $address = $_[0] ; # Optional
    my $channel = $_[1] ;
@@ -843,8 +838,10 @@ sub channel_hex_to_id () {
    my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
 
    if ( $type eq "Name" ) {
-      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} and 
-         $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} eq "hex" ) {
+      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
+           defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} and
+           defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Convert} and 
+                   $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Convert} eq "hex" ) {
          $channel = &hex_to_dec ($channel) ;
       } else {
          $channel = &hex_to_bin ($channel) ;
@@ -873,8 +870,7 @@ sub channel_hex_to_id () {
 
    $channel = "0" . $channel if $channel < 10 and $channel !~ /^0/ ;
 
-   $channel = "0" . $channel if $channel < 10 ;
-   return $channel ;
+   return ($address,$channel) ;
 }
 
 # Get the status of modules
