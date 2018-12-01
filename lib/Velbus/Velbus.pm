@@ -484,7 +484,7 @@ sub process_message {
 
                   # Parse the message in total
                   } elsif ( defined $Process{Data}{PerMessage} ) {
-                     if ( $Process{Data}{PerMessage}{Convert} eq "SensorText" or
+                     if ( $Process{Data}{PerMessage}{Convert} eq "SensorNumber" or
                           $Process{Data}{PerMessage}{Convert} eq "MemoText") {
                         my $hex = shift @hex ;
                         my $Channel = &channel_hex_to_id($hex,$message{address},"SensorText") ; # This is useless for MemoText, but needed for SensorText
@@ -494,15 +494,15 @@ sub process_message {
                         $start = &hex_to_dec($start) ;
                         $start *= 1 ;
 
-                        # start of text so reset the data
+                        # Start of text so reset the data
                         if ( $start eq "0" ) {
                            delete $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}  ;
                            $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueStore} = "yes" ;
                         }
 
-                        # Maximum of characters. For now, we have Sensor with 15 and Memo with 63 characters
+                        # Maximum of characters. For now, we have Sensor with 15 and Memo with 63 characters.
                         my $MaxChars ;
-                        if ( $Process{Data}{PerMessage}{Convert} eq "SensorText" ) {
+                        if ( $Process{Data}{PerMessage}{Convert} eq "SensorNumber" ) {
                            $MaxChars = 15 ;
                         } else {
                            $MaxChars = 63 ;
@@ -525,7 +525,7 @@ sub process_message {
                                  }
 
                                  # Save the data
-                                 if ( $Process{Data}{PerMessage}{Convert} eq "SensorText" ) {
+                                 if ( $Process{Data}{PerMessage}{Convert} eq "SensorNumber" ) {
                                     &update_modules_channel_info ($message{address}, $Channel, "value", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value}) ;
                                     $openHAB_update_state{"Sensor_$message{addressMaster}_$Channel"} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
                                     $info{$Channel}{Button} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
@@ -535,7 +535,7 @@ sub process_message {
   
                               } else {
                                  my $char = chr hex $hex ;
-                                 if ( $Process{Data}{PerMessage}{Convert} eq "SensorText" ) {
+                                 if ( $Process{Data}{PerMessage}{Convert} eq "SensorNumber" ) {
                                     if ( $char =~ /[\d\.]/ ) { # Only use the numeric and the dot characters
                                        $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{valueArray}{$start} = $char ;
                                     }
@@ -853,14 +853,11 @@ sub channel_hex_to_id () {
          $channel ++ ;
       }
 
-   # VMB4AN channel: 9 -> sensor 1, 12 -> sensor 14
-   } elsif ( $type eq "SensorText" ) {
-      $channel = 1 if $channel eq "9" ;
-      $channel = 2 if $channel eq "10" ;
-      $channel = 3 if $channel eq "11" ;
-      $channel = 4 if $channel eq "12" ;
+   # VMB4AN channel: 9 -> sensor 1 = Ch9, 12 -> sensor 14 = Ch12
+   } elsif ( $type eq "SensorNumber" ) {
+      $channel = &hex_to_dec ($channel) ;
 
-   # "ConvertChannel" -> Button pressed or Sensor triggered on touch or an other input
+   # "ConvertChannel" -> Button pressed or Sensor triggered
    } else {
       $channel = &hex_to_bin ($channel) ;
       $channel =~ /(0*)$/ ; # Filter out last 0's

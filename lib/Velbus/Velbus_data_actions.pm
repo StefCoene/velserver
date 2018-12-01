@@ -69,14 +69,9 @@ $global{Cons}{ActionType}{Sensor}{Action}{Get}{Message} = "00" ;
 $global{Cons}{ActionType}{Sensor}{Action}{Get}{openHAB}{ItemType} = "Switch" ;
 
 $global{Cons}{ActionType}{SensorNumber}{Info} = "Reading the analog sensor value" ;
-$global{Cons}{ActionType}{SensorNumber}{Modules} = "32" ; # 32=VMB4AN
+$global{Cons}{ActionType}{SensorNumber}{Modules} = "32,31" ; # 32=VMB4AN, 31=VMBMETEO
 $global{Cons}{ActionType}{SensorNumber}{Action}{Get}{Message} = "AC" ;
 $global{Cons}{ActionType}{SensorNumber}{Action}{Get}{openHAB}{ItemType} = "Number" ;
-
-$global{Cons}{ActionType}{SensorText}{Info} = "Reading the text sensor value" ;
-$global{Cons}{ActionType}{SensorText}{Modules} = "31" ; # 31=VMBMETEO
-$global{Cons}{ActionType}{SensorText}{Action}{Get}{Message} = "AC" ;
-$global{Cons}{ActionType}{SensorText}{Action}{Get}{openHAB}{ItemType} = "String" ;
 
 $global{Cons}{ActionType}{Temperature}{Info} = "Reading the current temperature sensor" ;
 $global{Cons}{ActionType}{Temperature}{Modules} = "1E,1F,20,21,28,2C,2D,31,34,35,36,37,3A,3B,3C,3D,3E" ; # 1E=VMBGP1, 1F=VMBGP2, 20=VMBGP4, 28=VMBGPOD, 2C=VMBPIRO, 2D=VMBGP4PIR 

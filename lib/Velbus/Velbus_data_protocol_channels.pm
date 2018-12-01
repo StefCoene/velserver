@@ -836,11 +836,11 @@ $global{Cons}{ModuleTypes}{'31'}{Channels}{"01"}{Name} = "Frost alarm" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"10"}{Type} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'31'}{TemperatureChannel} = "10" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"11"}{Name} = "Rainfall" ;
-   $global{Cons}{ModuleTypes}{'31'}{Channels}{"11"}{Type} = "SensorText" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"11"}{Type} = "SensorNumber" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"12"}{Name} = "Illuminance" ;
-   $global{Cons}{ModuleTypes}{'31'}{Channels}{"12"}{Type} = "SensorText" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"12"}{Type} = "SensorNumber" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"13"}{Name} = "Wind speed" ;
-   $global{Cons}{ModuleTypes}{'31'}{Channels}{"13"}{Type} = "SensorText" ;
+   $global{Cons}{ModuleTypes}{'31'}{Channels}{"13"}{Type} = "SensorNumber" ;
 
 # VMB4AN: Analog I/O module
 $global{Cons}{ModuleTypes}{'32'}{Channels}{"09"}{Name} = "Sensor 1" ;

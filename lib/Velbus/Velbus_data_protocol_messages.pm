@@ -514,9 +514,10 @@ $global{Cons}{ModuleTypes}{'2B'}{Messages}{'00'}{General} = "PirOutput" ;
 ################### Other
 # VMBMETEO (31): Meteo station
 $global{Cons}{ModuleTypes}{'31'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'31'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "SensorNumber" ;
 
 # VMB4AN (32): Analog I/O module
-$global{Cons}{ModuleTypes}{'32'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "SensorText" ;
+$global{Cons}{ModuleTypes}{'32'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "SensorNumber" ;
 
 # VMBVP1 (33): Doorbird interface module
 $global{Cons}{ModuleTypes}{'33'}{Messages}{'00'}{General} = "ButtonPress" ;
