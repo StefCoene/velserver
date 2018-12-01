@@ -382,33 +382,35 @@ sub find_memory_addresses {
             }
 
             if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{SensorName} ) {
-               my $counter = 0 ; # Number of address
-               my $AddressHex ; # The address in hex
+               foreach my $Channel (sort keys %{$global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{SensorName}}) {
+                  my $counter = 0 ; # Number of address
+                  my $AddressHex ; # The address in hex
 
-               my @SensorNameAddress ; # To store all addresses
-               foreach my $loop (split ";", $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{SensorName}) {
-                  #print "loop $loop\n" ;
-                  my ($start,$end) = split "-", $loop ;
-                  $start = &hex_to_dec ($start) ;
-                  $end   = &hex_to_dec ($end) ;
-                  for ($i="$start"; $i <= "$end"; $i++) {
-                     $AddressHex = &dec_to_4hex($i) ;
-                     push @SensorNameAddress, $AddressHex ;
-                     if ( $counter eq "0" ) {
-                        # First address
-                        $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{SensorName} = "$counter:Start" ;
-                     } else {
-                        $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{SensorName} = "$counter" ;
+                  my @SensorNameAddress ; # To store all addresses
+                  foreach my $loop (split ";", $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{SensorName}{$Channel}) {
+                     #print "loop $loop\n" ;
+                     my ($start,$end) = split "-", $loop ;
+                     $start = &hex_to_dec ($start) ;
+                     $end   = &hex_to_dec ($end) ;
+                     for ($i="$start"; $i <= "$end"; $i++) {
+                        $AddressHex = &dec_to_4hex($i) ;
+                        push @SensorNameAddress, $AddressHex ;
+                        if ( $counter eq "0" ) {
+                           # First address
+                           $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{SensorName} = "$Channel:$counter:Start" ;
+                        } else {
+                           $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{SensorName} = "$Channel:$counter" ;
+                        }
+                        $counter ++ ;
                      }
-                     $counter ++ ;
                   }
+
+                  # Save all addresses for the get_status procedure
+                  $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{SensorNameAddress} = join ";", @SensorNameAddress ;
+
+                  # Remember last adress
+                  $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{SensorName} = "$Channel:$counter:Save" ;
                }
-
-               # Save all addresses for the get_status procedure
-               $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{SensorNameAddress} = join ";", @SensorNameAddress ;
-
-               # Remember last adress
-               $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{SensorName} = "$counter:Save" ;
             }
          }
       }

@@ -221,7 +221,7 @@ sub process_message {
                   my $char = chr hex $hex ;     # Memory content in char
 
                   # MemoryKey: configured based on the build of the module.
-                  my $MemoryKey = &module_find_MemoryKey ($message{address}, $message{ModuleType}) ;;
+                  my $MemoryKey = &module_find_MemoryKey ($message{address}, $message{ModuleType}) ;
 
                   if ( defined $MemoryKey ) {
                      # See if we have a Type defined for the memory
@@ -246,25 +246,19 @@ sub process_message {
                            push @{$message{text}}, "ModuleName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}" ;
                         }
                      } elsif ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{SensorName} ) {
-                        my $number = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{SensorName} ;
-                        my $command ;
-                        if ( $number =~ /(\d+):(.+)/ ) {
-                           $number = $1 ;
-                           $command = $2 ;
-                        }
+                        my ($Channel,$number,$command) = split ":", $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{SensorName} ;
 
                         if ( $command eq "Start" ) {
                            # Reset our SensorName
-                           delete $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress} ;
+                           delete $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}{$Channel} ;
                         }
 
-                        ${$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}}[$number] = $char if $hex ne "FF" ;
+                        ${$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}{$Channel}}[$number] = $char if $hex ne "FF" ;
 
                         if ( $command eq "Save" ) {
-                           my $SensorName = join '', @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}} ;
-                           my $SensorChannel = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{SensorChannel} ;
-                           &update_modules_channel_info ($message{address}, $SensorChannel, "Name", $SensorName) ;
-                           push @{$message{text}}, "SensorName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorName}" ;
+                           my $SensorName = join '', @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}{$Channel}} ;
+                           &update_modules_channel_info ($message{address}, $Channel, "Name", $SensorName) ;
+                           push @{$message{text}}, "SensorName=$SensorName" ;
                         }
                      } else {
                         # No type: loop possible Match keys

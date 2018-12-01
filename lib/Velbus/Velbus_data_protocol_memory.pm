@@ -155,8 +155,8 @@ $global{Cons}{ModuleTypes}{'2B'}{Memory}{1}{ModuleName} = "00B0-00EF" ;
 $global{Cons}{ModuleTypes}{'2C'}{MemoryMatch}{1}{Build}   = ">= 1519" ;
 $global{Cons}{ModuleTypes}{'2C'}{MemoryMatch}{1}{Version} = "1" ;
 $global{Cons}{ModuleTypes}{'2C'}{Memory}{'1'}{ModuleName} = "00B0-00EF" ;
-$global{Cons}{ModuleTypes}{'2C'}{Memory}{'1'}{SensorName} = "0080-008F" ;
-$global{Cons}{ModuleTypes}{'2C'}{Memory}{'1'}{SensorChannel} = "09" ; # Temperature sensor is CH9
+#$global{Cons}{ModuleTypes}{'2C'}{Memory}{'1'}{SensorName}{'09'} = "0080-008F" ;
+#$global{Cons}{ModuleTypes}{'2C'}{Memory}{'1'}{SensorChannel} = "09" ; # Temperature sensor is CH9
 
 # VMBGP4PIR
 $global{Cons}{ModuleTypes}{'2D'}{MemoryMatch}{1}{Build}   = ">= 1" ;
@@ -172,6 +172,15 @@ $global{Cons}{ModuleTypes}{'2E'}{Memory}{1}{ModuleName} = "004C-008B" ;
 $global{Cons}{ModuleTypes}{'31'}{MemoryMatch}{1}{Build}   = ">= 1" ;
 $global{Cons}{ModuleTypes}{'31'}{MemoryMatch}{1}{Version} = "1" ;
 $global{Cons}{ModuleTypes}{'31'}{Memory}{1}{ModuleName} = "03C0-03FF" ;
+
+# CH10 = temperature sensor
+$global{Cons}{ModuleTypes}{'31'}{Memory}{'1'}{SensorName}{'10'} = "03B0-03BF" ;
+# CH11 = rain
+$global{Cons}{ModuleTypes}{'31'}{Memory}{'1'}{SensorName}{'11'} = "00C0-00CF" ;
+# CH12 = light
+$global{Cons}{ModuleTypes}{'31'}{Memory}{'1'}{SensorName}{'12'} = "00D0-00DF" ;
+# CH13 = wind
+$global{Cons}{ModuleTypes}{'31'}{Memory}{'1'}{SensorName}{'13'} = "00E0-00EF" ;
 
 # VMB4AN
 $global{Cons}{ModuleTypes}{'32'}{MemoryMatch}{1}{Build}   = ">= 1" ;
