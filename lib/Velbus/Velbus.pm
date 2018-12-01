@@ -660,10 +660,10 @@ sub send_message () {
 
       if ( defined $channel and $channel ne "" ) {
          if ( $channel =~ /^0x/ ) {
-            push @message, "$channel" ;
+            push @message, $channel ;
          } else {
             ($channel,$address) = &channel_id_to_hex ($address,$channel,"MakeMessage") ;
-            push @message, "0x$channel" ;
+            push @message, "0x".$channel ;
          }
       }
 
@@ -677,7 +677,7 @@ sub send_message () {
 
       my $message = join " ", @message ;
       my $Name = $global{Cons}{ModuleTypes}{$type}{Messages}{$command}{Name} ; # Name of command
-      $address = "0x$address" ;
+      $address = "0x".$address ;
 
       &log("message","prio=$prio, address=$address (type=$type), rtr=$rtr, command=$command, message = $message, $Name") ;
 
