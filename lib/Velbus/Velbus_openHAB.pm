@@ -80,7 +80,7 @@ sub openHAB_status_push {
          } elsif ( $return{Status} eq "pressed" ) {
             $return{Status} = "ON" ;
          } elsif ( $return{Status} eq "released" ) {
-            $return{Status} = "OFF" 
+            $return{Status} = "OFF"
          }
          &openHAB_update_state ($item,$return{Status}) ;
       }
@@ -106,50 +106,57 @@ sub openHAB_loop () {
             if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} ) {
                my $Type = $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} ;
 
-               #next if $Channel eq "00" ; # Channel 00 is used to store data about the module, so this Channel does not exist
-
-               if ( $Type eq "Blind" or
-                    $Type eq "Button" or
-                    $Type eq "Dimmer" or
-                    $Type eq "Relay" or
-                    $Type eq "Sensor" or
-                    $Type eq "SensorText" or
-                    $Type eq "SensorNumber" ) {
-
-                  $openHAB .= &openHAB_loop_item ($LoopType, $Type, $ModuleType, $Address, $Channel) ;
-
-                  # Short and long pressed button
-                  if ( $Type eq "Button" ) {
-                     $openHAB .= &openHAB_loop_item ($LoopType, "ButtonLong", $ModuleType, $Address, $Channel) ;
-                  }
-               }
-
-               if ( $Type eq "ButtonCounter" and defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} ) {
-                  # ButtonCounter used as Button: VMB7IN when Divider = Disabled
-                  if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) {
-                     $openHAB .= &openHAB_loop_item ($LoopType, "Button",     $ModuleType, $Address, $Channel) ;
-                     $openHAB .= &openHAB_loop_item ($LoopType, "ButtonLong", $ModuleType, $Address, $Channel) ;
-                  # ButtonCounter used as Counter
-                  } else {
-                     $openHAB .= &openHAB_loop_item ($LoopType, "Divider",        $ModuleType, $Address, $Channel) ;
-                     $openHAB .= &openHAB_loop_item ($LoopType, "CounterRaw",     $ModuleType, $Address, $Channel) ;
-                     $openHAB .= &openHAB_loop_item ($LoopType, "Counter",        $ModuleType, $Address, $Channel) ;
-                     $openHAB .= &openHAB_loop_item ($LoopType, "CounterCurrent", $ModuleType, $Address, $Channel) ;
-                  }
-               }
-
                if ( $Type eq "Temperature" ) {
+                  # If there is a TemperatureAddr and it's FF, we have a touch panel with the temperature sensor disable. So skip the temperature items.
+                  if ( defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} and
+                               $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} eq "FF" ) {
+                     next ;
+                  }
+
                   $Channel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ; # Channel is fixed for temperature sensor
                   $openHAB .= &openHAB_loop_item ($LoopType, $Type, $ModuleType, $Address, $Channel) ;
 
-                  # Touch + Input modules: heater control
-                  if ( ( $ModuleType eq "1E" ) or
-                       ( $ModuleType eq "1F" ) or
-                       ( $ModuleType eq "20" ) or
-                       ( $ModuleType eq "28" ) ) {
-                     $openHAB .= &openHAB_loop_item ($LoopType, "TemperatureCoHeMode", $ModuleType, $Address, $Channel) ;
-                     $openHAB .= &openHAB_loop_item ($LoopType, "TemperatureMode",     $ModuleType, $Address, $Channel) ;
-                     $openHAB .= &openHAB_loop_item ($LoopType, "TemperatureTarget",   $ModuleType, $Address, $Channel) ;
+                  # When we have a Temperature, we can have other stuff as well:
+                  foreach my $ActionType ("TemperatureCoHeMode", "TemperatureMode", "TemperatureTarget" ) {
+                     if ( defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType} ) {
+                        $openHAB .= &openHAB_loop_item ($LoopType, $ActionType, $ModuleType, $Address, $Channel) ;
+                     }
+                  }
+
+               } else {
+                  # Calculate the real address. This is needed for touch panels where you can have sub addresses for pages and/or temperature sensor.
+                  # When this sub address is FF, it's not used and we have to skip the correspondending channels
+                  my ($channelReal,$addressReal)  = &channel_id_to_hex ($Channel, $Address) ;
+                  next if $addressReal eq "FF" ;
+
+                  if ( $Type eq "Blind" or
+                     $Type eq "Button" or
+                     $Type eq "Dimmer" or
+                     $Type eq "Relay" or
+                     $Type eq "Sensor" or
+                     $Type eq "SensorText" or
+                     $Type eq "SensorNumber" ) {
+
+                     $openHAB .= &openHAB_loop_item ($LoopType, $Type, $ModuleType, $Address, $Channel) ;
+
+                     # Short and long pressed button
+                     if ( $Type eq "Button" ) {
+                        $openHAB .= &openHAB_loop_item ($LoopType, "ButtonLong", $ModuleType, $Address, $Channel) ;
+                     }
+                  }
+
+                  if ( $Type eq "ButtonCounter" and defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} ) {
+                     # ButtonCounter used as Button: VMB7IN when Divider = Disabled
+                     if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) {
+                        $openHAB .= &openHAB_loop_item ($LoopType, "Button",     $ModuleType, $Address, $Channel) ;
+                        $openHAB .= &openHAB_loop_item ($LoopType, "ButtonLong", $ModuleType, $Address, $Channel) ;
+                     # ButtonCounter used as Counter
+                     } else {
+                        $openHAB .= &openHAB_loop_item ($LoopType, "Divider",        $ModuleType, $Address, $Channel) ;
+                        $openHAB .= &openHAB_loop_item ($LoopType, "CounterRaw",     $ModuleType, $Address, $Channel) ;
+                        $openHAB .= &openHAB_loop_item ($LoopType, "Counter",        $ModuleType, $Address, $Channel) ;
+                        $openHAB .= &openHAB_loop_item ($LoopType, "CounterCurrent", $ModuleType, $Address, $Channel) ;
+                     }
                   }
                }
             }
@@ -209,14 +216,14 @@ sub openHAB_loop_item () {
          } elsif ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ) {
             $Name .= $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
          }
-   
+
          $Name .= $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{Append2Name} if defined $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{Append2Name} ; # It's possible we have to append something to the name
 
          # Add item name in name if requested
          if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
             $Name .= " (" . $item . ")" ;
          }
-   
+
          # Four Counter, add format if possible.
          if ( $Type eq "Counter" and $Action eq "GetCurrent" ) {
             if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} ) {
@@ -237,17 +244,17 @@ sub openHAB_loop_item () {
          } else {
             $Name .= " $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{ItemStateFormat}" if defined $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{ItemStateFormat} ; # Add item state format
          }
-   
+
          $openHAB .= "$global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{ItemType} $item" ; # Add correct itemp type
          $openHAB .= " \"$Name\" " if defined $Name ;
          $openHAB .= "<$global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{ItemIcon}> " if defined $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{ItemIcon} ; # Add correct item icon
-   
+
          # Add to group if needed
          my $Group = &openHAB_match_item($item) ;
          if ( defined $Group ) {
             $openHAB .= "($Group) " ;
          }
-   
+
          # Add channel tag if one is available
          if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Tag}{value} and
               $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Tag}{value} ne '__NoTag__' ) {
@@ -263,9 +270,9 @@ sub openHAB_loop_item () {
             $http_url .= $Type ;
          }
          $http_url .= "&channel=$Channel" if defined $Channel ; # TODO: is there a case when we have no channel?
-   
+
          my $http ;
-   
+
          if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
             $http .= "<[$http_url&action=$Action:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
          }
