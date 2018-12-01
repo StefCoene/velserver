@@ -180,7 +180,7 @@ sub process_message {
                    or $message{MessageType} eq "F2" ) {
 
                my $hex = shift @hex ;
-               my $Channel = &channel_hex_to_id($hex,$message{address},"Name") ;
+               my $Channel = &channel_hex_to_id($message{address},$hex,"Name") ;
 
                # For 2C = VMBPIRO, only the sensor name is returned and this as Channel 01. But this is in reality channel 09. The other channels have fixed names.
                if ( $message{ModuleType} eq "2C" ) {
@@ -418,7 +418,7 @@ sub process_message {
                                     if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
                                        $Channel = $hex[$byte] ;
                                        next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-                                       $Channel = &channel_hex_to_id($Channel,$message{address},"ConvertChannel") ; # Convert it to a number
+                                       $Channel = &channel_hex_to_id($message{address},$Channel,"ConvertChannel") ; # Convert it to a number
                                        $info{$Channel}{Button} = $Value ;
                                     }
                                  }
@@ -487,7 +487,7 @@ sub process_message {
                      if ( $Process{Data}{PerMessage}{Convert} eq "SensorNumber" or
                           $Process{Data}{PerMessage}{Convert} eq "MemoText") {
                         my $hex = shift @hex ;
-                        my $Channel = &channel_hex_to_id($hex,$message{address},"SensorText") ; # This is useless for MemoText, but needed for SensorText
+                        my $Channel = &channel_hex_to_id($message{address},$hex,"SensorText") ; # This is useless for MemoText, but needed for SensorText
 
                         # First byte is the start of the text
                         my $start = shift @hex ;
@@ -667,7 +667,7 @@ sub send_message () {
          if ( $channel =~ /^0x/ ) {
             push @message, "$channel" ;
          } else {
-            ($channel,$address) = &channel_number_to_id ($channel,$address,"MakeMessage") ;
+            ($channel,$address) = &channel_id_to_hex ($address,$channel,"MakeMessage") ;
             push @message, "0x$channel" ;
          }
       }
@@ -797,14 +797,14 @@ sub get_status_VMB7IN () {
 # Convert channel number and address to channel bit. 
 #   Channel 3 = 1000 -> 8
 # Used by commands.pl & scripts
-# 1: channel
-# 2: address
+# 1: address
+# 2: channel
 # 3: type -> not used, informational
 #     - MakeMessage
 #     - ButtonPressed
-sub channel_number_to_id () {
-   my $channel = $_[0] ;
-   my $address = $_[1] ;
+sub channel_id_to_hex () {
+   my $address = $_[0] ;
+   my $channel = $_[1] ;
 
    if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" or # VMBGP1D
         $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" or # VMBGP2D
@@ -829,15 +829,15 @@ sub channel_number_to_id () {
 }
 
 # Used by logger.pl for converting the channel hex value to the correct channel id
-# 1: channel
-# 2: address
+# 1: address
+# 2: channel
 # 3: type: Name or nothing
 #     - SensorText: message AC = transmitting sensor as text
 #     - Name
 #     - ConvertChannel
 sub channel_hex_to_id () {
-   my $channel = $_[0] ;
-   my $address = $_[1] ; # Optional
+   my $address = $_[0] ; # Optional
+   my $channel = $_[1] ;
    my $type    = $_[2] ;
 
    my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
@@ -928,7 +928,7 @@ sub button_pressed {
    my $address = $_[1] ;
    my $channel = $_[2] ;
    my $value   = $_[3] ;
-   ($channel,$address) = &channel_number_to_id($channel,$address,"ButtonPressed") ;
+   ($channel,$address) = &channel_id_to_hex($address,$channel,"ButtonPressed") ;
    # DATABYTE2 = Channel just pressed
    # DATABYTE3 = Channel just released
    # DATABYTE4 = Channel long pressed
