@@ -810,6 +810,10 @@ $global{Cons}{ModuleTypes}{'2B'}{Channels}{"01"}{Name} = "Dark output" ;
    $global{Cons}{ModuleTypes}{'2B'}{Channels}{"07"}{Type} = "Sensor" ;
 
 # Outdoor PIR sensor: VMBPIRO
+# Transmits the first part of the temperature sensor name:
+# Sensor bit number (â€˜00000001â€™ = Sensor 1)
+#    -> so channel 01 = temperature sensor = CH09
+$global{Cons}{ModuleTypes}{'2C'}{ChannelNumbers}{Name}{Map}{'01'} = "09" ;
 $global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Name} = "Dark output" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"02"}{Name} = "Light output" ;

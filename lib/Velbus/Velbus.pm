@@ -836,6 +836,11 @@ sub channel_hex_to_id () {
            defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Convert} and 
                    $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Convert} eq "hex" ) {
          $channel = &hex_to_dec ($channel) ;
+      } elsif ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
+                defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} and
+                defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Map} and 
+                defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Map}{$channel} ) {
+         $channel = $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Map}{$channel} ;
       } else {
          $channel = &hex_to_bin ($channel) ;
          $channel =~ /(0*)$/ ; # Filter out last 0's
