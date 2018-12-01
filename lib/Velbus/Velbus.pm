@@ -22,6 +22,8 @@ sub process_message {
    $message{ModuleType}  = "??" ;
    $message{MessageType} = "??" ;
 
+   $message{addressMessage}  = $message{address} ; # Store the address of the message, it's possible that we change the address if this is for a touch with multiple addresses
+
    if ( $message{STX} ne "0F" ) { # Only process valid packages
       push @{$message{text}}, "Not a valid packet: STX: $message{STX} != 0F" ;
    } elsif ( $message{ETX} ne "04" ) { # Only process valid packages
@@ -42,7 +44,6 @@ sub process_message {
          #my $sql = "insert into `modules` (`address`, `status`, `date`) VALUES (?, ?, NOW() ) ON DUPLICATE KEY UPDATE `status`=values(status), `date`=values(date)" ;
          my $sql = "replace into `modules` (`address`, `type`, `status`, `date`) VALUES (?, '', ?, CURRENT_TIMESTAMP )" ;
          &do_query ($global{dbh},$sql, $message{address}, "Start scan") ;
-         $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{address} = $message{address} ;
 
       } else {
          $message{MessageType} = shift @hex ;
@@ -70,7 +71,7 @@ sub process_message {
             }
             if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{MemoryMap} ) {
                &update_modules_info ($message{address}, "MemoryMap", $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{MemoryMap}]) ;
-               $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} = $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{MemoryMap}] ;
+               #$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{MemoryMap} = $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{MemoryMap}] ;
             }
             if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{Buildyear} ) {
                &update_modules_info ($message{address}, "BuildYear", $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{Buildyear}]) ;
@@ -88,10 +89,8 @@ sub process_message {
                # TODO: when an unknown module is found: trigger a scan
                if ( defined $global{Vars}{Modules}{Address}{$message{address}} and
                             $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ne '' ) {
-                  $message{addressMaster} = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{address} ; # This is the master address, used for a VMBGPOD because it has sub addresses. We use this when updating the database.
                   $message{ModuleType}    = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ;
                } else {
-                  $message{addressMaster} = $message{address} ;
                   push @{$message{text}}, "No module type found for this address" ;
                }
             }
@@ -114,30 +113,31 @@ sub process_message {
 
             if ( $message{MessageType} eq "B0" ) { # Module subtype: answer to a Scan
                if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ) {
-                  push @{$message{text}}, "address $message{address}, module type: $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type}" ;
-                  # The touch modules have a special address for the temperature sensor
-                  if ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
-                     push @{$message{text}},                  "SubAddr1 = $hex[3]" ;
-                     &update_modules_info ($message{address}, "SubAddr1", $hex[3]) ;
-                     push @{$message{text}},                  "SubAddr2 = $hex[4]" ;
-                     &update_modules_info ($message{address}, "SubAddr2", $hex[4]) ;
-                     push @{$message{text}},                  "SubAddr3 = $hex[5]" ;
-                     &update_modules_info ($message{address}, "SubAddr3", $hex[5]) ;
-                     push @{$message{text}},                  "SubAddr4 = $hex[6]" ;
-                     &update_modules_info ($message{address}, "SubAddr4", $hex[6]) ;
-                     push @{$message{text}},                  "TemperatureAddr = $hex[6]" ;
-                     &update_modules_info ($message{address}, "TemperatureAddr", $hex[6]) ;
+                  my $ModuleType = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ;
+                  push @{$message{text}}, "address $message{address}, module type: $ModuleType" ;
+                  # When we have multiple addresses, we get them in @hex
+                  shift @hex ; shift @hex ; shift @hex ; # Throw away what we do not need
+
+                  # Save all addresses
+                  my $counter = 1 ;
+                  foreach my $SubAddr (@hex) {
+                     push @{$message{text}},                  "SubAddr$counter = $SubAddr" ;
+                     &update_modules_info ($message{address}, "SubAddr$counter", $SubAddr) ;
+                     $global{Vars}{Modules}{SubAddress}{$SubAddr}{MasterAddress} = $message{address} ; # Remember the master address for this subaddress
+                     $global{Vars}{Modules}{SubAddress}{$SubAddr}{ChannelOffset} = $counter * 8 ; # Calculate the channel offset
+
+                     $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{"SubAddr$counter"} = $address ;
+                     $counter ++ ;
                   }
 
-                  if ( ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "1E" ) or # VMBGP1D
-                       ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "1F" ) or # VMBGP2D
-                       ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "20" ) or # VMBGP4D
-                       ( $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} eq "2D" ) ) { # VMBGP4PIR
-                     push @{$message{text}},                  "SubAddr1 = $hex[3]" ;
-                     &update_modules_info ($message{address}, "SubAddr1", $hex[3]) ;
+                  if (      $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} eq "09" ) {
+                     push @{$message{text}},                  "TemperatureAddr = $hex[0]" ;
+                     &update_modules_info ($message{address}, "TemperatureAddr", $hex[0]) ;
+                  } elsif ( $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} eq "33" ) {
                      push @{$message{text}},                  "TemperatureAddr = $hex[3]" ;
                      &update_modules_info ($message{address}, "TemperatureAddr", $hex[3]) ;
                   }
+
                } else {
                   push @{$message{text}}, "address $message{address}, no module info found for this address" ;
                }
@@ -164,7 +164,7 @@ sub process_message {
                &update_modules_channel_info ($message{address}, $TemperatureChannel, "Temperature", $temperature) ;
 
                push @{$message{text}}, "Temperature = $temperature" ;
-               &openHAB_update_state ("Temperature_$message{addressMaster}_$TemperatureChannel", $temperature) ;
+               &openHAB_update_state ("Temperature_$message{address}_$TemperatureChannel", $temperature) ;
 
             #} elsif ( $message{MessageType} eq "A9" ) {
             #my $Channel = &hex_to_dec (shift @hex ) ; # 9 -> sensor 1, 12 -> sensor 14
@@ -311,7 +311,7 @@ sub process_message {
                         foreach my $Channel (sort keys (%info) ) {
                            foreach my $SubName (sort keys (%{$info{$Channel}}) ) {
                               push @{$message{text}}, "$Channel, $SubName = $info{$Channel}{$SubName}" ;
-                              &update_modules_channel_info ($message{addressMaster}, $Channel, $SubName, $info{$Channel}{$SubName}) ;
+                              &update_modules_channel_info ($message{address}, $Channel, $SubName, $info{$Channel}{$SubName}) ;
                            }
                         }
 
@@ -425,7 +425,7 @@ sub process_message {
 
                                  # Do we have to update the state in openHAB
                                  if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ) {
-                                    my $openHAB = $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ; # Handier var
+                                    my $openHAB = $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ; # Easier var
 
                                     if ( $openHAB =~ "(.+):Button" ) {
                                        my $action = $1 ;
@@ -437,40 +437,40 @@ sub process_message {
                                              defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} and
                                                      $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
                                           if ( $action eq "RELEASED" ) {
-                                             if ( $global{openHAB}{ButtonState}{$message{addressMaster}}{$Channel} eq "PRESSED" ) {
+                                             if ( $global{openHAB}{ButtonState}{$message{address}}{$Channel} eq "PRESSED" ) {
                                                 # PRESSED: send ON + OFF
-                                                $openHAB_update_state{"Button_$message{addressMaster}_$Channel"} = "ON OFF" ;
+                                                $openHAB_update_state{"Button_$message{address}_$Channel"} = "ON OFF" ;
                                              } else {
                                                 # LONGPRESSED: send OFF
-                                                $openHAB_update_state{"ButtonLong_$message{addressMaster}_$Channel"} = "OFF" ;
+                                                $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "OFF" ;
                                              }
                                           } else {
-                                             $global{openHAB}{ButtonState}{$message{addressMaster}}{$Channel} = $action ; # remember type: PRESSED or LONGPRESSED
+                                             $global{openHAB}{ButtonState}{$message{address}}{$Channel} = $action ; # remember type: PRESSED or LONGPRESSED
                                              if ( $action eq "PRESSED" ) {
                                                 # Don't send ON yet, wait for RELEASED. Because for a LONGPRESSED, there is also a PRESSED message first
                                              } elsif ( $action eq "LONGPRESSED" ) {
-                                                $openHAB_update_state{"ButtonLong_$message{addressMaster}_$Channel"} = "ON" ;
+                                                $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "ON" ;
                                              }
                                           }
                                        } elsif ( $Type eq "Sensor" ) {
                                           if ( $action eq "RELEASED" ) {
-                                             $openHAB_update_state{"Sensor_$message{addressMaster}_$Channel"} = "OFF" ;
+                                             $openHAB_update_state{"Sensor_$message{address}_$Channel"} = "OFF" ;
                                           } else {
-                                             $openHAB_update_state{"Sensor_$message{addressMaster}_$Channel"} = "ON" ;
+                                             $openHAB_update_state{"Sensor_$message{address}_$Channel"} = "ON" ;
                                           }
                                        }
                                     } elsif ( $openHAB =~ /:/ ) {
                                        my @openHAB = split ":", $openHAB ;
                                        if ( $Channel eq "00" ) {
-                                          $openHAB_update_state{"$openHAB[1]_$message{addressMaster}"} = $openHAB[0] ;
+                                          $openHAB_update_state{"$openHAB[1]_$message{address}"} = $openHAB[0] ;
                                        } else {
-                                          $openHAB_update_state{"$openHAB[1]_$message{addressMaster}_$Channel"} = $openHAB[0] ;
+                                          $openHAB_update_state{"$openHAB[1]_$message{address}_$Channel"} = $openHAB[0] ;
                                        }
                                     } else {
                                        if ( $Channel eq "00" ) {
-                                          $openHAB_update_state{"$openHAB"."_"."$message{addressMaster}"} = $Value if defined $Value ;
+                                          $openHAB_update_state{"$openHAB"."_"."$message{address}"} = $Value if defined $Value ;
                                        } else {
-                                          $openHAB_update_state{"$openHAB"."_"."$message{addressMaster}_$Channel"} = $Value if defined $Value ;
+                                          $openHAB_update_state{"$openHAB"."_"."$message{address}_$Channel"} = $Value if defined $Value ;
                                        }
                                     }
                                  }
@@ -527,7 +527,7 @@ sub process_message {
                                  # Save the data
                                  if ( $Process{Data}{PerMessage}{Convert} eq "SensorNumber" ) {
                                     &update_modules_channel_info ($message{address}, $Channel, "value", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value}) ;
-                                    $openHAB_update_state{"Sensor_$message{addressMaster}_$Channel"} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
+                                    $openHAB_update_state{"Sensor_$message{address}_$Channel"} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
                                     $info{$Channel}{Button} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
                                  } else {
                                     $info{$Channel}{Memo} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
@@ -558,21 +558,21 @@ sub process_message {
                         if ( $info{$Channel}{$Name}{List}) {
                            my $temp = join ";", @{$info{$Channel}{$Name}{List}} ;
                            push @{$message{text}}, "$Channel, $Name = $temp" ;
-                           &update_modules_channel_info ($message{addressMaster}, $Channel, $Name, $temp) ;
+                           &update_modules_channel_info ($message{address}, $Channel, $Name, $temp) ;
                         } elsif ( $Name eq "Divider" ) {
-                           $openHAB_update_state{"Divider_$message{addressMaster}_$Channel"} = $info{$Channel}{Divider} ;
+                           $openHAB_update_state{"Divider_$message{address}_$Channel"} = $info{$Channel}{Divider} ;
                            push @{$message{text}}, "$Channel, Divider = $Divider" ;
-                           &update_modules_channel_info ($message{addressMaster}, $Channel, $Name, $info{$Channel}{Divider}) ;
-                           $openHAB_update_state{"Divider_$message{addressMaster}_$Channel"} = $info{$Channel}{Divider} ;
+                           &update_modules_channel_info ($message{address}, $Channel, $Name, $info{$Channel}{Divider}) ;
+                           $openHAB_update_state{"Divider_$message{address}_$Channel"} = $info{$Channel}{Divider} ;
                         } elsif ( $Name eq "Counter" ) {
                            my $CounterRaw = &hex_to_dec ($info{$Channel}{Counter}) ;
                            my $Counter = $CounterRaw / $info{$Channel}{Divider} ;
    
                            push @{$message{text}}, "$Channel, Counter = $Counter, CounterRaw = $CounterRaw" ;
-                           &update_modules_channel_info ($message{addressMaster}, $Channel, "CounterRaw", $CounterRaw) ;
-                           &update_modules_channel_info ($message{addressMaster}, $Channel, "Counter", $Counter) ;
-                           $openHAB_update_state{"CounterRaw_$message{addressMaster}_$Channel"} = $CounterRaw ;
-                           $openHAB_update_state{"Counter_$message{addressMaster}_$Channel"} = $Counter ;
+                           &update_modules_channel_info ($message{address}, $Channel, "CounterRaw", $CounterRaw) ;
+                           &update_modules_channel_info ($message{address}, $Channel, "Counter", $Counter) ;
+                           $openHAB_update_state{"CounterRaw_$message{address}_$Channel"} = $CounterRaw ;
+                           $openHAB_update_state{"Counter_$message{address}_$Channel"} = $Counter ;
 
                            # Using the current epoch seconds and the previous value, we can calculate the change per second of the counter
                            if ( defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{CounterPrevious}{value} ) { # Only do something if we have a previous value
@@ -591,8 +591,8 @@ sub process_message {
                               }
 
                               push @{$message{text}}, "$Channel, CounterCurrent = $CounterCurrent" ;
-                              &update_modules_channel_info ($message{addressMaster}, $Channel, "CounterCurrent", $CounterCurrent) ;
-                              $openHAB_update_state{"CounterCurrent_$message{addressMaster}_$Channel"} = $CounterCurrent ;
+                              &update_modules_channel_info ($message{address}, $Channel, "CounterCurrent", $CounterCurrent) ;
+                              $openHAB_update_state{"CounterCurrent_$message{address}_$Channel"} = $CounterCurrent ;
                            }
 
                            # Remember the counter and epoch seconds
@@ -600,7 +600,7 @@ sub process_message {
                            $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{CounterPreviousTime}{value} = time ;
                         } else {
                            push @{$message{text}}, "$Channel, $Name = $info{$Channel}{$Name}" ;
-                           &update_modules_channel_info ($message{addressMaster}, $Channel, $Name, $info{$Channel}{$Name}) ;
+                           &update_modules_channel_info ($message{address}, $Channel, $Name, $info{$Channel}{$Name}) ;
                         }
                      }
                   }
@@ -622,8 +622,8 @@ sub process_message {
 
    my $text = join "\n    ", @{$message{text}} ;
 
-   print         &timestamp . " $message{prio} $message{address}($message{addressMaster})=$message{ModuleType} $message{MessageType}=$message{MessageName}\n    $text\n" ;
-   &log("logger",&timestamp . " $message{prio} $message{address}($message{addressMaster})=$message{ModuleType} $message{MessageType}=$message{MessageName}\n    $text") ;
+   print         &timestamp . " $message{prio} $message{addressMessage}($message{address})=$message{ModuleType} $message{MessageType}=$message{MessageName}\n    $text\n" ;
+   &log("logger",&timestamp . " $message{prio} $message{addressMessage}($message{address})=$message{ModuleType} $message{MessageType}=$message{MessageName}\n    $text") ;
 
    if ( defined $global{Config}{velbus}{ENABLE_RAWMESSAGE_LOGGING} ) {
       &log("raw","$message{address} : $message{prio} : $message{MessageType} : $message{RTR_size} : $message{Raw}") ;
@@ -805,26 +805,26 @@ sub get_status_VMB7IN () {
 sub channel_id_to_hex () {
    my $address = $_[0] ;
    my $channel = $_[1] ;
+   my $type    = $_[2] ;
 
-   if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1E" or # VMBGP1D
-        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "1F" or # VMBGP2D
-        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "20" or # VMBGP2D
-        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "2D" or # VMBGP4PIR
-        $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
-      if ( $channel > 24 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ) {
-         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
-         $channel -= 24 ;
-      } elsif ( $channel > 16 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ) {
-         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ;
-         $channel -= 16 ;
-      } elsif ( $channel > 8 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ) {
-         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
-         $channel -= 8 ;
-      }
+   my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
+
+   # When the channel > 8 and we have sub addresses, calculate the correct address and channel
+   if ( $channel > 24 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ) {
+      $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
+      $channel -= 24 ;
+   } elsif ( $channel > 16 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ) {
+      $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ;
+      $channel -= 16 ;
+   } elsif ( $channel > 8 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ) {
+      $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
+      $channel -= 8 ;
    }
+
    $channel -- ;
    $channel = "1" . "0" x $channel ;
    $channel = &bin_to_hex ($channel) ;
+
    return ($channel,$address) ;
 }
 
@@ -864,16 +864,14 @@ sub channel_hex_to_id () {
       $channel = ($1 =~ tr/0//); # Count last 0's
       $channel ++ ;
 
-      if ( defined $address and
-           defined $global{Vars}{Modules}{Address}{$address} and
-           defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ) {
-         $channel += $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddrMulti} ;
-      }
-
-      if ( defined $address and $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{address}) {
-         $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{address} ;
+      # If this is a SubAddress, replace the address with the master address and calculate the correct channel.
+      if ( defined $global{Vars}{Modules}{SubAddress}{$address} ) {
+         $channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ; # Before changing the $address!!!!
+         $address = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress} ;
       }
    }
+
+   $channel = "0" . $channel if $channel < 10 and $channel !~ /^0/ ;
 
    $channel = "0" . $channel if $channel < 10 ;
    return $channel ;

@@ -538,8 +538,8 @@ sub www_print_found_modules () {
       $mail_body .= "address;type;ModuleName;Build;MemoryKey;\n" ;
 
       foreach my $address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerStatus}{$status}{ModuleList}}) ) {
-         my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ; # Handier var
-         my $MemoryKey = &module_find_MemoryKey ($address, $ModuleType) ; # Handier var
+         my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ; # Easier var
+         my $MemoryKey = &module_find_MemoryKey ($address, $ModuleType) ; # Easier var
          #my $MemoryMap = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{MemoryMap} ;
          $table .= "  <tr>\n" ;
          if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} ) {
@@ -989,9 +989,9 @@ sub www_print_velbus_messages_print_messages () {
 
    $html .= "<tbody>\n" ;
    foreach my $Message (sort  {$a cmp $b} keys %{$data{BroadCast}}) {
-      my $Name = $data{BroadCast}{$Message}{Name} ; # Handier var
-      my $Info = $data{BroadCast}{$Message}{Info} ; # Handier var
-      my $Prio = $data{BroadCast}{$Message}{Prio} ; # Handier var
+      my $Name = $data{BroadCast}{$Message}{Name} ; # Easier var
+      my $Info = $data{BroadCast}{$Message}{Info} ; # Easier var
+      my $Prio = $data{BroadCast}{$Message}{Prio} ; # Easier var
       $html .= "  <tr>\n" ;
       $html .= "    <th><a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a></th>\n" ;
       $Name =~ s/COMMAND_//g ;
@@ -1255,9 +1255,9 @@ sub www_process_messages () {
 
    # Loop all broadcast messages
    foreach my $Message (sort (keys %{$global{Cons}{MessagesBroadCast}}) ) {
-      my $Name = $global{Cons}{MessagesBroadCast}{$Message}{Name} ; # Handier var
-      my $Info = $global{Cons}{MessagesBroadCast}{$Message}{Info} ; # Handier var
-      my $Prio = $global{Cons}{MessagesBroadCast}{$Message}{Prio} ; # Handier var
+      my $Name = $global{Cons}{MessagesBroadCast}{$Message}{Name} ; # Easier var
+      my $Info = $global{Cons}{MessagesBroadCast}{$Message}{Info} ; # Easier var
+      my $Prio = $global{Cons}{MessagesBroadCast}{$Message}{Prio} ; # Easier var
       $data{BroadCast}{$Message}{Name} = $Name ;
       $data{BroadCast}{$Message}{Info} = $Info ;
       $data{BroadCast}{$Message}{Prio} = $Prio ;
@@ -1269,8 +1269,8 @@ sub www_process_messages () {
          foreach my $Name (split ";", $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Name}) {
             $data{Module}{$Message}{Name}{$Name} = "yes" ;
          }
-         my $Info = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Info} ; # Handier var
-         my $Prio = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Prio} ; # Handier var
+         my $Info = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Info} ; # Easier var
+         my $Prio = $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Prio} ; # Easier var
          $data{Module}{$Message}{ModuleType}{$ModuleType} = "yes" ;
          $data{Module}{$Message}{Info}{$Info} = "yes";
          $data{Module}{$Message}{Prio}{$Prio} = "yes";

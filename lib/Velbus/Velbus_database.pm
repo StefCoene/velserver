@@ -1,14 +1,14 @@
 
 # Mysql related sub functions to get the data out of the database
 
-# Get all modules from the database
+# Get all the modules on the bus
 sub get_all_modules_from_database {
    my %data = &fetch_data ($global{dbh},"select * from `modules` where `status`='Found'","address" ) ;
 
    foreach my $address (sort keys %data ) {
-      my $type   = $data{$address}{type} ; # Handier var
+      my $type   = $data{$address}{type} ; # Easier var
       next if $type eq '' ;
-      my $status = $data{$address}{status} ; # Handier var
+      my $status = $data{$address}{status} ; # Easier var
 
       %{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}} = %{$data{$address}} ; # List of all modules
       $global{Vars}{Modules}{PerStatus}{$status}{ModuleList}{$address} = "yes" ; # List of all modules per status
@@ -18,52 +18,57 @@ sub get_all_modules_from_database {
    &get_all_modules_info_from_database ;
 }
 
-# Loop all found modules and load the extra info from the database
+# Loop all found modules and load the extra info
 sub get_all_modules_info_from_database {
    foreach my $address (sort keys (%{$global{Vars}{Modules}{PerStatus}{Found}{ModuleList}}) ) {
       my %SubAddr ;
 
+      # 1: Get the module information
       my %data = &fetch_data ($global{dbh},"select * from `modules_info` where `address`='$address'","data" ) ;
       foreach my $data (sort keys (%data)) {
-         # Sub addresses are kept in 'SubAddr' for easy access
-         if ( $data =~ /^SubAddr/ and $data{$data}{value} ne "FF" ) {
-            # TODO: save type per sub address, sometimes info is transmitted with the sub address like COMMAND_MODULE_STATUS
-            my $SubAddr = $data{$data}{value} ; # Handier var
-            $SubAddr{$SubAddr} = $data ;
-         } else {
-            # If there is an address for the temperature sensor, add this address to the list with type 'Temperature'
-            if ( $data eq "TemperatureAddr" ) {
-               $global{Vars}{Modules}{Address}{$data{$data}{value}}{ModuleInfo}{type} = "Temperature" ;
-            }
-         }
          $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} = $data{$data}{value} ;
+
+         # Parse the SubAddress variable if it's valid
+         if ( $data =~ /^SubAddr(\d+)/ and $data{$data}{value} ne "FF" ) {
+            my $counter = $1 ;
+            my $SubAddr = $data{$data}{value} ; # Easier var
+
+            $SubAddr{$SubAddr} = $data ; # Remember a list of SubAddreses
+
+            $global{Vars}{Modules}{SubAddress}{$SubAddr}{MasterAddress} = $address ; # Remember the master address for this SubAddress
+            $global{Vars}{Modules}{SubAddress}{$SubAddr}{ChannelOffset} = $counter * 8 ; # Calculate the channel offset
+         }
+
+         # If there is an address for the temperature sensor, add this address to the list with type 'Temperature'
+         #if ( $data eq "TemperatureAddr" ) {
+         #   my $SubAddr = $data{$data}{value} ; # Easier var
+         #   $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{type} = "Temperature" ;
+         #}
       }
 
-      # Store a list of sub addresses in 1 variable
       if ( %SubAddr ) {
+         # 1: Store all the information also for the SubAddress
+         foreach my $SubAddr (sort keys %SubAddr) {
+            foreach my $data (sort keys %{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}}) {
+               $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{$data} = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} ;
+            }
+         }
+
+         # 2: Store a list of sub addresses in 1 variable
          my $SubAddr = join ",", sort keys  %SubAddr ;
          $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} = $SubAddr ;
       }
 
+      # 2: Get the channel information
       my %datatemp = &fetch_data ($global{dbh},"select * from `modules_channel_info` where `address`='$address'" ) ;
       foreach my $key (sort keys (%datatemp)) {
-         my $date    = $datatemp{$key}{date} ;    # Handier var
-         my $address = $datatemp{$key}{address} ; # Handier var
-         my $channel = $datatemp{$key}{channel} ; # Handier var
-         my $data    = $datatemp{$key}{data} ;    # Handier var
-         my $value   = $datatemp{$key}{value} ;   # Handier var
+         my $date    = $datatemp{$key}{date} ;    # Easier var
+         my $address = $datatemp{$key}{address} ; # Easier var
+         my $channel = $datatemp{$key}{channel} ; # Easier var
+         my $data    = $datatemp{$key}{data} ;    # Easier var
+         my $value   = $datatemp{$key}{value} ;   # Easier var
          $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{$data}{value} = $value ;
          $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$channel}{$data}{date}  = $date ;
-      }
-
-      # A VMBGPOD has multiple address. When the a button is pressed, it is submitted from the sub address and so we need to add '8' per subaddress to the channel.
-      if ( %SubAddr ) {
-         foreach my $SubAddr (sort keys %SubAddr) {
-            %{$global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}} = %{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}} ;
-            if ( $SubAddr{$SubAddr} =~ /SubAddr(\d+)/ ) {
-               $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{SubAddrMulti} = $1 * 8 ;
-            }
-         }
       }
    }
 }
@@ -80,7 +85,7 @@ sub update_modules_channel_info {
    if ( defined $address and $address ne "" and
         defined $channel and $channel ne "" and
         defined $data    and $data    ne "" and
-        defined $value   and $value   ne "") {
+        defined $value   and $value   ne "" ) {
       #&do_query ($global{dbh},"insert into `modules_channel_info` 
       #      (`address`, `channel`, `data`, `value`, `date`) 
       #         VALUES 
@@ -116,7 +121,7 @@ sub update_modules_info {
    my ($address, $data, $value) = @_ ;
    if ( defined $address and $address ne "" and
         defined $data    and $data    ne "" and
-        defined $value   and $value   ne "") {
+        defined $value   and $value   ne "" ) {
       #&do_query ($global{dbh},"insert into `modules_info` 
       #      (`address`, `data`, `value`, `date`) 
       #         VALUES 
