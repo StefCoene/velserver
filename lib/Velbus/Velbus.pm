@@ -523,7 +523,7 @@ sub process_message {
                                  if ( $Process{Data}{PerMessage}{Convert} eq "SensorNumber" ) {
                                     &update_modules_channel_info ($message{address}, $Channel, "value", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value}) ;
                                     $openHAB_update_state{"Sensor_$message{address}_$Channel"} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
-                                    $info{$Channel}{Button} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
+                                    $info{$Channel}{SensorNumber} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
                                  } else {
                                     $info{$Channel}{Memo} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
                                  }
@@ -809,9 +809,16 @@ sub channel_id_to_hex () {
       $channel -= 8 ;
    }
 
-   $channel -- ;
-   $channel = "1" . "0" x $channel ;
-   $channel = &bin_to_hex ($channel) ;
+   if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
+        defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{MakeMessage} and
+        defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{MakeMessage}{Convert} and
+                $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{MakeMessage}{Convert} eq "hex" ) {
+      $channel = &hex_to_dec ($channel) ;
+   } else {
+      $channel -- ;
+      $channel = "1" . "0" x $channel ;
+      $channel = &bin_to_hex ($channel) ;
+   }
 
    return ($channel,$address) ;
 }

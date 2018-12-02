@@ -837,6 +837,7 @@ $global{Cons}{ModuleTypes}{'2C'}{Channels}{"01"}{Name} = "Dark output" ;
 
 #	VMBMETEO (31): Meteo station
 $global{Cons}{ModuleTypes}{'31'}{ChannelNumbers}{Name}{Convert} = "hex" ;
+$global{Cons}{ModuleTypes}{'31'}{AllChannelStatus} = "FF" ;
 $global{Cons}{ModuleTypes}{'31'}{Channels}{"01"}{Name} = "Frost alarm" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"01"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"02"}{Name} = "Heat alarm" ;
@@ -865,7 +866,26 @@ $global{Cons}{ModuleTypes}{'31'}{Channels}{"01"}{Name} = "Frost alarm" ;
    $global{Cons}{ModuleTypes}{'31'}{Channels}{"13"}{Type} = "SensorNumber" ;
 
 # VMB4AN: Analog I/O module
-$global{Cons}{ModuleTypes}{'32'}{Channels}{"09"}{Name} = "Sensor 1" ;
+$global{Cons}{ModuleTypes}{'32'}{ChannelNumbers}{Name}{Convert} = "hex" ;
+$global{Cons}{ModuleTypes}{'32'}{ChannelNumbers}{MakeMessage}{Convert} = "hex" ;
+$global{Cons}{ModuleTypes}{'32'}{AllChannelStatus} = "FF" ;
+$global{Cons}{ModuleTypes}{'32'}{Channels}{"01"}{Name} = "Alarm 1" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"01"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"02"}{Name} = "Alarm 2" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"02"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"03"}{Name} = "Alarm 3" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"03"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"04"}{Name} = "Alarm 4" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"04"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"05"}{Name} = "Alarm 5" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"05"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"06"}{Name} = "Alarm 6" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"06"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"07"}{Name} = "Alarm 7" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"07"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"08"}{Name} = "Alarm 8" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"08"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'32'}{Channels}{"09"}{Name} = "Sensor 1" ;
    $global{Cons}{ModuleTypes}{'32'}{Channels}{"09"}{Type} = "SensorNumber" ;
    $global{Cons}{ModuleTypes}{'32'}{Channels}{"10"}{Name} = "Sensor 2" ;
    $global{Cons}{ModuleTypes}{'32'}{Channels}{"10"}{Type} = "SensorNumber" ;

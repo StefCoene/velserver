@@ -1,4 +1,3 @@
-
 $global{Cons}{ActionType}{Blind}{Info} = "Reading and controlling the blinds" ;
 $global{Cons}{ActionType}{Blind}{Modules} = "03,09,1D,2E" ; # 03=VMB1BL, 09=VMB2BL, 1D=VMB2BLE, 2E=VMB1BLS
 $global{Cons}{ActionType}{Blind}{Action}{Get}{Message}  = "EC" ;
@@ -56,7 +55,7 @@ $global{Cons}{ActionType}{Memo}{Modules} = "28" ; # VMBGPOD
 $global{Cons}{ActionType}{Memo}{Action}{Set}{Message} = "AC" ; # &send_memo
 
 $global{Cons}{ActionType}{Relay}{Info} = "Reading and setting the relay state" ;
-$global{Cons}{ActionType}{Relay}{Modules} = "02,08,10,11,1B,29" ; # 02=VMB1RY 08 VMB4RY 10=VMB4RYLD 11=VMB4RYNO 1B=VMB1RYNO 29=VMB1RYNOS 
+$global{Cons}{ActionType}{Relay}{Modules} = "02,08,10,11,1B,29" ; # 02=VMB1RY 08 VMB4RY 10=VMB4RYLD 11=VMB4RYNO 1B=VMB1RYNO 29=VMB1RYNOS
 $global{Cons}{ActionType}{Relay}{Action}{Get}{Message} = "FB" ;
 $global{Cons}{ActionType}{Relay}{Action}{Get}{openHAB}{ItemIcon} = "switch" ;
 $global{Cons}{ActionType}{Relay}{Action}{Get}{openHAB}{ItemType} = "Switch" ;
@@ -74,7 +73,7 @@ $global{Cons}{ActionType}{SensorNumber}{Action}{Get}{Message} = "AC" ;
 $global{Cons}{ActionType}{SensorNumber}{Action}{Get}{openHAB}{ItemType} = "Number" ;
 
 $global{Cons}{ActionType}{Temperature}{Info} = "Reading the current temperature sensor" ;
-$global{Cons}{ActionType}{Temperature}{Modules} = "1E,1F,20,21,28,2C,2D,31,34,35,36,37,3A,3B,3C,3D,3E" ; # 1E=VMBGP1, 1F=VMBGP2, 20=VMBGP4, 28=VMBGPOD, 2C=VMBPIRO, 2D=VMBGP4PIR 
+$global{Cons}{ActionType}{Temperature}{Modules} = "1E,1F,20,21,28,2C,2D,31,34,35,36,37,3A,3B,3C,3D,3E" ; # 1E=VMBGP1, 1F=VMBGP2, 20=VMBGP4, 28=VMBGPOD, 2C=VMBPIRO, 2D=VMBGP4PIR
 $global{Cons}{ActionType}{Temperature}{Action}{Get}{Message} = "E6" ;
 $global{Cons}{ActionType}{Temperature}{Action}{Get}{openHAB}{ItemIcon} = "temperature" ;
 $global{Cons}{ActionType}{Temperature}{Action}{Get}{openHAB}{ItemStateFormat} = "[%.1f °C]" ;
