@@ -662,7 +662,7 @@ sub send_message () {
          if ( $channel =~ /^0x/ ) {
             push @message, $channel ;
          } else {
-            ($channel,$address) = &channel_id_to_hex ($address,$channel,"MakeMessage") ;
+            ($address,$channel) = &channel_id_to_hex ($address,$channel,"MakeMessage") ;
             push @message, "0x".$channel ;
          }
       }
@@ -797,6 +797,8 @@ sub channel_id_to_hex () {
 
    my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
 
+   &log("channel_id_to_hex",&timestamp . " address=$address, channel=$channel, type=$type, ModuleType=$ModuleType") ;
+
    # When the channel > 8 and we have sub addresses, calculate the correct address and channel
    if ( $channel > 24 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ) {
       $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
@@ -813,6 +815,7 @@ sub channel_id_to_hex () {
         defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{MakeMessage} and
         defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{MakeMessage}{Convert} and
                 $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{MakeMessage}{Convert} eq "hex" ) {
+      &log("channel_id_to_hex",&timestamp . "    ChannelNumbers MakeMessage Convert = hex") ;
       $channel = &hex_to_dec ($channel) ;
    } else {
       $channel -- ;
@@ -820,7 +823,9 @@ sub channel_id_to_hex () {
       $channel = &bin_to_hex ($channel) ;
    }
 
-   return ($channel,$address) ;
+   &log("channel_id_to_hex",&timestamp . "    return: channel=$channel, address=$address") ;
+
+   return ($address,$channel) ;
 }
 
 # Used by logger.pl for converting the channel hex value to the correct channel id
@@ -837,16 +842,20 @@ sub channel_hex_to_id () {
 
    my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
 
+   &log("channel_hex_to_id",&timestamp . " address=$address, channel=$channel, type=$type, ModuleType=$ModuleType") ;
+
    if ( $type eq "Name" ) {
       if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
            defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} and
            defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Convert} and 
                    $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Convert} eq "hex" ) {
+         &log("channel_hex_to_id",&timestamp . "    ChannelNumbers Name Convert = hex") ;
          $channel = &hex_to_dec ($channel) ;
       } elsif ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
                 defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} and
                 defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Map} and 
                 defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Map}{$channel} ) {
+         &log("channel_hex_to_id",&timestamp . "    ChannelNumbers Name Map") ;
          $channel = $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Map}{$channel} ;
       } else {
          $channel = &hex_to_bin ($channel) ;
@@ -857,6 +866,7 @@ sub channel_hex_to_id () {
 
    # VMB4AN channel: 9 -> sensor 1 = Ch9, 12 -> sensor 14 = Ch12
    } elsif ( $type eq "SensorNumber" ) {
+      &log("channel_hex_to_id",&timestamp . "    SensorNumber") ;
       $channel = &hex_to_dec ($channel) ;
 
    # "ConvertChannel" -> Button pressed or Sensor triggered
@@ -868,12 +878,15 @@ sub channel_hex_to_id () {
 
       # If this is a SubAddress, replace the address with the master address and calculate the correct channel.
       if ( defined $global{Vars}{Modules}{SubAddress}{$address} ) {
+         &log("channel_hex_to_id",&timestamp . "    SensorNumber: channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset}, address = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress}") ;
          $channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ; # Before changing the $address!!!!
          $address = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress} ;
       }
    }
 
    $channel = "0" . $channel if $channel < 10 and $channel !~ /^0/ ;
+
+   &log("channel_hex_to_id",&timestamp . "    return: channel=$channel, address=$address") ;
 
    return ($address,$channel) ;
 }
@@ -927,7 +940,7 @@ sub button_pressed {
    my $address = $_[1] ;
    my $channel = $_[2] ;
    my $value   = $_[3] ;
-   ($channel,$address) = &channel_id_to_hex($address,$channel,"ButtonPressed") ;
+   ($address,$channel) = &channel_id_to_hex($address,$channel,"ButtonPressed") ;
    # DATABYTE2 = Channel just pressed
    # DATABYTE3 = Channel just released
    # DATABYTE4 = Channel long pressed
