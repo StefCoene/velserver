@@ -502,15 +502,13 @@ $global{Cons}{ModuleTypes}{'17'}{Messages}{'00'}{General} = "ButtonPress" ;
 
 ################### PIR Sensors: Messages
 # Mini PIR detector module: VMBPIRM
-$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{General} = "PirOutput" ;
-
-# Outdour PIR sensor: VMBPIRO
-$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{General} = "PirOutput" ;
-   $global{Cons}{ModuleTypes}{'2C'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{General} = "PirOutput PirOutputIn" ;
 
 # VMBPIRC (2B): Ceiling PIR detector module
-$global{Cons}{ModuleTypes}{'2B'}{Messages}{'00'}{General} = "PirOutput" ;
+$global{Cons}{ModuleTypes}{'2B'}{Messages}{'00'}{General} = "PirOutput PirOutputIn" ;
 
+# Outdour PIR sensor: VMBPIRO
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{General} = "PirOutput PirOutputOut" ;
 ################### Other
 # VMBMETEO (31): Meteo station
 $global{Cons}{ModuleTypes}{'31'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
@@ -642,43 +640,96 @@ $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = 
    $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Match}{'01'}{Info} = "Up LED very fast blinking" ;
 
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Name} = "Channel just pressed" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.'}{Info} = "pressed" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Dark output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "01" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "PRESSED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%......1.'}{Info} = "Light output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%......1.'}{Channel} = "02" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%......1.'}{openHAB} = "PRESSED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{Info} = "Motion 1 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{Channel} = "03" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{openHAB} = "PRESSED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%....1...'}{Info} = "Light depending motion 1 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%....1...'}{Channel} = "04" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%....1...'}{openHAB} = "PRESSED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%...1....'}{Info} = "Motion 2 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%...1....'}{Channel} = "05" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%...1....'}{openHAB} = "PRESSED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{Info} = "Light depending motion 2 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{Channel} = "06" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{openHAB} = "PRESSED:Button" ;
 
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Name} = "Channel just released" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.'}{Info} = "released" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Info} = "Dark output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "01" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "RELEASED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%......1.'}{Info} = "Light output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%......1.'}{Channel} = "02" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%......1.'}{openHAB} = "RELEASED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{Info} = "Motion 1 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{Channel} = "03" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{openHAB} = "RELEASED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%....1...'}{Info} = "Light depending motion 1 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%....1...'}{Channel} = "04" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%....1...'}{openHAB} = "RELEASED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%...1....'}{Info} = "Motion 2 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%...1....'}{Channel} = "05" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%...1....'}{openHAB} = "RELEASED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{Info} = "Light depending motion 2 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{Channel} = "06" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{openHAB} = "RELEASED:Button" ;
 
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Name} = "Channel long pressed" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
-
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Dark output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%......1.'}{Info} = "Light output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{Info} = "Motion 1 output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%....1...'}{Info} = "Light depending motion 1 output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%...1....'}{Info} = "Motion 2 output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{Info} = "Light depending motion 2 output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Absence output" ;
-
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Info} = "Dark output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%......1.'}{Info} = "Light output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{Info} = "Motion 1 output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%....1...'}{Info} = "Light depending motion 1 output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%...1....'}{Info} = "Motion 2 output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{Info} = "Light depending motion 2 output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Info} = "Absence output" ;
-
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.......1'}{Info} = "Dark output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.......1'}{Channel} = "01" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.......1'}{openHAB} = "LONGPRESSED:Button" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%......1.'}{Info} = "Light output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%......1.'}{Channel} = "02" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%......1.'}{openHAB} = "LONGPRESSED:Button" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.....1..'}{Info} = "Motion 1 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.....1..'}{Channel} = "03" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.....1..'}{openHAB} = "LONGPRESSED:Button" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%....1...'}{Info} = "Light depending motion 1 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%....1...'}{Channel} = "04" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%....1...'}{openHAB} = "LONGPRESSED:Button" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%...1....'}{Info} = "Motion 2 output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%...1....'}{Channel} = "05" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%...1....'}{openHAB} = "LONGPRESSED:Button" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%..1.....'}{Info} = "Light depending motion 2 output" ;
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%.1......'}{Info} = "Absence output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%..1.....'}{Channel} = "06" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%..1.....'}{openHAB} = "LONGPRESSED:Button" ;
+
+   # For sensors used in house
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Absence output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Channel} = "07" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'0'}{Match}{'%.1......'}{openHAB} = "PRESSED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Info} = "Absence output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Channel} = "07" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'1'}{Match}{'%.1......'}{openHAB} = "RELEASED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'2'}{Match}{'%.1......'}{Info} = "Absence output" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'2'}{Match}{'%.1......'}{Channel} = "07" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'2'}{Match}{'%.1......'}{openHAB} = "LONGPRESSED:Button" ;
+
+   # For sensors used outside
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Low temperature alarm" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Channel} = "07" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'0'}{Match}{'%.1......'}{openHAB} = "PRESSED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Info} = "Low temperature alarm" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Channel} = "07" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'1'}{Match}{'%.1......'}{openHAB} = "RELEASED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'2'}{Match}{'%.1......'}{Info} = "Low temperature alarm" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'2'}{Match}{'%.1......'}{Channel} = "07" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'2'}{Match}{'%.1......'}{openHAB} = "LONGPRESSED:Button" ;
+
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Info} = "High temperature alarm" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Channel} = "08" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'0'}{Match}{'%1.......'}{openHAB} = "PRESSED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'1'}{Match}{'%1.......'}{Info} = "High temperature alarm" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'1'}{Match}{'%1.......'}{Channel} = "08" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'1'}{Match}{'%1.......'}{openHAB} = "RELEASED:Button" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'2'}{Match}{'%1.......'}{Info} = "High temperature alarm" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'2'}{Match}{'%1.......'}{Channel} = "08" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'2'}{Match}{'%1.......'}{openHAB} = "LONGPRESSED:Button" ;
 
 # Merge the {General} information
 foreach my $ModuleType (sort keys %{$global{Cons}{ModuleTypes}}) {
