@@ -783,10 +783,10 @@ sub get_status_VMB7IN () {
    &send_message ($sock, $address, 'FD', undef, '03' ,'FE') ;
 
    # Request counter divider
-   &send_message ($sock, $address, 'FD', undef, '00', 'E4') ; # Channel 1
-   &send_message ($sock, $address, 'FD', undef, '00', 'E9') ; # Channel 2
-   &send_message ($sock, $address, 'FD', undef, '00', 'EE') ; # Channel 3
-   &send_message ($sock, $address, 'FD', undef, '00', 'F3') ; # Channel 4
+   #&send_message ($sock, $address, 'FD', undef, '00', 'E4') ; # Channel 1
+   #&send_message ($sock, $address, 'FD', undef, '00', 'E9') ; # Channel 2
+   #&send_message ($sock, $address, 'FD', undef, '00', 'EE') ; # Channel 3
+   #&send_message ($sock, $address, 'FD', undef, '00', 'F3') ; # Channel 4
 }
 
 # Convert channel number and address to channel bit. 
