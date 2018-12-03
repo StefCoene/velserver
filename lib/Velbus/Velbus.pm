@@ -350,13 +350,13 @@ sub process_message {
                               if ( $key =~ /^%(.+)$/ ) {
                                  my $regex = $1 ;
                                  if ( $bin =~ /$regex/ ) {
-                                    $Match = "yes" ;
+                                    $Match = "regex_bin: $bin =~ $regex" ;
                                  }
 
                               # The rest is a hex match or a bin match
                               } elsif ( $key eq $hex[$byte] or
                                         $key eq $bin ) {
-                                 $Match = "yes" ;
+                                 $Match = "eq: $key eq $hex[$byte]|$bin" ;
                               }
 
                               # If we have match, process the information
@@ -380,12 +380,14 @@ sub process_message {
                                     if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Procent" ) {
                                        $Name = "Procent" if ! defined $Name ;
                                        $Value = hex $hex[$byte] ;
+                                       &log("logger_match","address=$message{address}: byte=$byte, key=$key, Convert eq Procent") ;
                                     }
 
                                     # Calculate the temperature from the message
                                     if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Temperature" ) {
                                        $Name = "Temperature" if ! defined $Name ;
                                        $Value = &hex_to_temperature ($hex[$byte]) ;
+                                       &log("logger_match","address=$message{address}: byte=$byte, key=$key, Convert eq Temperature") ;
                                     }
 
                                     # Simple Counter: first byte is divider + Channel
@@ -402,11 +404,13 @@ sub process_message {
 
                                        $info{$Channel}{Divider} = $Divider ;
                                        $Name = "Counter" if ! defined $Name ;
+                                       &log("logger_match","address=$message{address}: byte=$byte, key=$key, Convert eq Divider") ;
                                     }
 
                                     # Simple Counter
                                     if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
                                        $info{$Channel}{Counter} .= $hex[$byte] ;
+                                       &log("logger_match","address=$message{address}: byte=$byte, key=$key, Convert eq Counter") ;
                                     }
 
                                     # Button pressed or Sensor triggered on touch or an other input
@@ -415,6 +419,7 @@ sub process_message {
                                        next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
                                        ($message{address},$Channel) = &channel_hex_to_id($message{address},$Channel,"ConvertChannel") ; # Convert it to a number
                                        $info{$Channel}{Button} = $Value ;
+                                       &log("logger_match","address=$message{address}: byte=$byte, key=$key, Convert eq Channel") ;
                                     }
                                  }
 
@@ -472,6 +477,8 @@ sub process_message {
    
                                  push @{$info{$Channel}{$Name}{List}},    $Value if defined $Value ;
                                  push @{$info{$Channel}{$SubName}{List}}, $Value if defined $SubName ;
+
+                                 &log("logger_match","address=$message{address}: key=$key, Match=$Match, Value=$Value, Channel=$Channel, SubName=$SubName") ;
                               }
                            }
                         }
@@ -608,7 +615,7 @@ sub process_message {
                      }
                   }
                } else {
-                  push @{$message{text}}, "No process info for message ($message{Raw})" ;
+                  push @{$message{text}}, "No process info for message ($message{Raw}): ModuleType=$message{ModuleType}, MessageType=$message{MessageType}" ;
                }
             }
          }
