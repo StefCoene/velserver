@@ -107,19 +107,19 @@ sub openHAB_loop () {
                my $Type = $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} ;
 
                if ( $Type eq "Temperature" ) {
-                  # If there is a TemperatureAddr and it's FF, we have a touch panel with the temperature sensor disable. So skip the temperature items.
-                  if ( defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} and
-                               $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} eq "FF" ) {
-                     next ;
-                  }
-
+                  # Every touch has a temperature sensor
                   $Channel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ; # Channel is fixed for temperature sensor
                   $openHAB .= &openHAB_loop_item ($LoopType, $Type, $ModuleType, $Address, $Channel) ;
 
-                  # When we have a Temperature, we can have other stuff as well:
-                  foreach my $ActionType ("TemperatureCoHeMode", "TemperatureMode", "TemperatureTarget" ) {
-                     if ( defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType} ) {
-                        $openHAB .= &openHAB_loop_item ($LoopType, $ActionType, $ModuleType, $Address, $Channel) ;
+                  # If there is a TemperatureAddr and it's FF, we have a touch panel with the temperature sensor disable. So skip the temperature control items.
+                  if ( defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} and
+                               $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} eq "FF" ) {
+                  } else {
+                     # When we have a Temperature, we can have other stuff as well:
+                     foreach my $ActionType ("TemperatureCoHeMode", "TemperatureMode", "TemperatureTarget" ) {
+                        if ( defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType} ) {
+                           $openHAB .= &openHAB_loop_item ($LoopType, $ActionType, $ModuleType, $Address, $Channel) ;
+                        }
                      }
                   }
 
