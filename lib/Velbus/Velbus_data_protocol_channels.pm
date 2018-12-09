@@ -241,11 +241,15 @@ $global{Cons}{ModuleTypes}{'0B'}{Channels}{"01"}{Name} = "Push button 1" ;
 $global{Cons}{ModuleTypes}{'2A'}{General} = "PIR" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"07"}{Name} = "Absence output" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"07"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"99"}{Name} = "Light Sensor Value" ;
+   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"99"}{Type} = "LightSensor" ;
 
 # 	VMBPIRC (2B): Ceiling PIR detector module
 $global{Cons}{ModuleTypes}{'2B'}{General} = "PIR" ;
    $global{Cons}{ModuleTypes}{'2B'}{Channels}{"07"}{Name} = "Absence output" ;
    $global{Cons}{ModuleTypes}{'2B'}{Channels}{"07"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleTypes}{'2B'}{Channels}{"99"}{Name} = "Light Sensor Value" ;
+   $global{Cons}{ModuleTypes}{'2B'}{Channels}{"99"}{Type} = "LightSensor" ;
 
 # Outdoor PIR sensor: VMBPIRO
 $global{Cons}{ModuleTypes}{'2C'}{General} = "PIR" ;
@@ -258,6 +262,8 @@ $global{Cons}{ModuleTypes}{'2C'}{General} = "PIR" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"08"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"99"}{Name} = "Light Sensor Value" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"99"}{Type} = "LightSensor" ;
 
 #	VMBMETEO (31): Meteo station
 $global{Cons}{ModuleTypes}{'31'}{ChannelNumbers}{Name}{Convert} = "hex" ;
@@ -435,6 +441,8 @@ $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"05"}{Name} = "Dark/Light outpu
    $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"07"}{Type} = "Sensor" ;
    $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"08"}{Name} = "Absence output" ;
    $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"08"}{Type} = "Sensor" ;
+   $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"99"}{Name} = "Light Sensor Value" ;
+   $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"99"}{Type} = "LightSensor" ;
 
 # Touch with OLED
 $global{Cons}{ModuleGeneral}{TouchO}{ChannelNumbers}{Name}{Convert} = "hex" ;

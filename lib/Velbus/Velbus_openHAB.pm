@@ -131,12 +131,13 @@ sub openHAB_loop () {
                   next if $addressReal eq "FF" ;
 
                   if ( $Type eq "Blind" or
-                     $Type eq "Button" or
-                     $Type eq "Dimmer" or
-                     $Type eq "Relay" or
-                     $Type eq "Sensor" or
-                     $Type eq "SensorText" or
-                     $Type eq "SensorNumber" ) {
+                       $Type eq "Button" or
+                       $Type eq "Dimmer" or
+                       $Type eq "Relay" or
+                       $Type eq "Sensor" or
+                       $Type eq "SensorText" or
+                       $Type eq "SensorNumber" or
+                       $Type eq "LightSensor" ) {
 
                      $openHAB .= &openHAB_loop_item ($LoopType, $Type, $ModuleType, $Address, $Channel) ;
 

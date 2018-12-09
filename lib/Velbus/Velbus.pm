@@ -549,10 +549,18 @@ sub process_message {
                            }
                         }
                      }
-                  }
+                     if ( $Process{Data}{PerMessage}{Convert} eq "LightSensor" ) {
+                        shift @hex ;
+                        my $high = shift @hex ;
+                        my $low  = shift @hex ;
+                        my $LightSensor = &hex_to_dec ($high . $low) ;
 
-                  #print "\n" ; # Debugging
-                  #print Dumper {%info} ; # Debugging
+                        &update_modules_channel_info ($message{address}, "99", "LightSensor", $LightSensor) ;
+
+                        push @{$message{text}}, "LightSensor = $LightSensor" ;
+                        &openHAB_update_state ("LightSensor_$message{address}_99", $LightSensor) ;
+                     }
+                  }
 
                   # Loop all found info and store in the database
                   foreach my $Channel (sort keys (%info) ) {

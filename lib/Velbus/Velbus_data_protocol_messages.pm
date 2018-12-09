@@ -390,6 +390,7 @@ $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'ED'}{General} = "LightSensor" ;
 
 # Touch panel with Oled display: VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -472,6 +473,7 @@ $global{Cons}{ModuleTypes}{'3E'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+   $global{Cons}{ModuleTypes}{'3E'}{Messages}{'ED'}{General} = "LightSensor" ;
 
 ################### Input: messages
 # 8-channel Push button interface module: VMB8PB
@@ -503,12 +505,16 @@ $global{Cons}{ModuleTypes}{'17'}{Messages}{'00'}{General} = "ButtonPress" ;
 ################### PIR Sensors: Messages
 # Mini PIR detector module: VMBPIRM
 $global{Cons}{ModuleTypes}{'2A'}{Messages}{'00'}{General} = "PirOutput PirOutputIn" ;
+$global{Cons}{ModuleTypes}{'2A'}{Messages}{'ED'}{General} = "LightSensor" ;
 
 # VMBPIRC (2B): Ceiling PIR detector module
 $global{Cons}{ModuleTypes}{'2B'}{Messages}{'00'}{General} = "PirOutput PirOutputIn" ;
+$global{Cons}{ModuleTypes}{'2B'}{Messages}{'ED'}{General} = "LightSensor" ;
 
 # Outdour PIR sensor: VMBPIRO
 $global{Cons}{ModuleTypes}{'2C'}{Messages}{'00'}{General} = "PirOutput PirOutputOut" ;
+$global{Cons}{ModuleTypes}{'2C'}{Messages}{'ED'}{General} = "LightSensor" ;
+
 ################### Other
 # VMBMETEO (31): Meteo station
 $global{Cons}{ModuleTypes}{'31'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
@@ -536,7 +542,7 @@ $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = 
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'2'}{Match}{'%.'}{Info} = "longpressed" ;
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'2'}{Match}{'%.'}{openHAB} = "LONGPRESSED:Button" ;
 
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Name} = "Operating mode" ;
+$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Name} = "Operating mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Mode push button locked" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.......0'}{Info} = "Mode push button unlocked" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.....11.'}{Info} = "Disable mode" ;
@@ -601,34 +607,34 @@ $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = 
    $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'4'}{Match}{'%.'}{openHAB} = "TemperatureTarget" ;
 
-   $global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
+$global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Info} = "Cooler mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Match}{'%........'}{openHAB} = "1:TemperatureCoHeMode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Info} = "Heater mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{openHAB} = "0:TemperatureCoHeMode" ;
 
-   $global{Cons}{ModuleGeneral}{Messages}{Byte2LedStatus}{Data}{PerByte}{'2'}{Name} = "LED status" ;
+$global{Cons}{ModuleGeneral}{Messages}{Byte2LedStatus}{Data}{PerByte}{'2'}{Name} = "LED status" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte2LedStatus}{Data}{PerByte}{'2'}{Match}{'00000000'}{Info} = "LED off" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte2LedStatus}{Data}{PerByte}{'2'}{Match}{'10000000'}{Info} = "LED on" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte2LedStatus}{Data}{PerByte}{'2'}{Match}{'01000000'}{Info} = "LED slow blinking" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte2LedStatus}{Data}{PerByte}{'2'}{Match}{'00100000'}{Info} = "LED fast blinking" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte2LedStatus}{Data}{PerByte}{'2'}{Match}{'00010000'}{Info} = "LED very fast blinking" ;
 
-   $global{Cons}{ModuleGeneral}{Messages}{Byte3LedStatus}{Data}{PerByte}{'3'}{Name} = "LED status" ;
+$global{Cons}{ModuleGeneral}{Messages}{Byte3LedStatus}{Data}{PerByte}{'3'}{Name} = "LED status" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte3LedStatus}{Data}{PerByte}{'3'}{Match}{'00000000'}{Info} = "LED off" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte3LedStatus}{Data}{PerByte}{'3'}{Match}{'10000000'}{Info} = "LED on" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte3LedStatus}{Data}{PerByte}{'3'}{Match}{'01000000'}{Info} = "LED slow blinking" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte3LedStatus}{Data}{PerByte}{'3'}{Match}{'00100000'}{Info} = "LED fast blinking" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte3LedStatus}{Data}{PerByte}{'3'}{Match}{'00010000'}{Info} = "LED very fast blinking" ;
 
-   $global{Cons}{ModuleGeneral}{Messages}{Byte1ChannelStatus}{Data}{PerByte}{'1'}{Name} = "Channel status" ;
+$global{Cons}{ModuleGeneral}{Messages}{Byte1ChannelStatus}{Data}{PerByte}{'1'}{Name} = "Channel status" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte1ChannelStatus}{Data}{PerByte}{'1'}{Match}{'%......00'}{Info} = "Channel normal" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte1ChannelStatus}{Data}{PerByte}{'1'}{Match}{'%......01'}{Info} = "Channel inhibted" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte1ChannelStatus}{Data}{PerByte}{'1'}{Match}{'%......10'}{Info} = "Channel forced on" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte1ChannelStatus}{Data}{PerByte}{'1'}{Match}{'%......11'}{Info} = "Channel disabled" ;
 
-   $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Name} = "Led status" ;
+$global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Name} = "Led status" ;
    $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Match}{'00'}{Info} = "Leds off" ;
    $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Match}{'18'}{Info} = "Down LED on" ;
    $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Match}{'14'}{Info} = "Down LED slow blinking" ;
@@ -639,7 +645,7 @@ $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = 
    $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Match}{'02'}{Info} = "Up LED fast blinking" ;
    $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Match}{'01'}{Info} = "Up LED very fast blinking" ;
 
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Name} = "Channel just pressed" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Dark output" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "01" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "PRESSED:Button" ;
@@ -699,8 +705,8 @@ $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = 
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%..1.....'}{Channel} = "06" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'2'}{Match}{'%..1.....'}{openHAB} = "LONGPRESSED:Button" ;
 
-   # For sensors used in house
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Absence output" ;
+# For sensors used in house
+$global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Absence output" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Channel} = "07" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'0'}{Match}{'%.1......'}{openHAB} = "PRESSED:Button" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Info} = "Absence output" ;
@@ -710,8 +716,8 @@ $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = 
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'2'}{Match}{'%.1......'}{Channel} = "07" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputIn}{Data}{PerByte}{'2'}{Match}{'%.1......'}{openHAB} = "LONGPRESSED:Button" ;
 
-   # For sensors used outside
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Low temperature alarm" ;
+# For sensors used outside
+$global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Low temperature alarm" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Channel} = "07" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'0'}{Match}{'%.1......'}{openHAB} = "PRESSED:Button" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Info} = "Low temperature alarm" ;
@@ -730,6 +736,8 @@ $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = 
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'2'}{Match}{'%1.......'}{Info} = "High temperature alarm" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'2'}{Match}{'%1.......'}{Channel} = "08" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutputOut}{Data}{PerByte}{'2'}{Match}{'%1.......'}{openHAB} = "LONGPRESSED:Button" ;
+
+$global{Cons}{ModuleGeneral}{Messages}{LightSensor}{Data}{PerMessage}{Convert} = "LightSensor" ;
 
 # Merge the {General} information
 foreach my $ModuleType (sort keys %{$global{Cons}{ModuleTypes}}) {
