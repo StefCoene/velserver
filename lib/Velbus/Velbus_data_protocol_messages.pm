@@ -355,40 +355,45 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{PerByte}{'0'}{Name} = "Ch
 $global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'1E'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'1E'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # One, two or four touch buttonsmodule: VMBGP2
 $global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'1F'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'1F'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # One, two or four touch buttonsmodule: VMBGP4
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'20'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'20'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'20'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'20'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMBGPO (21): Touch panel with Oled display
 $global{Cons}{ModuleTypes}{'21'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'21'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "33" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'21'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'21'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'21'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'21'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'21'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'21'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
 $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'2D'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'ED'}{General} = "LightSensor" ;
 
@@ -396,8 +401,9 @@ $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{General} = "ButtonPress" ;
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "33" ; # Temperature sensor is CH33
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'28'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'28'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'28'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'28'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "MemoText" ;
@@ -406,72 +412,81 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "M
 $global{Cons}{ModuleTypes}{'34'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'34'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'34'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'34'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'34'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMBEL2 (35): Edge-lit one, two or four touch buttons module
 $global{Cons}{ModuleTypes}{'35'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'35'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'35'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'35'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'35'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMBEL4 (36): Edge-lit one, two or four touch buttons module
 $global{Cons}{ModuleTypes}{'36'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'36'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'36'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'36'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'36'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMBELO (37): Edge-lit touch panel with Oled display
 $global{Cons}{ModuleTypes}{'37'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "33" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'37'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'37'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'37'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'37'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMBGP1-2 (3A): One, two or four touch buttons module (ed2)e
 $global{Cons}{ModuleTypes}{'3A'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3A'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'3A'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'3A'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'3A'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'3A'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'3A'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3A'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMBGP2-2 (3B): One, two or four touch buttons module (ed2)e
 $global{Cons}{ModuleTypes}{'3B'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3B'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'3B'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'3B'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'3B'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'3B'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'3B'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3B'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMBGP4-2 (3C): One, two or four touch buttons module (ed2)e
 $global{Cons}{ModuleTypes}{'3C'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3C'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "09" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'3C'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'3C'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'3C'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'3C'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'3C'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3C'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMBGPOD-2 (3D): Touch panel with Oled display (ed2)
 $global{Cons}{ModuleTypes}{'3D'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3D'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "33" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'3D'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'3D'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'3D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'3D'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'3D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3D'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
 
 # VMBGP4PIR-2 (3E): Four touch buttons with PIR detector module (ed2)
 $global{Cons}{ModuleTypes}{'3E'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "33" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-   $global{Cons}{ModuleTypes}{'3E'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
-   $global{Cons}{ModuleTypes}{'3E'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
+   # Not needed, info is also transmitted in message EA
+   #$global{Cons}{ModuleTypes}{'3E'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
+   #$global{Cons}{ModuleTypes}{'3E'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'ED'}{General} = "LightSensor" ;
 
@@ -610,7 +625,7 @@ $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Name
 $global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Info} = "Cooler mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Match}{'%........'}{openHAB} = "1:TemperatureCoHeMode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
+$global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Info} = "Heater mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{openHAB} = "0:TemperatureCoHeMode" ;
 
