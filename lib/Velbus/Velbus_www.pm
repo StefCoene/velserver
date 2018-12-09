@@ -398,7 +398,14 @@ sub www_service () {
 
                # Get the current temperature: touch panels & outdoor sensor
                } elsif ( $ActionType eq "Temperature" ) {
-                  $json{Status} = $data{Temperature}{value} if defined $data{Temperature} ;
+                  # touch panels temperature is stored with the data name 'Current temperature' and outdoor sensor with data name 'Temperature'
+                  if (defined $data{Temperature}) {
+                     # outdoor sensor
+						   $json{Status} = $data{Temperature}{value} if defined $data{Temperature} ;
+                  } else {
+                     # touch panels
+                     $json{Status} = $data{'Current temperature'}{value} if defined $data{'Current temperature'} ;
+                  }
 
                # Get/Set heating or cooling: touch panels
                } elsif ( $ActionType eq "TemperatureCoHeMode" ) {
