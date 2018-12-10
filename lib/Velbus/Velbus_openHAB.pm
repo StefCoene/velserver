@@ -147,17 +147,17 @@ sub openHAB_loop () {
                      }
                   }
 
-                  if ( $Type eq "ButtonCounter" and defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} ) {
-                     # ButtonCounter used as Button: VMB7IN when Divider = Disabled
-                     if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) {
-                        $openHAB .= &openHAB_loop_item ($LoopType, "Button",     $ModuleType, $Address, $Channel) ;
-                        $openHAB .= &openHAB_loop_item ($LoopType, "ButtonLong", $ModuleType, $Address, $Channel) ;
+                  if ( $Type eq "ButtonCounter" ) {
+                     if (defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} and $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
                      # ButtonCounter used as Counter
-                     } else {
                         $openHAB .= &openHAB_loop_item ($LoopType, "Divider",        $ModuleType, $Address, $Channel) ;
                         $openHAB .= &openHAB_loop_item ($LoopType, "CounterRaw",     $ModuleType, $Address, $Channel) ;
                         $openHAB .= &openHAB_loop_item ($LoopType, "Counter",        $ModuleType, $Address, $Channel) ;
                         $openHAB .= &openHAB_loop_item ($LoopType, "CounterCurrent", $ModuleType, $Address, $Channel) ;
+                     } else {
+                     # ButtonCounter used as Button: VMB7IN when Divider = Disabled or no Divider
+                        $openHAB .= &openHAB_loop_item ($LoopType, "Button",     $ModuleType, $Address, $Channel) ;
+                        $openHAB .= &openHAB_loop_item ($LoopType, "ButtonLong", $ModuleType, $Address, $Channel) ;
                      }
                   }
                }
@@ -205,9 +205,10 @@ sub openHAB_loop_item () {
       } else {
          my $Name ;
          # Add module name if requested
-         if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
-              defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} and
-                      $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ne "" ) {
+         if ( $Type eq "LightSensor" or
+              ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} and
+                        $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ne "" ) ) {
              $Name = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} . " :: " ;
          }
          # Add channel name if one is available

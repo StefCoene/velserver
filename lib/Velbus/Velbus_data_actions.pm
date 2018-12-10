@@ -76,6 +76,7 @@ $global{Cons}{ActionType}{LightSensor}{Info} = "Reading the current light sensor
 $global{Cons}{ActionType}{LightSensor}{Modules} = "2A,2B,2C,2D,3E" ;
 $global{Cons}{ActionType}{LightSensor}{Action}{Get}{Message} = "ED" ;
 $global{Cons}{ActionType}{LightSensor}{Action}{Get}{openHAB}{ItemType} = "Number" ;
+$global{Cons}{ActionType}{LightSensor}{Action}{Get}{openHAB}{ItemStateFormat} = "[%.0f]" ;
 
 $global{Cons}{ActionType}{Temperature}{Info} = "Reading the current temperature sensor" ;
 $global{Cons}{ActionType}{Temperature}{Modules} = "1E,1F,20,21,28,2C,2D,31,34,35,36,37,3A,3B,3C,3D,3E" ; # 1E=VMBGP1, 1F=VMBGP2, 20=VMBGP4, 28=VMBGPOD, 2C=VMBPIRO, 2D=VMBGP4PIR
