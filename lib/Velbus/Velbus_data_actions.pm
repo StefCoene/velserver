@@ -76,6 +76,7 @@ $global{Cons}{ActionType}{LightSensor}{Info} = "Reading the current light sensor
 $global{Cons}{ActionType}{LightSensor}{Modules} = "2A,2B,2C,2D,3E" ;
 $global{Cons}{ActionType}{LightSensor}{Action}{Get}{Message} = "ED" ;
 $global{Cons}{ActionType}{LightSensor}{Action}{Get}{openHAB}{ItemType} = "Number" ;
+$global{Cons}{ActionType}{LightSensor}{Action}{Get}{openHAB}{ItemStateFormat} = "[%.0f]" ;
 
 $global{Cons}{ActionType}{Temperature}{Info} = "Reading the current temperature sensor" ;
 $global{Cons}{ActionType}{Temperature}{Modules} = "1E,1F,20,21,28,2C,2D,31,34,35,36,37,3A,3B,3C,3D,3E" ; # 1E=VMBGP1, 1F=VMBGP2, 20=VMBGP4, 28=VMBGPOD, 2C=VMBPIRO, 2D=VMBGP4PIR
@@ -88,7 +89,7 @@ $global{Cons}{ActionType}{TemperatureCoHeMode}{Info} = "Reading and setting the 
 $global{Cons}{ActionType}{TemperatureCoHeMode}{Modules} = "1E,1F,20,21,28,2D,34,35,36,37,3A,3B,3C,3D,3E" ; # 1E=VMBGP1, 1F=VMBGP2, 20=VMBGP4, 28=VMBGPOD, 2D=VMBGP4PIR
 $global{Cons}{ActionType}{TemperatureCoHeMode}{Action}{Get}{Message} = "DF,E0" ;
 $global{Cons}{ActionType}{TemperatureCoHeMode}{Action}{Get}{openHAB}{ItemIcon} = "temperature" ;
-$global{Cons}{ActionType}{TemperatureCoHeMode}{Action}{Get}{openHAB}{ItemStateFormat} = "Cool/Heat mode" ;
+$global{Cons}{ActionType}{TemperatureCoHeMode}{Action}{Get}{openHAB}{Append2Name} = " Cool/Heat mode" ;
 $global{Cons}{ActionType}{TemperatureCoHeMode}{Action}{Get}{openHAB}{ItemType} = "Number" ;
 $global{Cons}{ActionType}{TemperatureCoHeMode}{Action}{Set}{Message} = "DF,E0" ; # &set_temperature_cohe_mode
 
@@ -96,7 +97,7 @@ $global{Cons}{ActionType}{TemperatureMode}{Info} = "Reading and setting the temp
 $global{Cons}{ActionType}{TemperatureMode}{Modules} = "1E,1F,20,21,28,2D,34,35,36,37,3A,3B,3C,3D,3E" ; # 1E=VMBGP1, 1F=VMBGP2, 20=VMBGP4, 28=VMBGPOD, 2D=VMBGP4PIR
 $global{Cons}{ActionType}{TemperatureMode}{Action}{Get}{Message} = "EA" ;
 $global{Cons}{ActionType}{TemperatureMode}{Action}{Get}{openHAB}{ItemIcon} = "temperature" ;
-$global{Cons}{ActionType}{TemperatureMode}{Action}{Get}{openHAB}{ItemStateFormat} = "mode" ;
+$global{Cons}{ActionType}{TemperatureMode}{Action}{Get}{openHAB}{Append2Name} = " mode" ;
 $global{Cons}{ActionType}{TemperatureMode}{Action}{Get}{openHAB}{ItemType} = "Number" ;
 $global{Cons}{ActionType}{TemperatureMode}{Action}{Set}{Message} = "DB,DC,DD,DE" ; # &set_temperature_mode
 
@@ -104,6 +105,7 @@ $global{Cons}{ActionType}{TemperatureTarget}{Info} = "Reading and setting the ta
 $global{Cons}{ActionType}{TemperatureTarget}{Modules} = "1E,1F,20,21,28,2D,34,35,36,37,3A,3B,3C,3D,3E" ; # 1E=VMBGP1, 1F=VMBGP2, 20=VMBGP4, 28=VMBGPOD, 2D=VMBGP4PIR
 $global{Cons}{ActionType}{TemperatureTarget}{Action}{Get}{Message} = "EA" ;
 $global{Cons}{ActionType}{TemperatureTarget}{Action}{Get}{openHAB}{ItemIcon} = "temperature" ;
-$global{Cons}{ActionType}{TemperatureTarget}{Action}{Get}{openHAB}{ItemStateFormat} = "temperature target [%.1f °C]" ;
+$global{Cons}{ActionType}{TemperatureTarget}{Action}{Get}{openHAB}{Append2Name} = " temperature target" ;
+$global{Cons}{ActionType}{TemperatureTarget}{Action}{Get}{openHAB}{ItemStateFormat} = "[%.1f °C]" ;
 $global{Cons}{ActionType}{TemperatureTarget}{Action}{Get}{openHAB}{ItemType} = "Number" ;
 $global{Cons}{ActionType}{TemperatureTarget}{Action}{Set}{Message} = "E4" ; # &set_temperature
