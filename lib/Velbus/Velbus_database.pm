@@ -39,18 +39,24 @@ sub get_all_modules_info_from_database {
             $global{Vars}{Modules}{SubAddress}{$SubAddr}{ChannelOffset} = $counter * 8 ; # Calculate the channel offset
          }
 
-         # If there is an address for the temperature sensor, add this address to the list with type 'Temperature'
-         #if ( $data eq "TemperatureAddr" ) {
-         #   my $SubAddr = $data{$data}{value} ; # Easier var
-         #   $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{type} = "Temperature" ;
-         #}
+         # If there is an address for the temperature sensor, add this address to the list with special type
+         if ( $data eq "TemperatureAddr" ) {
+            my $SubAddr = $data{$data}{value} ; # Easier var
+            next if $SubAddr eq "FF" ;
+            my $MasterAddress = $global{Vars}{Modules}{SubAddress}{$SubAddr}{MasterAddress} ; # Master address of the module
+            my $ModuleType    = $global{Vars}{Modules}{Address}{$MasterAddress}{ModuleInfo}{type} ; # Type of the module
+            $ModuleType = $ModuleType."t" ;
+            $global{Vars}{Modules}{Address}{$MasterAddress}{ModuleInfo}{TemperatureAddr} = $SubAddr ;
+            $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{type} = $ModuleType ;
+            $global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}{$SubAddr} = "yes" ; # List of alle modules per type module
+         }
       }
 
       if ( %SubAddr ) {
          # 1: Store all the information also for the SubAddress
          foreach my $SubAddr (sort keys %SubAddr) {
             foreach my $data (sort keys %{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}}) {
-               $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{$data} = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} ;
+               $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{$data} = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} if ! defined $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{$data} ;
             }
          }
 

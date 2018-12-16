@@ -130,12 +130,22 @@ sub process_message {
                      $counter ++ ;
                   }
 
-                  if (      $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} eq "09" ) {
-                     push @{$message{text}},                  "TemperatureAddr = $hex[0]" ;
-                     &update_modules_info ($message{address}, "TemperatureAddr", $hex[0]) ;
-                  } elsif ( $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} eq "33" ) {
-                     push @{$message{text}},                  "TemperatureAddr = $hex[3]" ;
-                     &update_modules_info ($message{address}, "TemperatureAddr", $hex[3]) ;
+                  # If this is a touch with a TemperatureChannel, store the address used for the TemperatureChannel
+                  if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ) {
+                     # 1 page touch
+                     if (      $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} eq "09" ) {
+                        push @{$message{text}},                  "TemperatureAddr = $hex[0]" ;
+                        &update_modules_info ($message{address}, "TemperatureAddr", $hex[0]) ;
+                        $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{TemperatureAddr} = $hex[0] ;
+                        $global{Vars}{Modules}{Address}{$hex[0]}{ModuleInfo}{type} = $ModuleType."t" ; # We need a dedicated ModuleType for the temperature so we can interprete the messages correctly
+
+                     # Multi-page touch
+                     } elsif ( $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} eq "33" ) {
+                        push @{$message{text}},                  "TemperatureAddr = $hex[3]" ;
+                        &update_modules_info ($message{address}, "TemperatureAddr", $hex[3]) ;
+                        $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{TemperatureAddr} = $hex[3] ;
+                        $global{Vars}{Modules}{Address}{$hex[3]}{ModuleInfo}{type} = $ModuleType."t" ; # We need a dedicated ModuleType for the temperature so we can interprete the messages correctly
+                     }
                   }
 
                } else {
@@ -461,20 +471,27 @@ sub process_message {
                                        }
                                     } elsif ( $openHAB =~ /:/ ) {
                                        my @openHAB = split ":", $openHAB ;
+
+                                       my $message_address = $message{address} ;
+                                       # When we have to update ChannelTemperature, we have to switch to the master addres of the module!!!
+                                       if ( $openHAB[1] eq "ChannelTemperature" ) {
+                                          $message_address = $global{Vars}{Modules}{SubAddress}{$message{address}}{MasterAddress} ;
+                                       }
+
                                        if ( $Channel eq "00" ) {
-                                          $openHAB_update_state{"$openHAB[1]_$message{address}"} = $openHAB[0] ;
+                                          $openHAB_update_state{"$openHAB[1]_$message_address"} = $openHAB[0] ;
                                        } else {
-                                          $openHAB_update_state{"$openHAB[1]_$message{address}_$Channel"} = $openHAB[0] ;
+                                          $openHAB_update_state{"$openHAB[1]_$message_address"._."$Channel"} = $openHAB[0] ;
                                        }
                                     } else {
                                        if ( $Channel eq "00" ) {
                                           $openHAB_update_state{"$openHAB"."_"."$message{address}"} = $Value if defined $Value ;
                                        } else {
-                                          $openHAB_update_state{"$openHAB"."_"."$message{address}_$Channel"} = $Value if defined $Value ;
+                                          $openHAB_update_state{"$openHAB"."_"."$message{address}"._."$Channel"} = $Value if defined $Value ;
                                        }
                                     }
                                  }
-   
+  
                                  push @{$info{$Channel}{$Name}{List}},    $Value if defined $Value ;
                                  push @{$info{$Channel}{$SubName}{List}}, $Value if defined $SubName ;
 
@@ -901,7 +918,7 @@ sub channel_hex_to_id () {
       if ( defined $global{Vars}{Modules}{SubAddress}{$address} ) {
          &log("channel_hex_to_id",&timestamp . "    SensorNumber: channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset}, address = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress}") ;
          $channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ; # Before changing the $address!!!!
-         $address = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress} ;
+         $address  = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress} ;
       }
    }
 

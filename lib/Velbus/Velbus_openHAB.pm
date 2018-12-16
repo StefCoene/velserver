@@ -95,6 +95,8 @@ sub openHAB_loop () {
 
    # Loop all module types
    foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
+      next if ! defined $global{Cons}{ModuleTypes}{$ModuleType}{Type} ; # This is used to skip the virtual module types used to represent the temperature of the touch panels
+
       $openHAB .= "// $global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)\n" ;
 
       # Loop all found modules for the type
@@ -125,15 +127,19 @@ sub openHAB_loop () {
                   }
 
                } else {
-                  # Calculate the real address. This is needed for touch panels where you can have sub addresses for pages and/or temperature sensor.
-                  # When this sub address is FF, it's not used and we have to skip the correspondending channels
-                  my ($channelReal,$addressReal)  = &channel_id_to_hex ($Channel, $Address) ;
-                  next if $addressReal eq "FF" ;
+                  # For ChannelTemperature, get the address assigned to the temperature. If this address is FF, it's not used and we have to skip the correspondending channels
+                  if ( $Type eq "ChannelTemperature" ) {
+                     if ( $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} eq "FF" ) {
+                        $openHAB .= "// Skip channel $Channel: TemperatureAddr = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr}\n" ;
+                        next ;
+                     }
+                  }
 
                   if ( $Type eq "Blind" or
                        $Type eq "Button" or
                        $Type eq "Dimmer" or
                        $Type eq "Relay" or
+                       $Type eq "ChannelTemperature" or
                        $Type eq "Sensor" or
                        $Type eq "SensorText" or
                        $Type eq "SensorNumber" or
@@ -213,16 +219,20 @@ sub openHAB_loop_item () {
                         $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ne "" ) ) {
              $Name = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} . " :: " ;
          }
+
+         if ( $Type eq "ChannelTemperature" ) {
+            my $TemperatureChannel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ; # Channel is fixed for temperature sensor
+            $Name .= $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$TemperatureChannel}{Name}{value} . " :: " . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
          # Add channel name if one is available
-         if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} and
-                      $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
-             $Name .= $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} ;
+         } elsif ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} and
+                           $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+            $Name .= $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} ;
          # Add default name if one is available
          } elsif ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ) {
             $Name .= $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
          }
 
-         $Name .= $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{Append2Name} if defined $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{Append2Name} ; # It's possible we have to append something to the name
+         $Name .= " :: " . $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{Append2Name} if defined $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{Append2Name} ; # It's possible we have to append something to the name
 
          # Add item name in name if requested
          if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {

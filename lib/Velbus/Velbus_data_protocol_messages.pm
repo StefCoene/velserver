@@ -1,29 +1,6 @@
 # This is a list of messages with extra options.
 # The format is easy to understand
 #
-# Next is not used:
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Name} = "COMMAND_OUTPUT_STATUS" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Name} = "Output channel activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Heater activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%......1.'}{Info} = "Boost heater/cooler activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{Info} = "Pump activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%....1...'}{Info} = "Cooler activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 activated" ;
-#
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Name} = "Output channel deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Info} = "Heater deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%......1.'}{Info} = "Boost heater/cooler deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{Info} = "Pump deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%....1...'}{Info} = "Cooler deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 deactivated" ;
-
-
 # Temperature Sensor Module : VMB1TS
 # 00 = COMMAND_OUTPUT_STATUS
 #   This is in 2 blocks in the protocol file, the second blocks starts with x but since the first block starts with 0, this has to be 1.
@@ -359,6 +336,7 @@ $global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'1E'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'1E'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'1Et'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # One, two or four touch buttonsmodule: VMBGP2
 $global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -368,6 +346,7 @@ $global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'1F'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'1F'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'1Ft'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # One, two or four touch buttonsmodule: VMBGP4
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -377,6 +356,7 @@ $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'20'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'20'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'20t'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # VMBGPO (21): Touch panel with Oled display
 $global{Cons}{ModuleTypes}{'21'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -386,6 +366,7 @@ $global{Cons}{ModuleTypes}{'21'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'21'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'21'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'21'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'21t'}{Messages}{'00'}{General} = "TouchOTemperature" ;
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
 $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -396,6 +377,7 @@ $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'2D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'ED'}{General} = "LightSensor" ;
+$global{Cons}{ModuleTypes}{'2Dt'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # Touch panel with Oled display: VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -405,8 +387,8 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'28'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'28'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
-
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "MemoText" ;
+$global{Cons}{ModuleTypes}{'28t'}{Messages}{'00'}{General} = "TouchOTemperature" ;
 
 # VMBEL1 (34): Edge-lit one, two or four touch buttons module
 $global{Cons}{ModuleTypes}{'34'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -416,6 +398,7 @@ $global{Cons}{ModuleTypes}{'34'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'34'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'34'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'34t'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # VMBEL2 (35): Edge-lit one, two or four touch buttons module
 $global{Cons}{ModuleTypes}{'35'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -425,6 +408,7 @@ $global{Cons}{ModuleTypes}{'35'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'35'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'35'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'35t'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # VMBEL4 (36): Edge-lit one, two or four touch buttons module
 $global{Cons}{ModuleTypes}{'36'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -434,6 +418,7 @@ $global{Cons}{ModuleTypes}{'36'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'36'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'36'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'36t'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # VMBELO (37): Edge-lit touch panel with Oled display
 $global{Cons}{ModuleTypes}{'37'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -443,6 +428,7 @@ $global{Cons}{ModuleTypes}{'37'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'37'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'37'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'37t'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # VMBGP1-2 (3A): One, two or four touch buttons module (ed2)e
 $global{Cons}{ModuleTypes}{'3A'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -452,6 +438,7 @@ $global{Cons}{ModuleTypes}{'3A'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'3A'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'3A'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3A'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'3At'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # VMBGP2-2 (3B): One, two or four touch buttons module (ed2)e
 $global{Cons}{ModuleTypes}{'3B'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -461,6 +448,7 @@ $global{Cons}{ModuleTypes}{'3B'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'3B'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'3B'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3B'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'3Bt'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # VMBGP4-2 (3C): One, two or four touch buttons module (ed2)e
 $global{Cons}{ModuleTypes}{'3C'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -470,6 +458,7 @@ $global{Cons}{ModuleTypes}{'3C'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'3C'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'3C'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3C'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'3Ct'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # VMBGPOD-2 (3D): Touch panel with Oled display (ed2)
 $global{Cons}{ModuleTypes}{'3D'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -479,6 +468,7 @@ $global{Cons}{ModuleTypes}{'3D'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'3D'}{Messages}{'DF'}{General} = "TouchCoolerMode" ;
    #$global{Cons}{ModuleTypes}{'3D'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3D'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
+$global{Cons}{ModuleTypes}{'3Dt'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 # VMBGP4PIR-2 (3E): Four touch buttons with PIR detector module (ed2)
 $global{Cons}{ModuleTypes}{'3E'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -489,6 +479,7 @@ $global{Cons}{ModuleTypes}{'3E'}{Messages}{'00'}{General} = "ButtonPress" ;
    #$global{Cons}{ModuleTypes}{'3E'}{Messages}{'E0'}{General} = "TouchHeaterMode" ;
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'E6'}{Data}{PerByte}{'0'}{Name} = "Dummy" ; # Just to indicate that this module has a temperature sensor
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'ED'}{General} = "LightSensor" ;
+$global{Cons}{ModuleTypes}{'3Et'}{Messages}{'00'}{General} = "Touch124Temperature" ;
 
 ################### Input: messages
 # 8-channel Push button interface module: VMB8PB
@@ -628,6 +619,109 @@ $global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Matc
 $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Name} = "Temperature CoHe mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Info} = "Heater mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{openHAB} = "0:TemperatureCoHeMode" ;
+
+$global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Name} = "COMMAND_OUTPUT_STATUS_TEMPERATURE" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Name} = "Output channel activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Heater activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "11" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%......1.'}{Info} = "Boost heater/cooler activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%......1.'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%......1.'}{Channel} = "12" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{Info} = "Pump activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{Channel} = "13" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%....1...'}{Info} = "Cooler activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%....1...'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%....1...'}{Channel} = "14" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%...1....'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%...1....'}{Channel} = "15" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{Channel} = "16" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%.1......'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Channel} = "17" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%1.......'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Channel} = "18" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Name} = "Output channel deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Info} = "Heater deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "11" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%......1.'}{Info} = "Boost heater/cooler deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%......1.'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%......1.'}{Channel} = "12" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{Info} = "Pump deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{Channel} = "13" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%....1...'}{Info} = "Cooler deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%....1...'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%....1...'}{Channel} = "14" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%...1....'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%...1....'}{Channel} = "15" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{Channel} = "16" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%.1......'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Channel} = "17" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%1.......'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Touch124Temperature}{Data}{PerByte}{'1'}{Match}{'%1.......'}{Channel} = "18" ;
+$global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Name} = "COMMAND_OUTPUT_STATUS_TEMPERATURE" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Name} = "Output channel activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Heater activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "35" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%......1.'}{Info} = "Boost heater/cooler activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "36" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{Info} = "Pump activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "37" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%....1...'}{Info} = "Cooler activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "38" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "39" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "40" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "41" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 activated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "ON:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "42" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Name} = "Output channel deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Info} = "Heater deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "35" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%......1.'}{Info} = "Boost heater/cooler deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "36" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{Info} = "Pump deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "37" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%....1...'}{Info} = "Cooler deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "38" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "39" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "40" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "41" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 deactivated" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "OFF:ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Messages}{TouchOTemperature}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "42" ;
 
 $global{Cons}{ModuleGeneral}{Messages}{Byte2LedStatus}{Data}{PerByte}{'2'}{Name} = "LED status" ;
    $global{Cons}{ModuleGeneral}{Messages}{Byte2LedStatus}{Data}{PerByte}{'2'}{Match}{'00000000'}{Info} = "LED off" ;

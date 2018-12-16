@@ -85,6 +85,10 @@ $global{Cons}{ActionType}{Temperature}{Action}{Get}{openHAB}{ItemIcon} = "temper
 $global{Cons}{ActionType}{Temperature}{Action}{Get}{openHAB}{ItemStateFormat} = "[%.1f °C]" ;
 $global{Cons}{ActionType}{Temperature}{Action}{Get}{openHAB}{ItemType} = "Number" ;
 
+$global{Cons}{ActionType}{ChannelTemperature}{Modules} = "28,1E,1F,20,21,28,2D,34,35,36,37,3A,3B,3C,3D,3E" ;
+$global{Cons}{ActionType}{ChannelTemperature}{Action}{Get}{Message} = "00" ;
+$global{Cons}{ActionType}{ChannelTemperature}{Action}{Get}{openHAB}{ItemType} = "Switch" ;
+
 $global{Cons}{ActionType}{TemperatureCoHeMode}{Info} = "Reading and setting the cooling or heating mode" ;
 $global{Cons}{ActionType}{TemperatureCoHeMode}{Modules} = "1E,1F,20,21,28,2D,34,35,36,37,3A,3B,3C,3D,3E" ; # 1E=VMBGP1, 1F=VMBGP2, 20=VMBGP4, 28=VMBGPOD, 2D=VMBGP4PIR
 $global{Cons}{ActionType}{TemperatureCoHeMode}{Action}{Get}{Message} = "DF,E0" ;

@@ -72,49 +72,63 @@ $global{Cons}{ModuleTypes}{'2E'}{Channels}{"01"}{Name} = "Blind" ;
 
 ################### Touch panels: Channel names
 # VMBGP1
-$global{Cons}{ModuleTypes}{'1E'}{General} = "Touch1" ;
+$global{Cons}{ModuleTypes}{'1E'}{General} = "Touch1 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'1Et'}{General} = "Touch124Temperature" ;
 
 # VMBGP2
-$global{Cons}{ModuleTypes}{'1F'}{General} = "Touch2" ;
+$global{Cons}{ModuleTypes}{'1F'}{General} = "Touch2 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'1Ft'}{General} = "Touch124Temperature" ;
 
 # VMBGP4
-$global{Cons}{ModuleTypes}{'20'}{General} = "Touch4" ;
+$global{Cons}{ModuleTypes}{'20'}{General} = "Touch4 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'2t'}{General} = "Touch124Temperature" ;
 
 # VMBGPO (21): Touch panel with Oled display
-$global{Cons}{ModuleTypes}{'21'}{General} = "TouchO" ;
+$global{Cons}{ModuleTypes}{'21'}{General} = "TouchO TouchOTemperature" ;
+#$global{Cons}{ModuleTypes}{'21t'}{General} = "TouchOTemperature" ;
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
-$global{Cons}{ModuleTypes}{'2D'}{General} = "TouchPIR Touch4" ;
+$global{Cons}{ModuleTypes}{'2D'}{General} = "TouchPIR Touch4 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'2Dt'}{General} = "Touch124Temperature" ;
 
 # Touch panel with Oled display: VMBGPOD
-$global{Cons}{ModuleTypes}{'28'}{General} = "TouchO" ;
+$global{Cons}{ModuleTypes}{'28'}{General} = "TouchO TouchOTemperature" ;
 
 # VMBEL1 (34): Edge-lit one, two or four touch buttons module
-$global{Cons}{ModuleTypes}{'34'}{General} = "Touch1" ;
+$global{Cons}{ModuleTypes}{'34'}{General} = "Touch1 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'34t'}{General} = "Touch124Temperature" ;
 
 # VMBEL1 (35): Edge-lit one, two or four touch buttons module
-$global{Cons}{ModuleTypes}{'35'}{General} = "Touch2" ;
+$global{Cons}{ModuleTypes}{'35'}{General} = "Touch2 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'35t'}{General} = "Touch124Temperature" ;
 
 # VMBEL1 (36): Edge-lit one, two or four touch buttons module
-$global{Cons}{ModuleTypes}{'36'}{General} = "Touch4" ;
+$global{Cons}{ModuleTypes}{'36'}{General} = "Touch4 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'36t'}{General} = "Touch124Temperature" ;
 
 # MBELO (37): Edge-lit touch panel with Oled display)
-$global{Cons}{ModuleTypes}{'37'}{General} = "TouchO" ;
+$global{Cons}{ModuleTypes}{'37'}{General} = "TouchO TouchOTemperature" ;
+#$global{Cons}{ModuleTypes}{'37t'}{General} = "TouchOTemperature" ;
 
 # VMBGP1-2 (3A): One, two or four touch buttons module (ed2)e
-$global{Cons}{ModuleTypes}{'3A'}{General} = "Touch1" ;
+$global{Cons}{ModuleTypes}{'3A'}{General} = "Touch1 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'3At'}{General} = "Touch124Temperature" ;
 
 # VMBGP2-2 (3B): One, two or four touch buttons module (ed2)e
-$global{Cons}{ModuleTypes}{'3B'}{General} = "Touch2" ;
+$global{Cons}{ModuleTypes}{'3B'}{General} = "Touch2 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'3Bt'}{General} = "Touch124Temperature" ;
 
 # VMBGP4-2 (3C): One, two or four touch buttons module (ed2)e
-$global{Cons}{ModuleTypes}{'3C'}{General} = "Touch4" ;
+$global{Cons}{ModuleTypes}{'3C'}{General} = "Touch4 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'3Ct'}{General} = "Touch124Temperature" ;
 
 # VMBGPOD-2 (3D): Touch panel with Oled display (ed2)
-$global{Cons}{ModuleTypes}{'3D'}{General} = "TouchO" ;
+$global{Cons}{ModuleTypes}{'3D'}{General} = "TouchO TouchOTemperature" ;
+#$global{Cons}{ModuleTypes}{'3Dt'}{General} = "TouchOTemperature" ;
 
 # VMBGP4PIR-2 (3E): Four touch buttons with PIR detector module (ed2)
-$global{Cons}{ModuleTypes}{'3E'}{General} = "TouchPIR Touch4" ;
+$global{Cons}{ModuleTypes}{'3E'}{General} = "TouchPIR Touch4 Touch124Temperature" ;
+#$global{Cons}{ModuleTypes}{'3Et'}{General} = "Touch124Temperature" ;
  
 ################### Input: Channel names
 # 8-channel Push button interface module: VMB8PB
@@ -243,14 +257,14 @@ $global{Cons}{ModuleTypes}{'0B'}{Channels}{"01"}{Name} = "Push button 1" ;
 $global{Cons}{ModuleTypes}{'2A'}{General} = "PIR" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"07"}{Name} = "Absence output" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"07"}{Type} = "Sensor" ;
-   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"99"}{Name} = "Light Sensor Value" ;
+   $global{Cons}{ModuleTypes}{'2A'}{Channels}{"99"}{Name} = "Light value" ;
    $global{Cons}{ModuleTypes}{'2A'}{Channels}{"99"}{Type} = "LightSensor" ;
 
 # 	VMBPIRC (2B): Ceiling PIR detector module
 $global{Cons}{ModuleTypes}{'2B'}{General} = "PIR" ;
    $global{Cons}{ModuleTypes}{'2B'}{Channels}{"07"}{Name} = "Absence output" ;
    $global{Cons}{ModuleTypes}{'2B'}{Channels}{"07"}{Type} = "Sensor" ;
-   $global{Cons}{ModuleTypes}{'2B'}{Channels}{"99"}{Name} = "Light Sensor Value" ;
+   $global{Cons}{ModuleTypes}{'2B'}{Channels}{"99"}{Name} = "Light value" ;
    $global{Cons}{ModuleTypes}{'2B'}{Channels}{"99"}{Type} = "LightSensor" ;
 
 # Outdoor PIR sensor: VMBPIRO
@@ -264,7 +278,7 @@ $global{Cons}{ModuleTypes}{'2C'}{General} = "PIR" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"08"}{Type} = "Sensor" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"09"}{Type} = "Temperature" ;
-   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"99"}{Name} = "Light Sensor Value" ;
+   $global{Cons}{ModuleTypes}{'2C'}{Channels}{"99"}{Name} = "Light value" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"99"}{Type} = "LightSensor" ;
 
 #	VMBMETEO (31): Meteo station
@@ -434,6 +448,23 @@ $global{Cons}{ModuleGeneral}{Touch4}{ChannelNumbers}{Name}{Convert} = "hex" ;
    $global{Cons}{ModuleGeneral}{Touch4}{Channels}{"09"}{Name} = "Temperature" ;
    $global{Cons}{ModuleGeneral}{Touch4}{Channels}{"09"}{Type} = "Temperature" ;
 
+$global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"11"}{Name} = "Heater" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"11"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"12"}{Name} = "Boost" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"12"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"13"}{Name} = "Pump" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"13"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"14"}{Name} = "Cooler" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"14"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"15"}{Name} = "Alarm 1" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"15"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"16"}{Name} = "Alarm 2" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"16"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"17"}{Name} = "Alarm 3" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"17"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"18"}{Name} = "Alarm 4" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"18"}{Type} = "ChannelTemperature" ;
+
 # Touch with PIR sensor: sensor channels
 $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"05"}{Name} = "Dark/Light output" ;
    $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"05"}{Type} = "Sensor" ;
@@ -443,7 +474,7 @@ $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"05"}{Name} = "Dark/Light outpu
    $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"07"}{Type} = "Sensor" ;
    $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"08"}{Name} = "Absence output" ;
    $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"08"}{Type} = "Sensor" ;
-   $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"99"}{Name} = "Light Sensor Value" ;
+   $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"99"}{Name} = "Light value" ;
    $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"99"}{Type} = "LightSensor" ;
 
 # Touch with OLED
@@ -516,6 +547,23 @@ $global{Cons}{ModuleGeneral}{TouchO}{ChannelNumbers}{Name}{Convert} = "hex" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"32"}{Type} = "Button" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"33"}{Name} = "Temperature" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"33"}{Type} = "Temperature" ;
+
+$global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"35"}{Name} = "Heater" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"35"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"36"}{Name} = "Boost" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"36"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"37"}{Name} = "Pump" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"37"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"38"}{Name} = "Cooler" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"38"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"39"}{Name} = "Alarm 1" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"39"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"40"}{Name} = "Alarm 2" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"40"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"41"}{Name} = "Alarm 3" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"41"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"42"}{Name} = "Alarm 4" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"42"}{Type} = "ChannelTemperature" ;
 
 # PIR sensor
 $global{Cons}{ModuleGeneral}{PIR}{Channels}{"01"}{Name} = "Dark output" ;
