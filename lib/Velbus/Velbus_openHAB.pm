@@ -204,10 +204,13 @@ sub openHAB_loop_item () {
 
       } else {
          my $Name ;
+
          # Add module name if requested
-         if ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
-              defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} and
-                      $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ne "" ) {
+         if ( ( $Type eq "LightSensor" or
+                $Type eq "Sensor" ) or
+              ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} and
+                        $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ne "" ) ) {
              $Name = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} . " :: " ;
          }
          # Add channel name if one is available
