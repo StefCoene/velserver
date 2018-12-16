@@ -804,7 +804,7 @@ sub get_status_VMB7IN () {
 # 2: channel
 # 3: type -> not used, informational
 #     - MakeMessage
-#     - ButtonPressed
+#     - SimulateButtonPressed
 sub channel_id_to_hex () {
    my $address = $_[0] ;
    my $channel = $_[1] ;
@@ -838,7 +838,7 @@ sub channel_id_to_hex () {
       $channel = &bin_to_hex ($channel) ;
    }
 
-   &log("channel_id_to_hex",&timestamp . "    return: channel=$channel, address=$address") ;
+   &log("channel_id_to_hex",&timestamp . "    return: address=$address, channel=$channel") ;
 
    return ($address,$channel) ;
 }
@@ -955,7 +955,7 @@ sub button_pressed {
    my $address = $_[1] ;
    my $channel = $_[2] ;
    my $value   = $_[3] ;
-   ($address,$channel) = &channel_id_to_hex($address,$channel,"ButtonPressed") ;
+   ($address,$channel) = &channel_id_to_hex($address,$channel,"SimulateButtonPressed") ;
    # DATABYTE2 = Channel just pressed
    # DATABYTE3 = Channel just released
    # DATABYTE4 = Channel long pressed
