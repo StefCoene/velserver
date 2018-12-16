@@ -217,6 +217,8 @@ $global{Cons}{ModuleTypes}{'22'}{Channels}{"01"}{Name} = "Push button 1" ;
    $global{Cons}{ModuleTypes}{'22'}{Channels}{"06"}{Type} = "Button" ;
    $global{Cons}{ModuleTypes}{'22'}{Channels}{"07"}{Name} = "Push button 7" ;
    $global{Cons}{ModuleTypes}{'22'}{Channels}{"07"}{Type} = "Button" ;
+   $global{Cons}{ModuleTypes}{'22'}{Channels}{"08"}{Name} = "Virtual button" ;
+   $global{Cons}{ModuleTypes}{'22'}{Channels}{"08"}{Type} = "Button" ;
 
 # Push button and timer panel: VMB4PD
 $global{Cons}{ModuleTypes}{'0B'}{Channels}{"01"}{Name} = "Push button 1" ;
