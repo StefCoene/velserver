@@ -3,60 +3,60 @@
 #
 # Next is not used:
 #   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Name} = "COMMAND_OUTPUT_STATUS" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Name} = "Output channel just activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Heater just activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%......1.'}{Info} = "Boost heater/cooler just activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{Info} = "Pump just activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%....1...'}{Info} = "Cooler just activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 just activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 alarm activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 just activated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 alarm activated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Name} = "Output channel activated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Heater activated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%......1.'}{Info} = "Boost heater/cooler activated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%.....1..'}{Info} = "Pump activated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%....1...'}{Info} = "Cooler activated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 activated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 activated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 activated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 activated" ;
 #
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Name} = "Output channel just deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Info} = "Heater just deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%......1.'}{Info} = "Boost heater/cooler just deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{Info} = "Pump just deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%....1...'}{Info} = "Cooler just deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 just deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 alarm deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 just deactivated" ;
-#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 alarm deactivated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Name} = "Output channel deactivated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Info} = "Heater deactivated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%......1.'}{Info} = "Boost heater/cooler deactivated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%.....1..'}{Info} = "Pump deactivated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%....1...'}{Info} = "Cooler deactivated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%...1....'}{Info} = "Temperature alarm 1 deactivated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%..1.....'}{Info} = "Temperature alarm 2 deactivated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%.1......'}{Info} = "Temperature alarm 3 deactivated" ;
+#   $global{Cons}{ModuleTypes}{'Temperature'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1.......'}{Info} = "Temperature alarm 4 deactivated" ;
 
 
 # Temperature Sensor Module : VMB1TS
 # 00 = COMMAND_OUTPUT_STATUS
 #   This is in 2 blocks in the protocol file, the second blocks starts with x but since the first block starts with 0, this has to be 1.
 $global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Name} = "Heater" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%0..1...1'}{Info} = "Heater just activated" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%0.....1.'}{Info} = "Turbo heater/cooler just activated" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%0....1..'}{Info} = "Comfort or day mode just activated" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%0...1...'}{Info} = "Cooler just activated" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%0..1...1'}{Info} = "Heater activated" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%0.....1.'}{Info} = "Turbo heater/cooler activated" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%0....1..'}{Info} = "Comfort or day mode activated" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%0...1...'}{Info} = "Cooler activated" ;
 $global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%0.1.....'}{Info} = "Low temperature alarm activated" ;
 $global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%01......'}{Info} = "High temperature alarm activated" ;
 
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%0..1...1'}{Info} = "Heater just deactivated" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%0.....1.'}{Info} = "Turbo heater/cooler just deactivated" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%0....1..'}{Info} = "Comfort or day mode just deactivated" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%0...1...'}{Info} = "Cooler just deactivated" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%0..1...1'}{Info} = "Heater deactivated" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%0.....1.'}{Info} = "Turbo heater/cooler deactivated" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%0....1..'}{Info} = "Comfort or day mode deactivated" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%0...1...'}{Info} = "Cooler deactivated" ;
 $global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%0.0.....'}{Info} = "Low temperature alarm deactivated" ;
 $global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%00......'}{Info} = "High temperature alarm deactivated" ;
 
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1......1'}{Info} = "Heater push button just pressed" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1.....1.'}{Info} = "Turbo heater/cooler push button just pressed" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1....1..'}{Info} = "Day mode push button just pressed" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1...1...'}{Info} = "Cooler push button just pressed" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1..1....'}{Info} = "Mode & heater (pump) button just pressed" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1.1.....'}{Info} = "Mode & turbo (low alarm) button just pressed" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%11......'}{Info} = "Mode & day (high alarm) button just pressed" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1......1'}{Info} = "Heater push button pressed" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1.....1.'}{Info} = "Turbo heater/cooler push button pressed" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1....1..'}{Info} = "Day mode push button pressed" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1...1...'}{Info} = "Cooler push button pressed" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1..1....'}{Info} = "Mode & heater (pump) button pressed" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%1.1.....'}{Info} = "Mode & turbo (low alarm) button pressed" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'0'}{Match}{'%11......'}{Info} = "Mode & day (high alarm) button pressed" ;
 
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1......1'}{Info} = "Heater push button just released" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1.....1.'}{Info} = "Turbo heater/cooler push button just released" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1....1..'}{Info} = "Day mode push button just released" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1...1...'}{Info} = "Cooler push button just released" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1..1....'}{Info} = "Mode & heater (pump) button just released" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1.1.....'}{Info} = "Mode & turbo (low alarm) button just released" ;
-$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%11......'}{Info} = "Mode & day (high alarm) button just released" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1......1'}{Info} = "Heater push button released" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1.....1.'}{Info} = "Turbo heater/cooler push button released" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1....1..'}{Info} = "Day mode push button released" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1...1...'}{Info} = "Cooler push button released" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1..1....'}{Info} = "Mode & heater (pump) button released" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%1.1.....'}{Info} = "Mode & turbo (low alarm) button released" ;
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'1'}{Match}{'%11......'}{Info} = "Mode & day (high alarm) button released" ;
 
 $global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'2'}{Match}{'%1......1'}{Info} = "Heater push button long pressed" ;
 $global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{Data}{PerByte}{'2'}{Match}{'%1.....1.'}{Info} = "Turbo heater/cooler push button long pressed" ;
@@ -542,12 +542,12 @@ $global{Cons}{ModuleTypes}{'32'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "S
 $global{Cons}{ModuleTypes}{'33'}{Messages}{'00'}{General} = "ButtonPress" ;
 
 ################### General messages that can be used in different modules
-$global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = "Channel pressed" ;
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Match}{'%.'}{Info} = "pressed" ;
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Match}{'%.'}{openHAB} = "PRESSED:Button" ;
 
-   $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'1'}{Name} = "Channel just released" ;
+   $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'1'}{Name} = "Channel released" ;
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Channel" ;
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'1'}{Match}{'%.'}{Info} = "released" ;
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'1'}{Match}{'%.'}{openHAB} = "RELEASED:Button" ;
@@ -660,7 +660,7 @@ $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Name}
    $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Match}{'02'}{Info} = "Up LED fast blinking" ;
    $global{Cons}{ModuleGeneral}{Messages}{LedStatusBlind}{Data}{PerByte}{'3'}{Match}{'01'}{Info} = "Up LED very fast blinking" ;
 
-$global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Name} = "Channel just pressed" ;
+$global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Name} = "Channel pressed" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Info} = "Dark output" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{Channel} = "01" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%.......1'}{openHAB} = "PRESSED:Button" ;
@@ -680,7 +680,7 @@ $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Name} = "C
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{Channel} = "06" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'0'}{Match}{'%..1.....'}{openHAB} = "PRESSED:Button" ;
 
-   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Name} = "Channel just released" ;
+   $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Name} = "Channel released" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Info} = "Dark output" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.......1'}{Channel} = "01" ;
    $global{Cons}{ModuleGeneral}{Messages}{PirOutput}{Data}{PerByte}{'1'}{Match}{'%.......1'}{openHAB} = "RELEASED:Button" ;
