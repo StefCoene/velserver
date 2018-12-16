@@ -797,9 +797,10 @@ sub get_status_VMB7IN () {
    #&send_message ($sock, $address, 'FD', undef, '00', 'F3') ; # Channel 4
 }
 
-# Convert channel number and address to channel bit. 
+# Convert channel number to channel bit. 
 #   Channel 3 = 1000 -> 8
-# Used by commands.pl & scripts
+# Find the correct sub address for modules with multiple addresses like touch panels
+# Parameters:
 # 1: address
 # 2: channel
 # 3: type -> not used, informational
@@ -814,6 +815,9 @@ sub channel_id_to_hex () {
 
    &log("channel_id_to_hex",&timestamp . " address=$address, channel=$channel, type=$type, ModuleType=$ModuleType") ;
 
+   # We have to rewrite the address based on the channel.
+   # This will not work for Type=ChannelTemperature. But since this function is only used when making a message and we never send something to channels with Type=ChannelTemperature, we don't care.
+
    # When the channel > 8 and we have sub addresses, calculate the correct address and channel
    if ( $channel > 24 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ) {
       $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
@@ -825,6 +829,8 @@ sub channel_id_to_hex () {
       $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
       $channel -= 8 ;
    }
+
+   &log("channel_id_to_hex",&timestamp . "    NEW: address=$address, channel=$channel") ;
 
    if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
         defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{MakeMessage} and
