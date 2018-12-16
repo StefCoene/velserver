@@ -126,7 +126,7 @@ sub process_message {
                      $global{Vars}{Modules}{SubAddress}{$SubAddr}{MasterAddress} = $message{address} ; # Remember the master address for this subaddress
                      $global{Vars}{Modules}{SubAddress}{$SubAddr}{ChannelOffset} = $counter * 8 ; # Calculate the channel offset
 
-                     $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{"SubAddr$counter"} = $address ;
+                     $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{"SubAddr$counter"} = $SubAddr ; # Remember the sub address for the master address
                      $counter ++ ;
                   }
 
