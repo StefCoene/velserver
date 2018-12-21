@@ -442,10 +442,16 @@ sub process_message {
                                        my $Type = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Channels}{$Channel}{Type} ;
                                        # A Button is tricky: we have to do something on RELEASED, but we need to know if it was a short or a long press
                                        # For a 7IN (=ButtonCounter) we also have to check the Divider value
-                                       if ( $Type eq "Button" or
-                                          ( $Type eq "ButtonCounter" and
+                                       if ( ( $Type eq "Button" or
+                                              $Type eq "ButtonCounter" ) and
                                              defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} and
-                                                     $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} eq "Disabled" ) ) {
+                                                     $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
+                                          if ( $action eq "RELEASED" ) {
+                                             $openHAB_update_state{"Sensor_$message{address}_$Channel"} = "OFF" ;
+                                          } else {
+                                             $openHAB_update_state{"Sensor_$message{address}_$Channel"} = "ON" ;
+                                          }
+                                       } elsif ( $Type eq "Sensor" ) {
                                           if ( $action eq "RELEASED" ) {
                                              if ( $global{openHAB}{ButtonState}{$message{address}}{$Channel} eq "PRESSED" ) {
                                                 # PRESSED: send ON + OFF
@@ -461,12 +467,6 @@ sub process_message {
                                              } elsif ( $action eq "LONGPRESSED" ) {
                                                 $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "ON" ;
                                              }
-                                          }
-                                       } elsif ( $Type eq "Sensor" ) {
-                                          if ( $action eq "RELEASED" ) {
-                                             $openHAB_update_state{"Sensor_$message{address}_$Channel"} = "OFF" ;
-                                          } else {
-                                             $openHAB_update_state{"Sensor_$message{address}_$Channel"} = "ON" ;
                                           }
                                        }
                                     } elsif ( $openHAB =~ /:/ ) {
