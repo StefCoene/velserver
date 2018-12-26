@@ -127,8 +127,8 @@ sub openHAB_loop () {
                   }
 
                } else {
-                  # For ChannelTemperature, get the address assigned to the temperature. If this address is FF, it's not used and we have to skip the correspondending channels
-                  if ( $Type eq "ChannelTemperature" ) {
+                  # For TemperatureChannel, get the address assigned to the temperature. If this address is FF, it's not used and we have to skip the correspondending channels
+                  if ( $Type eq "TemperatureChannel" ) {
                      if ( $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} eq "FF" ) {
                         $openHAB .= "// Skip channel $Channel: TemperatureAddr = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr}\n" ;
                         next ;
@@ -139,7 +139,7 @@ sub openHAB_loop () {
                        $Type eq "Button" or
                        $Type eq "Dimmer" or
                        $Type eq "Relay" or
-                       $Type eq "ChannelTemperature" or
+                       $Type eq "TemperatureChannel" or
                        $Type eq "Sensor" or
                        $Type eq "SensorText" or
                        $Type eq "SensorNumber" or
@@ -154,7 +154,7 @@ sub openHAB_loop () {
                   }
 
                   if ( $Type eq "ButtonCounter" ) {
-                     if (defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} and $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
+                     if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} and $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
                      # ButtonCounter used as Counter
                         $openHAB .= &openHAB_loop_item ($LoopType, "Divider",        $ModuleType, $Address, $Channel) ;
                         $openHAB .= &openHAB_loop_item ($LoopType, "CounterRaw",     $ModuleType, $Address, $Channel) ;
@@ -220,7 +220,7 @@ sub openHAB_loop_item () {
              $Name = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} . " :: " ;
          }
 
-         if ( $Type eq "ChannelTemperature" ) {
+         if ( $Type eq "TemperatureChannel" ) {
             my $TemperatureChannel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ; # Channel is fixed for temperature sensor
             $Name .= $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$TemperatureChannel}{Name}{value} . " :: " . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
          # Add channel name if one is available

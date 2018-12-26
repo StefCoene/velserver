@@ -437,52 +437,83 @@ sub process_message {
                                  if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ) {
                                     my $openHAB = $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ; # Easier var
 
-                                    if ( $openHAB =~ "(.+):Button" ) {
-                                       my $action = $1 ;
-                                       my $Type = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Channels}{$Channel}{Type} ;
-                                       # A Button is tricky: we have to do something on RELEASED, but we need to know if it was a short or a long press
-                                       # For a 7IN (=ButtonCounter) we also have to check the Divider value
-                                       if ( ( $Type eq "Button" or
-                                              $Type eq "ButtonCounter" ) and
-                                             defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} and
-                                                     $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
-                                          if ( $action eq "RELEASED" ) {
-                                             $openHAB_update_state{"Sensor_$message{address}_$Channel"} = "OFF" ;
-                                          } else {
-                                             $openHAB_update_state{"Sensor_$message{address}_$Channel"} = "ON" ;
-                                          }
-                                       } elsif ( $Type eq "Sensor" ) {
-                                          if ( $action eq "RELEASED" ) {
-                                             if ( $global{openHAB}{ButtonState}{$message{address}}{$Channel} eq "PRESSED" ) {
-                                                # PRESSED: send ON + OFF
-                                                $openHAB_update_state{"Button_$message{address}_$Channel"} = "ON OFF" ;
-                                             } else {
-                                                # LONGPRESSED: send OFF
-                                                $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "OFF" ;
-                                             }
-                                          } else {
-                                             $global{openHAB}{ButtonState}{$message{address}}{$Channel} = $action ; # remember type: PRESSED or LONGPRESSED
-                                             if ( $action eq "PRESSED" ) {
-                                                # Don't send ON yet, wait for RELEASED. Because for a LONGPRESSED, there is also a PRESSED message first
-                                             } elsif ( $action eq "LONGPRESSED" ) {
-                                                $openHAB_update_state{"ButtonLong_$message{address}_$Channel"} = "ON" ;
-                                             }
-                                          }
-                                       }
-                                    } elsif ( $openHAB =~ /:/ ) {
+                                    # 0:TemperatureCoHeMode
+                                    # 1:TemperatureCoHeMode
+                                    # 1:TemperatureMode
+                                    # 2:TemperatureMode
+                                    # 3:TemperatureMode
+                                    # 4:TemperatureMode
+                                    # OFF:Relay
+                                    # ON:Relay
+                                    # OFF:TemperatureChannel
+                                    # ON:TemperatureChannel
+                                    # PRESSED:Button
+                                    # LONGPRESSED:Button
+                                    # RELEASED:Button
+                                    if ( $openHAB =~ /:/ ) {
                                        my @openHAB = split ":", $openHAB ;
 
-                                       my $message_address = $message{address} ;
-                                       # When we have to update ChannelTemperature, we have to switch to the master addres of the module!!!
-                                       if ( $openHAB[1] eq "ChannelTemperature" ) {
-                                          $message_address = $global{Vars}{Modules}{SubAddress}{$message{address}}{MasterAddress} ;
+                                       if ( $openHAB[1] eq "Button" ) {
+                                          # $openHAB[0] = PRESSED | LONGPRESSES | RELEASED
+                                          my $Type = $global{Cons}{ModuleTypes}{$message{ModuleType}}{Channels}{$Channel}{Type} ;
+
+                                          # For a 7IN (=ButtonCounter) we also have to check the Divider value to see if the channel is a button or a counter
+                                          if ( $Type eq "ButtonCounter" and
+                                             defined $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} and
+                                                     $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
+                                             # Divider is set -> input is NOT a button, but a counter so do nothing
+
+                                          # A Button is tricky: we have to do something on RELEASED, but we need to know if it was a short or a long press
+                                          } elsif ( $Type eq "Button"  or
+                                                    $Type eq "ButtonCounter" ) {
+
+                                             if ( $openHAB[0] eq "RELEASED" ) {
+                                                if ( $global{openHAB}{ButtonState}{$message{address}}{$Channel} eq "PRESSED" ) {
+                                                   # PRESSED: send ON + OFF
+                                                   my $item = "Button_".$message{address}."_".$Channel ; # openHAB item
+                                                   $openHAB_update_state{$item} = "ON OFF" ;
+                                                } else {
+                                                   my $item = "ButtonLong_".$message{address}."_".$Channel ; # openHAB item
+                                                   # LONGPRESSED: send OFF
+                                                   $openHAB_update_state{$item} = "OFF" ;
+                                                }
+                                             } else {
+                                                $global{openHAB}{ButtonState}{$message{address}}{$Channel} = $openHAB[0] ; # remember type: PRESSED or LONGPRESSED
+                                                if ( $openHAB[0] eq "PRESSED" ) {
+                                                   # Don't send ON yet, wait for RELEASED. Because for a LONGPRESSED, there is also a PRESSED message first
+                                                } elsif ( $openHAB[0] eq "LONGPRESSED" ) {
+                                                   my $item = "ButtonLong_".$message{address}."_".$Channel ; # openHAB item
+                                                   $openHAB_update_state{$item} = "ON" ;
+                                                }
+                                             }
+
+                                          # A Sensor is almost the same as a Button, except that we don't have LONGPRESS
+                                          # So we send immediate on PRESSED and RELEASED
+                                          } elsif ( $Type eq "Sensor" ) {
+                                             my $item = "Sensor_".$message{address}."_".$Channel ; # openHAB item
+                                             if ( $openHAB[0] eq "RELEASED" ) {
+                                                $openHAB_update_state{$item} = "OFF" ;
+                                             } else { # PRESSED | LONGPRESSES
+                                                $openHAB_update_state{$item} = "ON" ;
+                                             }
+                                          }
+
+                                       } else {
+                                          # When we have to update TemperatureChannel, we have to switch to the master addres of the module!!!
+                                          if ( $openHAB[1] eq "TemperatureChannel" ) {
+                                             $message_address = $global{Vars}{Modules}{SubAddress}{$message{address}}{MasterAddress} ;
+                                          }
+
+                                          if ( $Channel eq "00" ) {
+                                             $openHAB_update_state{"$openHAB[1]_$message_address"} = $openHAB[0] ;
+                                          } else {
+                                             $openHAB_update_state{"$openHAB[1]_$message_address"._."$Channel"} = $openHAB[0] ;
+                                          }
                                        }
 
-                                       if ( $Channel eq "00" ) {
-                                          $openHAB_update_state{"$openHAB[1]_$message_address"} = $openHAB[0] ;
-                                       } else {
-                                          $openHAB_update_state{"$openHAB[1]_$message_address"._."$Channel"} = $openHAB[0] ;
-                                       }
+                                    # Blind
+                                    # Dimmer
+                                    # TemperatureTarget
                                     } else {
                                        if ( $Channel eq "00" ) {
                                           $openHAB_update_state{"$openHAB"."_"."$message{address}"} = $Value if defined $Value ;
@@ -833,7 +864,7 @@ sub channel_id_to_hex () {
    &log("channel_id_to_hex",&timestamp . " address=$address, channel=$channel, type=$type, ModuleType=$ModuleType") ;
 
    # We have to rewrite the address based on the channel.
-   # This will not work for Type=ChannelTemperature. But since this function is only used when making a message and we never send something to channels with Type=ChannelTemperature, we don't care.
+   # This will not work for Type=TemperatureChannel. But since this function is only used when making a message and we never send something to channels with Type=TemperatureChannel, we don't care.
 
    # When the channel > 8 and we have sub addresses, calculate the correct address and channel
    if ( $channel > 24 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ) {

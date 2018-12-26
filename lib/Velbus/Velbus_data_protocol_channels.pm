@@ -449,21 +449,21 @@ $global{Cons}{ModuleGeneral}{Touch4}{ChannelNumbers}{Name}{Convert} = "hex" ;
    $global{Cons}{ModuleGeneral}{Touch4}{Channels}{"09"}{Type} = "Temperature" ;
 
 $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"11"}{Name} = "Heater" ;
-   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"11"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"11"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"12"}{Name} = "Boost" ;
-   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"12"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"12"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"13"}{Name} = "Pump" ;
-   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"13"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"13"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"14"}{Name} = "Cooler" ;
-   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"14"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"14"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"15"}{Name} = "Alarm 1" ;
-   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"15"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"15"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"16"}{Name} = "Alarm 2" ;
-   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"16"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"16"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"17"}{Name} = "Alarm 3" ;
-   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"17"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"17"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"18"}{Name} = "Alarm 4" ;
-   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"18"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"18"}{Type} = "TemperatureChannel" ;
 
 # Touch with PIR sensor: sensor channels
 $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"05"}{Name} = "Dark/Light output" ;
@@ -549,21 +549,21 @@ $global{Cons}{ModuleGeneral}{TouchO}{ChannelNumbers}{Name}{Convert} = "hex" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"33"}{Type} = "Temperature" ;
 
 $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"35"}{Name} = "Heater" ;
-   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"35"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"35"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"36"}{Name} = "Boost" ;
-   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"36"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"36"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"37"}{Name} = "Pump" ;
-   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"37"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"37"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"38"}{Name} = "Cooler" ;
-   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"38"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"38"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"39"}{Name} = "Alarm 1" ;
-   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"39"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"39"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"40"}{Name} = "Alarm 2" ;
-   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"40"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"40"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"41"}{Name} = "Alarm 3" ;
-   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"41"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"41"}{Type} = "TemperatureChannel" ;
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"42"}{Name} = "Alarm 4" ;
-   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"42"}{Type} = "ChannelTemperature" ;
+   $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"42"}{Type} = "TemperatureChannel" ;
 
 # PIR sensor
 $global{Cons}{ModuleGeneral}{PIR}{Channels}{"01"}{Name} = "Dark output" ;
