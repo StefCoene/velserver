@@ -280,7 +280,7 @@ sub openHAB_loop_item () {
          my $http_url = "$global{Config}{openHAB}{BASE_URL}?address=$Address&type=" ;
          # It's possible we overrule the action
          if ( defined $global{Cons}{ActionType}{$Type}{Action}{Get}{openHAB}{HttpType} ) {
-            $http_url .= $$global{Cons}{ActionType}{$Type}{Action}{Get}{openHAB}{HttpType} ;
+            $http_url .= $global{Cons}{ActionType}{$Type}{Action}{Get}{openHAB}{HttpType} ;
          } else {
             $http_url .= $Type ;
          }
