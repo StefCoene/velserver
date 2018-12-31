@@ -69,7 +69,6 @@ sub www_index () {
 
    $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_protocol").">Velbus protocol</a> || " ;
    $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_messages").">Velbus messages</a> || " ;
-   $content .= "<a href=?".&www_make_url("*=-","appl=print_velbus_actions").">Velbus actions</a> " ;
    $content .= "</p>\n" ;
 
    if ( $global{cgi}{params}{appl} eq "print_found_modules" ) {
@@ -88,9 +87,6 @@ sub www_index () {
    }
    if ( $global{cgi}{params}{appl} eq "print_velbus_messages" ) {
       $content .= &www_print_velbus_messages ;
-   }
-   if ( $global{cgi}{params}{appl} eq "print_velbus_actions" ) {
-      $content .= &www_print_velbus_actions ;
    }
    if ( $global{cgi}{params}{appl} eq "generate_openHAB" ) {
       $content .= &www_generate_openHAB ;
@@ -119,343 +115,254 @@ sub www_service () {
 
    my %json ;
 
-   # Save the original request parameters
+   # Save the original request parameters for debug purposes
    foreach (keys %{$global{cgi}{params}}) {
-      $json{"Req$_"} = $global{cgi}{params}{$_} ;
+      $json{"Raw_$_"} = $global{cgi}{params}{$_} ;
    }
 
-   my $address ;
-   my $ModuleType ; # Type of the module, based on $address
-   # Parse options: find the moduletype based on the supplied address
-   if ( defined $global{cgi}{params}{address} ) {
-      $address = $global{cgi}{params}{address} ;
-      if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} and $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ne '' ) {
-         $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
-         $json{ModuleType} = $ModuleType ;
+   # 1/2: Parse Item and search ChannelType, address and Channel
+   if ( defined $global{cgi}{params}{Item} ) {
+      $json{ReqItem} = $global{cgi}{params}{Item} ;
+
+      if ( $json{ReqItem} =~ /(.+)_(..)_(..)$/ ) {
+         $json{ReqChannelType} = $1 ;
+         $json{ReqAddress}     = $2 ;
+         $json{ReqChannel}     = $3 ;
+      } else {
+         $json{Error} = "Item param not correct" ;
       }
    }
 
-   my $action ;
-   if ( defined $global{cgi}{params}{action} ) {
-      $action = $global{cgi}{params}{action} ;
+   # 2/2: Set address if supplied as param
+   if ( ! defined $json{ReqAddress} and defined $global{cgi}{params}{Address} ) {
+      if ( $global{cgi}{params}{Address} =~ /^..$/ ) {
+         $json{ReqAddress} = $global{cgi}{params}{Address} ;
+      } else {
+         $json{Error} = "Address param not correct" ;
+      }
    }
 
-   my $value ;
-   if ( defined $global{cgi}{params}{value} ) {
-      $value = $global{cgi}{params}{value} ;
+   # 2/2: Set channel if supplied as param
+   if ( ! defined $json{ReqChannel} and defined $global{cgi}{params}{Channel} ) {
+      if ( $global{cgi}{params}{Channel} =~ /^..$/ ) {
+         $json{ReqChannel} = $global{cgi}{params}{Channel} ;
+      } else {
+         $json{Error} = "Channel param not correct" ;
+      }
    }
+
+   # Parse options: find the moduletype based on the supplied address
+   if ( defined $json{ReqAddress} ) {
+      if ( defined $global{Vars}{Modules}{Address}{$json{ReqAddress}}{ModuleInfo}{type} and $global{Vars}{Modules}{Address}{$json{ReqAddress}}{ModuleInfo}{type} ne '' ) {
+         $json{ModuleType} = $global{Vars}{Modules}{Address}{$json{ReqAddress}}{ModuleInfo}{type} ;
+      }
+   }
+
+   # Get Action and Value if supplied
+   $json{ReqAction} = $global{cgi}{params}{Action} if defined $global{cgi}{params}{Action} ;
+   $json{ReqValue}  = $global{cgi}{params}{Value}  if defined $global{cgi}{params}{Value} ;
+
+   ###############
+   #my $test = Dumper \%{$global{Cons}{ChannelTypes}{$json{ReqChannelType}}} ;
+   #$json{Debug_ChannelType} = "<pre>" . $test . "</pre>" ;
 
    # Put the time on the bus
-   if ( defined $action and $action eq "TimeSync" ) {
+   if ( defined $json{ReqAction} and $json{ReqAction} eq "TimeSync" ) {
       &broadcast_datetime($sock) ;
 
    # Set memo text: only for VMBGPOD
-   } elsif ( defined $action and $action eq "Memo" ) {
+   } elsif ( defined $json{ReqAction} and $json{ReqAction} eq "Memo" ) {
+      #my $test = Dumper \%{$global{Cons}{ChannelTypes}{Memo}} ;
+      #$json{Debug_memo} = "<pre>" . $test . "</pre>" ;
+      #
       # We need an address
-      if ( ! defined $address ) {
+      if ( ! defined $json{ReqAddress} ) {
          $json{Error} = "NO_ADDRESS" ;
 
-      } elsif ( defined $ModuleType and $ModuleType eq "28" ) {
-         if ( defined $value ) {
-            &send_memo ($sock, $address, $value) ;
-            $json{Text} = $value ;
+      # Only ModuleType = 28 can receive Memo text
+      } elsif ( defined $json{ModuleType} and $json{ModuleType} eq "28" ) {
+         if ( defined $json{ReqValue} ) {
+            &send_memo ($sock, $json{ReqAddress}, $json{ReqValue}) ;
+            $json{Text} = $json{ReqValue} ;
          } else {
-            &send_memo ($sock, $address) ;
+            &send_memo ($sock, $json{ReqAddress}) ; # Send nothing to clear the message
          }
 
-      } elsif ( defined $ModuleType ) {
+      } elsif ( defined $json{ModuleType} ) {
          $json{Error} = "WRONG_MODULETYPE" ;
 
       } else {
          $json{Error} = "NO_MODULETYPE" ;
       }
 
-   # The rest is for getting and setting.
-   } elsif ( defined $global{cgi}{params}{type} ) {
-      my $ActionType = $global{cgi}{params}{type} ;
+   # The rest is for getting and setting an item
+   } elsif ( defined $json{ReqChannelType} ) {
 
-      # 1: if we have a type, it should be defined in $global{Cons}{ActionType}
-      if ( ! defined $global{Cons}{ActionType}{$ActionType} ) {
-         $json{Error} = "UNSUPPORTED_TYPE" ;
+      # 1: if we have a ChannelType, it should be defined in $global{Cons}{ChannelTypes}
+      if ( ! defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}} ) {
+         $json{Error} = "UNSUPPORTED_CHANNELTYPE" ;
 
       # 2: we need an address
-      } elsif ( ! defined $global{cgi}{params}{address} ) {
+      } elsif ( ! defined $json{ReqAddress} ) {
          $json{Error} = "NO_ADDRESS" ;
 
-      # 3: we need a module type (based on parameter address)
-      } elsif ( ! defined $ModuleType ) {
+      # 3: We need a Channel
+      } elsif ( ! defined $json{ReqChannel} ) {
+         $json{Error} = "NO_CHANNEL" ;
+
+      # 4: we need a module type (based on parameter address)
+      } elsif ( ! defined $json{ModuleType} ) {
          $json{Error} = "NO_MODULETYPE" ;
 
-      # 4: the module type should be supported for the type
-      } elsif ( ! defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType} ) {
-         $json{Error} = "MODULETYPE_NOT_SUPPORTED" ;
+      # 5: there should be at least a Get for the ChannelTpe and ModuleType
+      } elsif ( ! defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Module}{$json{ModuleType}}{Action}{Get} ) {
+         $json{Error} = "CHANNELTYPE_NOT_SUPPORTED_FOR_MODULETYPE" ;
 
-      # 5: we also need an action
-      } elsif ( ! defined $action ) {
+      # 6: we also need an action
+      } elsif ( ! defined $json{ReqAction} ) {
          $json{Error} = "NO_ACTION" ;
 
-      # 6: If action = Set we need a value
-      } elsif ( $action eq "Set" and ! defined $value ) {
+      # 7: the action should be supported for the ChannelType and ModuleType
+      # This checks also that Action should be Get or Set
+      } elsif ( ! defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Module}{$json{ModuleType}}{Action}{$json{ReqAction}} ) {
+         $json{Error} = "ACTION_NOT_SUPPORTED_FOR_CHANNELTYPE_AND_MODULETYPE" ;
+
+      # 8: If action = Set we need a value
+      } elsif ( $json{ReqAction} eq "Set" and ! defined $json{ReqValue} ) {
          $json{Error} = "NO_VALUE_FOR_SET" ;
 
       } else {
-         my $SetAction ;
+         # Get the relevant data
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`=? and `channel`=?","data",$json{ReqAddress},$json{ReqChannel}) ;
+         #my $data = Dumper \%data ;
+         #$json{Debug_data} = "<pre>" . $data . "</pre>" ;
 
-         # For blinds, the value is used to set Setacion
-         if ( $ActionType eq "Blind" and $action eq "Set" ) {
-            if ( $value eq "UP" ) {
-               $SetAction = "Up" ;
-            } elsif ( $value eq "DOWN" ) {
-               $SetAction = "Down" ;
-            } elsif ( $value eq "STOP" ) {
-               $SetAction = "Stop" ;
-            } elsif ( $value =~ /(\d+)/ ) {
-               $value = $1 ;
-               if ( $value >= 0 and $value <= 100 ) {
-                  $SetAction = "Position" ;
-               } else {
-                  undef $value ;
-               }
-            }
+         # Get Name if we have one
+         if ( $data{Name} ) {
+            $json{Name} = $data{Name}{value} ;
          }
 
-         # 7: the action should be supported for the type
-         if ( ! defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$action} ) {
-            $json{Error} = "ACTION_NOT_SUPPORTED:$ActionType:$action" ;
-
-         # If there is a SetAction, it should be supported for the type
-         } elsif ( defined $SetAction and ! $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction} ) {
-            $json{Error} = "SETACTION_NOT_SUPPORTED:$ActionType:$action:$SetAction" ;
-
-         } else {
-            # If we need something regarding the temperature, we set the channel ourself
-            my $Channel ;
-            if ( $ActionType eq "Temperature" or
-                 $ActionType eq "TemperatureCoHeMode" or
-                 $ActionType eq "TemperatureMode" or
-                 $ActionType eq "TemperatureTarget" ) {
-               $Channel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ;
-            } elsif ( defined $global{cgi}{params}{channel} ) {
-               $Channel = $global{cgi}{params}{channel} ;
-            }
-
-            if ( ! defined $Channel ) {
-               $json{Error} = "NO_CHANNEL" ;
-
+         # Get the data and add it to the json
+         if ( $json{ReqAction} eq "Get" ) {
+            if ( defined $data{$json{ReqChannelType}} ) {
+               $json{Status} = $data{$json{ReqChannelType}}{value} ;
             } else {
-               my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`=? and `channel`=?","data",$address,$Channel) ;
-               $json{Name} = $data{Name}{value} if defined $data{Name} ;
+               $json{Error} = "NO_VALUE_FOR_GET:$json{ReqChannelType}" ;
+            }
 
-               # We don't bother in setting the blind channels by some alghorithm, but just set them in the code
-               # For the 2 other blind modules, the channel numbering is normal.
-               if ( $ActionType eq "Blind" and $action eq "Set" ) {
-                  if ( $ModuleType eq "03" ) {
-                     $Channel = "0x03" ; # B‘00000011’
-                  }
-                  if ( $ModuleType eq "09" ) {
-                     if ( $Channel eq "01" ) {
-                        $Channel = "0x03" ; # B’00000011’
-                     }
-                     if ( $Channel eq "02" ) {
-                        $Channel = "0x0C" ; # B’00001100’
-                     }
+         } else { # $json{ReqAction} eq "Set"
+            # 1: Check the Value with Action=Set to make sure it's valid
+            foreach my $Match (sort keys %{$global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}} ) {
+               if ( $json{ReqValue} =~ /^$Match$/ ) {
+                  $json{ReqMatch} = $json{ReqValue} ;
+                  if ( defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ) {
+                     $json{Action} = $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ;
+                  } else {
+                     $json{Action} = $Match ;
                   }
                }
+            }
 
-               # Parse the value
-               if ( $action eq "Set" ) {
-                  # Parse the value for the Dimmer type
-                  if ( $ActionType eq "Dimmer" ) {
-                     if ( $value eq "ON" ) {
-                        $value = "100" ;
-                     } elsif ( $value eq "OFF" ) {
-                        $value = "0" ;
-                     } elsif ( $value =~ /(\d+)/ ) {
-                        $value = $1 ;
-                        if ( $value >= 0 and $value <= 100 ) {
-                        } else {
-                           undef $value ;
-                        }
-                     } else {
-                        undef $value ;
-                     }
+            # 2: Some extra custom checks
+            if ( defined $json{ReqMatch} ) {
+               if ( $json{ReqChannelType} eq "Blind" and $json{Action} eq "POSITION" ) {
+                  if ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) {
+                     $json{Action} = "POSITION" ;
+                  } else {
+                     undef $json{Action} ;
+                     $json{Error} = "VALUE_NOT_IN_RANGE_1" ;
                   }
-
-                  # Parse the value for the TemperatureCoHeMode type
-                  if ( $ActionType eq "TemperatureCoHeMode" ) {
-                     if ( $value eq "1" or $value eq "0" ) {
-                     } else {
-                        undef $value ;
-                     }
-                  }
-
-                  # Parse the value for the TemperatureMode type
-                  if ( $ActionType eq "TemperatureMode" ) {
-                     if ( $value eq "1" or $value eq "2" or $value eq "3" or $value eq "4" ) {
-                     } else {
-                        undef $value ;
-                     }
-                  }
-
-                  # Parse the value for the TemperatureTarget type
-                  if ( $ActionType eq "TemperatureTarget" ) {
-                     if ( $value =~ /(\d+\.\d+)/ or $value =~ /(\d+)/ ) {
-                        $value = $1 ;
-                     } else {
-                        undef $value ;
-                     }
+               } elsif ( $json{ReqChannelType} eq "Dimmer" and $json{Action} eq "LEVEL" ) {
+                  if ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) {
+                     $json{Action} = "LEVEL" ;
+                  } elsif ( $json{ReqValue} eq "ON" ) {
+                     $json{ReqValue} = "100" ;
+                  } elsif ( $json{ReqValue} eq "OFF" ) {
+                     $json{ReqValue} = "0" ;
+                  } else {
+                     undef $json{Action} ;
+                     $json{Error} = "VALUE_NOT_IN_RANGE_2" ;
                   }
                }
+            } else {
+               $json{Error} = "VALUE_NOT_IN_RANGE_3" ;
+            }
 
-               ###################################################
+            #     $SetAction -> $json{Action}
+            #
+            # 3: Only continue if we had no error
+            if ( ! defined $json{Error} ) {
                # Get/Set Blind positoin
-               if ( $ActionType eq "Blind" ) {
-                  if (      $SetAction eq "Up" ) {
-                     &blind_up   ($sock, $address, $Channel) ;
-                     $json{Status} = $SetAction ;
-                  } elsif ( $SetAction eq "Down" ) {
-                     &blind_down ($sock, $address, $Channel) ;
-                     $json{Status} = $SetAction ;
-                  } elsif ( $SetAction eq "Stop" ) {
-                     &blind_stop ($sock, $address, $Channel) ;
-                     $json{Status} = $SetAction ;
-                  } elsif ( $SetAction eq "Position" and defined $value ) {
-                     &blind_pos  ($sock, $address, $Channel, $value) ;
-                     $json{Status} = $value ;
-                  } elsif ( $action eq "Get" ) {
-                     $json{Status} = $data{Position}{value} if defined $data{Position} ;
+               if ( $json{ReqChannelType} eq "Blind" ) {
+                  if (      $json{Action} eq "UP" ) {
+                     #&blind_up   ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = $json{Action} ;
+                  } elsif ( $json{Action} eq "DOWN" ) {
+                     #&blind_down ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = $json{Action} ;
+                  } elsif ( $json{Action} eq "STOP" ) {
+                     #&blind_stop ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = $json{Action} ;
+                  } elsif ( $json{Action} eq "POSITION" ) {
+                     #&blind_pos  ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
+                     $json{Status} = $json{ReqValue} ;
                   } else {
-                     $json{Error} = "INCORRECT_VALUE" ;
+                     $json{Error} = "INCORRECT_ACTION" ;
                   }
 
-               # Get Counter : only for VMB7IN
-               } elsif ( $ActionType eq "Counter" ) {
-                  if ( $action eq "Get" ) {
-                     $json{Status} = $data{Counter}{value}        if defined $data{Counter} ;
-                  } elsif ( $action eq "GetCurrent" ) {
-                     $json{Status} = $data{CounterCurrent}{value} if defined $data{CounterCurrent} ;
-                  } elsif ( $action eq "GetDivider" ) {
-                     $json{Status} = $data{Divider}{value}        if defined $data{Divider} ;
-                  } elsif ( $action eq "GetRaw" ) {
-                     $json{Status} = $data{CounterRaw}{value}     if defined $data{CounterRaw} ;
+               } elsif ( $json{ReqChannelType} eq "Button" ) {
+                  if ( $json{Action} eq "ON" ) {
+                     #&button_pressed ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = $json{ReqValue} ;
+                  } elsif ( $json{Action} eq "OFF" ) {
+                     # TODO
                   }
 
-               # Get/Set Dimmer level
-               } elsif ( $ActionType eq "Dimmer" ) {
-                  if ( $action eq "Set" and defined $value ) {
-                     &dim_value ($sock, $address, $Channel, $value) ;
-                     $json{Status} = $value ;
-                  } elsif ( $action eq "Get" ) {
-                     $json{Status} = $data{Dimmer}{value} if defined $data{Dimmer}{value} ;
-                  } else {
-                     $json{Error} = "INCORRECT_VALUE" ;
+               } elsif ( $json{ReqChannelType} eq "ButtonLong" ) {
+                  if ( $json{Action} eq "ON" ) {
+                     #&button_long_pressed ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = $json{ReqValue} ;
+                  } elsif ( $json{Action} eq "OFF" ) {
+                     # TODO
                   }
 
-               # Get/Set Relay status
-               } elsif ( $ActionType eq "Relay" ) {
-                  if ( $action eq "Set" and defined $value ) {
-                     if ( $value eq "ON" ) {
-                        &relay_on ($sock, $address, $Channel) ;
-                        $json{Status} = "ON" ;
-                     } elsif ( $value eq "OFF" ) {
-                        &relay_off ($sock, $address, $Channel) ;
-                        $json{Status} = "OFF" ;
-                     }
-                  } elsif ( $action eq "Get" ) {
-                     if ( defined $data{'Relay status'} ) {
-                        if ( $data{'Relay status'}{value}      eq "Relay channel off" ) {
-                           $json{Status} = "OFF" ;
-                        } elsif ( $data{'Relay status'}{value} eq "Relay channel on" ) {
-                           $json{Status} = "ON" ;
-                        }
-                     }
-                  } else {
-                     $json{Error} = "INCORRECT_VALUE" ;
+               } elsif ( $json{ReqChannelType} eq "Dimmer" ) {
+                  #&dim_value ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
+                  $json{Status} = $json{ReqValue} ;
+
+               } elsif ( $json{ReqChannelType} eq "Relay" ) {
+                  if ( $json{ReqValue} eq "ON" ) {
+                     #&relay_on ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = "ON" ;
+                  } elsif ( $json{ReqValue} eq "OFF" ) {
+                     #&relay_off ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = "OFF" ;
                   }
 
-               # Get SensorNumber: only for VMB4AN
-               } elsif ( $ActionType eq "SensorNumber" ) {
-                  $json{Status} = $data{SensorNumber}{value} if defined $data{SensorNumber} ;
+               # Set heating or cooling: touch panels
+               } elsif ( $json{ReqChannelType} eq "ThermostatCoHeMode" ) {
+                  &set_temperature_cohe_mode ($sock, $json{ReqAddress}, $json{ReqValue}) ;
+                  $json{Status} = $json{ReqValue} ;
 
-               # Sensor
-               } elsif ( $ActionType eq "Sensor" ) {
-                  if ( $action eq "Get" ) {
-                     $json{Status} = $data{Button}{value} if defined $data{Button} ;
-                  } else {
-                     $json{Error} = "INCORRECT_VALUE" ;
-                  }
+               # Set the Heater mode: touch panels
+               } elsif ( $json{ReqChannelType} eq "ThermostatMode" ) {
+                  &set_temperature_mode ($sock, $json{ReqAddress}, $json{ReqValue}) ;
+                  $json{Status} = $json{ReqValue} ;
 
-               # Get/Set button: touch, input, sensors, ...
-               } elsif ( $ActionType eq "Button" ) {
-                  if ( $action eq "Set" and defined $value and $value eq "ON" ) {
-                     &button_pressed ($sock, $address, $Channel) ;
-                     $json{Status} = $value ;
-                  } elsif ( $action eq "Get" ) {
-                     $json{Status} = $data{Button}{value} if defined $data{Button} ;
-                  } else {
-                     $json{Error} = "INCORRECT_VALUE" ;
-                  }
+               # Set the Cooler/Heater target temperature: touch panels
+               } elsif ( $json{ReqChannelType} eq "ThermostatTarget" ) {
+                  &set_temperature ($sock, $json{ReqAddress}, $json{ReqValue}) ;
+                  $json{Status} = $json{ReqValue} ;
 
-               # Get the current temperature: touch panels & outdoor sensor
-               } elsif ( $ActionType eq "Temperature" ) {
-                  $json{Status} = $data{Temperature}{value} if defined $data{Temperature} ;
-
-               # Get/Set heating or cooling: touch panels
-               } elsif ( $ActionType eq "TemperatureCoHeMode" ) {
-                  if ( $action eq "Set" and defined $value ) {
-                     &set_temperature_cohe_mode ($sock, $address, $value) ;
-                     $json{Status} = $value ;
-                  } elsif ( $action eq "Get" ) {
-                     if ( defined $data{'Temperature CoHe mode'} ) {
-                        if ( $data{'Temperature CoHe mode'}{value} =~ /cooler/i ) {
-                           $json{Status} = 1 ;
-                        } elsif ( $data{'Temperature CoHe mode'}{value} =~ /heater/i ) {
-                           $json{Status} = 0 ;
-                        }
-                     }
-                  } else {
-                     $json{Error} = "INCORRECT_VALUE" ;
-                  }
-
-               # Get/Set the Heater mode: touch panels
-               } elsif ( $ActionType eq "TemperatureMode" ) {
-                  if ( $action eq "Set" and defined $value ) {
-                     &set_temperature_mode ($sock, $address, $value) ;
-                     $json{Status} = $value ;
-                  } elsif ( $action eq "Get" ) {
-                     if ( defined $data{'Temperature mode'} ) {
-                        if (      $data{'Temperature mode'}{value} =~ /comfort/i ) {
-                           $json{Status} = 1 ;
-                        } elsif ( $data{'Temperature mode'}{value} =~ /day/i ) {
-                           $json{Status} = 2 ;
-                        } elsif ( $data{'Temperature mode'}{value} =~ /night/i ) {
-                           $json{Status} = 3 ;
-                        } elsif ( $data{'Temperature mode'}{value} =~ /safe/i ) {
-                           $json{Status} = 4 ;
-                        }
-                     }
-                  } else {
-                     $json{Error} = "INCORRECT_VALUE" ;
-                  }
-
-               # Get/Set the Cooler/Heater target temperature: touch panels
-               } elsif ( $ActionType eq "TemperatureTarget" ) {
-                  if ( $action eq "Set" and defined $value ) {
-                     &set_temperature ($sock, $address, $value) ;
-                     $json{Status} = $value ;
-                  } elsif ( $action eq "Get" ) {
-                     if ( defined $data{'Current temperature set'} ) {
-                        $json{Status} = $data{'Current temperature set'}{value} ;
-                     }
-                  } else {
-                     $json{Error} = "INCORRECT_VALUE" ;
-                  }
+               } else {
+                  $json{TODO} = "ChannelType=$ChannelType" ;
                }
-
-               $json{Error} = "NO_INFO" if ! defined $json{Status} ;
             }
          }
+         $json{Status} = "" if ! defined $json{Status} ;
       }
+   } else {
+      $json{Error} = "Nothing to do?" ;
    }
 
    return %json ;
@@ -787,80 +694,6 @@ sub www_print_velbus_messages () {
    return $html ;
 }
 
-sub www_print_velbus_actions () {
-   $html .= "<h1>Velbus actions</h1>\n" ;
-
-   foreach my $ActionType (sort keys %{$global{Cons}{ActionType}} ) {
-      $html .= "<h2>Action: $ActionType</h2>\n" ;
-      if ( defined $global{Cons}{ActionType}{$ActionType}{Info} ) {
-         $html .= $global{Cons}{ActionType}{$ActionType}{Info} ;
-      }
-      $html .= "<table border=\"1\">\n" ;
-      $html .= "<thead>\n" ;
-      $html .= "<tr>\n" ;
-      $html .= "<th>Module</th>\n" ;
-      $html .= "<th>Action</th>\n" ;
-      $html .= "<th>SetAction</th>\n" ;
-      $html .= "</tr>\n" ;
-      $html .= "</thead>\n" ;
-      $html .= "<tbody>\n" ;
-      foreach my $ModuleType (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}} ) {
-         $html .= "<tr>\n" ;
-         $html .= "<th>" . &link_ModuleType($ModuleType) . "</a></th>" ;
-         $html .= "<td>\n" ;
-
-         my $html_SetAction ;
-         foreach my $Action (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}} ) {
-
-            if ( $Action eq "Set" and defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction} ) {
-               $html .= "$Action: <i><b>see SetAction</b></i>" ;
-               foreach my $SetAction (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}} ) {
-                  $html_SetAction .= "$SetAction (" ;
-                  foreach my $Message (sort split ",", $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction}) {
-                     $html_SetAction .= "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a>" ;
-                  }
-                  $html_SetAction.= ")<br />" ;
-               }
-            } else {
-               my @MessageTxt ;
-               foreach my $Message (sort split ",", $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action}) {
-                  push @MessageTxt, "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message</a>" ;
-               }
-               my @MessageErrorTxt ;
-               foreach my $Message (sort keys %{$global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{ActionError}{$Action}}) {
-                  push @MessageErrorTxt, "<a href=?".&www_make_url("appl=print_velbus_messages", "Message=$Message").">$Message: $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{ActionError}{$Action}{$Message}</a>" ;
-               }
-               $html .= "$Action" ;
-               if ( @MessageTxt ) {
-                  $html .= " (" ;
-                  $html .= join ",", @MessageTxt ;
-                  $html .= ")" ;
-               }
-               if ( @MessageErrorTxt ) {
-                  $html .= " Error: (" ;
-                  $html .= join ",", @MessageErrorTxt ;
-                  $html .= ")" ;
-               }
-               $html .= "<br />" ;
-            }
-         }
-         $html .= "</td>\n" ;
-         $html .= "<td>\n" ;
-         if ( $html_SetAction ) {
-            $html .= $html_SetAction ;
-         }
-         $html .= "</td>\n" ;
-         $html .= "</tr>\n" ;
-      }
-      $html .= "</tbody>\n" ;
-      $html .= "</table>\n" ;
-      #$html .= "<pre>\n" ;
-      #$html .= Dumper \%{$global{Cons}{ActionType}{$ActionType}} ;
-      #$html .= "</pre>\n" ;
-   }
-   return $html ;
-}
-
 sub www_print_velbus_messages_print_message () {
    my $Message = $_[0] ;
    my $html ;
@@ -1041,7 +874,7 @@ sub www_print_velbus_messages_print_messages () {
 sub www_print_velbus_protocol () {
    my $html ;
    $html .= "<h1>Velbus protocol</h1>\n" ;
-   $html .= "<p>This is a list of all modules based on the published protocol files. For each module, the protocol pdf file is converted to txt and parsed. The script can found in bin/pdf2txt.pl and the result is lib/Velbus/Velbus_data_protocol_auto.pm.<br />The Channels column is based on Velbus_data_protocol_channels.pm.<br />The Action / SetAction column is based on Velbus_data_actions.pm.</p>\n" ;
+   $html .= "<p>This is a list of all modules based on the published protocol files. For each module, the protocol pdf file is converted to txt and parsed. The script can found in bin/pdf2txt.pl and the result is lib/Velbus/Velbus_data_protocol_auto.pm.<br />The Channels column is based on Velbus_data_protocol_channels.pm.</p>\n" ;
    if ( defined $global{cgi}{params}{ModuleType} ) {
       $html .= &www_print_velbus_protocol_print_moduleType($global{cgi}{params}{ModuleType}) ;
    } else {
@@ -1121,7 +954,7 @@ sub www_print_velbus_protocol_print_moduleType () {
                $html2 .= "    <td>$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$DataByte}{Type}</td>\n" ;
                $html2 .= "    <td>\n" ;
                foreach my $Parser ( sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$DataByte}{Match}}) ) {
-                  $html2 .= "$Parser: $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$DataByte}{Match}{$Parser}{Info}<br />\n" ;
+                  $html2 .= "$Parser: $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data}{$DataByte}{Match}{$Parser}{Value}<br />\n" ;
                }
                $html2 .= "    </td>\n" ;
                $html2 .= "  </tr>\n" ;
@@ -1151,7 +984,6 @@ sub www_print_velbus_protocol_print_modules () {
    $html .= "    <th>Memory</th>\n" ;
    $html .= "    <th>Module name</th>\n" ;
    $html .= "    <th>Channels</th>\n" ;
-   $html .= "    <th>Action / SetAction</th>\n" ;
    $html .= "  </tr>\n" ;
    $html .= "</thead>\n" ;
 
@@ -1183,16 +1015,6 @@ sub www_print_velbus_protocol_print_modules () {
       } else {
          $html .= "    <td>-</td>\n" ;
       }
-      $html .= "    <td>" ;
-      foreach my $ActionType (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{ActionType}}) {
-         foreach my $Action (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}}) {
-            $html .= "$ActionType: $Action<br />" ;
-         }
-         foreach my $SetAction (sort keys %{$global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{SetAction}}) {
-            $html .= "Set: $ActionType: $SetAction<br />" ;
-         }
-      }
-      $html .= "    </td>" ;
       $html .= "  </tr>\n" ;
    }
 

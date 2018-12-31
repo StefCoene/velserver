@@ -23,7 +23,7 @@ use Velbus::Velbus_data_protocol_auto ;
 use Velbus::Velbus_data_protocol_memory ;
 use Velbus::Velbus_data_protocol_messages ;
 use Velbus::Velbus_data_protocol_channels ;
-use Velbus::Velbus_data_actions ;
+use Velbus::Velbus_data_channels ;
 use Velbus::Velbus_data ;
 use Velbus::Velbus_helper ;
 use Velbus::Velbus_openHAB ;
@@ -80,8 +80,6 @@ sub init {
  
    # Find memory addresses for module name
    &find_memory_addresses ;
-
-   &process_ActionType ;
 }
 
 return 1

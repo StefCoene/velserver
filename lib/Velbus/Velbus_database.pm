@@ -23,6 +23,8 @@ sub get_all_modules_info_from_database {
    foreach my $address (sort keys (%{$global{Vars}{Modules}{ModuleList}}) ) {
       my %SubAddr ;
 
+      my $ThermostatAddr ;
+
       # 1: Get the module information
       my %data = &fetch_data ($global{dbh},"select * from `modules_info` where `address`='$address'","data" ) ;
       foreach my $data (sort keys (%data)) {
@@ -39,28 +41,14 @@ sub get_all_modules_info_from_database {
             $global{Vars}{Modules}{SubAddress}{$SubAddr}{ChannelOffset} = $counter * 8 ; # Calculate the channel offset
          }
 
-         # If there is an address for the temperature sensor, add this address to the list with special type
-         if ( $data eq "TemperatureAddr" ) {
-            my $SubAddr = $data{$data}{value} ; # Easier var
-            next if $SubAddr eq "FF" ;
-            my $MasterAddress = $global{Vars}{Modules}{SubAddress}{$SubAddr}{MasterAddress} ; # Master address of the module
-            my $ModuleType    = $global{Vars}{Modules}{Address}{$MasterAddress}{ModuleInfo}{type} ; # Type of the module
-            $ModuleType = $ModuleType."t" ;
-            $global{Vars}{Modules}{Address}{$MasterAddress}{ModuleInfo}{TemperatureAddr} = $SubAddr ;
-            $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{type} = $ModuleType ;
-            $global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}{$SubAddr} = "yes" ; # List of alle modules per type module
+         # If there is an address for the Thermostat, add this address to the list with special type
+         if ( $data eq "ThermostatAddr" and $data{$data}{value} ne "FF" ) {
+            $ThermostatAddr = $data{$data}{value} ; # Easier var
          }
       }
 
       if ( %SubAddr ) {
-         # 1: Store all the information also for the SubAddress
-         foreach my $SubAddr (sort keys %SubAddr) {
-            foreach my $data (sort keys %{$global{Vars}{Modules}{Address}{$address}{ModuleInfo}}) {
-               $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{$data} = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{$data} if ! defined $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{$data} ;
-            }
-         }
-
-         # 2: Store a list of sub addresses in 1 variable
+         # Store a list of sub addresses in 1 variable, only used on website
          my $SubAddr = join ",", sort keys  %SubAddr ;
          $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} = $SubAddr ;
       }

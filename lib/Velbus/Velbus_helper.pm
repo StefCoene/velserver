@@ -417,56 +417,6 @@ sub find_memory_addresses {
    }
 }
 
-sub process_ActionType () {
-   foreach my $ActionType (sort keys %{$global{Cons}{ActionType}}) {
-      foreach my $ModuleType (sort split ",", $global{Cons}{ActionType}{$ActionType}{Modules}) {
-         if ( defined $global{Cons}{ActionType}{$ActionType}{Action} ) {
-            foreach my $Action (sort keys %{$global{Cons}{ActionType}{$ActionType}{Action}}) {
-               if ( $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Message} eq "" ) {
-                  $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
-                  $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} = $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Message} ;
-               } else {
-                  foreach my $Message (split ",", $global{Cons}{ActionType}{$ActionType}{Action}{$Action}{Message}) {
-                     if ( $Action eq "Get" ) {
-                        if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message} and 
-                             defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message}{Data} ) {
-                           $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
-                           $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} .= $Message . "," ;
-                        } else {
-                           if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message} ) {
-                              $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{ActionError}{$Action}{$Message} = "No Data" ;
-                           } else {
-                              $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{ActionError}{$Action}{$Message} = "No Message" ;
-                           }
-                           $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
-                           $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} .= "," ;
-                        }
-                     } else {
-                        if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message} ) {
-                           $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{Action}{$Action} = "yes" ;
-                           $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} .= $Message . "," ;
-                        }
-                     }
-                  }
-                  $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action} =~ s/,$//g if defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{Action}{$Action}  ;
-               }
-            }
-         }
-
-         if ( defined $global{Cons}{ActionType}{$ActionType}{SetAction} ) {
-            foreach my $SetAction (sort keys %{$global{Cons}{ActionType}{$ActionType}{SetAction}}) {
-               foreach my $Message (split ",", $global{Cons}{ActionType}{$ActionType}{SetAction}{$SetAction}{Message}) {
-                  if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message} ) {
-                     $global{Cons}{ModuleTypes}{$ModuleType}{ActionType}{$ActionType}{SetAction}{$SetAction} = "yes" ;
-                     $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType}{SetAction}{$SetAction} = $global{Cons}{ActionType}{$ActionType}{SetAction}{$SetAction}{Message} ;
-                  }
-               }
-            }
-         }
-      }
-   }
-}
-
 # This is a bit tricky. Find the MemoryKey based on the Buld and the module type.
 # MemoryKey is used to specify the memory address that has to be used. These addresses can differ between Build versions.
 sub module_find_MemoryKey () {

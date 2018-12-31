@@ -70,18 +70,10 @@ sub openHAB_status_push {
 
    if ( defined $return{Status} ) {
       # If we have no info, do nothing
-      if ( $return{Status} eq "NO_INFO" or
+      if ( $return{Status} eq "" or
+           $return{Status} eq "NO_INFO" or
            $return{Status} eq "NO_MODULE" ) {
       } else {
-         # pressed and released -> ON and OFF
-         if ( $return{Status} eq "longpressed" ) {
-            $item =~ s/^Button/^ButtonLong/g ;
-            $return{Status} = "ON" ;
-         } elsif ( $return{Status} eq "pressed" ) {
-            $return{Status} = "ON" ;
-         } elsif ( $return{Status} eq "released" ) {
-            $return{Status} = "OFF"
-         }
          &openHAB_update_state ($item,$return{Status}) ;
       }
    }
@@ -93,79 +85,67 @@ sub openHAB_loop () {
    my $LoopType = $_[0] ;
    my $openHAB ;
 
-   # Loop all module types
+   # Loop all found module types
    foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
-      next if ! defined $global{Cons}{ModuleTypes}{$ModuleType}{Type} ; # This is used to skip the virtual module types used to represent the temperature of the touch panels
+      #next if ! defined $global{Cons}{ModuleTypes}{$ModuleType}{Type} ; # This is used to skip the virtual module types used to represent the temperature of the touch panels
 
       $openHAB .= "// $global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)\n" ;
 
       # Loop all found modules for the type
       foreach my $Address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}}) ) {
-         # All possible channels
          $openHAB .= "// $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ($Address)\n" ;
+
+         # All possible channels
          foreach my $Channel ( sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}{$ModuleType}{Channels}}) ) {
-         # All found channels
-         #foreach my $Channel ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{Address}{$Address}{ChannelInfo}}) ) {
             if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} ) {
-               my $Type = $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} ;
+               # We set $ChannelType to the list of items we want to add
+               # Per default is this the Type of channel
+               my $ChannelType = $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} ;
 
-               if ( $Type eq "Temperature" ) {
-                  # Every touch has a temperature sensor
-                  $Channel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ; # Channel is fixed for temperature sensor
-                  $openHAB .= &openHAB_loop_item ($LoopType, $Type, $ModuleType, $Address, $Channel) ;
+               my $ChannelTypeComment ;
 
-                  # If there is a TemperatureAddr and it's FF, we have a touch panel with the temperature sensor disable. So skip the temperature control items.
-                  if ( defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} and
-                               $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} eq "FF" ) {
-                  } else {
-                     # When we have a Temperature, we can have other stuff as well:
-                     foreach my $ActionType ("TemperatureCoHeMode", "TemperatureMode", "TemperatureTarget" ) {
-                        if ( defined $global{Cons}{ActionType}{$ActionType}{Module}{$ModuleType} ) {
-                           $openHAB .= &openHAB_loop_item ($LoopType, $ActionType, $ModuleType, $Address, $Channel) ;
-                        }
-                     }
+               # For ThermostatChannel, get the address assigned to the temperature. If this address is FF, the thermostat is not used and we have to skip this channel
+               if ( $ChannelType eq "ThermostatChannel" ) {
+                  if ( defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ThermostatAddr} and
+                               $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ThermostatAddr} eq "FF" ) {
+                     $ChannelTypeComment = "Skip ThermostatChannel $Channel: ThermostatAddr = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ThermostatAddr}" ;
+                     undef $ChannelType ;
                   }
+               }
 
-               } else {
-                  # For TemperatureChannel, get the address assigned to the temperature. If this address is FF, it's not used and we have to skip the correspondending channels
-                  if ( $Type eq "TemperatureChannel" ) {
-                     if ( $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr} eq "FF" ) {
-                        $openHAB .= "// Skip channel $Channel: TemperatureAddr = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{TemperatureAddr}\n" ;
-                        next ;
-                     }
-                  }
-
-                  if ( $Type eq "Blind" or
-                       $Type eq "Button" or
-                       $Type eq "Dimmer" or
-                       $Type eq "Relay" or
-                       $Type eq "TemperatureChannel" or
-                       $Type eq "Sensor" or
-                       $Type eq "SensorText" or
-                       $Type eq "SensorNumber" or
-                       $Type eq "LightSensor" ) {
-
-                     $openHAB .= &openHAB_loop_item ($LoopType, $Type, $ModuleType, $Address, $Channel) ;
-
-                     # Short and long pressed button
-                     if ( $Type eq "Button" ) {
-                        $openHAB .= &openHAB_loop_item ($LoopType, "ButtonLong", $ModuleType, $Address, $Channel) ;
-                     }
-                  }
-
-                  if ( $Type eq "ButtonCounter" ) {
-                     if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} and $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
-                     # ButtonCounter used as Counter
-                        $openHAB .= &openHAB_loop_item ($LoopType, "Divider",        $ModuleType, $Address, $Channel) ;
-                        $openHAB .= &openHAB_loop_item ($LoopType, "CounterRaw",     $ModuleType, $Address, $Channel) ;
-                        $openHAB .= &openHAB_loop_item ($LoopType, "Counter",        $ModuleType, $Address, $Channel) ;
-                        $openHAB .= &openHAB_loop_item ($LoopType, "CounterCurrent", $ModuleType, $Address, $Channel) ;
+               # There is only 1 Channel of type Temperature. We use this channel to add the Thermostat Control items
+               if ( $ChannelType eq "Temperature" ) {
+                  # If no ThermostatAddr is assigned, we have no Thermostat and we have to skip the Thermostat Controls
+                  # If this address is FF, the thermostat is not used and we have to skip this channel
+                  if ( defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ThermostatAddr} ) {
+                     if ( $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ThermostatAddr} eq "FF" ) {
+                        $ChannelTypeComment = "Skip Thermostat Controls: ThermostatAddr = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ThermostatAddr}" ;
                      } else {
-                     # ButtonCounter used as Button: VMB7IN when Divider = Disabled or no Divider
-                        $openHAB .= &openHAB_loop_item ($LoopType, "Button",     $ModuleType, $Address, $Channel) ;
-                        $openHAB .= &openHAB_loop_item ($LoopType, "ButtonLong", $ModuleType, $Address, $Channel) ;
+                        # When we have a ThemostatAddr we add the Thermostat Controls:
+                        $ChannelType .= " ThermostatCoHeMode ThermostatMode ThermostatTarget" ;
                      }
+                  } else {
+                     $ChannelTypeComment = "Skip Thermostat Controls: No ThermostatAddr" ;
                   }
+
+               # Extra item: long pressed button
+               } elsif ( $ChannelType eq "Button" ) {
+                  $ChannelType .= " ButtonLong" ;
+
+               } elsif ( $ChannelType eq "ButtonCounter" ) {
+                  # ButtonCounter used as Counter
+                  if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} and $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Divider}{value} ne "Disabled" ) {
+                     $ChannelType = "Divider CounterRaw Counter CounterCurrent" ;
+                  # ButtonCounter used as Button: VMB7IN when Divider = Disabled or no Divider
+                  } else {
+                     $ChannelType = "Button ButtonLong" ;
+                  }
+               }
+
+               # Loop all ChannelTypes
+               $openHAB .= "// $ChannelTypeComment\n" if defined $ChannelTypeComment ;
+               foreach my $Type (split " ", $ChannelType) {
+                  $openHAB .= &openHAB_loop_item ($LoopType, $Type, $ModuleType, $Address, $Channel) ;
                }
             }
          }
@@ -178,136 +158,122 @@ sub openHAB_loop () {
 # Subfunction of openHAB_loop
 # This will generate the item file or will push the status to openHAB for 1 item and its actions.
 sub openHAB_loop_item () {
-   my $LoopType   = $_[0] ; # This is status or write_config
-   my $Type       = $_[1] ;
-   my $ModuleType = $_[2] ;
-   my $Address    = $_[3] ;
-   my $Channel    = $_[4] ;
+   my $LoopType    = $_[0] ; # This is status or write_config
+   my $ChannelType = $_[1] ;
+   my $ModuleType  = $_[2] ;
+   my $Address     = $_[3] ;
+   my $Channel     = $_[4] ;
 
    my $openHAB ; # Only usefull when $LoopType = write_config
 
-   foreach my $Action (sort keys %{$global{Cons}{ActionType}{$Type}{Module}{$ModuleType}{Action}} ) {
-      # Skip the Get action -> we use the Get action when we parse the Set action(s)
-      # The only case we don't have a Set is type = Memo: TODO
-      next if $Action !~ /^Get/ ;
+   if ( defined $global{Cons}{ChannelTypes}{$ChannelType} ) {
+      if ( defined $global{Cons}{ChannelTypes}{$ChannelType}{Module}{$ModuleType}{Action}{Get} ) {
+         my $item = $ChannelType."_".$Address."_".$Channel ;
+         if ( $LoopType eq "status" ) {
+            # Simulate a service request so set the needed cgi parameters.
+            $global{cgi}{params}{address} = $Address ;
+            $global{cgi}{params}{channel} = $Channel ;
+            $global{cgi}{params}{action}  = "Get" ;
+            $global{cgi}{params}{type}    = $ChannelType ;
+            &openHAB_status_push ($item) ;
 
-      my $item ; # Create the openHAB item name
-      if ( defined $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{Type} ) {
-         $item .= $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{Type} ;
-      } else {
-         $item = $Type ;
-      }
-      $item .= "_".$Address ;
-      $item .= "_".$Channel if $Channel ; # TODO: is there a case when we have no channel?
-
-      if ( $LoopType eq "status" ) {
-         # Simulate a service request so set the needed cgi parameters.
-         $global{cgi}{params}{address} = $Address ;
-         $global{cgi}{params}{channel} = $Channel ;
-         $global{cgi}{params}{action}  = $Action ;
-         $global{cgi}{params}{type}    = $Type ;
-         &openHAB_status_push ($item) ;
-
-      } else {
-         my $Name ;
-
-         # Add module name if requested
-         if ( ( $Type eq "LightSensor" or
-                $Type eq "Sensor" ) or
-              ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
-                defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} and
-                        $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ne "" ) ) {
-             $Name = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} . " :: " ;
-         }
-
-         if ( $Type eq "TemperatureChannel" ) {
-            my $TemperatureChannel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ; # Channel is fixed for temperature sensor
-            $Name .= $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$TemperatureChannel}{Name}{value} . " :: " . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-         # Add channel name if one is available
-         } elsif ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} and
-                           $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
-            $Name .= $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} ;
-         # Add default name if one is available
-         } elsif ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ) {
-            $Name .= $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
-         }
-
-         $Name .= " :: " . $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{Append2Name} if defined $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{Append2Name} ; # It's possible we have to append something to the name
-
-         # Add item name in name if requested
-         if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
-            $Name .= " (" . $item . ")" ;
-         }
-
-         # Four Counter, add format if possible.
-         if ( $Type eq "Counter" and $Action eq "GetCurrent" ) {
-            if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} ) {
-               if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
-                  $Name .= " [%.0f W/s]" ;
-               } else {
-                  $Name .= " [%.0f " . $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} . "/s]";
-               }
-            }
-         } elsif ( $Type eq "Counter" and $Action eq "Get" ) {
-            if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} ) {
-               if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
-                  $Name .= " [%.0f kWh]" ;
-               } else {
-                  $Name .= " [%.0f " . $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} . "]" ;
-               }
-            }
          } else {
-            $Name .= " $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{ItemStateFormat}" if defined $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{ItemStateFormat} ; # Add item state format
-         }
+            my $Name ;
 
-         $openHAB .= "$global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{ItemType} $item" ; # Add correct itemp type
-         $openHAB .= " \"$Name\" " if defined $Name ;
-         $openHAB .= "<$global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{ItemIcon}> " if defined $global{Cons}{ActionType}{$Type}{Action}{$Action}{openHAB}{ItemIcon} ; # Add correct item icon
-
-         # Add to group if needed
-         my $Group = &openHAB_match_item($item) ;
-         if ( defined $Group ) {
-            $openHAB .= "($Group) " ;
-         }
-
-         # Add channel tag if one is available
-         if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Tag}{value} and
-              $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Tag}{value} ne '__NoTag__' ) {
-               $openHAB .= "[\"$global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Tag}{value}\"] " ;
-         }
-
-         # Add the http binding rules
-         my $http_url = "$global{Config}{openHAB}{BASE_URL}?address=$Address&type=" ;
-         # It's possible we overrule the action
-         if ( defined $global{Cons}{ActionType}{$Type}{Action}{Get}{openHAB}{HttpType} ) {
-            $http_url .= $global{Cons}{ActionType}{$Type}{Action}{Get}{openHAB}{HttpType} ;
-         } else {
-            $http_url .= $Type ;
-         }
-         $http_url .= "&channel=$Channel" if defined $Channel ; # TODO: is there a case when we have no channel?
-
-         my $http ;
-
-         if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
-            $http .= "<[$http_url&action=$Action:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
-         }
-         foreach my $Action (sort keys %{$global{Cons}{ActionType}{$Type}{Module}{$ModuleType}{Action}} ) {
-            if ( $Action eq "Set" ) {
-               $http .= ">[*:GET:$http_url&action=Set&value=%2\$s]" ;
+            # Add module name if requested
+            if ( ( $ChannelType eq "LightSensor" or
+                   $ChannelType eq "Sensor" ) or
+                 ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
+                   defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} and
+                           $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ne "" ) ) {
+                $Name = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} . " :: " ;
             }
-         }
-         if ( defined $http ) {
-            #$openHAB .= "{http=\"" . $http. "\"}" ;
-            # TODO: more testing needed
-            # In openhab items are automatically updated by commands. This is currently not the task of the bindings. But when a binding is unable to execute the command the item is set anyway and displays an incorrect status.
-            # Only by adding autoupdate="false" to the item configuration this behavior can be disabled per item. In this case you have to update the item manually by rule because the bindings do not do this.
-            $openHAB .= "{http=\"" . $http. "\", autoupdate=\"false\"}" ;
-         }
-         $openHAB .= "\n" ;
 
+            if ( $ChannelType eq "ThermostatChannel" ) {
+               my $TemperatureChannel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ; # Channel is fixed per ModuleType for Temperature sensor
+               $Name .= $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$TemperatureChannel}{Name}{value} . " :: " . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ; # Add Name of Temperature sensor
+            # Add channel name if one is available
+            } elsif ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} and
+                              $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} ne "" ) {
+               $Name .= $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Name}{value} ;
+            # Add default name if one is available
+            } elsif ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ) {
+               $Name .= $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ;
+            }
+
+            $Name .= " :: " . $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{Append2Name} if defined $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{Append2Name} ; # It's possible we have to append something to the name
+
+            # Add item name in name if requested
+            if ( defined $global{Config}{openHAB}{INCLUDE_ITEM_IN_NAME} ) {
+               $Name .= " (" . $item . ")" ;
+            }
+
+            # Four Counter, add format if possible.
+            if ( $ChannelType eq "CounterCurrent" ) {
+               if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} ) {
+                  if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
+                     $Name .= " [%.0f W/s]" ;
+                  } else {
+                     $Name .= " [%.0f " . $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} . "/s]";
+                  }
+               }
+            } elsif ( $ChannelType eq "Counter" ) {
+               if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} ) {
+                  if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
+                     $Name .= " [%.0f kWh]" ;
+                  } else {
+                     $Name .= " [%.0f " . $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} . "]" ;
+                  }
+               }
+            } else {
+               $Name .= " $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemStateFormat}" if defined $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemStateFormat} ; # Add item state format
+            }
+
+            $openHAB .= "$global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemType} $item" ; # Add correct itemp type
+            $openHAB .= " \"$Name\" " if defined $Name ;
+            $openHAB .= "<$global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemIcon}> " if defined $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemIcon} ; # Add correct item icon
+
+            # Add to group if needed
+            my $Group = &openHAB_match_item($item) ;
+            if ( defined $Group ) {
+               $openHAB .= "($Group) " ;
+            }
+
+            # Add channel tag if one is available
+            if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Tag}{value} and
+                 $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Tag}{value} ne '__NoTag__' ) {
+                  $openHAB .= "[\"$global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Tag}{value}\"] " ;
+            }
+
+            # Add the http binding rules
+            my $http_url = "$global{Config}{openHAB}{BASE_URL}?Item=$item" ;
+
+            my $http ;
+            # If polling is enabled, add it to the http binding
+            if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+               $http .= "<[$http_url&Action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+            }
+
+            # If there is a Set defined, add it to the http binding
+            if ( defined $global{Cons}{ChannelTypes}{$ChannelType}{Module}{$ModuleType}{Action}{Set} ) {
+               $http .= ">[*:GET:$http_url&Action=Set&Value=%2\$s]" ;
+            }
+
+            if ( defined $http ) {
+               #$openHAB .= "{http=\"" . $http. "\"}" ;
+               # TODO: more testing needed
+               # In openhab items are automatically updated by commands. This is currently not the task of the bindings. But when a binding is unable to execute the command the item is set anyway and displays an incorrect status.
+               # Only by adding autoupdate="false" to the item configuration this behavior can be disabled per item. In this case you have to update the item manually by rule because the bindings do not do this.
+               $openHAB .= "{http=\"" . $http. "\", autoupdate=\"false\"}" ;
+            }
+            $openHAB .= "\n" ;
+         }
+      } else {
+         $openHAB = "// ERROR: ChannelType $ChannelType defined but no Get support\n" ;
       }
+   } else {
+      $openHAB = "// ERROR: ChannelType $ChannelType not defined in Velbus_data_channels.pm\n" ;
    }
-
    return $openHAB ;
 }
 
