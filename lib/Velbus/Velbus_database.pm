@@ -51,6 +51,12 @@ sub get_all_modules_info_from_database {
          # Store a list of sub addresses in 1 variable, only used on website
          my $SubAddr = join ",", sort keys  %SubAddr ;
          $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr} = $SubAddr ;
+
+         # Get the type of module of the masteraddress and store it also for the sub address
+         foreach my $SubAddr (sort keys %SubAddr) {
+            my $MasterAddress = $global{Vars}{Modules}{SubAddress}{$SubAddr}{MasterAddress} ;
+            $global{Vars}{Modules}{Address}{$SubAddr}{ModuleInfo}{type} = $global{Vars}{Modules}{Address}{$MasterAddress}{ModuleInfo}{type} ;
+         }
       }
 
       # 2: Get the channel information
