@@ -268,6 +268,10 @@ sub www_service () {
                if ( $json{ReqChannelType} eq "Blind" and $json{Action} eq "POSITION" ) {
                   if ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) {
                      $json{Action} = "POSITION" ;
+                  } elsif ( $json{ReqValue} eq "0" ) {
+                     $json{ReqValue} = "UP" ;
+                  } elsif ( $json{ReqValue} eq "100" ) {
+                     $json{ReqValue} = "DOWN" ;
                   } else {
                      undef $json{Action} ;
                      $json{Error} = "VALUE_NOT_IN_RANGE_1" ;
@@ -295,16 +299,16 @@ sub www_service () {
                # Get/Set Blind positoin
                if ( $json{ReqChannelType} eq "Blind" ) {
                   if (      $json{Action} eq "UP" ) {
-                     #&blind_up   ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     &blind_up   ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
                      $json{Status} = $json{Action} ;
                   } elsif ( $json{Action} eq "DOWN" ) {
-                     #&blind_down ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     &blind_down ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
                      $json{Status} = $json{Action} ;
                   } elsif ( $json{Action} eq "STOP" ) {
-                     #&blind_stop ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     &blind_stop ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
                      $json{Status} = $json{Action} ;
                   } elsif ( $json{Action} eq "POSITION" ) {
-                     #&blind_pos  ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
+                     &blind_pos  ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
                      $json{Status} = $json{ReqValue} ;
                   } else {
                      $json{Error} = "INCORRECT_ACTION" ;
@@ -312,7 +316,7 @@ sub www_service () {
 
                } elsif ( $json{ReqChannelType} eq "Button" ) {
                   if ( $json{Action} eq "ON" ) {
-                     #&button_pressed ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     &button_pressed ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
                      $json{Status} = $json{ReqValue} ;
                   } elsif ( $json{Action} eq "OFF" ) {
                      # TODO
@@ -320,22 +324,22 @@ sub www_service () {
 
                } elsif ( $json{ReqChannelType} eq "ButtonLong" ) {
                   if ( $json{Action} eq "ON" ) {
-                     #&button_long_pressed ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     &button_long_pressed ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
                      $json{Status} = $json{ReqValue} ;
                   } elsif ( $json{Action} eq "OFF" ) {
                      # TODO
                   }
 
                } elsif ( $json{ReqChannelType} eq "Dimmer" ) {
-                  #&dim_value ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
+                  &dim_value ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
                   $json{Status} = $json{ReqValue} ;
 
                } elsif ( $json{ReqChannelType} eq "Relay" ) {
                   if ( $json{ReqValue} eq "ON" ) {
-                     #&relay_on ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     &relay_on ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
                      $json{Status} = "ON" ;
                   } elsif ( $json{ReqValue} eq "OFF" ) {
-                     #&relay_off ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     &relay_off ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
                      $json{Status} = "OFF" ;
                   }
 
