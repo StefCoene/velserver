@@ -1302,6 +1302,10 @@ sub send_memo () {
    my $text    = $_[2] ;
 
    if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
+      # When we receive CLEAR as text, we send an empty message to clear the LED.
+      if ( defined $text and $text eq "CLEAR" ) {
+         $text = "" ;
+      }
       my @text = split "", $text ;
       unshift @text , "" ; # First element of tekst is lost due to $j starting a 1
 

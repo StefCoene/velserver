@@ -92,8 +92,10 @@ $global{Cons}{ChannelTypes}{Dimmer}{openHAB}{ItemType} = "Dimmer" ;
 $global{Cons}{ChannelTypes}{LightSensor}{openHAB}{ItemType} = "Number" ;
 $global{Cons}{ChannelTypes}{LightSensor}{openHAB}{ItemStateFormat} = "[%.0f]" ;
 
-$global{Cons}{ChannelTypes}{Memo}{Set}{Match}{'.'}{Message} = "AC" ; # &send_memo
+$global{Cons}{ChannelTypes}{Memo}{Get}{Message} = "AC" ;
+$global{Cons}{ChannelTypes}{Memo}{Set}{Match}{'.*'}{Message} = "AC" ; # &send_memo
 $global{Cons}{ChannelTypes}{Memo}{Modules} = "28" ; #  This is the only ChannelType where we set the list of Modules manually because there is no channel for Memo. TODO: Create a channel for Memo so we can send and receive memo text remotely
+$global{Cons}{ChannelTypes}{Memo}{openHAB}{ItemType} = "String" ;
 
 $global{Cons}{ChannelTypes}{Relay}{Get}{Message} = "FB" ;
 $global{Cons}{ChannelTypes}{Relay}{Set}{Match}{ON}{Message} = "02" ; # &relay_on

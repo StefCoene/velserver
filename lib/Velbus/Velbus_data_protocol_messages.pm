@@ -246,8 +246,8 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
-$global{Cons}{ModuleTypes}{'28'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "MemoText" ;
-   $global{Cons}{ModuleTypes}{'28'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "MemoText" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'AC'}{Data}{PerMessage}{Channel} = "99" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # VMBEL1 (34): Edge-lit one, two or four touch buttons module

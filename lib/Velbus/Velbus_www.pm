@@ -334,6 +334,10 @@ sub www_service () {
                   &dim_value ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
                   $json{Status} = $json{ReqValue} ;
 
+               } elsif ( $json{ReqChannelType} eq "Memo" ) {
+                  &send_memo ($sock, $json{ReqAddress}, $json{ReqValue}) ;
+                  $json{Text} = $json{ReqValue} ;
+
                } elsif ( $json{ReqChannelType} eq "Relay" ) {
                   if ( $json{ReqValue} eq "ON" ) {
                      &relay_on ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
@@ -359,7 +363,7 @@ sub www_service () {
                   $json{Status} = $json{ReqValue} ;
 
                } else {
-                  $json{TODO} = "ChannelType=$ChannelType" ;
+                  $json{TODO} = "ChannelType=$json{ReqChannelType}" ;
                }
             }
          }

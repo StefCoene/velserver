@@ -62,6 +62,11 @@ sub process {
          $global{cgi}{params}{$_} = $u->query_param($_) ;
       }
 
+      # For Memo, we do a POST and so we get the Value in the content of the request.
+      if ( defined $r->{_content} and  $r->{_content} ne "" ) {
+         $global{cgi}{params}{Value} = $r->{_content} ;
+      }
+
       # Depending on the path, we have a webservice call or we need to serve a web page
       my $path = $r->url->path ;
       if ( $path eq "/service" ) {
@@ -79,6 +84,17 @@ sub process {
             $encoder->allow_nonref();
             my $json = $encoder->encode(\%json);
             $response->content($json) ;
+            if ( defined $json{Status} ) {
+               if ( $json{Status} eq "" ) {
+                  &log("webserver",sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
+                  &log("webserver","   $global{cgi}{params}{Item}: No Status") ;
+               } else {
+                  &log("webserver","   $global{cgi}{params}{Item}: Status = $json{Status}") ;
+               }
+            } else {
+               &log("webserver",sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
+               &log("webserver","    ERROR: $json") ;
+            }
          }
 
       } elsif ( $path =~ /include\/(.+)/ ) {

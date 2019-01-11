@@ -89,11 +89,11 @@ sub openHAB_loop () {
    foreach my $ModuleType (sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}})) {
       #next if ! defined $global{Cons}{ModuleTypes}{$ModuleType}{Type} ; # This is used to skip the virtual module types used to represent the temperature of the touch panels
 
-      $openHAB .= "// $global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)\n" ;
+      $openHAB .= "// ModuleType: $global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)\n" ;
 
       # Loop all found modules for the type
       foreach my $Address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}}) ) {
-         $openHAB .= "// $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ($Address)\n" ;
+         $openHAB .= "// Found Module: $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ($Address)\n" ;
 
          # All possible channels
          foreach my $Channel ( sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}{$ModuleType}{Channels}}) ) {
@@ -249,21 +249,29 @@ sub openHAB_loop_item () {
             my $http_url = "$global{Config}{openHAB}{BASE_URL}?Item=$item" ;
 
             my $http ;
-            # If polling is enabled, add it to the http binding
-            if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
-               $http .= "<[$http_url&Action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
-            }
+            # Memo is something special. We have to a POST instead of GET because a GET gives errors in OH when it contains non-alphanumeric characters.
+            # We also have never POLLING for Memo.
+            # Remark: we keep the GET for all other items because that's easier to trigger from a browser then doing a POST.
+            # Remark: the end user is reponsible to clear the message by sending an empty string or the text CLEAR.
+            if ( $ChannelType eq "Memo" ) {
+               $http .= ">[*:POST:$http_url&Action=Set:default]" ;
+            } else {
+               # If polling is enabled, add it to the http binding
+               if ( defined $global{Config}{openHAB}{POLL_STATUS} ) {
+                  $http .= "<[$http_url&Action=Get:$global{Config}{openHAB}{POLLING}:JSONPATH(\$.Status)] " ;
+               }
 
-            # If there is a Set defined, add it to the http binding
-            if ( defined $global{Cons}{ChannelTypes}{$ChannelType}{Module}{$ModuleType}{Action}{Set} ) {
-               $http .= ">[*:GET:$http_url&Action=Set&Value=%2\$s]" ;
+               # If there is a Set defined, add it to the http binding
+               if ( defined $global{Cons}{ChannelTypes}{$ChannelType}{Module}{$ModuleType}{Action}{Set} ) {
+                  $http .= ">[*:GET:$http_url&Action=Set&Value=%2\$s]" ;
+               }
             }
 
             if ( defined $http ) {
                #$openHAB .= "{http=\"" . $http. "\"}" ;
                # TODO: more testing needed
                # In openhab items are automatically updated by commands. This is currently not the task of the bindings. But when a binding is unable to execute the command the item is set anyway and displays an incorrect status.
-               # Only by adding autoupdate="false" to the item configuration this behavior can be disabled per item. In this case you have to update the item manually by rule because the bindings do not do this.
+               # Only by adding autoupdate="false" to the item configuration this behaviour can be disabled per item. In this case you have to update the item manually by rule because the bindings do not do this.
                $openHAB .= "{http=\"" . $http. "\", autoupdate=\"false\"}" ;
             }
             $openHAB .= "\n" ;

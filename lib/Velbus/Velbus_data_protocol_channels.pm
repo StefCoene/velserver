@@ -552,6 +552,8 @@ $global{Cons}{ModuleGeneral}{TouchO}{ChannelNumbers}{Name}{Convert} = "hex" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"32"}{Type} = "Button" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"34"}{Name} = "Temperature" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"34"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"99"}{Name} = "Memo Text" ;
+   $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"99"}{Type} = "Memo" ;
 
 $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"35"}{Name} = "Heater" ;
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"35"}{Type} = "ThermostatChannel" ;
