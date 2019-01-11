@@ -32,7 +32,17 @@ use JSON ;
 $global{cgi}{CGI} = new CGI ;
 my $session  = CGI::Session->load() ;
 
-%{$global{cgi}{params}} = $global{cgi}{CGI}->Vars; # Get all supplied parameters in a hash
+# When doing POST for Memo text, the content has to be used as Value. This can be found in ->param with $param = POSTDATA.
+# But we also need to parse rest of the parameters supplied in the url. These can be found with ->url_param.
+foreach my $param ($global{cgi}{CGI}->param()) {
+   if ( $param eq "POSTDATA" ) {
+      $global{cgi}{params}{Value} = $global{cgi}{CGI}->param($param) ;
+   }
+}
+
+foreach my $param ($global{cgi}{CGI}->url_param()) {
+   $global{cgi}{params}{$param} = $global{cgi}{CGI}->url_param($param) ;
+}
 
 my %json = &www_service ;
 
@@ -45,4 +55,3 @@ if ( defined $global{cgi}{params}{html} ) {
    print $session->header(-type=>'application/json') ;
    print encode_json(\%json) ;
 }
- 
