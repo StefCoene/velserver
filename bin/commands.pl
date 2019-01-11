@@ -37,32 +37,33 @@ use strict;
 use POSIX qw/strftime/;
 
 use Velbus ;
-
 &init () ;
 
 my $sock = &open_socket ;
-
-if ( $global{opts}{option} eq "scan" ) {
-   &scan($sock) ;
-} elsif ( $global{opts}{option} eq "status" ) {
-   &update_module_status($sock) ;
-} elsif ( $global{opts}{option} eq "tempinterval" ) {
-   &set_temperature_interval_all($sock,"60") ;
-} elsif ( $global{opts}{option} eq "date" ) {
-   &broadcast_datetime($sock) ;
-} elsif ( $global{opts}{option} eq "memo" ) {
-   if ( defined $global{opts}{address} ) {
-      &send_memo ($sock,$global{opts}{address},$global{opts}{text}) ;
-   }
-
-} elsif ( $global{opts}{option} eq "openHAB" ) {
-   &openHAB_parse_config () ;
-   my $openHAB = &openHAB_config () ;
-   print $openHAB ;
-} elsif ( $global{opts}{option} eq "openHAB_push_status" ) {
-   use Velbus::Velbus_www ;
-   &openHAB_status ;
+if ( ! defined $sock ) {
+   print "No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}\n" ;
 } else {
-   &print_help ;
-}
+   if ( $global{opts}{option} eq "scan" ) {
+      &scan($sock) ;
+   } elsif ( $global{opts}{option} eq "status" ) {
+      &update_module_status($sock) ;
+   } elsif ( $global{opts}{option} eq "tempinterval" ) {
+      &set_temperature_interval_all($sock,"60") ;
+   } elsif ( $global{opts}{option} eq "date" ) {
+      &broadcast_datetime($sock) ;
+   } elsif ( $global{opts}{option} eq "memo" ) {
+      if ( defined $global{opts}{address} ) {
+         &send_memo ($sock,$global{opts}{address},$global{opts}{text}) ;
+      }
 
+   } elsif ( $global{opts}{option} eq "openHAB" ) {
+      &openHAB_parse_config () ;
+      my $openHAB = &openHAB_config () ;
+      print $openHAB ;
+   } elsif ( $global{opts}{option} eq "openHAB_push_status" ) {
+      use Velbus::Velbus_www ;
+      &openHAB_status ;
+   } else {
+      &print_help ;
+   }
+}

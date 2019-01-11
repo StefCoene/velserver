@@ -1,28 +1,49 @@
 #!/usr/bin/perl 
 
-use lib "/home/velbus/velserver/lib" ;
-our %global ;
-$global{BaseDir} = "/home/velbus/velserver" ;
+# This process will run as a daemon and will connects to the bus via (local or remote) velserv (or othre TCPIP implementation).
+# The packets are analysed and processed.
 
-&init () ;
-# Connect to the Velbus server and monitor the bus.
-# All packets are analysed and printed on STDOUT.
-# All packets are logged in the database (only for mysql and if enabled in the config file)
+use lib "/home/velbus/velserver/lib" ;
+
+our %global ; # Variable shared by all functions where we store all data
+$global{BaseDir} = "/home/velbus/velserver" ;
 
 use strict;
 use POSIX qw/strftime/;
 
 use Velbus ;
+&init () ;
 
-my $sock = &open_socket ;
-
-our %global ; # Variable shared by all functions where we store all data
+my $sock ;
 
 while (1) {
-   # wait for data
-   my $recv_data;
-   $sock->recv($recv_data,10240);
-   chomp($recv_data);
+   # Connected socket? Try to read from it.
+   if (defined $sock and $sock->connected) {
+      my $recv_data;
 
-   &process_raw_message ($recv_data) ;
+      $sock->recv($recv_data,10240) ;
+
+      if ( $recv_data and $recv_data ne "" ) {
+         chomp($recv_data) ;
+         &process_raw_message ($recv_data) ;
+
+      # Nothing returned? Discard socket so we can reconnect.
+      } else {
+         print "Nothing received? Undef socket.\n" ;
+         &log("logger",&timestamp . " Nothing received? Undef socket.") ;
+         undef $sock ;
+      }
+
+   # No socket or socket exist but it's not connected? Open a new one.
+   } else {
+      sleep 1 ;
+      $sock = &open_socket ;
+      if ( ! defined $sock ) {
+         print "No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}\n" ;
+         &log("logger",&timestamp . " No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
+      } else {
+         print "Conected to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}\n" ;
+         &log("logger",&timestamp . " Connected to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
+      }
+   }
 }

@@ -21,8 +21,6 @@ $global{BaseDir} = "/home/velbus/velserver" ;
 use Velbus ;
 &init ;
 
-my $sock = &open_socket ;
-
 use Velbus::Velbus_www ;
 
 use CGI ;

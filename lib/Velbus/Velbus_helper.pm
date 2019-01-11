@@ -213,13 +213,17 @@ sub check_valid {
 # Return: socket
 sub open_socket () {
    my $sock = new IO::Socket::INET(
-                   PeerAddr => $global{Config}{velbus}{HOST},
-                   PeerPort => $global{Config}{velbus}{PORT},
-                   Proto    => 'tcp');
-   $sock or die "No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}: $!";
+         PeerAddr => $global{Config}{velbus}{HOST},
+         PeerPort => $global{Config}{velbus}{PORT},
+         Proto    => 'tcp'
+      );
 
-   $sock->autoflush(1);
-
+   if ( $sock ) {
+      $sock->autoflush(1);
+   } else {
+      # Do not print an error, but trap an error in the calling function
+      #print "No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}: $!\n" ;
+   }
    return $sock ;
 }
 
