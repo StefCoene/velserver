@@ -3,7 +3,6 @@
 use lib "/home/velbus/velserver/lib" ;
 
 use strict;
-use POSIX qw/strftime/;
 use URI::QueryParam qw( );
 
 our %global ; # Variable shared by all functions where we store all data

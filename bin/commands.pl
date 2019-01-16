@@ -34,7 +34,6 @@ if ( defined $global{opts}{help} ) {
 }  
 
 use strict;
-use POSIX qw/strftime/;
 
 use Velbus ;
 &init () ;

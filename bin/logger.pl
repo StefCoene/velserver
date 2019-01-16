@@ -9,7 +9,6 @@ our %global ; # Variable shared by all functions where we store all data
 $global{BaseDir} = "/home/velbus/velserver" ;
 
 use strict;
-use POSIX qw/strftime/;
 
 use Velbus ;
 &init () ;

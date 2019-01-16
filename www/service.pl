@@ -13,7 +13,6 @@
 use lib "/home/velbus/velserver/lib" ;
 
 use strict;
-use POSIX qw/strftime/;
 
 our %global ; # Variable shared by all functions where we store all data
 $global{BaseDir} = "/home/velbus/velserver" ;
@@ -44,7 +43,7 @@ foreach my $param ($global{cgi}{CGI}->url_param()) {
 
 my %json = &www_service ;
 
-if ( defined $global{cgi}{params}{html} ) {
+if ( exists $global{cgi}{params}{html} ) {
    print $session->header() ;
    foreach my $key (sort keys %json) {
       print "$key: $json{$key}<br />\n" ;

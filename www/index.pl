@@ -3,7 +3,6 @@
 use lib "/home/velbus/velserver/lib" ;
 
 use strict;
-use POSIX qw/strftime/;
 
 our %global ; # Variable shared by all functions where we store all data
 $global{BaseDir} = "/home/velbus/velserver" ;
