@@ -281,12 +281,12 @@ sub www_service () {
                         $json{Error} = "VALUE_NOT_IN_RANGE_1" ;
                      }
                   } elsif ( $json{ReqChannelType} eq "Dimmer" and $json{Action} eq "LEVEL" ) {
-                     if ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) {
-                        $json{Action} = "LEVEL" ;
-                     } elsif ( $json{ReqValue} eq "ON" ) {
+                     if ( $json{ReqValue} eq "ON" ) {
                         $json{ReqValue} = "100" ;
                      } elsif ( $json{ReqValue} eq "OFF" ) {
                         $json{ReqValue} = "0" ;
+                     } elsif ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) { # ! After ON and OFF check
+                        $json{Action} = "LEVEL" ;
                      } else {
                         undef $json{Action} ;
                         $json{Error} = "VALUE_NOT_IN_RANGE_2" ;
