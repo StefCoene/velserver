@@ -128,7 +128,7 @@ $global{Cons}{ChannelTypes}{ThermostatCoHeMode}{openHAB}{Append2Name} = "Cool/He
 $global{Cons}{ChannelTypes}{ThermostatCoHeMode}{openHAB}{ItemType} = "Number" ;
 
 $global{Cons}{ChannelTypes}{ThermostatMode}{BasedOn} = "Temperature" ;
-$global{Cons}{ChannelTypes}{ThermostatMode}{Set}{Match}{'[0123]+'}{Message} = "DB" ;
+$global{Cons}{ChannelTypes}{ThermostatMode}{Set}{Match}{'[1234]+'}{Message} = "DB" ;
 $global{Cons}{ChannelTypes}{ThermostatMode}{openHAB}{ItemIcon} = "temperature" ;
 $global{Cons}{ChannelTypes}{ThermostatMode}{openHAB}{Append2Name} = "mode" ;
 $global{Cons}{ChannelTypes}{ThermostatMode}{openHAB}{ItemType} = "Number" ;
