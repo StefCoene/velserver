@@ -171,10 +171,8 @@ sub openHAB_loop_item () {
          my $item = $ChannelType."_".$Address."_".$Channel ;
          if ( $LoopType eq "status" ) {
             # Simulate a service request so set the needed cgi parameters.
-            $global{cgi}{params}{address} = $Address ;
-            $global{cgi}{params}{channel} = $Channel ;
-            $global{cgi}{params}{action}  = "Get" ;
-            $global{cgi}{params}{type}    = $ChannelType ;
+            $global{cgi}{params}{Item} = $ChannelType . "_" . $Address . "_" . $Channel ;
+            $global{cgi}{params}{Action}  = "Get" ;
             &openHAB_status_push ($item) ;
 
          } else {
