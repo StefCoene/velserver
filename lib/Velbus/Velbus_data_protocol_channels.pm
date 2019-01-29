@@ -1,3 +1,25 @@
+###################
+# Temperature sensor module: VMB1TS
+$global{Cons}{ModuleTypes}{'0C'}{Channels}{"01"}{Name} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"01"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleTypes}{'0C'}{Thermostat} = "yes" ;
+
+# Do not add the extra channels! The code is written for Touch Panels and this will not work
+#$global{Cons}{ModuleTypes}{'0C'}{Channels}{"01"}{Name} = "Heater" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"01"}{Type} = "ThermostatChannel" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"02"}{Name} = "Boost Heater" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"02"}{Type} = "ThermostatChannel" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"03"}{Name} = "Central heating" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"03"}{Type} = "ThermostatChannel" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"04"}{Name} = "Cooler" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"04"}{Type} = "ThermostatChannel" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"05"}{Name} = "Pump" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"05"}{Type} = "ThermostatChannel" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"06"}{Name} = "Low alarm" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"06"}{Type} = "ThermostatChannel" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"07"}{Name} = "High alarm" ;
+#   $global{Cons}{ModuleTypes}{'0C'}{Channels}{"07"}{Type} = "ThermostatChannel" ;
+
 ################### Relays: Channel names
 # 1-channel relay module: VMB1RY
 $global{Cons}{ModuleTypes}{'02'}{Channels}{"01"}{Name} = "Relay" ;

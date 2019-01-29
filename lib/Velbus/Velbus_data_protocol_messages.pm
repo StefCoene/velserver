@@ -1,7 +1,14 @@
 # This is a list of messages with extra options.
 # The format is easy to understand
 #
+
+###################
 # Temperature Sensor Module : VMB1TS
+$global{Cons}{ModuleTypes}{'0C'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "01" ; # Temperature sensor is CH10
+   $global{Cons}{ModuleTypes}{'0C'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "01" ; # Temperature sensor is CH10
+   $global{Cons}{ModuleTypes}{'0C'}{Messages}{'EA'}{General} = "Thermostat" ;
+
+   #$global{Cons}{ModuleTypes}{'0C'}{Messages}{'00'}{General} = "ButtonPress" ;
 
 ################### Relays: messages
 # 1-channel relay module: VMB1RY
@@ -210,42 +217,42 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{PerByte}{'0'}{Name} = "Ch
 $global{Cons}{ModuleTypes}{'1E'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH10
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH10
-   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'1E'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'1E'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # One, two or four touch buttonsmodule: VMBGP2
 $global{Cons}{ModuleTypes}{'1F'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
-   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'1F'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'1F'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # One, two or four touch buttonsmodule: VMBGP4
 $global{Cons}{ModuleTypes}{'20'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
-   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'20'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'20'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # VMBGPO (21): Touch panel with Oled display
 $global{Cons}{ModuleTypes}{'21'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'21'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'21'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH9
-   $global{Cons}{ModuleTypes}{'21'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'21'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'21'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
 $global{Cons}{ModuleTypes}{'2D'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
-   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'2D'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'2D'}{Messages}{'ED'}{General} = "ButtonChannelStatus LightSensorChannelStatus7" ;
 
 # Touch panel with Oled display: VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
-   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'28'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "MemoText" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'AC'}{Data}{PerMessage}{Channel} = "99" ;
    $global{Cons}{ModuleTypes}{'28'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
@@ -254,56 +261,56 @@ $global{Cons}{ModuleTypes}{'28'}{Messages}{'00'}{General} = "ButtonPress" ;
 $global{Cons}{ModuleTypes}{'34'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
-   $global{Cons}{ModuleTypes}{'34'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'34'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # VMBEL2 (35): Edge-lit one, two or four touch buttons module
 $global{Cons}{ModuleTypes}{'35'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
-   $global{Cons}{ModuleTypes}{'35'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'35'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # VMBEL4 (36): Edge-lit one, two or four touch buttons module
 $global{Cons}{ModuleTypes}{'36'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
-   $global{Cons}{ModuleTypes}{'36'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'36'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # VMBELO (37): Edge-lit touch panel with Oled display
 $global{Cons}{ModuleTypes}{'37'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
-   $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # VMBGP1-2 (3A): One, two or four touch buttons module (ed2)e
 $global{Cons}{ModuleTypes}{'3A'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3A'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'3A'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
-   $global{Cons}{ModuleTypes}{'3A'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'3A'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'3A'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # VMBGP2-2 (3B): One, two or four touch buttons module (ed2)e
 $global{Cons}{ModuleTypes}{'3B'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3B'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'3B'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
-   $global{Cons}{ModuleTypes}{'3B'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'3B'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'3B'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # VMBGP4-2 (3C): One, two or four touch buttons module (ed2)e
 $global{Cons}{ModuleTypes}{'3C'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3C'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'3C'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
-   $global{Cons}{ModuleTypes}{'3C'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'3C'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'3C'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # VMBGPOD-2 (3D): Touch panel with Oled display (ed2)
 $global{Cons}{ModuleTypes}{'3D'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3D'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
    $global{Cons}{ModuleTypes}{'3D'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
-   $global{Cons}{ModuleTypes}{'3D'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'3D'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'3D'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
    $global{Cons}{ModuleTypes}{'3D'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
@@ -311,7 +318,7 @@ $global{Cons}{ModuleTypes}{'3D'}{Messages}{'00'}{General} = "ButtonPress" ;
 $global{Cons}{ModuleTypes}{'3E'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
-   $global{Cons}{ModuleTypes}{'3E'}{Messages}{'EA'}{General} = "TouchTempStatus" ;
+   $global{Cons}{ModuleTypes}{'3E'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'3E'}{Messages}{'ED'}{General} = "ButtonChannelStatus LightSensorChannelStatus7" ;
 
 ################### Input: messages
@@ -380,36 +387,39 @@ $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'0'}{Name} = 
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'2'}{Match}{'%.'}{Convert} = "Channel" ;
    $global{Cons}{ModuleGeneral}{Messages}{ButtonPress}{Data}{PerByte}{'2'}{Match}{'%.'}{Value} = "longpressed" ;
 
-$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Name} = "Operating mode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.100....'}{Name} = "ThermostatMode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.100....'}{Value} = "Comfort mode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.100....'}{openHAB} = "1" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.010....'}{Name} = "ThermostatMode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.010....'}{Value} = "Day mode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.010....'}{openHAB} = "2" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.001....'}{Name} = "ThermostatMode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.001....'}{Value} = "Night mode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.001....'}{openHAB} = "3" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.000....'}{Name} = "ThermostatMode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.000....'}{Value} = "Safe temp mode (anti frost)" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%.000....'}{openHAB} = "4" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Name} = "ThermostatCoHeMode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Value} = "Cooler mode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%1.......'}{openHAB} = "1" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%0.......'}{Name} = "ThermostatCoHeMode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%0.......'}{Value} = "Heater mode" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Match}{'%0.......'}{openHAB} = "0" ;
+# Thermostat info: used in touch panels and in VMB1TS
+$global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Name} = "Operating mode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.100....'}{Name} = "ThermostatMode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.100....'}{Value} = "Comfort mode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.100....'}{openHAB} = "1" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.010....'}{Name} = "ThermostatMode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.010....'}{Value} = "Day mode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.010....'}{openHAB} = "2" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.001....'}{Name} = "ThermostatMode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.001....'}{Value} = "Night mode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.001....'}{openHAB} = "3" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.000....'}{Name} = "ThermostatMode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.000....'}{Value} = "Safe temp mode (anti frost)" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%.000....'}{openHAB} = "4" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Name} = "ThermostatCoHeMode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%1.......'}{Value} = "Cooler mode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%1.......'}{openHAB} = "1" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%0.......'}{Name} = "ThermostatCoHeMode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%0.......'}{Value} = "Heater mode" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'0'}{Match}{'%0.......'}{openHAB} = "0" ;
 
-   # The Channel in byte 3 is calculated with an offset = TemperatureChannel
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.'}{Name} = "ThermostatChannel" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.'}{Convert} = "ChannelBitStatus:8" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'4'}{Name} = "ThermostatTarget" ;
+   $global{Cons}{ModuleGeneral}{Messages}{Thermostat}{Data}{PerByte}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
 
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'4'}{Name} = "ThermostatTarget" ;
-   $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
+# The Channels in byte 3 are calculated with an offset = TemperatureChannel for the touch panels
+$global{Cons}{ModuleGeneral}{Messages}{ThermostatChannelTouch}{Data}{PerByte}{'3'}{Match}{'%.'}{Name} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{Messages}{ThermostatChannelTouch}{Data}{PerByte}{'3'}{Match}{'%.'}{Convert} = "ChannelBitStatus:8" ;
 
+# Not used anymore
 $global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Name} = "ThermostatCoHeMode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Value} = "Cooler mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchCoolerMode}{Data}{PerByte}{'0'}{Match}{'%........'}{openHAB} = "1" ;
+# Not used anymore
 $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Name} = "ThermostatCoHeMode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{Value} = "Heater mode" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchHeaterMode}{Data}{PerByte}{'0'}{Match}{'%........'}{openHAB} = "0" ;

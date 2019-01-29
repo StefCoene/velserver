@@ -93,7 +93,12 @@ sub openHAB_loop () {
 
       # Loop all found modules for the type
       foreach my $Address ( sort {$a cmp $b} keys (%{$global{Vars}{Modules}{PerType}{$ModuleType}{ModuleList}}) ) {
-         $openHAB .= "// Found Module: $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ($Address)\n" ;
+         if ( defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} and
+                      $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ne "" ) {
+            $openHAB .= "// Found Module @ $Address: $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName}\n" ;
+         } else {
+            $openHAB .= "// Found Module @ $Address\n" ;
+         }
 
          # All possible channels
          foreach my $Channel ( sort {$a cmp $b} keys (%{$global{Cons}{ModuleTypes}{$ModuleType}{Channels}}) ) {
@@ -124,6 +129,11 @@ sub openHAB_loop () {
                         # When we have a ThemostatAddr we add the Thermostat Controls:
                         $ChannelType .= " ThermostatCoHeMode ThermostatMode ThermostatTarget" ;
                      }
+
+                  # Some non-touch panels also have a thermostat (like VMB1TS=0C)
+                  } elsif ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Thermostat} ) {
+                     $ChannelType .= " ThermostatCoHeMode ThermostatMode ThermostatTarget" ;
+
                   } else {
                      $ChannelTypeComment = "Skip Thermostat Controls: No ThermostatAddr" ;
                   }
@@ -178,13 +188,19 @@ sub openHAB_loop_item () {
          } else {
             my $Name ;
 
-            # Add module name if requested
-            if ( ( $ChannelType eq "LightSensor" or
-                   $ChannelType eq "Sensor" ) or
-                 ( defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} and
-                   defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} and
-                           $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ne "" ) ) {
-                $Name = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} . " :: " ;
+            # Find ModuleName and if there no ModuleName, use ModuleType
+            my $ModuleName ;
+            if ( defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} and
+                         $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ne "" ) {
+               $ModuleName = $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ;
+            } else {
+               $ModuleName = $global{Cons}{ModuleTypes}{$ModuleType}{Type} ;
+	         }
+
+            # Add ModuleName if requested
+            if ( ( $ChannelType eq "LightSensor" or $ChannelType eq "Sensor" ) or
+                 defined $global{Config}{openHAB}{INCLUDE_MODULENAME_IN_NAME} ) {
+                $Name = $ModuleName . " :: " ;
             }
 
             if ( $ChannelType eq "ThermostatChannel" ) {

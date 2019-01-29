@@ -11,7 +11,7 @@ $global{Cons}{ModuleTypes}{'0E'}{Memory}{1}{ModuleName} = "00F0-00FF" ;
 # VMB1TS
 $global{Cons}{ModuleTypes}{'0C'}{MemoryMatch}{1}{Build}   = ">= 1" ;
 $global{Cons}{ModuleTypes}{'0C'}{MemoryMatch}{1}{Version} = "1" ;
-$global{Cons}{ModuleTypes}{'0C'}{Memory}{1}{ModuleName} = "00F0-00FF" ;
+#$global{Cons}{ModuleTypes}{'0C'}{Memory}{1}{ModuleName} = "" ; # No support for ModuleName in the firmware
 
 # VMB4RYLD
 $global{Cons}{ModuleTypes}{'10'}{MemoryMatch}{1}{Build}   = ">= 1409" ;
