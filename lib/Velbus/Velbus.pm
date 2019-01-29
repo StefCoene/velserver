@@ -663,6 +663,7 @@ sub process_message {
                            # For some $ChannelType, we push the Value always to openHAB
                            } elsif ( $ChannelType eq "Dimmer" or
                                      $ChannelType eq "Blind" or
+                                     $ChannelType eq "SensorNumber" or
                                      $ChannelType eq "LightSensor" or
                                      $ChannelType eq "Relay" ) {
                               $openHAB{$address}{$Channel}{$ChannelType}{Value} = $Value ;
@@ -1022,8 +1023,16 @@ sub channel_hex_to_id () {
 
    # VMB4AN channel: 9 -> sensor 1 = Ch9, 12 -> sensor 14 = Ch12
    } elsif ( $type eq "SensorNumber" ) {
-      &log("channel_hex_to_id",&timestamp . "    SensorNumber") ;
-      $channel = &hex_to_dec ($channel) ;
+      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
+          defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{SensorNumber} and
+          defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{SensorNumber}{Map} and
+          defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{SensorNumber}{Map}{$channel} ) {
+         &log("channel_hex_to_id",&timestamp . "    ChannelNumbers SensorNumber Map") ;
+         $channel = $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{SensorNumber}{Map}{$channel} ;
+      } else {
+         &log("channel_hex_to_id",&timestamp . "    SensorNumber") ;
+         $channel = &hex_to_dec ($channel) ;
+      }
 
    # Not used anymore
    } elsif ( $type eq "ChannelBit" ) {

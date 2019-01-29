@@ -358,6 +358,7 @@ $global{Cons}{ModuleTypes}{'2C'}{Messages}{'ED'}{General} = "LightSensorChannelS
 
 ################### Other
 # VMBMETEO (31): Meteo station
+$global{Cons}{ModuleTypes}{'31'}{Messages}{'00'}{General} = "PirOutput" ;
 $global{Cons}{ModuleTypes}{'31'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "SensorNumber" ;
 
 # VMB4AN (32): Analog I/O module
@@ -402,38 +403,6 @@ $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'0'}{Name
    # The Channel in byte 3 is calculated with an offset = TemperatureChannel
    $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.'}{Name} = "ThermostatChannel" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.'}{Convert} = "ChannelBitStatus:8" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.......0'}{Channel} = "02" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.......0'}{Value} = "released" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.......1'}{Channel} = "02" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.......1'}{Value} = "pressed" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%......0.'}{Channel} = "03" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%......0.'}{Value} = "released" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%......1.'}{Channel} = "03" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%......1.'}{Value} = "pressed" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.....0..'}{Channel} = "04" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.....0..'}{Value} = "released" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.....1..'}{Channel} = "04" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.....1..'}{Value} = "pressed" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%....0...'}{Channel} = "05" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%....0...'}{Value} = "released" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%....1...'}{Channel} = "05" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%....1...'}{Value} = "pressed" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%...0....'}{Channel} = "06" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%...0....'}{Value} = "released" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%...1....'}{Channel} = "06" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%...1....'}{Value} = "pressed" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%..0.....'}{Channel} = "07" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%..0.....'}{Value} = "released" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%..1.....'}{Channel} = "07" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%..1.....'}{Value} = "pressed" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.0......'}{Channel} = "08" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.0......'}{Value} = "released" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.1......'}{Channel} = "08" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%.1......'}{Value} = "pressed" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%0.......'}{Channel} = "09" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%0.......'}{Value} = "released" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%1.......'}{Channel} = "09" ;
-   #$global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'3'}{Match}{'%1.......'}{Value} = "pressed" ;
 
    $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'4'}{Name} = "ThermostatTarget" ;
    $global{Cons}{ModuleGeneral}{Messages}{TouchTempStatus}{Data}{PerByte}{'4'}{Match}{'%.'}{Convert} = "Temperature" ;
