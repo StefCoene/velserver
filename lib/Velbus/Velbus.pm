@@ -818,7 +818,7 @@ sub send_message () {
          if ( $channel =~ /^0x/ ) {
             push @message, $channel ;
          } else {
-            ($address,$channel) = &channel_id_to_hex ($address,$channel,"MakeMessage") ;
+            ($address,$channel) = &channel_convert($address,$channel,"MakeMessage") ;
             push @message, "0x".$channel ;
          }
       }
@@ -1026,9 +1026,9 @@ sub channel_convert () {
    #   Touch panels & Name
    #   VMB4AN=32 & MakeMessage
    } elsif ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
-             defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$Type} and
-             defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$Type}{Convert} and
-                     $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$Type}{Convert} eq "hex" ) {
+             defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$type} and
+             defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$type}{Convert} and
+                     $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$type}{Convert} eq "hex" ) {
       &log("channel_convert",&timestamp . "    ChannelNumbers $type Convert = hex") ;
       $channel = &hex_to_dec ($channel) ;
 
@@ -1057,7 +1057,7 @@ sub channel_convert () {
 
          # If this is a SubAddress, replace the address with the master address and calculate the correct channel.
          if ( defined $global{Vars}{Modules}{SubAddress}{$address} and defined $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ) {
-            &log("channel_convert",&timestamp . "    type=$type: channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset}, address = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress}") ;
+            &log("channel_convert",&timestamp . "    type=$type: address = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress}, channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset}") ;
             $channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ; # Before changing the $address!!!!
             $address  = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress} ;
          }
@@ -1088,7 +1088,7 @@ sub channel_convert () {
 
    $channel = "0" . $channel if $channel < 10 and $channel !~ /^0/ ;
 
-   &log("channel_convert",&timestamp . "    return: channel=$channel, address=$address") ;
+   &log("channel_convert",&timestamp . "    return: address=$address, channel=$channel") ;
 
    return ($address,$channel) ;
 }
