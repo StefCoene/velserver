@@ -170,7 +170,7 @@ sub process_message {
                    or $message{MessageType} eq "F2" ) {
 
                my $hex = shift @hex ;
-               my ($dummy,$Channel) = &channel_hex_to_id($message{address},$hex,"Name") ;
+               my ($dummy,$Channel) = &channel_convert($message{address},$hex,"Name") ;
 
                # Reset the name
                if ( $message{MessageType} eq "F0" ) {
@@ -410,7 +410,7 @@ sub process_message {
                                     if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
                                        $Channel = $hex[$byte] ;
                                        next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-                                       ($message{address},$Channel) = &channel_hex_to_id($message{address},$Channel,"ConvertChannel") ; # Convert it to a number
+                                       ($message{address},$Channel) = &channel_convert($message{address},$Channel,"ConvertChannel") ; # Convert it to a number
                                        if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ) {
                                           $Channel += $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ;
                                        }
@@ -423,15 +423,15 @@ sub process_message {
                                     # The place in the byte determines the channel and 0=released, 1=pressed
                                     #    00100000 -> CH6 pressed, the rest is released
                                     if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} =~ /ChannelBitStatus:(\d)/ ) {
-                                       my $Max = $1 ;
+                                       my $Max = $1 ; # The number of bits=channels
                                        my @bin = split //, $bin ;
                                        foreach my $bit (1..$Max) {
                                           my @Channel = (0,0,0,0,0,0,0,0) ;
                                           $Channel[-$bit] = 1 ; # Flip the correct bit, start counting from the right
                                           $Channel = join "", @Channel ;
-                                          $Channel = &bin_to_hex($Channel) ; # Convert to hex for &channel_hex_to_id
+
                                           my $address ;
-                                          ($address,$Channel) = &channel_hex_to_id($message{address},$Channel) ; # Convert it to a number
+                                          ($address,$Channel) = &channel_convert($message{address},$Channel,"ChannelBitStatus") ; # Convert it to a number, no &bin_to_hex needed
                                           if ( $bin[$bit] eq "1" ) {
                                              $Value = "ON" ;
                                           } else {
@@ -452,9 +452,9 @@ sub process_message {
                                              my @Channel = (0,0,0,0,0,0,0,0) ;
                                              $Channel[$bit] = 1 ; # Flip the correct bit
                                              $Channel = join "", @Channel ;
-                                             $Channel = &bin_to_hex($Channel) ; # Convert to hex for &channel_hex_to_id
+
                                              my $address ;
-                                             ($address,$Channel) = &channel_hex_to_id($message{address},$Channel,"ChannelBit") ; # Convert it to a number
+                                             ($address,$Channel) = &channel_convert($message{address},$Channel,"ChannelBit") ; # Convert it to a number, no &bin_to_hex needed
                                              $Channel += $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ; # Take into count the offset
                                              $Channel = "0" . $Channel if $Channel < 10 and $Channel !~ /^0/ ;
                                              &log("logger_match","address=$message{address}: byte=$byte, key=$key, Channel=$Channel, Name=$Name, Value=$Value Convert eq ChannelBit") ;
@@ -494,7 +494,7 @@ sub process_message {
                      if ( $Process{Data}{PerMessage}{Convert} eq "SensorNumber" or
                           $Process{Data}{PerMessage}{Convert} eq "MemoText") {
                         my $hex = shift @hex ;
-                        my ($dummy,$Channel) = &channel_hex_to_id($message{address},$hex,"SensorNumber") ; # This is useless for MemoText (it has no channel), but needed for SensorNumber
+                        my ($dummy,$Channel) = &channel_convert($message{address},$hex,"SensorNumber") ; # This is useless for MemoText (it has no channel), but needed for SensorNumber
 
                         # First byte is the start of the text
                         my $start = shift @hex ;
@@ -941,14 +941,14 @@ sub get_status_VMB7IN () {
 # 3: type -> not used, informational
 #     - MakeMessage
 #     - SimulateButtonPressed
-sub channel_id_to_hex () {
+sub channel_convert_OLD () {
    my $address = $_[0] ;
    my $channel = $_[1] ;
    my $type    = $_[2] ;
 
    my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
 
-   &log("channel_id_to_hex",&timestamp . " address=$address, channel=$channel, type=$type, ModuleType=$ModuleType") ;
+   &log("channel_convert_OLD",&timestamp . " address=$address, channel=$channel, type=$type, ModuleType=$ModuleType") ;
 
    # We have to rewrite the address based on the channel.
    # This will not work for Type=ThermostatChannel. But since this function is only used when making a message and we never send something to channels with Type=ThermostatChannel, we don't care.
@@ -965,13 +965,15 @@ sub channel_id_to_hex () {
       $channel -= 8 ;
    }
 
-   &log("channel_id_to_hex",&timestamp . "    NEW: address=$address, channel=$channel") ;
+   &log("channel_convert_OLD",&timestamp . "    NEW: address=$address, channel=$channel") ;
 
+   # Used:
+   #    VMB4AN=32
    if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
         defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{MakeMessage} and
         defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{MakeMessage}{Convert} and
                 $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{MakeMessage}{Convert} eq "hex" ) {
-      &log("channel_id_to_hex",&timestamp . "    ChannelNumbers MakeMessage Convert = hex") ;
+      &log("channel_convert_OLD",&timestamp . "    ChannelNumbers MakeMessage Convert = hex") ;
       $channel = &hex_to_dec ($channel) ;
    } else {
       $channel -- ;
@@ -979,7 +981,7 @@ sub channel_id_to_hex () {
       $channel = &bin_to_hex ($channel) ;
    }
 
-   &log("channel_id_to_hex",&timestamp . "    return: address=$address, channel=$channel") ;
+   &log("channel_convert_OLD",&timestamp . "    return: address=$address, channel=$channel") ;
 
    return ($address,$channel) ;
 }
@@ -990,75 +992,103 @@ sub channel_id_to_hex () {
 # 3: type:
 #     - Name: message that contains the name of a channel
 #     - SensorNumber: message AC = transmitting sensor as text
-#     - ChannelBit
+#     - ChannelBit/ChannelBitStatus: channel is in bit!
 #     - ConvertChannel: when parsing a message, we have to decode the channel
-sub channel_hex_to_id () {
+#     - MakeMessage
+#     - SimulateButtonPressed
+sub channel_convert () {
    my $address = $_[0] ; # Optional
    my $channel = $_[1] ;
    my $type    = $_[2] ;
 
    my $ModuleType = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
 
-   &log("channel_hex_to_id",&timestamp . " address=$address, channel=$channel, type=$type, ModuleType=$ModuleType") ;
+   &log("channel_convert",&timestamp . " address=$address, channel=$channel, type=$type, ModuleType=$ModuleType") ;
 
-   if ( $type eq "Name" ) {
-      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
-                defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} and
-                defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Map} and
-                defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Map}{$channel} ) {
-         &log("channel_hex_to_id",&timestamp . "    ChannelNumbers Name Map") ;
-         $channel = $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Map}{$channel} ;
-      } elsif ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
-           defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name} and
-           defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Convert} and
-                   $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{Name}{Convert} eq "hex" ) {
-         &log("channel_hex_to_id",&timestamp . "    ChannelNumbers Name Convert = hex") ;
-         $channel = &hex_to_dec ($channel) ;
-      } else {
+   # If we have a fixed mapping for $ModuleType and $type
+   # Used (see Velbus_data_protocol_channels.pm) for:
+   #   VMB4AN=32 channel: 9 -> sensor 1 = Ch9, 12 -> sensor 14 = Ch12 ?????
+   #   VMB1BL=03 & Name
+   #   VMB2BL=09 & Name
+   #   touch panels & Name (for temperature channel)
+   #   VMBPIRO=2C & Name
+   #   VMBMETEO=31 & SensorNumber
+   if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
+        defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$type} and
+        defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$type}{Map} and
+        defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$type}{Map}{$channel} ) {
+      &log("channel_convert",&timestamp . "    ChannelNumbers $type Map") ;
+      $channel = $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$type}{Map}{$channel} ;
+
+   # Convert to hex. Used for:
+   #   VMBMETEO=31 & Name
+   #   VMB4AN=32 & Name
+   #   Touch panels & Name
+   #   VMB4AN=32 & MakeMessage
+   } elsif ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
+             defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$Type} and
+             defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$Type}{Convert} and
+                     $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{$Type}{Convert} eq "hex" ) {
+      &log("channel_convert",&timestamp . "    ChannelNumbers $type Convert = hex") ;
+      $channel = &hex_to_dec ($channel) ;
+
+   } else {
+      if ( $type eq "Name" ) {
          $channel = &hex_to_bin ($channel) ;
          $channel =~ /(0*)$/ ; # Filter out last 0's
          $channel = ($1 =~ tr/0//); # Count last 0's
          $channel ++ ;
-      }
 
-   # VMB4AN channel: 9 -> sensor 1 = Ch9, 12 -> sensor 14 = Ch12
-   } elsif ( $type eq "SensorNumber" ) {
-      if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers} and
-          defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{SensorNumber} and
-          defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{SensorNumber}{Map} and
-          defined $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{SensorNumber}{Map}{$channel} ) {
-         &log("channel_hex_to_id",&timestamp . "    ChannelNumbers SensorNumber Map") ;
-         $channel = $global{Cons}{ModuleTypes}{$ModuleType}{ChannelNumbers}{SensorNumber}{Map}{$channel} ;
-      } else {
-         &log("channel_hex_to_id",&timestamp . "    SensorNumber") ;
+      } elsif ( $type eq "SensorNumber" ) {
          $channel = &hex_to_dec ($channel) ;
-      }
 
-   # Not used anymore
-   } elsif ( $type eq "ChannelBit" ) {
-      $channel = &hex_to_bin ($channel) ;
-      $channel =~ /(0*)$/ ; # Filter out last 0's
-      $channel = ($1 =~ tr/0//); # Count last 0's
-      $channel ++ ;
+      # Channel is already in bit!
+      } elsif ( $type eq "ChannelBit" or $type eq "ChannelBitStatus" ) {
+         $channel =~ /(0*)$/ ; # Filter out last 0's
+         $channel = ($1 =~ tr/0//); # Count last 0's
+         $channel ++ ;
 
-   # "ConvertChannel" -> Button pressed or Sensor triggered
-   } else {
-      $channel = &hex_to_bin ($channel) ;
-      $channel =~ /(0*)$/ ; # Filter out last 0's
-      $channel = ($1 =~ tr/0//); # Count last 0's
-      $channel ++ ;
+      # Button pressed or Sensor triggered
+      } elsif ( $type eq "ConvertChannel" ) {
+         $channel = &hex_to_bin ($channel) ;
+         $channel =~ /(0*)$/ ; # Filter out last 0's
+         $channel = ($1 =~ tr/0//); # Count last 0's
+         $channel ++ ;
 
-      # If this is a SubAddress, replace the address with the master address and calculate the correct channel.
-      if ( defined $global{Vars}{Modules}{SubAddress}{$address} and defined $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ) {
-         &log("channel_hex_to_id",&timestamp . "    SensorNumber: channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset}, address = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress}") ;
-         $channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ; # Before changing the $address!!!!
-         $address  = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress} ;
+         # If this is a SubAddress, replace the address with the master address and calculate the correct channel.
+         if ( defined $global{Vars}{Modules}{SubAddress}{$address} and defined $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ) {
+            &log("channel_convert",&timestamp . "    type=$type: channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset}, address = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress}") ;
+            $channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ; # Before changing the $address!!!!
+            $address  = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress} ;
+         }
+      
+      } elsif ( $type eq "MakeMessage" or $type eq "SimulateButtonPressed" ) {
+         # We have to rewrite the address based on the channel.
+         # This will not work for Type=ThermostatChannel. But since this function is only used when making a message and we never send something to channels with Type=ThermostatChannel, we don't care.
+
+         # When the channel > 8 and we have sub addresses, calculate the correct address and channel
+         if ( $channel > 24 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ) {
+            $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr3} ;
+            $channel -= 24 ;
+         } elsif ( $channel > 16 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ) {
+            $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr2} ;
+            $channel -= 16 ;
+         } elsif ( $channel > 8 and defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ) {
+            $address = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{SubAddr1} ;
+            $channel -= 8 ;
+         }
+
+         &log("channel_convert",&timestamp . "    type=$type address=$address, channel=$channel") ;
+
+         $channel -- ;
+         $channel = "1" . "0" x $channel ;
+         $channel = &bin_to_hex ($channel) ;
       }
    }
 
    $channel = "0" . $channel if $channel < 10 and $channel !~ /^0/ ;
 
-   &log("channel_hex_to_id",&timestamp . "    return: channel=$channel, address=$address") ;
+   &log("channel_convert",&timestamp . "    return: channel=$channel, address=$address") ;
 
    return ($address,$channel) ;
 }
@@ -1112,7 +1142,7 @@ sub button_pressed {
    my $address = $_[1] ;
    my $channel = $_[2] ;
    my $value   = $_[3] ;
-   ($address,$channel) = &channel_id_to_hex($address,$channel,"SimulateButtonPressed") ;
+   ($address,$channel) = &channel_convert($address,$channel,"SimulateButtonPressed") ;
    # DATABYTE2 = Channel just pressed
    # DATABYTE3 = Channel just released
    # DATABYTE4 = Channel long pressed
@@ -1130,7 +1160,7 @@ sub button_long_pressed {
    my $address = $_[1] ;
    my $channel = $_[2] ;
    my $value   = $_[3] ;
-   ($address,$channel) = &channel_id_to_hex($address,$channel,"SimulateButtonPressed") ;
+   ($address,$channel) = &channel_convert($address,$channel,"SimulateButtonPressed") ;
    # DATABYTE2 = Channel just pressed
    # DATABYTE3 = Channel just released
    # DATABYTE4 = Channel long pressed
