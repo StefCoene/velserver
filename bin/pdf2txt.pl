@@ -287,13 +287,17 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                  $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+ type \(0x(..)\)/i or
                  $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /type \(0x(..)/i ) {
                $ModuleTypeHex = $1 ;
+
                #if ( $ModuleType eq "VMBGPOD" ) { # In the pdf this is type 21, but this is wrong and should be type 28. I think...
                #   $ModuleTypeHex = "28" ;
                #}
+               #
                $file{PerHexType}{$ModuleTypeHex} = $file ; # Remember all the Hex Module Types
                $file{PerFile}{$file}{Info}{ModuleTypeHex} = $ModuleTypeHex ; # Remember the Hex value per ModuleType
 
+               # Step 1: Search for extra info
                if ( defined $file{PerFile}{$file}{Messages}{$counter}{byte} ) {
+                  # For VMB1TSW (0C) this is wrong in the protocol files
                   if ( $ModuleTypeHex eq "0C" ) {
                      $file{ModuleType}{$ModuleTypeHex}{SerialHigh} = "4" ;
                      $file{ModuleType}{$ModuleTypeHex}{SerialLow}  = "5" ;
@@ -324,6 +328,8 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                      }
                   }
                }
+
+               # Step 2: copy the found data to similar modules & print the output
                # VMBGP1 = 1E: from pdf file
                # VMBGP2 = 1F: ??
                # VMBGP4 = 20: from my bus
@@ -343,6 +349,7 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Type} = \"VMBGP4\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+
                # VMBEL1 = 34
                # VMBEL2 = 35
                # VMBEL4 = 36
@@ -361,6 +368,7 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Type} = \"VMBEL4\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+
                # VMBGP1-2 = 3A
                # VMBGP2-2 = 3B
                # VMBGP4-2 = 3C
@@ -379,6 +387,7 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Type} = \"VMBGP4-2\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+
                } else {
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{File} = \"$file\" ;\n" ;
                   print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Type} = \"$ModuleType\" ;\n" ;
@@ -446,8 +455,8 @@ foreach my $ModuleTypeHex (sort keys %{$file{PerCommandHexLocal}}) {
          print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
          print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
 
-         # VMBGP2 = 1E: from pdf
-         # VMBGP2 = 1F: I think
+         # VMBGP1 = 1E: from pdf file
+         # VMBGP2 = 1F: ??
          # VMBGP4 = 20: from my bus
          if ( $ModuleTypeHex eq "1E" ) {
             print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
@@ -456,16 +465,22 @@ foreach my $ModuleTypeHex (sort keys %{$file{PerCommandHexLocal}}) {
             print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
             print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
             print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
-         }
-         if ( $ModuleTypeHex eq "34" ) {
+
+         # VMBEL1 = 34
+         # VMBEL2 = 35
+         # VMBEL4 = 36
+         } elsif ( $ModuleTypeHex eq "34" ) {
             print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
             print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
             print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
             print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
             print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
             print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
-         }
-         if ( $ModuleTypeHex eq "3C" ) {
+
+         # VMBGP1-2 = 3A
+         # VMBGP2-2 = 3B
+         # VMBGP4-2 = 3C
+         } elsif ( $ModuleTypeHex eq "3C" ) {
             print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Messages}{'$CommandHex'}{Name} = \"$Name\" ;\n" ;
             print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Messages}{'$CommandHex'}{Info} = \"$Info\" ;\n" ;
             print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Messages}{'$CommandHex'}{Prio} = \"$Prio\" ;\n" ;
