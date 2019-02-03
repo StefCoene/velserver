@@ -93,26 +93,26 @@ $global{Cons}{ModuleTypes}{'29'}{Messages}{'FB'}{Data}{PerByte}{'0'}{Name} = "Ch
 $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Name} = "Channel" ;
    $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Match}{'01'}{Channel} = "01" ;
    $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
+   $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Decimal" ;
 
    # EE = COMMAND_DIMMER_STATUS
    $global{Cons}{ModuleTypes}{'07'}{Messages}{'EE'}{Data}{PerByte}{'0'}{Name} = "Channel" ;
    $global{Cons}{ModuleTypes}{'07'}{Messages}{'EE'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "01" ;
    $global{Cons}{ModuleTypes}{'07'}{Messages}{'EE'}{Data}{PerByte}{'1'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'07'}{Messages}{'EE'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
+   $global{Cons}{ModuleTypes}{'07'}{Messages}{'EE'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Decimal" ;
 
 # PWM LED strip dimmer module: VMB1LED
 # 0F = COMMAND_SLIDER_STATUS
 $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Name} = "Channel" ;
    $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Match}{'01'}{Channel} = "01" ;
    $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
+   $global{Cons}{ModuleTypes}{'0F'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Decimal" ;
 
    # EE = COMMAND_DIMMER_STATUS
    $global{Cons}{ModuleTypes}{'0F'}{Messages}{'EE'}{Data}{PerByte}{'0'}{Name} = "Channel" ;
    $global{Cons}{ModuleTypes}{'0F'}{Messages}{'EE'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "01" ;
    $global{Cons}{ModuleTypes}{'0F'}{Messages}{'EE'}{Data}{PerByte}{'1'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'0F'}{Messages}{'EE'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
+   $global{Cons}{ModuleTypes}{'0F'}{Messages}{'EE'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Decimal" ;
 
 # 0/1 to 10V dimmer controller module: VMB4DC
 # 07 = COMMAND_SET_DIMVALUE
@@ -122,7 +122,7 @@ $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{PerByte}{'0'}{Name} = "Ch
    $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{PerByte}{'0'}{Match}{'04'}{Channel} = "03" ;
    $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{PerByte}{'0'}{Match}{'08'}{Channel} = "04" ;
    $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{PerByte}{'1'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
+   $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Decimal" ;
 
    # B8 = COMMAND_DIMMERCONTROLLER_STATUS: answer to 07 = COMMAND_SET_DIMVALUE
    $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{PerByte}{'0'}{Name} = "Channel" ;
@@ -131,21 +131,21 @@ $global{Cons}{ModuleTypes}{'12'}{Messages}{'07'}{Data}{PerByte}{'0'}{Name} = "Ch
    $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{PerByte}{'0'}{Match}{'00000100'}{Channel} = "03" ;
    $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{PerByte}{'0'}{Match}{'00001000'}{Channel} = "04" ;
    $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{PerByte}{'2'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{PerByte}{'2'}{Match}{'%.'}{Convert} = "Procent" ;
+   $global{Cons}{ModuleTypes}{'12'}{Messages}{'B8'}{Data}{PerByte}{'2'}{Match}{'%.'}{Convert} = "Decimal" ;
 
 # Dimmer module: VMBDME
 # 0F = COMMAND_SLIDER_STATUS
 $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Name} = "Channel" ;
    $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Match}{'01'}{Channel} = "01" ;
    $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
+   $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Decimal" ;
 
 # Velbus dimmer for resistive orinductive load:    VMBDMI
 # 0F = COMMAND_SLIDER_STATUS
 $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Name} = "Channel" ;
    $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Match}{'01'}{Channel} = "01" ;
    $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Procent" ;
+   $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Decimal" ;
 
 ################### Blinds: messages
 # Blind Control Module: VMB1BL
@@ -200,7 +200,7 @@ $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{PerByte}{'0'}{Name} = "Ch
 
    # blind position (0% = up...100%=down)
    $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{PerByte}{'4'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{PerByte}{'4'}{Match}{'%.'}{Convert} = "Procent" ;
+   $global{Cons}{ModuleTypes}{'2E'}{Messages}{'EC'}{Data}{PerByte}{'4'}{Match}{'%.'}{Convert} = "Decimal" ;
 
 # 2 channel blind module: VMB2BLE
 # EC = COMMAND_BLIND_STATUS
@@ -210,7 +210,7 @@ $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{PerByte}{'0'}{Name} = "Ch
 
    # blind position (0% = up...100%=down)
    $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{PerByte}{'4'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{PerByte}{'4'}{Match}{'%.'}{Convert} = "Procent" ;
+   $global{Cons}{ModuleTypes}{'1D'}{Messages}{'EC'}{Data}{PerByte}{'4'}{Match}{'%.'}{Convert} = "Decimal" ;
 
 ################### Touch panels: messages
 # One, two or four touch buttonsmodule: VMBGP1

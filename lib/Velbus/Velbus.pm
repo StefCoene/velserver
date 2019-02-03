@@ -385,12 +385,12 @@ sub process_message {
 
                                  # Do we have to convert the message
                                  if ( defined $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} ) {
-                                    # Calculate the procent
-                                    if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "Procent" ) {
-                                       $Name = "Procent" if ! defined $Name ;
-                                       $Value = hex $hex[$byte] ;
+                                    # Convert to decimal on the matched part of the bit formatted message
+                                    if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "Decimal" ) {
+                                       $Name = "Decimal" if ! defined $Name ;
+                                       $Value = &bin_to_dec ($BinValue) ;
                                        push @{$ChannelInfo{$message{address}}{$Channel}{$Name}{ValueList}}, $Value ;
-                                       &log("logger_match","address=$message{address}: byte=$byte, key=$key, Convert eq Procent") ;
+                                       &log("logger_match","address=$message{address}: byte=$byte, key=$key, Convert eq Decimal") ;
                                     }
 
                                     # Calculate the temperature from the message
