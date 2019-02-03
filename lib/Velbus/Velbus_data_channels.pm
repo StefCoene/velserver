@@ -58,12 +58,10 @@ $global{Cons}{ChannelTypes}{Blind}{openHAB}{ItemType}        = "Rollershutter" ;
 $global{Cons}{ChannelTypes}{Button}{Get}{Message} = "00" ;
 $global{Cons}{ChannelTypes}{Button}{Set}{Match}{ON}{Message}  = "00" ;
 $global{Cons}{ChannelTypes}{Button}{Set}{Match}{OFF}{Message} = "00" ;
-$global{Cons}{ChannelTypes}{Button}{openHAB}{ItemType} = "Switch" ;
 
 # ButtonLong is the same as Button except for Append2Name
 $global{Cons}{ChannelTypes}{ButtonLong}{BasedOn} = "Button" ; # Copy of Button
 $global{Cons}{ChannelTypes}{ButtonLong}{openHAB}{Append2Name} = "Long" ;
-$global{Cons}{ChannelTypes}{ButtonLong}{openHAB}{ItemType}    = "Switch" ;
 
 $global{Cons}{ChannelTypes}{Counter}{Get}{Message} = "BE" ;
 $global{Cons}{ChannelTypes}{Counter}{openHAB}{ItemIcon} = "chart" ;
@@ -103,10 +101,8 @@ $global{Cons}{ChannelTypes}{Relay}{Get}{Message} = "FB" ;
 $global{Cons}{ChannelTypes}{Relay}{Set}{Match}{ON}{Message} = "02" ; # &relay_on
 $global{Cons}{ChannelTypes}{Relay}{Set}{Match}{OFF}{Message} = "01" ; # &relay_off
 $global{Cons}{ChannelTypes}{Relay}{openHAB}{ItemIcon} = "switch" ;
-$global{Cons}{ChannelTypes}{Relay}{openHAB}{ItemType} = "Switch" ;
 
 $global{Cons}{ChannelTypes}{Sensor}{Get}{Message} = "00" ;
-$global{Cons}{ChannelTypes}{Sensor}{openHAB}{ItemType} = "Switch" ;
 
 $global{Cons}{ChannelTypes}{SensorNumber}{Get}{Message} = "AC" ;
 $global{Cons}{ChannelTypes}{SensorNumber}{openHAB}{ItemType} = "Number" ;
@@ -119,7 +115,6 @@ $global{Cons}{ChannelTypes}{Temperature}{openHAB}{ItemStateFormat} = "[%.1f °C]
 $global{Cons}{ChannelTypes}{Temperature}{openHAB}{ItemType} = "Number" ;
 
 $global{Cons}{ChannelTypes}{ThermostatChannel}{Get}{Message} = "00" ;
-$global{Cons}{ChannelTypes}{ThermostatChannel}{openHAB}{ItemType} = "Switch" ;
 
 $global{Cons}{ChannelTypes}{ThermostatCoHeMode}{BasedOn} = "Temperature" ;
 $global{Cons}{ChannelTypes}{ThermostatCoHeMode}{Set}{Match}{'[01]'}{Message} = "DF" ;

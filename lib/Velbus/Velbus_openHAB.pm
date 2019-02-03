@@ -243,7 +243,11 @@ sub openHAB_loop_item () {
                $Name .= " $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemStateFormat}" if defined $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemStateFormat} ; # Add item state format
             }
 
-            $openHAB .= "$global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemType} $item" ; # Add correct itemp type
+            if ( defined $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemType} ) {
+               $openHAB .= "$global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemType} $item" ; # Add correct item type
+            } else {
+               $openHAB .= "Switch $item" ; # Add correct item type
+            }
             $openHAB .= " \"$Name\" " if defined $Name ;
             $openHAB .= "<$global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemIcon}> " if defined $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemIcon} ; # Add correct item icon
 
