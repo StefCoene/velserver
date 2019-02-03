@@ -294,8 +294,7 @@ $global{Cons}{ModuleTypes}{'2C'}{General} = "PIR" ;
    $global{Cons}{ModuleTypes}{'2C'}{Channels}{"99"}{Type} = "LightSensor" ;
 
 #	VMBMETEO (31): Meteo station
-$global{Cons}{ModuleTypes}{'31'}{ChannelNumbers}{Name}{Convert} = "hex" ;
-   $global{Cons}{ModuleTypes}{'31'}{ChannelNumbers}{SensorNumber}{Map}{'02'} = "11" ; # bin 00000010 = hex 02
+$global{Cons}{ModuleTypes}{'31'}{ChannelNumbers}{SensorNumber}{Map}{'02'} = "11" ; # bin 00000010 = hex 02
    $global{Cons}{ModuleTypes}{'31'}{ChannelNumbers}{SensorNumber}{Map}{'04'} = "12" ; # bin 00000100 = hex 04
    $global{Cons}{ModuleTypes}{'31'}{ChannelNumbers}{SensorNumber}{Map}{'08'} = "13" ; # bin 00001000 = hex 08
    $global{Cons}{ModuleTypes}{'31'}{AllChannelStatus} = "FF" ;
