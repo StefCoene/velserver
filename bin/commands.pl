@@ -57,7 +57,7 @@ if ( ! defined $sock ) {
 
    } elsif ( $global{opts}{option} eq "openHAB" ) {
       &openHAB_parse_config () ;
-      my $openHAB = &openHAB_config () ;
+      my $openHAB = &openHAB_items () ;
       print $openHAB ;
    } elsif ( $global{opts}{option} eq "openHAB_push_status" ) {
       use Velbus::Velbus_www ;

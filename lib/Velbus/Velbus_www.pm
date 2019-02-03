@@ -63,7 +63,7 @@ sub www_index () {
    $content .= "<a href=?".&www_make_url("*=-","appl=scan_for_modules").">Scan the bus for modules</a> || " ;
    $content .= "<a href=?".&www_make_url("*=-","appl=print_found_modules").">Found modules</a> || " ;
    $content .= "<a href=?".&www_make_url("*=-","appl=print_channel_tags").">Channel tags</a> || " ;
-   $content .= "<a href=?".&www_make_url("*=-","appl=generate_openHAB").">Generate openHAB items file</a> || " ;
+   $content .= "<a href=?".&www_make_url("*=-","appl=generate_openHAB_items").">Generate openHAB items file</a> || " ;
    $content .= "<a href=?".&www_make_url("*=-","appl=empty_database").">Empty the database</a> " ;
    $content .= "<br />\n" ;
 
@@ -88,8 +88,8 @@ sub www_index () {
    if ( $global{cgi}{params}{appl} eq "print_velbus_messages" ) {
       $content .= &www_print_velbus_messages ;
    }
-   if ( $global{cgi}{params}{appl} eq "generate_openHAB" ) {
-      $content .= &www_generate_openHAB ;
+   if ( $global{cgi}{params}{appl} eq "generate_openHAB_items" ) {
+      $content .= &www_generate_openHAB_items ;
    }
    if ( $global{cgi}{params}{appl} eq "scan_for_modules" ) {
       $content .= &www_scan_for_modules ;
@@ -1037,9 +1037,9 @@ sub www_print_velbus_protocol_print_modules () {
    return $html ;
 }
 
-sub www_generate_openHAB () {
+sub www_generate_openHAB_items () {
    &openHAB_parse_config () ;
-   my $openHAB = &openHAB_config () ;
+   my $openHAB = &openHAB_items () ;
    $openHAB =~ s/</&lt;/g ;    # Prepare for html output
    $openHAB =~ s/>/&gt;/g ;    # Prepare for html output
    $openHAB =~ s/\n/<br>\n/g ; # Prepare for html output

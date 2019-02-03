@@ -42,10 +42,10 @@ sub openHAB_match_item {
 }
 
 # Create the items file for openHAB
-sub openHAB_config () {
+sub openHAB_items () {
    my $openHAB ;
 
-   $openHAB = &openHAB_loop ("write_config") ;
+   $openHAB = &openHAB_loop ("write_items") ;
 
    # If the item file exists and is writable, update the item file
    if ( open ITEM_FILE, ">$global{Config}{openHAB}{ITEM_FILE}" ) {
@@ -168,13 +168,13 @@ sub openHAB_loop () {
 # Subfunction of openHAB_loop
 # This will generate the item file or will push the status to openHAB for 1 item and its actions.
 sub openHAB_loop_item () {
-   my $LoopType    = $_[0] ; # This is status or write_config
+   my $LoopType    = $_[0] ; # This is status or write_items
    my $ChannelType = $_[1] ;
    my $ModuleType  = $_[2] ;
    my $Address     = $_[3] ;
    my $Channel     = $_[4] ;
 
-   my $openHAB ; # Only usefull when $LoopType = write_config
+   my $openHAB ; # Only usefull when $LoopType = write_items
 
    if ( defined $global{Cons}{ChannelTypes}{$ChannelType} ) {
       if ( defined $global{Cons}{ChannelTypes}{$ChannelType}{Module}{$ModuleType}{Action}{Get} ) {
