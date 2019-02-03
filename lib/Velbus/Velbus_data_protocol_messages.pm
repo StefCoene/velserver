@@ -283,6 +283,8 @@ $global{Cons}{ModuleTypes}{'37'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "34" ; # Temperature sensor is CH34
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
+   $global{Cons}{ModuleTypes}{'37'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "MemoText" ;
+   $global{Cons}{ModuleTypes}{'37'}{Messages}{'AC'}{Data}{PerMessage}{Channel} = "99" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
 
 # VMBGP1-2 (3A): One, two or four touch buttons module (ed2)e

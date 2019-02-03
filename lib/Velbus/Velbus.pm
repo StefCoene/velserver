@@ -1342,26 +1342,24 @@ sub send_memo () {
    my $address = $_[1] ;
    my $text    = $_[2] ;
 
-   if ( $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} eq "28" ) { # VMBGPOD
-      # When we receive CLEAR as text, we send an empty message to clear the LED.
-      if ( defined $text and $text eq "CLEAR" ) {
-         $text = "" ;
-      }
-      my @text = split "", $text ;
-      unshift @text , "" ; # First element of tekst is lost due to $j starting a 1
+   # When we receive CLEAR as text, we send an empty message to clear the LED.
+   if ( defined $text and $text eq "CLEAR" ) {
+      $text = "" ;
+   }
+   my @text = split "", $text ;
+   unshift @text , "" ; # First element of tekst is lost due to $j starting a 1
 
-      # We can send 64 characters and it's 5 characters / message. So we need 13 messages.
-      foreach my $i (0..12) {
-         my @message = ('00', '00', '00', '00', '00', '00') ; # Pre-fill the message with 00
-         foreach my $j (1..5) { # Start from 1 because 0 is for the offset
-            my $place = $i * 5 + $j ;
-            next if $place > 64 ;
-            my $char = &dec_to_hex (ord $text[$place]) ;
-            $message[$j] = $char ;
-         }
-         $message[0] = &dec_to_hex($i * 5) ; # First element is the offset of the character
-         &send_message ($sock, $address, 'AC', 'FF', @message) ;
+   # We can send 64 characters and it's 5 characters / message. So we need 13 messages.
+   foreach my $i (0..12) {
+      my @message = ('00', '00', '00', '00', '00', '00') ; # Pre-fill the message with 00
+      foreach my $j (1..5) { # Start from 1 because 0 is for the offset
+         my $place = $i * 5 + $j ;
+         next if $place > 64 ;
+         my $char = &dec_to_hex (ord $text[$place]) ;
+         $message[$j] = $char ;
       }
+      $message[0] = &dec_to_hex($i * 5) ; # First element is the offset of the character
+      &send_message ($sock, $address, 'AC', 'FF', @message) ;
    }
 }
 
