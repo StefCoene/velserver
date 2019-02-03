@@ -110,7 +110,7 @@ $global{Cons}{ModuleTypes}{'20'}{General} = "Touch4 Touch124Temperature" ;
 $global{Cons}{ModuleTypes}{'21'}{General} = "TouchO TouchOTemperature" ;
 
 # Four touch buttons with PIR detectormodule: VMBGP4PIR
-$global{Cons}{ModuleTypes}{'2D'}{General} = "TouchPIR Touch4 Touch124Temperature" ;
+$global{Cons}{ModuleTypes}{'2D'}{General} = "Touch4 Touch124Temperature TouchPIR" ; # TouchPIR AFTER Touch4!
 
 # Touch panel with Oled display: VMBGPOD
 $global{Cons}{ModuleTypes}{'28'}{General} = "TouchO TouchOTemperature" ;
@@ -140,7 +140,7 @@ $global{Cons}{ModuleTypes}{'3C'}{General} = "Touch4 Touch124Temperature" ;
 $global{Cons}{ModuleTypes}{'3D'}{General} = "TouchO TouchOTemperature" ;
 
 # VMBGP4PIR-2 (3E): Four touch buttons with PIR detector module (ed2)
-$global{Cons}{ModuleTypes}{'3E'}{General} = "TouchPIR Touch4 Touch124Temperature" ;
+$global{Cons}{ModuleTypes}{'3E'}{General} = "Touch4 Touch124Temperature TouchPIR" ; # TouchPIR AFTER Touch4!
  
 ################### Input: Channel names
 # 8-channel Push button interface module: VMB8PB
