@@ -1,14 +1,14 @@
 # pre-defined ChannelTypes
-#    Blind 
-#    Button 
-#    ButtonCounter 
-#    Dimmer 
-#    LightSensor 
-#    Relay 
-#    Sensor 
-#    SensorNumber 
-#    Temperature 
-#    ThermostatChannel 
+#    Blind
+#    Button
+#    ButtonCounter
+#    Dimmer
+#    LightSensor
+#    Relay
+#    Sensor
+#    SensorNumber
+#    Temperature
+#    ThermostatChannel
 #
 #  Rules:
 #    Button
@@ -27,29 +27,29 @@
 #       + ThermostatTarget
 #
 # All ChannelTypes:
-#    Blind 
-#    Button 
+#    Blind
+#    Button
 #    ButtongLong
 #    Divider
 #    Counter
 #    CounterRaw
 #    CounterCurrent
-#    Dimmer 
-#    LightSensor 
-#    Relay 
-#    Sensor 
-#    SensorNumber 
-#    Temperature 
+#    Dimmer
+#    LightSensor
+#    Relay
+#    Sensor
+#    SensorNumber
+#    Temperature
 #    ThermostatCoHeode
 #    ThermostatMode
 #    ThermostatTarget
-#    ThermostatChannel 
+#    ThermostatChannel
 
 $global{Cons}{ChannelTypes}{Blind}{Get}{Message} = "EC" ;
 $global{Cons}{ChannelTypes}{Blind}{Set}{Match}{STOP}{Message}  = "04" ;
 $global{Cons}{ChannelTypes}{Blind}{Set}{Match}{UP}{Message}    = "05" ;
 $global{Cons}{ChannelTypes}{Blind}{Set}{Match}{DOWN}{Message}  = "06" ;
-$global{Cons}{ChannelTypes}{Blind}{Set}{Match}{'\d+'}{Message} = "1C" ; 
+$global{Cons}{ChannelTypes}{Blind}{Set}{Match}{'\d+'}{Message} = "1C" ;
 $global{Cons}{ChannelTypes}{Blind}{Set}{Match}{'\d+'}{Action}  = "POSITION" ; # Default Action = $Match
 $global{Cons}{ChannelTypes}{Blind}{openHAB}{ItemIcon}        = "rollershutter" ;
 $global{Cons}{ChannelTypes}{Blind}{openHAB}{ItemStateFormat} = "[%s %%]" ;
@@ -57,7 +57,7 @@ $global{Cons}{ChannelTypes}{Blind}{openHAB}{ItemType}        = "Rollershutter" ;
 
 $global{Cons}{ChannelTypes}{Button}{Get}{Message} = "00" ;
 $global{Cons}{ChannelTypes}{Button}{Set}{Match}{ON}{Message}  = "00" ;
-$global{Cons}{ChannelTypes}{Button}{Set}{Match}{OFF}{Message}  = "00" ;
+$global{Cons}{ChannelTypes}{Button}{Set}{Match}{OFF}{Message} = "00" ;
 $global{Cons}{ChannelTypes}{Button}{openHAB}{ItemType} = "Switch" ;
 
 # ButtonLong is the same as Button except for Append2Name
@@ -96,7 +96,7 @@ $global{Cons}{ChannelTypes}{LightSensor}{openHAB}{ItemStateFormat} = "[%.0f]" ;
 
 $global{Cons}{ChannelTypes}{Memo}{Get}{Message} = "AC" ;
 $global{Cons}{ChannelTypes}{Memo}{Set}{Match}{'.*'}{Message} = "AC" ; # &send_memo
-$global{Cons}{ChannelTypes}{Memo}{Modules} = "28,37" ; #  This is the only ChannelType where we set the list of Modules manually because there is no channel for Memo. TODO: Create a channel for Memo so we can send and receive memo text remotely
+$global{Cons}{ChannelTypes}{Memo}{Modules} = "28,37" ; # This is the only ChannelType where we set the list of Modules manually because there is no channel for Memo. TODO: Create a channel for Memo so we can send and receive memo text remotely
 $global{Cons}{ChannelTypes}{Memo}{openHAB}{ItemType} = "String" ;
 
 $global{Cons}{ChannelTypes}{Relay}{Get}{Message} = "FB" ;
