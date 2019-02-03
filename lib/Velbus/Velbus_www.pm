@@ -472,7 +472,11 @@ sub www_print_found_modules () {
       $mail_body .= "$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildYear}$global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildWeek};" ;
 
       if ( defined $MemoryKey ) {
-         $table .= "    <td>$MemoryKey</td>\n" ;
+         if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Memory}{$MemoryKey}{ModuleName} ) {
+            $table .= "    <td>$MemoryKey</td>\n" ;
+         } else {
+            $table .= "    <td>$MemoryKey: No support for ModuleName!</td>\n" ;
+         }
          $mail_body .= "$MemoryKey;" ;
       } else {
          $table .= "    <td>-</td>\n" ;
@@ -501,6 +505,7 @@ sub www_print_found_modules () {
 
    $mail_body =~ s/\n/%0D%0A/g ;
    $html .= "<p>Do you want to help? Send me <a href=\"mailto:velserver\@docum.org?subject=velserver detected modules&body=$mail_body\">an email</a> with the content of this table. Especially if there is an issue with the MemoryKey column and module name detection.</p>\n" ;
+   $html .= "<p>If a module has the remark 'No support for ModuleName' in the MemoryKey column, the module name can not be detected. It's possible that a newer firmware is available that will allow this. VelbusLink can be used to check for newer firmwares. So upgrade the module to the newest build if possible, rescan the bus and recheck this page.</p>\n" ;
    $html .= $table ;
 
    $html .= "<h1>Details per module type</h1>\n" ;
