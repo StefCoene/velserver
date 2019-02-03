@@ -313,8 +313,15 @@ sub process_message {
                     defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Data} ) {
                   my %Process = %{$global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}} ;
 
+                  my $ByteCount = $#hex ; $ByteCount ++ ; # Count the number of hex in the message
+
                   # Parse the message byte per byte
-                  if ( defined $Process{Data}{PerByte} ) {
+                  if ( defined $Process{Data}{PerByte} or defined $Process{Data}{"PerByte:$ByteCount"} ) {
+                     my $PerByte = "PerByte" ;
+                     if ( defined $Process{Data}{"PerByte:$ByteCount"} ) {
+                        $PerByte = "PerByte:$ByteCount" ;
+                     }
+
                      my $Channel = "00" ; # Default value
 
                      # Search for a name
@@ -325,16 +332,16 @@ sub process_message {
 
                      foreach my $byte (0..8) { # Loop the 8 possible bytes
                         # Only process when there is information about this byte
-                        if ( defined $Process{Data}{PerByte}{$byte} ) {
+                        if ( defined $Process{Data}{$PerByte}{$byte} ) {
                            my $bin  = &hex_to_bin ($hex[$byte]) ; # We also need the message in binary format
 
                            # Search for a name
-                           if ( defined $Process{Data}{PerByte}{$byte}{Name} ) {
-                              $Name = $Process{Data}{PerByte}{$byte}{Name} ;
+                           if ( defined $Process{Data}{$PerByte}{$byte}{Name} ) {
+                              $Name = $Process{Data}{$PerByte}{$byte}{Name} ;
                            }
 
                            # Loop the possbile values for the byte
-                           foreach my $key (sort keys(%{$Process{Data}{PerByte}{$byte}{Match}})) {
+                           foreach my $key (sort keys(%{$Process{Data}{$PerByte}{$byte}{Match}})) {
                               my $Match ; # We set this variable if we have a match
 
                               # Regular exression is always binary based match
@@ -354,20 +361,20 @@ sub process_message {
                               if ( $Match ) {
                                  my $Value ; # To store the value of the message. This can be data found in the message or stored in {Value}
 
-                                 if ( defined  $Process{Data}{PerByte}{$byte}{Match}{$key}{Value} ) {
-                                    $Value = $Process{Data}{PerByte}{$byte}{Match}{$key}{Value} ;
+                                 if ( defined  $Process{Data}{$PerByte}{$byte}{Match}{$key}{Value} ) {
+                                    $Value = $Process{Data}{$PerByte}{$byte}{Match}{$key}{Value} ;
                                  }
-                                 if ( defined  $Process{Data}{PerByte}{$byte}{Match}{$key}{Channel} ) {
-                                    $Channel = $Process{Data}{PerByte}{$byte}{Match}{$key}{Channel} ;
+                                 if ( defined  $Process{Data}{$PerByte}{$byte}{Match}{$key}{Channel} ) {
+                                    $Channel = $Process{Data}{$PerByte}{$byte}{Match}{$key}{Channel} ;
                                  }
-                                 if ( defined  $Process{Data}{PerByte}{$byte}{Match}{$key}{Name} ) {
-                                    $Name = $Process{Data}{PerByte}{$byte}{Match}{$key}{Name} ;
+                                 if ( defined  $Process{Data}{$PerByte}{$byte}{Match}{$key}{Name} ) {
+                                    $Name = $Process{Data}{$PerByte}{$byte}{Match}{$key}{Name} ;
                                  }
 
                                  # Do we have to convert the message
-                                 if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} ) {
+                                 if ( defined $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} ) {
                                     # Calculate the procent
-                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Procent" ) {
+                                    if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "Procent" ) {
                                        $Name = "Procent" if ! defined $Name ;
                                        $Value = hex $hex[$byte] ;
                                        push @{$ChannelInfo{$message{address}}{$Channel}{$Name}{ValueList}}, $Value ;
@@ -375,7 +382,7 @@ sub process_message {
                                     }
 
                                     # Calculate the temperature from the message
-                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Temperature" ) {
+                                    if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "Temperature" ) {
                                        $Name = "Temperature" if ! defined $Name ;
                                        $Value = &hex_to_temperature ($hex[$byte]) ;
                                        push @{$ChannelInfo{$message{address}}{$Channel}{$Name}{ValueList}}, $Value ;
@@ -383,7 +390,7 @@ sub process_message {
                                     }
 
                                     # Simple Counter: first byte is divider + Channel
-                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Divider" ) {
+                                    if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "Divider" ) {
                                        $bin =~ /(......)(..)/ ; # The byte contains $Value and $Channel
                                        $Value = $1 ;
                                        $Channel = $2 ;
@@ -400,14 +407,14 @@ sub process_message {
                                     }
 
                                     # Simple Counter
-                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
+                                    if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "Counter" ) {
                                        $Name = "CounterHex" ;
                                        $ChannelInfo{$message{address}}{$Channel}{$Name}{Value} .= $hex[$byte] ; # We have to append the Value for the counter
                                        &log("logger_match","address=$message{address}: byte=$byte, key=$key, Convert eq Counter") ;
                                     }
 
                                     # Button pressed or Sensor triggered on touch or an other input
-                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
+                                    if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
                                        $Channel = $hex[$byte] ;
                                        next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
                                        ($message{address},$Channel) = &channel_convert($message{address},$Channel,"ConvertChannel") ; # Convert it to a number
@@ -422,7 +429,7 @@ sub process_message {
                                     # Used in processing ED message of Touch en PIR sensors
                                     # The place in the byte determines the channel and 0=released, 1=pressed
                                     #    00100000 -> CH6 pressed, the rest is released
-                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} =~ /ChannelBitStatus:(\d)/ ) {
+                                    if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} =~ /ChannelBitStatus:(\d)/ ) {
                                        my $Max = $1 ; # The number of bits=channels
                                        my @bin = split //, $bin ;
                                        foreach my $bit (1..$Max) {
@@ -445,7 +452,7 @@ sub process_message {
                                     # This is a special case were we have multiple channels in 1 byte.
                                     # When a bit is 1, the location determines the channel. so 00001001 -> channel 4 and 1
                                     # This is used for Type=ThermostatChannel
-                                    if ( $Process{Data}{PerByte}{$byte}{Match}{$key}{Convert} eq "ChannelBit" ) {
+                                    if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "ChannelBit" ) {
                                        my @bin = split //, $bin ;
                                        foreach my $bit (0..7) {
                                           if ( $bin[$bit] eq "1" ) {
@@ -467,13 +474,13 @@ sub process_message {
                                  # TODO: is there a message that we don't have a Channel??
                                  } elsif ( defined $Channel ) {
                                     # TODO What if we don't have a Value?
-                                    if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{Value} ) {
-                                       $Value = $Process{Data}{PerByte}{$byte}{Match}{$key}{Value} ;
+                                    if ( defined $Process{Data}{$PerByte}{$byte}{Match}{$key}{Value} ) {
+                                       $Value = $Process{Data}{$PerByte}{$byte}{Match}{$key}{Value} ;
                                        push @{$ChannelInfo{$message{address}}{$Channel}{$Name}{ValueList}}, $Value ;
 
                                        # Do we have to update the state in openHAB
-                                       if ( defined $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ) {
-                                          $ChannelInfo{$message{address}}{$Channel}{$Name}{openHAB} = $Process{Data}{PerByte}{$byte}{Match}{$key}{openHAB} ;
+                                       if ( defined $Process{Data}{$PerByte}{$byte}{Match}{$key}{openHAB} ) {
+                                          $ChannelInfo{$message{address}}{$Channel}{$Name}{openHAB} = $Process{Data}{$PerByte}{$byte}{Match}{$key}{openHAB} ;
                                        }
 
                                        &log("logger_match","address=$message{address}: key=$key, Match=$Match, Value=$Value, Channel=$Channel, Name=$Name") ;
