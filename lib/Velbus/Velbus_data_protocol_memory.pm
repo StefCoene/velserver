@@ -29,8 +29,6 @@ $global{Cons}{ModuleTypes}{'12'}{MemoryMatch}{1}{Version} = "1" ;
 $global{Cons}{ModuleTypes}{'12'}{Memory}{'1'}{ModuleName} = "00E0-00EF;01E0-01EF" ;
 
 # VMBDMI
-$global{Cons}{ModuleTypes}{'15'}{MemoryMatch}{1}{Build}   = "< 1410" ;
-$global{Cons}{ModuleTypes}{'15'}{MemoryMatch}{1}{Version} = "0" ;
 $global{Cons}{ModuleTypes}{'15'}{MemoryMatch}{2}{Build}   = ">= 1410" ;
 $global{Cons}{ModuleTypes}{'15'}{MemoryMatch}{2}{Version} = "1" ;
 $global{Cons}{ModuleTypes}{'15'}{Memory}{1}{ModuleName} = "00B0-00EF" ;

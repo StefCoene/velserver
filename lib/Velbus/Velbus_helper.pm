@@ -429,7 +429,7 @@ sub module_find_MemoryKey () {
 
    my $Build = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildYear} . $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{BuildWeek} ;
 
-   my $MemoryKey ;
+   my $MemoryKey = 0 ;
    if ( defined $global{Cons}{ModuleTypes}{$type} and
         defined $global{Cons}{ModuleTypes}{$type}{MemoryMatch} ) {
       foreach my $key (sort {$a <=> $b} (keys %{$global{Cons}{ModuleTypes}{$type}{MemoryMatch}} ) ) {
@@ -442,7 +442,7 @@ sub module_find_MemoryKey () {
          }
       }
    }
-   return undef ;
+   return $MemoryKey ;
 }
 
 return 1
