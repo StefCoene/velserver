@@ -286,6 +286,8 @@ $global{Cons}{ModuleTypes}{'37'}{Messages}{'00'}{General} = "ButtonPress OpenCol
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "33" ; # Temperature sensor is CH33 in velbusLink
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "33" ; # Temperature sensor is CH33 in velbusLink
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
+   $global{Cons}{ModuleTypes}{'37'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "MemoText" ;
+   $global{Cons}{ModuleTypes}{'37'}{Messages}{'AC'}{Data}{PerMessage}{Channel} = "99" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'FB'}{Data} = "yes" ; # This is tricky. This message is not available for the module but have to define it so the open collector (Type=Relay) will be enabled (FB = status message for Relay).
 

@@ -29,9 +29,19 @@ $Data::Dumper::Indent = 1 ;   # Output in a reasonable style (but no array index
 
 # Convert the pdf's to text
 foreach my $pdf (sort `ls protocol*.pdf`) {
-  chomp $pdf ;
-  #print "Zet om naar text: $pdf\n" ;
-  `pdftotext -layout $pdf` ;
+   chomp $pdf ;
+
+   # skip pdf's that are not protocol files
+   next if $pdf eq "protocol_vmb1rs.pdf" ;
+   next if $pdf eq "protocol_vmb1usb.pdf" ;
+   next if $pdf eq "protocol_vmb4pd_ir.pdf" ;
+   next if $pdf eq "protocol_vmb4pd_ir_hexcodes.pdf" ;
+   next if $pdf eq "protocol_vmbgpod_ir.pdf" ;
+   next if $pdf eq "protocol_vmbgpod_ir_hexcodes.pdf" ;
+   next if $pdf eq "protocol_vmbrsusb.pdf" ;
+
+   # print "Convert to txt: $pdf\n" ;
+   `pdftotext -layout $pdf` ;
 }
 
 my %file ; # Contains all raw info read from the files
