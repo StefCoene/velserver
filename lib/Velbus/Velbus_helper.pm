@@ -274,7 +274,7 @@ sub hex_to_bin {
 
 sub hex_to_dec {
    my $hex = $_[0] ;
-   return sprintf ("%02d", hex $hex) ;
+   return hex ($hex) ;
 }
 
 sub bin_to_hex {
