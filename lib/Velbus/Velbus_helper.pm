@@ -54,7 +54,7 @@ sub message_hex_to_dec {
    my @data = @_ ;
    my @return ;
    for (my $k=0; $k<@data; $k++) {
-      $return[$k] = hex ($data[$k]) ;
+      $return[$k] = &hex_to_dec ($data[$k]) ;
    }
    return @return ;
 }
@@ -67,13 +67,13 @@ sub make_message {
    # Loop over the message and convert hex numbers to decimal if required
    for ($index=0; $index<=$#message; $index++) {
       if ( $message[$index] =~ /0x/ ) {
-         $message[$index] = hex $message[$index] ;
+         $message[$index] = &hex_to_dec ($message[$index]) ;
       }
    }
 
    # Build new message in @message_new
    my @message_new = () ;
-   $message_new[0] = hex "0x0F" ;
+   $message_new[0] = &hex_to_dec ("0x0F") ;
    $message_new[1] = $message[0] ;
    $message_new[2] = $message[1] ;
    $message_new[3] = ($message[2] & 240) | (($message_length-3) & 15) ;
@@ -85,7 +85,7 @@ sub make_message {
    # Calculating checksum and finalizing new message
    my $checksum = &calc_checksum_send(@message_new) ;
    $message_new[$message_length+1] = $checksum ;
-   $message_new[$message_length+2] = hex "0x04" ;
+   $message_new[$message_length+2] = &hex_to_dec ("0x04") ;
 
    # Convert to character
    for ($index=0; $index<=$#message_new; $index++) {
@@ -274,7 +274,7 @@ sub hex_to_bin {
 
 sub hex_to_dec {
    my $hex = $_[0] ;
-   return hex ($hex) ;
+   return sprintf ("%02d", hex $hex) ;
 }
 
 sub bin_to_hex {
