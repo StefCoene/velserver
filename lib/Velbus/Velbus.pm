@@ -323,6 +323,9 @@ sub process_message {
                      }
 
                      my $Channel = "00" ; # Default value
+                     if ( defined $Process{Data}{Channel} ) {
+                        $Channel = $Process{Data}{Channel} ;
+                     }
 
                      # Search for a name
                      my $Name ;
