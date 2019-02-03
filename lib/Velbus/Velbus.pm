@@ -345,23 +345,32 @@ sub process_message {
 
                            # Loop the possbile values for the byte
                            foreach my $key (sort keys(%{$Process{Data}{$PerByte}{$byte}{Match}})) {
-                              my $Match ; # We set this variable if we have a match
+                              my $BinValue = $bin ; # By default we start with the value in binary
+                              my $MatchTxt ; # We set this variable if we have a match
 
                               # Regular exression is always binary based match
                               if ( $key =~ /^%(.+)$/ ) {
                                  my $regex = $1 ;
-                                 if ( $bin =~ /$regex/ ) {
-                                    $Match = "regex_bin: $bin =~ $regex" ;
+                                 # If we have a sub-match in the regex
+                                 if ( $regex =~ /\(/ ) {
+                                    if ( $bin =~ /$regex/ ) {
+                                       $BinValue = $1 ; # Save the match!
+                                       $MatchTxt = "regex_bin: $bin =~ $regex, BinValue=$BinValue" ;
+                                    }
+                                 } else {
+                                    if ( $bin =~ /$regex/ ) {
+                                       $MatchTxt = "regex_bin: $bin =~ $regex" ;
+                                    }
                                  }
 
                               # The rest is a hex match or a bin match
                               } elsif ( $key eq $hex[$byte] or
                                         $key eq $bin ) {
-                                 $Match = "eq: $key eq $hex[$byte]|$bin" ;
+                                 $MatchTxt = "eq: $key eq $hex[$byte]|$bin" ;
                               }
 
                               # If we have match, process the information
-                              if ( $Match ) {
+                              if ( $MatchTxt ) {
                                  my $Value ; # To store the value of the message. This can be data found in the message or stored in {Value}
 
                                  if ( defined  $Process{Data}{$PerByte}{$byte}{Match}{$key}{Value} ) {
@@ -486,12 +495,12 @@ sub process_message {
                                           $ChannelInfo{$message{address}}{$Channel}{$Name}{openHAB} = $Process{Data}{$PerByte}{$byte}{Match}{$key}{openHAB} ;
                                        }
 
-                                       &log("logger_match","address=$message{address}: key=$key, Match=$Match, Value=$Value, Channel=$Channel, Name=$Name") ;
+                                       &log("logger_match","address=$message{address}: key=$key, MatchTxt=$MatchTxt, Value=$Value, Channel=$Channel, Name=$Name") ;
                                     } else {
-                                       &log("logger_match","address=$message{address}: key=$key, Match=$Match, NO VALUE, Channel=$Channel, Name=$Name") ;
+                                       &log("logger_match","address=$message{address}: key=$key, MatchTxt=$MatchTxt, NO VALUE, Channel=$Channel, Name=$Name") ;
                                     }
                                  } else {
-                                    &log("logger_match","address=$message{address}: key=$key, Match=$Match, Value=$Value, NO CHANNEL, Name=$Name") ;
+                                    &log("logger_match","address=$message{address}: key=$key, MatchTxt=$MatchTxt, Value=$Value, NO CHANNEL, Name=$Name") ;
                                  }
                               }
                            }
