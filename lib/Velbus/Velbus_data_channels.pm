@@ -172,7 +172,7 @@ foreach my $ChannelType (sort keys %{$global{Cons}{ChannelTypes}}) {
       if ( defined $global{Cons}{ChannelTypes}{$ChannelType}{Set} ) {
          foreach my $Match (sort keys %{$global{Cons}{ChannelTypes}{$ChannelType}{Set}{Match}} ) {
             my $Message = $global{Cons}{ChannelTypes}{$ChannelType}{Set}{Match}{$Match}{Message} ;
-            if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message} ) {
+            if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Messages}{$Message} or $Message eq "" ) {
                $global{Cons}{ChannelTypes}{$ChannelType}{Module}{$ModuleType}{Action}{Set} = "yes" ;
             } else {
                # print "NO SET: ChannelType=$ChannelType, ModuleType=$ModuleType, Match=$Match, Message=$Message\n" ;
