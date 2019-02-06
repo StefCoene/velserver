@@ -1207,6 +1207,106 @@ sub dim_value {
    &send_message ($sock, $address, "07", $channel, $value, "00", "00" ) ;
 }
 
+# Define a custom color for a palette.
+# To be used with edge-lit touch panels.
+# 1: socket
+# 2: address
+# 3: palette: 0 - 31
+# 4: brightness
+# 5: red
+# 6: green
+# 7: blue
+sub edge_color {
+   my$sock       = $_[0] ;
+   my $address    = $_[1] ;
+   my $palette    = $_[2] ;
+   my $brightness = $_[3] ;
+   my $red        = $_[4] ;
+   my $green      = $_[5] ;
+   my $blue       = $_[6] ;
+
+   $palette = &dec_to_hex ($palette) ;
+   $brightness = &hex_to_bin (&dec_to_hex ($brightness)) ;
+   $brightness =~ s/^./0/g ; # set the first bit to 0 to specify that we want a RGB-color
+   $brightness = &bin_to_hex ($brightness) ;
+
+   &send_message ($sock, $address, "D4", undef, $palette, $brightness, $red, $green, $blue) ;
+
+   return "$palette, $brightness, $red, $green, $blue" ;
+}
+
+# Set a color on 1 of more edges of an edge-lit touch panel.
+# 1: socket
+# 2: address
+# 3: palette: 0 - 31
+# 4: state: 0 | 1 | 2
+# 5: edge: LIRB
+sub edge_lit {
+   my $sock    = $_[0] ;
+   my $address = $_[1] ;
+   my $palette = $_[2] ;
+   my $state   = $_[3] ;
+   my $edge    = $_[4] ;
+
+   # background/feedback color
+   # xxxxxxx0       do not apply to background color
+   # xxxxxxx1       apply to background color
+   # xxxxxx0x       do not apply to continuous feedback color
+   # xxxxxx1x       apply to continuous feedback color
+   # xxxxx0xx       do not apply to slow blinking feedback color
+   # xxxxx1xx       apply to slow blinking feedback color
+   # xxxx0xxx       do not apply to fast blinking feedback color
+   # xxxx1xxx       apply to fast blinking feedback color
+   # 0xxxxxxx       Default color palette
+   # 1xxxxxxx       Custom color palette
+   my $hex2 = &bin_to_hex("11111111") ;
+
+   # Page/edge
+   # xxxxxxx0             do not apply to left edge
+   # xxxxxxx1             apply to left edge
+   # xxxxxx0x             do not apply to top edge
+   # xxxxxx1x             apply to top edge
+   # xxxxx0xx             do not apply to right edge
+   # xxxxx1xx             apply to right edge
+   # xxxx0xxx             do not apply to bottom edge
+   # xxxx1xxx             apply to bottom edge
+   # 1111xxxx             Apply to all button pages (only for feedback light)
+   my @hex3bits  = ("1","1","1","1","0","0","0","0") ;
+   $hex3bits[7] = "1" if $edge =~ /L/ ;
+   $hex3bits[6] = "1" if $edge =~ /T/ ;
+   $hex3bits[5] = "1" if $edge =~ /R/ ;
+   $hex3bits[4] = "1" if $edge =~ /B/ ;
+   my $hex3 = &bin_to_hex (join "", @hex3bits) ;
+
+   # blink/priority/color palette index 
+   # 0xxxxxxx         Background not blinking/Feedback not blinking
+   # 1xxxxxxx         Background blinking/Feedback blinking
+   # x00xxxxx         Default color palette & feedback blinking mode
+   # x01xxxxx         Custom color with lowest priority
+   # x10xxxxx         Custom color with mid priority
+   # x11xxxxx         Custom color with highest priority
+   my @hex4bits = ("0","0","0") ; # These are the first 3 bits: not blinking + default color palette
+   if ( $state eq "2" ) { # ON
+      $hex4bits[1] = "1" ; # Priority
+      $hex4bits[2] = "1" ; # Priority
+   } elsif ( $state eq "1" ) { # Blink
+      $hex4bits[0] = "1" ; # Background blinking/Feedback blinking
+      $hex4bits[1] = "1" ; # Priority
+      $hex4bits[2] = "1" ; # Priority
+   } else { # $state eq "0"
+   }
+   my $hex4bits = join "", @hex4bits ;
+
+   $palette = &hex_to_bin(&dec_to_hex ($palette)) ;
+   $palette =~ s/^...//g ; # We only need the last 5 bits
+
+   $hex4bits .= $palette ; # Add the palette to our bit string
+   my $hex4 = &bin_to_hex ($hex4bits) ; # Convert to hex
+
+   &send_message ($sock, $address, "D4", undef, $hex2, $hex3, $hex4) ;
+   return "$hex2, $hex3, $hex4" ;
+}
+
 # Switch off a relay
 # 1: socket
 # 2: address

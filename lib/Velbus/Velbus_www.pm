@@ -291,6 +291,17 @@ sub www_service () {
                         undef $json{Action} ;
                         $json{Error} = "VALUE_NOT_IN_RANGE_2" ;
                      }
+                  } elsif ( $json{ReqChannelType} eq "ELBrightness" ) {
+                     if ( $json{ReqValue} eq "ON" ) {
+                        $json{ReqValue} = "127" ;
+                     } elsif ( $json{ReqValue} eq "OFF" ) {
+                        $json{ReqValue} = "0" ;
+                     } elsif ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) { # ! After ON and OFF check
+                        $json{ReqValue} = int ($json{ReqValue} * 1.27 )
+                     } else {
+                        undef $json{Action} ;
+                        $json{Error} = "VALUE_NOT_IN_RANGE_2" ;
+                     }
                   }
                } else {
                   $json{Error} = "VALUE_NOT_IN_RANGE_3" ;
@@ -365,6 +376,175 @@ sub www_service () {
                   } elsif ( $json{ReqChannelType} eq "ThermostatTarget" ) {
                      &set_temperature ($sock, $json{ReqAddress}, $json{ReqValue}) ;
                      $json{Status} = $json{ReqValue} ;
+   
+                  # Edge-lit actions
+                  } elsif ( $json{ReqChannelType} =~ /^EL/ ) {
+                     my %Edge ; # To store the Edge data
+
+                     if ( $json{ReqChannelType} eq "ELEdge" ) {
+                        if ( $json{ReqValue} =~ /(.+)_(.+)_(.+)/ ) {
+                           $Edge{Edge}    = $1 ;
+                           $Edge{Palette} = $2 ;
+                           $Edge{Action}  = $3 ;
+                           if ( $Edge{Edge} =~ /T/ ) {
+                              $Edge{Top} = "1" ;
+                           } else {
+                              $Edge{Top} = "0" ;
+                           }
+                           if ( $Edge{Edge} =~ /R/ ) {
+                              $Edge{Right} = "1" ;
+                           } else {
+                              $Edge{Right} = "0" ;
+                           }
+                           if ( $Edge{Edge} =~ /B/ ) {
+                              $Edge{Bottom} = "1" ;
+                           } else {
+                              $Edge{Bottom} = "0" ;
+                           }
+                           if ( $Edge{Edge} =~ /L/ ) {
+                              $Edge{Left} = "1" ;
+                           } else {
+                              $Edge{Left} = "0" ;
+                           }
+                           if ( $Edge{Palette} >= 0 and $Edge{Palette} <= 32 ) {
+                           } else {
+                              undef $Edge{Palette} ;
+                           }
+                           if ( $Edge{Action} eq "0" or $Edge{Action} eq "1" or $Edge{Action} eq "2" ) {
+                           } else {
+                              undef $Edge{Action} ;
+                           }
+                        }
+                     }
+                     if ( $json{ReqChannelType} eq "ELEdgeTop" ) {
+                        if ( $json{ReqValue} =~ /ON/ ) {
+                           $Edge{Top} = "1" ;
+                        } else {
+                           $Edge{Top} = "0" ;
+                        }
+                     } 
+                     if ( $json{ReqChannelType} eq "ELEdgeRight" ) {
+                        if ( $json{ReqValue} =~ /ON/ ) {
+                           $Edge{Right} = "1" ;
+                        } else {
+                           $Edge{Right} = "0" ;
+                        }
+                     } 
+                     if ( $json{ReqChannelType} eq "ELEdgeBottom" ) {
+                        if ( $json{ReqValue} =~ /ON/ ) {
+                           $Edge{Bottom} = "1" ;
+                        } else {
+                           $Edge{Bottom} = "0" ;
+                        }
+                     } 
+                     if ( $json{ReqChannelType} eq "ELEdgeLeft" ) {
+                        if ( $json{ReqValue} =~ /ON/ ) {
+                           $Edge{Left} = "1" ;
+                        } else {
+                           $Edge{Left} = "0" ;
+                        }
+                     } 
+                     if ( $json{ReqChannelType} eq "ELPalette" ) {
+                        if ( $json{ReqValue} >= 0 and $json{ReqValue} <= 32 ) {
+                           $Edge{Palette} = $json{ReqValue} ;
+                        } else {
+                        }
+                     } 
+                     if ( $json{ReqChannelType} eq "ELAction" ) {
+                        $Edge{Action} = "ELAction" ;
+                     }
+                     if ( $json{ReqChannelType} eq "ELColor" ) {
+                        if ( $json{ReqValue} =~ /(\d+),(\d+),(\d+)/ ) {
+                           ($Edge{Red}, $Edge{Green}, $Edge{Blue}) = &hsv2rgb ($1,$2,$3) ;
+                           $json{Color} = $Edge{Red} . $Edge{Green} . $Edge{Blue} ;
+                           $Edge{Action} = "ELColor" ;
+                           &update_modules_info ($json{ReqAddress}, "ELRed", $Edge{Red}) ;
+                           &update_modules_info ($json{ReqAddress}, "ELGreen", $Edge{Green}) ;
+                           &update_modules_info ($json{ReqAddress}, "ELBlue", $Edge{Blue}) ;
+                        }
+                     }
+                     if ( $json{ReqChannelType} eq "ELBrightness" ) {
+                        $Edge{Brightness} = $json{ReqValue} ;
+                     }
+
+                     my $data = Dumper \%Edge ;
+                     $json{Debug_Edge} = "<pre>" . $data . "</pre>" ;
+
+                     if ( defined $Edge{Top} ) {
+                        &update_modules_info ($json{ReqAddress}, "ELEdgeTop", $Edge{Top}) ;
+                        $json{Status} = $Edge{Top} ;
+                     }
+                     if ( defined $Edge{Right} ) {
+                        &update_modules_info ($json{ReqAddress}, "ELEdgeRight", $Edge{Right}) ;
+                        $json{Status} = $Edge{Right} ;
+                     }
+                     if ( defined $Edge{Bottom} ) {
+                        &update_modules_info ($json{ReqAddress}, "ELEdgeBottom", $Edge{Bottom}) ;
+                        $json{Status} = $Edge{Bottom} ;
+                     }
+                     if ( defined $Edge{Left} ) {
+                        &update_modules_info ($json{ReqAddress}, "ELEdgeLeft", $Edge{Left}) ;
+                        $json{Status} = $Edge{Left} ;
+                     }
+                     if ( defined $Edge{Palette} ) {
+                        &update_modules_info ($json{ReqAddress}, "ELPalette", $Edge{Palette}) ;
+                        $json{Status} = $Edge{Palette} ;
+                     }
+                     if ( defined $Edge{Brightness} ) {
+                        &update_modules_info ($json{ReqAddress}, "ELBrightness", $Edge{Brightness}) ;
+                        $json{Status} = $Edge{Brightness} ;
+                     }
+
+                     if ( defined $Edge{Action} ) {
+                        my %ELEdge = &fetch_data ($global{dbh},"select `data`,`value` from modules_info where `address`=? and `data` LIKE 'EL%'","data",$json{ReqAddress}) ;
+
+                        if ( defined $ELEdge{ELPalette} ) {
+                           $json{EdgePalette} = $ELEdge{ELPalette}{value} ;
+                        } else {
+                           $json{EdgePalette} = 0 ;
+                        }
+
+                        if ( defined $ELEdge{ELBrightness} ) {
+                           $json{EdgeBrightness} = $ELEdge{ELBrightness}{value} ;
+                        } else {
+                           $json{EdgeBrightness} = "127" ;
+                        }
+
+                        if ( $Edge{Action} eq "ELAction" ) {
+                           if ( $json{ReqValue} eq "1" ) {
+                              $json{ELState} = 1 ; # Blink
+                           } elsif ( $json{ReqValue} eq "2" ) {
+                              $json{ELState} = 2 ; # ON
+                           } else {
+                              $json{ELState} = 0 ; # OFF
+                           }
+                        } elsif ( defined $ELEdge{ELState} ) {
+                           $json{ELState} = $ELEdge{ELState} ;
+                        } else {
+                           $json{ELState} = 2 ; # ON
+                        }
+
+                        if ( defined $ELEdge{ELEdgeTop} and $ELEdge{ELEdgeTop}{value} eq "1" ) {
+                           $json{ELEdge} .= "T" ;
+                        }
+                        if ( defined $ELEdge{ELEdgeRight} and $ELEdge{ELEdgeRight}{value} eq "1" ) {
+                           $json{ELEdge} .= "R" ;
+                        }
+                        if ( defined $ELEdge{ELEdgeBottom} and $ELEdge{ELEdgeBottom}{value} eq "1" ) {
+                           $json{ELEdge} .= "B" ;
+                        }
+                        if ( defined $ELEdge{ELEdgeLeft} and $ELEdge{ELEdgeLeft}{value} eq "1" ) {
+                           $json{ELEdge} .= "L" ;
+                        }
+
+                        my $data = Dumper \%ELEdge ;
+                        $json{Debug_mysql} = "<pre>" . $data . "</pre>" ;
+                        $json{Debug_edge} = $json{EdgePalette} . " :: " . $json{ELState} . " :: " . $json{ELEdge} ;
+                        if ( $Edge{Action} eq "ELColor" ) {
+                           $json{StatusColor} = &edge_color($sock, $json{ReqAddress}, $json{EdgePalette}, $json{EdgeBrightness}, $Edge{Red}, $Edge{Green}, $Edge{Blue});
+                        }
+                        $json{Status} = &edge_lit($sock, $json{ReqAddress}, $json{EdgePalette}, $json{ELState}, $json{ELEdge}) ;
+                     }
    
                   } else {
                      $json{TODO} = "ChannelType=$json{ReqChannelType}" ;
@@ -1150,4 +1330,5 @@ sub link_ModuleType () {
       return "<a href=?".&www_make_url("appl=print_velbus_protocol","ModuleType=$ModuleType").">$global{Cons}{ModuleTypes}{$ModuleType}{Type} ($ModuleType)</a>: $global{Cons}{ModuleTypes}{$ModuleType}{Info}" ;
    }
 }
+
 return 1 ;

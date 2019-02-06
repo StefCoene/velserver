@@ -109,6 +109,10 @@ sub openHAB_loop () {
 
                my $ChannelTypeComment ;
 
+               if ( $ChannelType eq "EdgeLit" ) {
+                  $ChannelType = "ELEdge ELEdgeTop ELEdgeRight ELEdgeBottom ELEdgeLeft ELPalette ELAction ELColor ELBrightness" ;
+               }
+
                # For ThermostatChannel, get the address assigned to the temperature. If this address is FF, the thermostat is not used and we have to skip this channel
                if ( $ChannelType eq "ThermostatChannel" ) {
                   if ( defined $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ThermostatAddr} and
@@ -203,7 +207,9 @@ sub openHAB_loop_item () {
                 $Name = $ModuleName . " :: " ;
             }
 
-            if ( $ChannelType eq "ThermostatChannel" ) {
+            if ( $ChannelType =~ /^EL/ ) {
+               $Name .= $global{Vars}{Modules}{Address}{$Address}{ModuleInfo}{ModuleName} ;
+            } elsif ( $ChannelType eq "ThermostatChannel" ) {
                my $TemperatureChannel = $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel} ; # Channel is fixed per ModuleType for Temperature sensor
                $Name .= $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$TemperatureChannel}{Name}{value} . " :: " . $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Name} ; # Add Name of Temperature sensor
             # Add channel name if one is available
@@ -290,7 +296,11 @@ sub openHAB_loop_item () {
                # TODO: more testing needed
                # In openhab items are automatically updated by commands. This is currently not the task of the bindings. But when a binding is unable to execute the command the item is set anyway and displays an incorrect status.
                # Only by adding autoupdate="false" to the item configuration this behaviour can be disabled per item. In this case you have to update the item manually by rule because the bindings do not do this.
-               $openHAB .= "{http=\"" . $http. "\", autoupdate=\"false\"}" ;
+               if ( defined $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{SkipAutoUpdate} ) {
+                  $openHAB .= "{http=\"" . $http. "\"}" ;
+               } else {
+                  $openHAB .= "{http=\"" . $http. "\", autoupdate=\"false\"}" ;
+               }
             }
             $openHAB .= "\n" ;
          }

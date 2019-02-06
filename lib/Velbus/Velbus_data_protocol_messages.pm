@@ -262,21 +262,27 @@ $global{Cons}{ModuleTypes}{'34'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
+   $global{Cons}{ModuleTypes}{'34'}{Messages}{'D4'}{General} = "EdgeLit" ;
    $global{Cons}{ModuleTypes}{'34'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
+   $global{Cons}{ModuleTypes}{'34'}{Messages}{'FB'}{Data} = "yes" ; # This is tricky. This message is not available for the module but have to define it so the open collector (Type=Relay) will be enabled (FB = status message for Relay).
 
 # VMBEL2 (35): Edge-lit one, two or four touch buttons module
 $global{Cons}{ModuleTypes}{'35'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
+   $global{Cons}{ModuleTypes}{'35'}{Messages}{'D4'}{General} = "EdgeLit" ;
    $global{Cons}{ModuleTypes}{'35'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
+   $global{Cons}{ModuleTypes}{'35'}{Messages}{'FB'}{Data} = "yes" ; # This is tricky. This message is not available for the module but have to define it so the open collector (Type=Relay) will be enabled (FB = status message for Relay).
 
 # VMBEL4 (36): Edge-lit one, two or four touch buttons module
 $global{Cons}{ModuleTypes}{'36'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'EA'}{Data}{PerByte}{'0'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'EA'}{Data}{PerByte}{'4'}{Match}{'%.'}{Channel} = "10" ; # Temperature sensor is CH9
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
+   $global{Cons}{ModuleTypes}{'36'}{Messages}{'D4'}{General} = "EdgeLit" ;
    $global{Cons}{ModuleTypes}{'36'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
+   $global{Cons}{ModuleTypes}{'36'}{Messages}{'FB'}{Data} = "yes" ; # This is tricky. This message is not available for the module but have to define it so the open collector (Type=Relay) will be enabled (FB = status message for Relay).
 
 # VMBELO (37): Edge-lit touch panel with Oled display
 $global{Cons}{ModuleTypes}{'37'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -285,7 +291,9 @@ $global{Cons}{ModuleTypes}{'37'}{Messages}{'00'}{General} = "ButtonPress" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'EA'}{General} = "Thermostat ThermostatChannelTouch" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "MemoText" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'AC'}{Data}{PerMessage}{Channel} = "99" ;
+   $global{Cons}{ModuleTypes}{'37'}{Messages}{'D4'}{General} = "EdgeLit" ;
    $global{Cons}{ModuleTypes}{'37'}{Messages}{'ED'}{General} = "ButtonChannelStatus" ;
+   $global{Cons}{ModuleTypes}{'37'}{Messages}{'FB'}{Data} = "yes" ; # This is tricky. This message is not available for the module but have to define it so the open collector (Type=Relay) will be enabled (FB = status message for Relay).
 
 # VMBGP1-2 (3A): One, two or four touch buttons module (ed2)e
 $global{Cons}{ModuleTypes}{'3A'}{Messages}{'00'}{General} = "ButtonPress" ;
@@ -446,6 +454,66 @@ $global{Cons}{ModuleGeneral}{Messages}{LightSensorChannelStatus7}{Data}{PerByte}
 $global{Cons}{ModuleGeneral}{Messages}{LightSensorChannelStatus8}{Data}{PerMessage}{Convert} = "LightSensor" ;
 $global{Cons}{ModuleGeneral}{Messages}{LightSensorChannelStatus8}{Data}{PerByte}{'0'}{Name} = "Sensor" ;
 $global{Cons}{ModuleGeneral}{Messages}{LightSensorChannelStatus8}{Data}{PerByte}{'0'}{Match}{'%.'}{Convert} = "ChannelBitStatus:8" ;
+
+# 5 byte version
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{Channel} = "97" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'0'}{Name} = "Palette" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'0'}{Match}{'........'}{Convert} = "Decimal" ;
+
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'1'}{Match}{'%0.......'}{Name} = "Color" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'1'}{Match}{'%0.......'}{Value} = "RGB-color" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'1'}{Match}{'%1.......'}{Name} = "Color" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'1'}{Match}{'%1.......'}{Value} = "White" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'1'}{Match}{'%.(.......)'}{Name} = "Saturation" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'1'}{Match}{'%.(.......)'}{Convert} = "Decimal" ;
+
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'2'}{Name} = "Red" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'2'}{Match}{'%.'}{Convert} = "Decimal" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'3'}{Name} = "Green" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'3'}{Match}{'%.'}{Convert} = "Decimal" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'4'}{Name} = "Blue" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:5'}{'4'}{Match}{'%.'}{Convert} = "Decimal" ;
+
+# 3 byte version
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Name} = "Background" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Match}{'%.......0'}{Value} = "do not apply to background" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Match}{'%.......1'}{Value} = "apply to background" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Match}{'%......0.'}{Value} = "do not apply to continuous feedback" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Match}{'%......1.'}{Value} = "apply to continuous feedback" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Match}{'%.....0..'}{Value} = "do not apply to slow blinking feedback" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Match}{'%.....1..'}{Value} = "apply to slow blinking feedback" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Match}{'%....0...'}{Value} = "do not apply to fast blinking feedback" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Match}{'%....1...'}{Value} = "apply to fast blinking feedback" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Match}{'%0.......'}{Value} = "Default palette" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'0'}{Match}{'%1.......'}{Value} = "Custom palette" ;
+
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%.......0'}{Value} = "do not apply to left edge" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%.......1'}{Value} = "left" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%......0.'}{Value} = "do not apply to top edge" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%......1.'}{Value} = "top" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%.....0..'}{Value} = "do not apply to right edge" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%.....1..'}{Value} = "right" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%....0...'}{Value} = "do not apply to bottom edge" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%....1...'}{Value} = "bottom" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%0000xxxx'}{Value} = "apply to button page 1 (only for feedback light)" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%0001xxxx'}{Value} = "apply to button page 2 (only for feedback light)" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%0010xxxx'}{Value} = "apply to button page 3 (only for feedback light)" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%0011xxxx'}{Value} = "apply to button page 4 (only for feedback light)" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%0100xxxx'}{Value} = "apply to button page 5 (only for feedback light)" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%0101xxxx'}{Value} = "apply to button page 6 (only for feedback light)" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%0110xxxx'}{Value} = "apply to button page 7 (only for feedback light)" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%0111xxxx'}{Value} = "apply to button page 8 (only for feedback light)" ;
+#$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'1'}{Match}{'%1.......'}{Value} = "Apply to all button pages" ;
+
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'2'}{Match}{'%0.......'}{Value} = "not blinking" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'2'}{Match}{'%1.......'}{Value} = "blinking" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'2'}{Match}{'%.00.....'}{Value} = "Default palette" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'2'}{Match}{'%.01.....'}{Value} = "Custom color with lowest priority" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'2'}{Match}{'%.10.....'}{Value} = "Custom color with mid priority" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'2'}{Match}{'%.11.....'}{Value} = "Custom color with highest priority" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'2'}{Match}{'%...(.....)'}{Name} = "Palette" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'2'}{Match}{'%...(.....)'}{Value} = "Palette" ;
+$global{Cons}{ModuleGeneral}{Messages}{EdgeLit}{Data}{'PerByte:3'}{'2'}{Match}{'%...(.....)'}{Convert} = "Decimal" ;
 
 # Merge the {General} information
 foreach my $ModuleType (sort keys %{$global{Cons}{ModuleTypes}}) {

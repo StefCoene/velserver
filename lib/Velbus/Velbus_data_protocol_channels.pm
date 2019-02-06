@@ -116,16 +116,16 @@ $global{Cons}{ModuleTypes}{'2D'}{General} = "Touch4 Touch124Temperature TouchPIR
 $global{Cons}{ModuleTypes}{'28'}{General} = "TouchO TouchOTemperature" ;
 
 # VMBEL1 (34): Edge-lit one, two or four touch buttons module
-$global{Cons}{ModuleTypes}{'34'}{General} = "Touch1 Touch124Temperature" ;
+$global{Cons}{ModuleTypes}{'34'}{General} = "Touch1 TouchBEL124Temperature" ;
 
 # VMBEL1 (35): Edge-lit one, two or four touch buttons module
-$global{Cons}{ModuleTypes}{'35'}{General} = "Touch2 Touch124Temperature" ;
+$global{Cons}{ModuleTypes}{'35'}{General} = "Touch2 TouchBEL124Temperature" ;
 
 # VMBEL1 (36): Edge-lit one, two or four touch buttons module
-$global{Cons}{ModuleTypes}{'36'}{General} = "Touch4 Touch124Temperature" ;
+$global{Cons}{ModuleTypes}{'36'}{General} = "Touch4 TouchBEL124Temperature" ;
 
 # MBELO (37): Edge-lit touch panel with Oled display)
-$global{Cons}{ModuleTypes}{'37'}{General} = "TouchO TouchOTemperature" ;
+$global{Cons}{ModuleTypes}{'37'}{General} = "TouchO TouchBELOTemperature" ;
 
 # VMBGP1-2 (3A): One, two or four touch buttons module (ed2)
 $global{Cons}{ModuleTypes}{'3A'}{General} = "Touch1 Touch124Temperature" ;
@@ -477,6 +477,28 @@ $global{Cons}{ModuleGeneral}{Touch124Temperature}{ChannelNumbers}{Name}{Map}{'09
    $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"18"}{Name} = "Alarm 4" ;
    $global{Cons}{ModuleGeneral}{Touch124Temperature}{Channels}{"18"}{Type} = "ThermostatChannel" ;
 
+# Edge-lit touch with 1/2/4 buttons: temperature and thermostat channels
+$global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"09"}{Name} = "Temperature" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"09"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"10"}{Name} = "Heater" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"10"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"11"}{Name} = "Boost" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"11"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"12"}{Name} = "Pump" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"12"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"13"}{Name} = "Cooler" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"13"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"14"}{Name} = "Alarm 1" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"14"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"15"}{Name} = "Alarm 2" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"15"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"16"}{Name} = "Alarm 3" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"16"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"17"}{Name} = "Alarm 4" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"17"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"18"}{Name} = "Output" ;
+   $global{Cons}{ModuleGeneral}{TouchBEL124Temperature}{Channels}{"18"}{Type} = "Relay" ;
+
 # Touch with PIR sensor: sensor channels
 $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"05"}{Name} = "Dark/Light output" ;
    $global{Cons}{ModuleGeneral}{TouchPIR}{Channels}{"05"}{Type} = "Sensor" ;
@@ -557,8 +579,10 @@ $global{Cons}{ModuleGeneral}{TouchO}{ChannelNumbers}{Name}{Convert} = "hex" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"31"}{Type} = "Button" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"32"}{Name} = "Push button 32" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"32"}{Type} = "Button" ;
-   $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"99"}{Name} = "Memo Text" ;
-   $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"99"}{Type} = "Memo" ;
+   $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"98"}{Name} = "Memo Text" ;
+   $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"98"}{Type} = "Memo" ;
+   $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"97"}{Name} = "Edge Lit" ;
+   $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"97"}{Type} = "EdgeLit" ;
 
 # Touch with OLED: temperature and thermostat channels
 $global{Cons}{ModuleGeneral}{TouchOTemperature}{ChannelNumbers}{Name}{Map}{'21'} = "34" ; # Temperature channel name is reported on CH33 (33 dec = 21 hex)
@@ -580,6 +604,28 @@ $global{Cons}{ModuleGeneral}{TouchOTemperature}{ChannelNumbers}{Name}{Map}{'21'}
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"41"}{Type} = "ThermostatChannel" ;
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"42"}{Name} = "Alarm 4" ;
    $global{Cons}{ModuleGeneral}{TouchOTemperature}{Channels}{"42"}{Type} = "ThermostatChannel" ;
+
+# Touch with OLED: temperature and thermostat channels
+$global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"33"}{Name} = "Temperature" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"33"}{Type} = "Temperature" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"34"}{Name} = "Heater" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"34"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"35"}{Name} = "Boost" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"35"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"36"}{Name} = "Pump" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"36"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"37"}{Name} = "Cooler" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"37"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"38"}{Name} = "Alarm 1" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"38"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"39"}{Name} = "Alarm 2" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"39"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"40"}{Name} = "Alarm 3" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"40"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"41"}{Name} = "Alarm 4" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"41"}{Type} = "ThermostatChannel" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"42"}{Name} = "Output" ;
+   $global{Cons}{ModuleGeneral}{TouchBELOTemperature}{Channels}{"42"}{Type} = "Relay" ;
 
 # PIR sensor
 $global{Cons}{ModuleGeneral}{PIR}{Channels}{"01"}{Name} = "Dark output" ;
