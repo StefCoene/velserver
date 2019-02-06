@@ -9,6 +9,8 @@ use Hash::Merge qw( merge );
 # To be able to open a socket to the Velbus server
 use IO::Socket ;
 
+use Convert::Color ;
+
 # high resolution timer
 use Time::HiRes qw(usleep) ;
 

@@ -155,13 +155,13 @@ sub hex_to_temperature {
       $temperature =~ s/0/2/g ;
       $temperature =~ s/1/0/g ;
       $temperature =~ s/2/1/g ;
-   }  
+   }
    $temperature = &bin_to_dec ($temperature) ;
    $temperature = $temperature * 0.0625 ;
    if ( $negative ) {
       $temperature = 0 - $temperature ;
-   }  
-   return $temperature ; 
+   }
+   return $temperature ;
 }
 
 # Calculate checksum from message and return the checksum
@@ -443,6 +443,26 @@ sub module_find_MemoryKey () {
       }
    }
    return $MemoryKey ;
+}
+
+# Convert HSV to RGB for Edge-lit touch panels.
+# The HSV is input we receive from openHAB but Velbus expects RGB values.
+sub hsv2rgb {
+   # $h & $s: 0 - 359
+   # $v: 0 - 100
+   my ( $h, $s, $v ) = @_;
+
+   $s = $s / 100 ; # Saturation: 0 - 1
+   $v = $v / 100 ; # Value: 0 - 1
+
+   my $color =  Convert::Color->new("hsv:$h,$s,$v") ;
+   my ($red, $green, $blue) = $color->rgb ;
+
+   $red   = &dec_to_hex ($red   * 255) ;
+   $green = &dec_to_hex ($green * 255) ;
+   $blue  = &dec_to_hex ($blue  * 255) ;
+
+   return ($red, $green, $blue) ;
 }
 
 return 1
