@@ -137,49 +137,49 @@ $global{Cons}{ChannelTypes}{ThermostatTarget}{openHAB}{ItemType} = "Number" ;
 
 $global{Cons}{ChannelTypes}{ELEdge}{Set}{Match}{'.+'}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELEdge}{Get}{Message} = "" ;
-$global{Cons}{ChannelTypes}{ELEdge}{Modules} = "34,35,36,37,28" ;
+$global{Cons}{ChannelTypes}{ELEdge}{Modules} = "34,35,36,37" ;
 $global{Cons}{ChannelTypes}{ELEdge}{openHAB}{ItemType} = "String" ;
 $global{Cons}{ChannelTypes}{ELEdge}{openHAB}{Append2Name} = "TLBR" ;
 
 $global{Cons}{ChannelTypes}{ELEdgeTop}{Set}{Match}{ON}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELEdgeTop}{Set}{Match}{OFF}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELEdgeTop}{Get}{Message} = "" ;
-$global{Cons}{ChannelTypes}{ELEdgeTop}{Modules} = "34,35,36,37,28" ;
+$global{Cons}{ChannelTypes}{ELEdgeTop}{Modules} = "34,35,36,37" ;
 $global{Cons}{ChannelTypes}{ELEdgeTop}{openHAB}{Append2Name} = "Top" ;
 $global{Cons}{ChannelTypes}{ELEdgeTop}{openHAB}{SkipAutoUpdate} = "yes" ;
 
 $global{Cons}{ChannelTypes}{ELEdgeRight}{Set}{Match}{ON}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELEdgeRight}{Set}{Match}{OFF}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELEdgeRight}{Get}{Message} = "" ;
-$global{Cons}{ChannelTypes}{ELEdgeRight}{Modules} = "34,35,36,37,28" ;
+$global{Cons}{ChannelTypes}{ELEdgeRight}{Modules} = "34,35,36,37" ;
 $global{Cons}{ChannelTypes}{ELEdgeRight}{openHAB}{Append2Name} = "Right" ;
 $global{Cons}{ChannelTypes}{ELEdgeRight}{openHAB}{SkipAutoUpdate} = "yes" ;
 
 $global{Cons}{ChannelTypes}{ELEdgeBottom}{Set}{Match}{ON}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELEdgeBottom}{Set}{Match}{OFF}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELEdgeBottom}{Get}{Message} = "" ;
-$global{Cons}{ChannelTypes}{ELEdgeBottom}{Modules} = "34,35,36,37,28" ;
+$global{Cons}{ChannelTypes}{ELEdgeBottom}{Modules} = "34,35,36,37" ;
 $global{Cons}{ChannelTypes}{ELEdgeBottom}{openHAB}{Append2Name} = "Bottom" ;
 $global{Cons}{ChannelTypes}{ELEdgeBottom}{openHAB}{SkipAutoUpdate} = "yes" ;
 
 $global{Cons}{ChannelTypes}{ELEdgeLeft}{Set}{Match}{ON}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELEdgeLeft}{Set}{Match}{OFF}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELEdgeLeft}{Get}{Message} = "" ;
-$global{Cons}{ChannelTypes}{ELEdgeLeft}{Modules} = "34,35,36,37,28" ;
+$global{Cons}{ChannelTypes}{ELEdgeLeft}{Modules} = "34,35,36,37" ;
 $global{Cons}{ChannelTypes}{ELEdgeLeft}{openHAB}{Append2Name} = "Left" ;
 $global{Cons}{ChannelTypes}{ELEdgeLeft}{openHAB}{SkipAutoUpdate} = "yes" ;
 
 $global{Cons}{ChannelTypes}{ELPalette}{Set}{Match}{"\\d+"}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELPalette}{Get}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELPalette}{openHAB}{ItemType} = "Number" ;
-$global{Cons}{ChannelTypes}{ELPalette}{Modules} = "34,35,36,37,28" ;
+$global{Cons}{ChannelTypes}{ELPalette}{Modules} = "34,35,36,37" ;
 $global{Cons}{ChannelTypes}{ELPalette}{openHAB}{Append2Name} = "Palette [%d]" ;
 $global{Cons}{ChannelTypes}{ELPalette}{openHAB}{SkipAutoUpdate} = "yes" ;
 
 $global{Cons}{ChannelTypes}{ELAction}{Set}{Match}{'[012]'}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELAction}{Get}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELAction}{openHAB}{ItemType} = "Number" ;
-$global{Cons}{ChannelTypes}{ELAction}{Modules} = "34,35,36,37,28" ;
+$global{Cons}{ChannelTypes}{ELAction}{Modules} = "34,35,36,37" ;
 $global{Cons}{ChannelTypes}{ELAction}{openHAB}{Append2Name} = "Action" ;
 $global{Cons}{ChannelTypes}{ELAction}{openHAB}{SkipAutoUpdate} = "yes" ;
 
@@ -187,7 +187,7 @@ $global{Cons}{ChannelTypes}{ELColor}{Set}{Match}{'\d+,\d+,\d+'}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELColor}{Set}{Match}{ON}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELColor}{Set}{Match}{OFF}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELColor}{Get}{Message} = "" ;
-$global{Cons}{ChannelTypes}{ELColor}{Modules} = "34,35,36,37,28" ;
+$global{Cons}{ChannelTypes}{ELColor}{Modules} = "34,35,36,37" ;
 $global{Cons}{ChannelTypes}{ELColor}{openHAB}{Append2Name} = "Color" ;
 $global{Cons}{ChannelTypes}{ELColor}{openHAB}{ItemType} = "Color" ;
 $global{Cons}{ChannelTypes}{ELColor}{openHAB}{ItemIcon} = "Colorpicker" ;
@@ -196,7 +196,7 @@ $global{Cons}{ChannelTypes}{ELBrightness}{Set}{Match}{'\d+'}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELBrightness}{Set}{Match}{ON}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELBrightness}{Set}{Match}{OFF}{Message} = "" ;
 $global{Cons}{ChannelTypes}{ELBrightness}{Get}{Message} = "" ;
-$global{Cons}{ChannelTypes}{ELBrightness}{Modules} = "34,35,36,37,28" ;
+$global{Cons}{ChannelTypes}{ELBrightness}{Modules} = "34,35,36,37" ;
 
 $global{Cons}{ChannelTypes}{ELBrightness}{openHAB}{ItemIcon} = "slider" ;
 $global{Cons}{ChannelTypes}{ELBrightness}{openHAB}{ItemStateFormat} = "[%s %%]" ;

@@ -116,16 +116,16 @@ $global{Cons}{ModuleTypes}{'2D'}{General} = "Touch4 Touch124Temperature TouchPIR
 $global{Cons}{ModuleTypes}{'28'}{General} = "TouchO TouchOTemperature" ;
 
 # VMBEL1 (34): Edge-lit one, two or four touch buttons module
-$global{Cons}{ModuleTypes}{'34'}{General} = "Touch1 TouchBEL124Temperature" ;
+$global{Cons}{ModuleTypes}{'34'}{General} = "TouchEdgeLit Touch1 TouchBEL124Temperature" ;
 
 # VMBEL1 (35): Edge-lit one, two or four touch buttons module
-$global{Cons}{ModuleTypes}{'35'}{General} = "Touch2 TouchBEL124Temperature" ;
+$global{Cons}{ModuleTypes}{'35'}{General} = "TouchEdgeLit Touch2 TouchBEL124Temperature" ;
 
 # VMBEL1 (36): Edge-lit one, two or four touch buttons module
-$global{Cons}{ModuleTypes}{'36'}{General} = "Touch4 TouchBEL124Temperature" ;
+$global{Cons}{ModuleTypes}{'36'}{General} = "TouchEdgeLit Touch4 TouchBEL124Temperature" ;
 
 # MBELO (37): Edge-lit touch panel with Oled display)
-$global{Cons}{ModuleTypes}{'37'}{General} = "TouchO TouchBELOTemperature" ;
+$global{Cons}{ModuleTypes}{'37'}{General} = "TouchEdgeLit TouchO TouchBELOTemperature" ;
 
 # VMBGP1-2 (3A): One, two or four touch buttons module (ed2)
 $global{Cons}{ModuleTypes}{'3A'}{General} = "Touch1 Touch124Temperature" ;
@@ -581,8 +581,9 @@ $global{Cons}{ModuleGeneral}{TouchO}{ChannelNumbers}{Name}{Convert} = "hex" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"32"}{Type} = "Button" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"98"}{Name} = "Memo Text" ;
    $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"98"}{Type} = "Memo" ;
-   $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"97"}{Name} = "Edge Lit" ;
-   $global{Cons}{ModuleGeneral}{TouchO}{Channels}{"97"}{Type} = "EdgeLit" ;
+
+$global{Cons}{ModuleGeneral}{TouchEdgeLit}{Channels}{"97"}{Name} = "Edge Lit" ;
+   $global{Cons}{ModuleGeneral}{TouchEdgeLit}{Channels}{"97"}{Type} = "EdgeLit" ;
 
 # Touch with OLED: temperature and thermostat channels
 $global{Cons}{ModuleGeneral}{TouchOTemperature}{ChannelNumbers}{Name}{Map}{'21'} = "34" ; # Temperature channel name is reported on CH33 (33 dec = 21 hex)
