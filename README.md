@@ -13,3 +13,6 @@ This code helped me a lot and gave me a big jump start: http://leachy.homeip.net
 This code is not finished. It does the basic stuff, but I'm constantly updating it.
 
 See the wiki page https://github.com/StefCoene/velserver/wiki for more information
+
+I decided to rewrite the documentation in a google drive document:
+https://docs.google.com/document/d/e/2PACX-1vQtVpozXUgypN6_IAmaaVj0cxtqXUYm1gj_n4nqt8vWeznqdSgb8g1LCHe_bkZmlg0-WkLHiYUKFa7S/pub
