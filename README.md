@@ -14,5 +14,9 @@ This code is not finished. It does the basic stuff, but I'm constantly updating 
 
 See the wiki page https://github.com/StefCoene/velserver/wiki for more information
 
-I decided to rewrite the documentation in a google drive document:
-https://docs.google.com/document/d/e/2PACX-1vQtVpozXUgypN6_IAmaaVj0cxtqXUYm1gj_n4nqt8vWeznqdSgb8g1LCHe_bkZmlg0-WkLHiYUKFa7S/pub
+I decided to rewrite the documentation in a google drive documents:
+Velserver Information: https://docs.google.com/document/d/e/2PACX-1vSMcBHwNPwVBqv_ixkNafg1LjtWRsFbnmI4XzVx7Z3NruSXQec2IQ17fnl4dZSNY2tN1oZzsNvpft_Y/pub
+
+Velserver Internal Documentation - https://docs.google.com/document/d/e/2PACX-1vQtVpozXUgypN6_IAmaaVj0cxtqXUYm1gj_n4nqt8vWeznqdSgb8g1LCHe_bkZmlg0-WkLHiYUKFa7S/pub
+
+Velserver Components - https://docs.google.com/drawings/d/e/2PACX-1vTauZFqoRHuUSa8gNlJ15Jba3gulAxg97Eq0klhWF8_jjcmtFnaNoVDj6-qjgC6WpFY5_m8R9zy-IBN/pub?w=960&h=720
