@@ -79,7 +79,7 @@ $global{Cons}{ChannelTypes}{Divider}{BasedOn} = "Counter" ;
 $global{Cons}{ChannelTypes}{Divider}{openHAB}{ItemType} = "Number" ;
 
 $global{Cons}{ChannelTypes}{Dimmer}{Get}{Message} = "" ;
-$global{Cons}{ChannelTypes}{Dimmer}{Set}{Match}{'\d+'}{Message} = "07" ; # &dim_value
+$global{Cons}{ChannelTypes}{Dimmer}{Set}{Match}{'\d+\.?\d*'}{Message} = "07" ; # &dim_value
 $global{Cons}{ChannelTypes}{Dimmer}{Set}{Match}{'\d+'}{Action} = "LEVEL" ; # &dim_value, Default Action = $Match
 $global{Cons}{ChannelTypes}{Dimmer}{Set}{Match}{ON}{Message} = "07" ; # &dim_value
 $global{Cons}{ChannelTypes}{Dimmer}{Set}{Match}{ON}{Action} = "LEVEL" ; # &dim_value, Default Action = $Match
