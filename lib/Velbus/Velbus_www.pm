@@ -856,7 +856,7 @@ sub www_print_channel_tags () {
                      $global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value} = '__NoTag__' ;
                   }
                   $html .= $global{cgi}{CGI}->scrolling_list(
-                        -name=>"Tag::$address::$Channel",
+                        -name=>"Tag::".$address."::".$Channel,
                         -size=>1,
                         -values=>['Lighting', 'Switchable', '__NoTag__'],
                         -default=>[$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Tag}{value}]
