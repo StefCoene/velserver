@@ -68,8 +68,8 @@ $global{Cons}{ModuleTypes}{'14'}{Channels}{"01"}{Name} = "Dimmer" ;
    $global{Cons}{ModuleTypes}{'14'}{Channels}{"01"}{Type} = "Dimmer" ;
 
 # 1-channel Dimmer: VMBDMI
-$global{Cons}{ModuleTypes}{'15'}{Channels}{"01"}{Name} = "Dimmer" ;
-   $global{Cons}{ModuleTypes}{'15'}{Channels}{"01"}{Type} = "Dimmer" ;
+$global{Cons}{ModuleTypes}{'2F'}{Channels}{"01"}{Name} = "Dimmer" ;
+   $global{Cons}{ModuleTypes}{'2F'}{Channels}{"01"}{Type} = "Dimmer" ;
 
 ################### Blinds: Channel names
 # 1-channel blind control module: VMB1BL

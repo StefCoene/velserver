@@ -142,10 +142,10 @@ $global{Cons}{ModuleTypes}{'14'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Name} = "Ch
 
 # Velbus dimmer for resistive orinductive load:    VMBDMI
 # 0F = COMMAND_SLIDER_STATUS
-$global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Name} = "Channel" ;
-   $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Match}{'01'}{Channel} = "01" ;
-   $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Name} = "Status" ;
-   $global{Cons}{ModuleTypes}{'15'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Decimal" ;
+$global{Cons}{ModuleTypes}{'2F'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Name} = "Channel" ;
+   $global{Cons}{ModuleTypes}{'2F'}{Messages}{'0F'}{Data}{PerByte}{'0'}{Match}{'01'}{Channel} = "01" ;
+   $global{Cons}{ModuleTypes}{'2F'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Name} = "Status" ;
+   $global{Cons}{ModuleTypes}{'2F'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}{'%.'}{Convert} = "Decimal" ;
 
 ################### Blinds: messages
 # Blind Control Module: VMB1BL
