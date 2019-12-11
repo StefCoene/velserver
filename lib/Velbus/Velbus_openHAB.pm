@@ -245,8 +245,10 @@ sub openHAB_loop_item () {
                      $Name .= " [%.0f " . $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} . "]" ;
                   }
                }
-            } else {
-               $Name .= " $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemStateFormat}" if defined $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemStateFormat} ; # Add item state format
+            } elsif ( $ChannelType eq "SensorNumber" ) {
+               if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} ) {
+                  $Name .= " [%.0f " . $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} . "]" ;
+               }
             }
 
             if ( defined $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemType} ) {

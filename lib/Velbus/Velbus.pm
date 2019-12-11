@@ -245,6 +245,22 @@ sub process_message {
                            &update_modules_channel_info ($message{address}, $Channel, "Name", $SensorName) ;
                            push @{$message{text}}, "SensorName=$SensorName" ;
                         }
+                     } elsif ( defined  $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Unit} ) {
+                        my ($Channel,$number,$command) = split ":", $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Unit} ;
+
+                        if ( $command eq "Start" ) {
+                           # Reset our Unit
+                           delete $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{UnitAddress}{$Channel} ;
+                        }
+
+                        ${$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{UnitAddress}{$Channel}}[$number] = $char if $hex ne "00" and $hex ne "FF" ;
+
+                        if ( $command eq "Save" ) {
+                           my $Unit = join '', @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{UnitAddress}{$Channel}} ;
+                           &update_modules_channel_info ($message{address}, $Channel, "Unit", $Unit) ;
+                           push @{$message{text}}, "Unit=$Unit" ;
+                        }
+
                      } else {
                         # No type: loop possible Match keys
                         my %MemoryInfo ;
@@ -433,7 +449,8 @@ sub process_message {
                                        if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ) {
                                           $Channel += $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ;
                                        }
-                                       push @{$ChannelInfo{$message{address}}{$Channel}{$Name}{ValueList}}, $Value ;
+                                       $Channel = "0" . $Channel if $Channel < 10 and $Channel !~ /^0/ ;
+                                       push @{$ChannelInfo{$message{address}}{$Channel}{$Name}{ValueList}}, $Value if defined $Value ;
                                        &log("logger_match","address=$message{address}: byte=$byte, key=$key, Channel=$Channel, Name=$Name, Value=$Value Convert eq Channel") ;
                                     }
 
@@ -552,7 +569,7 @@ sub process_message {
 
                                  # Save the data
                                  if ( $Process{Data}{PerMessage}{Convert} eq "SensorNumber" ) {
-                                    &update_modules_channel_info ($message{address}, $Channel, "value", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value}) ;
+                                    &update_modules_channel_info ($message{address}, $Channel, "SensorNumber", $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value}) ;
                                     $ChannelInfo{$message{address}}{$Channel}{Sensor}{Value} = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
                                  } else {
                                     $ChannelInfo{$message{address}}{$Channel}{Memo}{Value}   = $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{value} ;
@@ -658,6 +675,11 @@ sub process_message {
                            # Remember the counter and epoch seconds
                            $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{CounterPrevious}{value}     = $Counter ;
                            $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{CounterPreviousTime}{value} = time ;
+
+                        # Sensor type of VMB4AN
+                        } elsif ( $Name eq "SensorType" ) {
+                           push @{$message{text}}, "Ch=".$address."_$Channel: SensorType=$Value" ;
+                           &update_modules_channel_info ($message{address}, $Channel, $Name, $Value) ;
 
                         } else {
                            # For some $Name, we push the Value always to openHAB
@@ -886,17 +908,8 @@ sub get_status () {
       # MemoryKey: configured based on the build of the module.
       my $MemoryKey = &module_find_MemoryKey ($address, $type) ;
 
-      if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{SensorNameAddress} ) {
-         my @memory = split ";", $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{SensorNameAddress} ;
-         foreach my $memory (@memory) {
-            $memory =~ /(..)(..)/ ;
-            my $hex1 = $1 ;
-            my $hex2 = $2 ;
-            &send_message ($sock, $address, 'FD', undef, $hex1 ,$hex2) ;
-         }
-      }
-      if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{ModuleNameAddress} ) {
-         my @memory = split ";", $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{ModuleNameAddress} ;
+      if ( defined $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{StatusAddress} ) {
+         my @memory = split ";", $global{Cons}{ModuleTypes}{$type}{Memory}{$MemoryKey}{StatusAddress} ;
          foreach my $memory (@memory) {
             $memory =~ /(..)(..)/ ;
             my $hex1 = $1 ;

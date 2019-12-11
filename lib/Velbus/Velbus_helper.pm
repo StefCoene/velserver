@@ -351,23 +351,24 @@ sub SubAddr_Channel {
    return $Channel ;
 }
 
-# Parse and rewrite the memory addresses for ModuleName and SensorName so we nnow for each possible memory address what it contains.
+# Parse and rewrite the memory addresses for ModuleName and SensorName so we know for each possible memory address what it contains.
 sub find_memory_addresses {
    foreach my $Type (sort keys %{$global{Cons}{ModuleTypes}}) {
       if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory} ) {
          foreach my $MemoryKey (sort keys %{$global{Cons}{ModuleTypes}{$Type}{Memory}}) {
+            my @StatusAddress ;
+
             if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{ModuleName} ) {
                my $counter = 0 ; # Number of address
                my $AddressHex ; # The address in hex
 
-               my @ModuleNameAddress ; # To store all addresses
                foreach my $loop (split ";", $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{ModuleName}) {
                   my ($start,$end) = split "-", $loop ;
                   $start = &hex_to_dec ($start) ;
                   $end   = &hex_to_dec ($end) ;
                   for ($i="$start"; $i <= "$end"; $i++) {
                      $AddressHex = &dec_to_4hex($i) ;
-                     push @ModuleNameAddress, $AddressHex ;
+                     push @StatusAddress, $AddressHex ;
                      if ( $counter eq "0" ) {
                         # First address
                         $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{ModuleName} = "$counter:Start" ;
@@ -378,9 +379,6 @@ sub find_memory_addresses {
                   }
                }
 
-               # Save all addresses for the get_status procedure
-               $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{ModuleNameAddress} = join ";", @ModuleNameAddress ;
-
                # Remember last adress
                $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{ModuleName} = "$counter:Save" ;
             }
@@ -390,7 +388,6 @@ sub find_memory_addresses {
                   my $counter = 0 ; # Number of address
                   my $AddressHex ; # The address in hex
 
-                  my @SensorNameAddress ; # To store all addresses
                   foreach my $loop (split ";", $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{SensorName}{$Channel}) {
                      #print "loop $loop\n" ;
                      my ($start,$end) = split "-", $loop ;
@@ -398,7 +395,7 @@ sub find_memory_addresses {
                      $end   = &hex_to_dec ($end) ;
                      for ($i="$start"; $i <= "$end"; $i++) {
                         $AddressHex = &dec_to_4hex($i) ;
-                        push @SensorNameAddress, $AddressHex ;
+                        push @StatusAddress, $AddressHex ;
                         if ( $counter eq "0" ) {
                            # First address
                            $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{SensorName} = "$Channel:$counter:Start" ;
@@ -409,12 +406,42 @@ sub find_memory_addresses {
                      }
                   }
 
-                  # Save all addresses for the get_status procedure
-                  $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{SensorNameAddress} = join ";", @SensorNameAddress ;
-
                   # Remember last adress
                   $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{SensorName} = "$Channel:$counter:Save" ;
                }
+            }
+
+            if ( defined $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Unit} ) {
+               foreach my $Channel (sort keys %{$global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Unit}}) {
+                  my $counter = 0 ; # Number of address
+                  my $AddressHex ; # The address in hex
+
+                  foreach my $loop (split ";", $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Unit}{$Channel}) {
+                     #print "loop $loop\n" ;
+                     my ($start,$end) = split "-", $loop ;
+                     $start = &hex_to_dec ($start) ;
+                     $end   = &hex_to_dec ($end) ;
+                     for ($i="$start"; $i <= "$end"; $i++) {
+                        $AddressHex = &dec_to_4hex($i) ;
+                        push @StatusAddress, $AddressHex ;
+                        if ( $counter eq "0" ) {
+                           # First address
+                           $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{Unit} = "$Channel:$counter:Start" ;
+                        } else {
+                           $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{Unit} = "$Channel:$counter" ;
+                        }
+                        $counter ++ ;
+                     }
+                  }
+
+                  # Remember last adress
+                  $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{Address}{"$AddressHex"}{Unit} = "$Channel:$counter:Save" ;
+               }
+            }
+
+            if ( @StatusAddress ) {
+               # Save all addresses for the get_status procedure
+               $global{Cons}{ModuleTypes}{$Type}{Memory}{$MemoryKey}{StatusAddress} = join ";", @StatusAddress ;
             }
          }
       }

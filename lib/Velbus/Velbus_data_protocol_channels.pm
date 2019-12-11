@@ -325,6 +325,7 @@ $global{Cons}{ModuleTypes}{'31'}{ChannelNumbers}{SensorNumber}{Map}{'02'} = "11"
 
 # VMB4AN: Analog I/O module
 $global{Cons}{ModuleTypes}{'32'}{ChannelNumbers}{Name}{Convert} = "hex" ;
+   $global{Cons}{ModuleTypes}{'32'}{ChannelNumbers}{ConvertChannel}{Convert} = "hex" ;
    $global{Cons}{ModuleTypes}{'32'}{ChannelNumbers}{MakeMessage}{Convert} = "hex" ;
    $global{Cons}{ModuleTypes}{'32'}{AllChannelStatus} = "FF" ;
    $global{Cons}{ModuleTypes}{'32'}{Channels}{"01"}{Name} = "Alarm 1" ;

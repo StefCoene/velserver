@@ -184,6 +184,10 @@ $global{Cons}{ModuleTypes}{'31'}{Memory}{'1'}{SensorName}{'13'} = "00E0-00EF" ;
 $global{Cons}{ModuleTypes}{'32'}{MemoryMatch}{1}{Build}   = ">= 1" ;
 $global{Cons}{ModuleTypes}{'32'}{MemoryMatch}{1}{Version} = "1" ;
 $global{Cons}{ModuleTypes}{'32'}{Memory}{1}{ModuleName} = "0000-003F" ;
+$global{Cons}{ModuleTypes}{'32'}{Memory}{'1'}{Unit}{'09'} = "02E0-02E6" ;
+$global{Cons}{ModuleTypes}{'32'}{Memory}{'1'}{Unit}{'10'} = "0412-0418" ;
+$global{Cons}{ModuleTypes}{'32'}{Memory}{'1'}{Unit}{'11'} = "0544-054A" ;
+$global{Cons}{ModuleTypes}{'32'}{Memory}{'1'}{Unit}{'12'} = "0676-067C" ;
 
 # VMBVP1
 $global{Cons}{ModuleTypes}{'33'}{MemoryMatch}{1}{Build}   = ">= 1" ;

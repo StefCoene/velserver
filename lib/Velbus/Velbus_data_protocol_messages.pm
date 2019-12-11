@@ -381,6 +381,13 @@ $global{Cons}{ModuleTypes}{'31'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "S
 # VMB4AN (32): Analog I/O module
 $global{Cons}{ModuleTypes}{'32'}{Messages}{'AC'}{Data}{PerMessage}{Convert} = "SensorNumber" ;
 
+$global{Cons}{ModuleTypes}{'32'}{Messages}{'A9'}{Data}{Name} = "SensorType" ;
+$global{Cons}{ModuleTypes}{'32'}{Messages}{'A9'}{Data}{PerByte}{'0'}{Match}{'%.'}{Convert} = "Channel" ;
+$global{Cons}{ModuleTypes}{'32'}{Messages}{'A9'}{Data}{PerByte}{'1'}{Match}{'%......00'}{Value} = "Voltage" ;
+$global{Cons}{ModuleTypes}{'32'}{Messages}{'A9'}{Data}{PerByte}{'1'}{Match}{'%......01'}{Value} = "Current" ;
+$global{Cons}{ModuleTypes}{'32'}{Messages}{'A9'}{Data}{PerByte}{'1'}{Match}{'%......10'}{Value} = "Resistance" ;
+$global{Cons}{ModuleTypes}{'32'}{Messages}{'A9'}{Data}{PerByte}{'1'}{Match}{'%......11'}{Value} = "Period" ;
+
 # VMBVP1 (33): Doorbird interface module
 $global{Cons}{ModuleTypes}{'33'}{Messages}{'00'}{General} = "ButtonPress" ;
 
