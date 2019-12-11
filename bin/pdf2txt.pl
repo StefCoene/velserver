@@ -298,6 +298,12 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                  $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /type \(0x(..)/i ) {
                $ModuleTypeHex = $1 ;
 
+               if ( $ModuleType eq "VMBDMI-R" ) {
+                  $ModuleTypeHex = "2F" ; # 15 in protocol file but the file is wrong
+               }
+               if ( $ModuleType eq "VMBDMI" ) {
+                  $ModuleTypeHex = "2F" ; # 15 in protocol file but the file is wrong
+               }
                #if ( $ModuleType eq "VMBGPOD" ) { # In the pdf this is type 21, but this is wrong and should be type 28. I think...
                #   $ModuleTypeHex = "28" ;
                #}
