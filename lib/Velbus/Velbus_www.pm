@@ -653,7 +653,11 @@ sub www_print_found_modules () {
 
       if ( defined $MemoryKey ) {
          if ( defined $global{Cons}{ModuleTypes}{$ModuleType}{Memory}{$MemoryKey}{ModuleName} ) {
-            $table .= "    <td>$MemoryKey</td>\n" ;
+            if ( $global{Cons}{ModuleTypes}{$ModuleType}{Memory}{$MemoryKey}{ModuleName} eq "" ) {
+               $table .= "    <td>$MemoryKey: ModuleName request not supported</td>\n" ;
+            } else {
+               $table .= "    <td>$MemoryKey</td>\n" ;
+            }
          } else {
             $table .= "    <td>$MemoryKey: No support for ModuleName!</td>\n" ;
          }
