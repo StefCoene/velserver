@@ -69,7 +69,7 @@ $global{Cons}{ModuleTypes}{'14'}{Channels}{"01"}{Name} = "Dimmer" ;
 
 # 1-channel Dimmer: VMBDMI
 $global{Cons}{ModuleTypes}{'15'}{Channels}{"01"}{Name} = "Dimmer" ;
-   $global{Cons}{ModuleTypes}{'5F'}{Channels}{"01"}{Type} = "Dimmer" ;
+   $global{Cons}{ModuleTypes}{'15'}{Channels}{"01"}{Type} = "Dimmer" ;
 
 # 1-channel Dimmer: VMBDMI-R
 $global{Cons}{ModuleTypes}{'2F'}{Channels}{"01"}{Name} = "Dimmer" ;
