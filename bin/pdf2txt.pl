@@ -301,9 +301,6 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
                if ( $ModuleType eq "VMBDMI-R" ) {
                   $ModuleTypeHex = "2F" ; # 15 in protocol file but the file is wrong
                }
-               if ( $ModuleType eq "VMBDMI" ) {
-                  $ModuleTypeHex = "2F" ; # 15 in protocol file but the file is wrong
-               }
                #if ( $ModuleType eq "VMBGPOD" ) { # In the pdf this is type 21, but this is wrong and should be type 28. I think...
                #   $ModuleTypeHex = "28" ;
                #}
