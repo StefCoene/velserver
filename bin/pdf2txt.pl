@@ -310,7 +310,17 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
             #if ( $ModuleType eq "VMBGPOD" ) { # In the pdf this is type 21, but this is wrong and should be type 28. I think...
             #   $ModuleTypeHex = "28" ;
             #}
-            #
+
+            if ( defined $file{PerHexType}{$ModuleTypeHex} ) {
+               # For protocol_vmb1tcw.txt and protocol_vmb1tc.txt we both have 0E but this is normal since these are the same mofule with an other color
+               # For protocol_vmb1tsw.txt and protocol_vmb1ts.txt we both have 0C but this is normal since these are the same mofule with an other color
+               if ( $file eq "protocol_vmb1tcw.txt"  or
+                    $file eq "protocol_vmb1tsw.txt" ) {
+               } else {
+                  print "Mhh, we have ModuleTypeHex=$ModuleTypeHex for $file, but we already have that ModuleTypeHex in $file{PerHexType}{$ModuleTypeHex}!\n" ;
+               }
+               next ;
+            }
             $file{PerHexType}{$ModuleTypeHex} = $file ; # Remember all the Hex Module Types
             $file{PerFile}{$file}{Info}{ModuleTypeHex} = $ModuleTypeHex ; # Remember the Hex value per ModuleType
 
