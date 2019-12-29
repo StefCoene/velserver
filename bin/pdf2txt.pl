@@ -243,7 +243,11 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
 
                   #$file{PerMessageHex}{$CommandHex}{$file} .= $counter . " " ;
                   $file{PerMessageAddressType}{$MessageAddressType}{$file} .= $counter . " " ; # Remember the messags per AdressType
-                  $file{PerCommandHex}{$file}{$CommandHex} .= $counter . " " ; # Remeber per file the $CommandHex. We use this to quickly find message 'FF'
+                  # Remember per file the $CommandHex. We use this to quickly find message 'FF'.
+                  # We need to make sure that the 'FF' message is for the local module and not for connected sesnros.
+                  if ( $MessageAddressType eq "local" ) {
+                     $file{PerCommandHex}{$file}{$CommandHex} .= $counter . " " ;
+                  }
 
                } elsif ( $line =~ /SOF-SID10/ ) {
                   # Ignore
@@ -289,131 +293,132 @@ foreach my $file (sort keys(%{$file{PerFile}})) {
 
    # Parse CommandHex FF
    if ( defined $file{PerCommandHex}{$file}{'FF'} ) {
-      foreach my $counter (split " ", $file{PerCommandHex}{$file}{'FF'}) {
-         if ( defined $file{PerFile}{$file}{Messages}{$counter} ) {
-            if ( $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+_TYPE.+\(H’(..)’\)/i or
-                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+ TYPE.+\(H’(..)’\)/i or
-                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+.+\(H’(..)’\)/i or
-                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+ type \(0x(..)\)/i or
-                 $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /type \(0x(..)/i ) {
-               $ModuleTypeHex = $1 ;
+      my @counter = split " ", $file{PerCommandHex}{$file}{'FF'} ;
+      my $counter = $counter[-1] ; # Take the last occurence of the command, this should be the one for the most recent firmware
 
-               if ( $ModuleType eq "VMBDMI-R" ) {
-                  $ModuleTypeHex = "2F" ; # 15 in protocol file but the file is wrong
-               }
-               #if ( $ModuleType eq "VMBGPOD" ) { # In the pdf this is type 21, but this is wrong and should be type 28. I think...
-               #   $ModuleTypeHex = "28" ;
-               #}
-               #
-               $file{PerHexType}{$ModuleTypeHex} = $file ; # Remember all the Hex Module Types
-               $file{PerFile}{$file}{Info}{ModuleTypeHex} = $ModuleTypeHex ; # Remember the Hex value per ModuleType
+      if ( defined $file{PerFile}{$file}{Messages}{$counter} ) {
+         if ( $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+_TYPE.+\(H’(..)’\)/i or
+              $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+ TYPE.+\(H’(..)’\)/i or
+              $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+.+\(H’(..)’\)/i or
+              $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /.+ type \(0x(..)\)/i or
+              $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text} =~ /type \(0x(..)/i ) {
+            $ModuleTypeHex = $1 ;
 
-               # Step 1: Search for extra info
-               if ( defined $file{PerFile}{$file}{Messages}{$counter}{byte} ) {
-                  # For VMB1TSW (0C) this is wrong in the protocol files
-                  if ( $ModuleTypeHex eq "0C" ) {
-                     $file{ModuleType}{$ModuleTypeHex}{SerialHigh} = "4" ;
-                     $file{ModuleType}{$ModuleTypeHex}{SerialLow}  = "5" ;
-                     $file{ModuleType}{$ModuleTypeHex}{MemoryMap}  = "6" ;
-                     $file{ModuleType}{$ModuleTypeHex}{Buildyear}  = "7" ;
-                     $file{ModuleType}{$ModuleTypeHex}{BuildWeek}  = "8" ;
+            if ( $ModuleType eq "VMBDMI-R" ) {
+               $ModuleTypeHex = "2F" ; # 15 in protocol file but the file is wrong
+            }
+            #if ( $ModuleType eq "VMBGPOD" ) { # In the pdf this is type 21, but this is wrong and should be type 28. I think...
+            #   $ModuleTypeHex = "28" ;
+            #}
+            #
+            $file{PerHexType}{$ModuleTypeHex} = $file ; # Remember all the Hex Module Types
+            $file{PerFile}{$file}{Info}{ModuleTypeHex} = $ModuleTypeHex ; # Remember the Hex value per ModuleType
 
-                  } else {
-                     foreach my $DATABYTE (sort keys %{$file{PerFile}{$file}{Messages}{$counter}{byte}}) {
-                        next if $DATABYTE eq "2" ;
-                        if ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Memorymap version/ or
-                             $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Memory map version/ ) {
-                           $file{ModuleType}{$ModuleTypeHex}{MemoryMap} = $DATABYTE ;
-                        } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /High byte of serial number/ or
-                                  $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Serial number high/ ) {
-                           $file{ModuleType}{$ModuleTypeHex}{SerialHigh} = $DATABYTE ;
-                        } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Low byte of serial number/ or
-                                  $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Serial number low/ ) {
-                           $file{ModuleType}{$ModuleTypeHex}{SerialLow} = $DATABYTE ;
-                        } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Build year/i ) {
-                           $file{ModuleType}{$ModuleTypeHex}{Buildyear} = $DATABYTE ;
-                        } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Build week/i ) {
-                           $file{ModuleType}{$ModuleTypeHex}{BuildWeek} = $DATABYTE ;
-                        } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /don’t care/i ) {
-                        } else {
-                           #print "Warning: DATABYTE=$DATABYTE = \"$file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text}\" in $file\n" ;
-                        }
+            # Step 1: Search for extra info
+            if ( defined $file{PerFile}{$file}{Messages}{$counter}{byte} ) {
+               # For VMB1TSW (0C) this is wrong in the protocol files
+               if ( $ModuleTypeHex eq "0C" ) {
+                  $file{ModuleType}{$ModuleTypeHex}{SerialHigh} = "4" ;
+                  $file{ModuleType}{$ModuleTypeHex}{SerialLow}  = "5" ;
+                  $file{ModuleType}{$ModuleTypeHex}{MemoryMap}  = "6" ;
+                  $file{ModuleType}{$ModuleTypeHex}{Buildyear}  = "7" ;
+                  $file{ModuleType}{$ModuleTypeHex}{BuildWeek}  = "8" ;
+
+               } else {
+                  foreach my $DATABYTE (sort keys %{$file{PerFile}{$file}{Messages}{$counter}{byte}}) {
+                     next if $DATABYTE eq "2" ;
+                     if ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Memorymap version/ or
+                          $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Memory map version/ ) {
+                        $file{ModuleType}{$ModuleTypeHex}{MemoryMap} = $DATABYTE ;
+                     } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /High byte of serial number/ or
+                               $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Serial number high/ ) {
+                        $file{ModuleType}{$ModuleTypeHex}{SerialHigh} = $DATABYTE ;
+                     } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Low byte of serial number/ or
+                               $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Serial number low/ ) {
+                        $file{ModuleType}{$ModuleTypeHex}{SerialLow} = $DATABYTE ;
+                     } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Build year/i ) {
+                        $file{ModuleType}{$ModuleTypeHex}{Buildyear} = $DATABYTE ;
+                     } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /Build week/i ) {
+                        $file{ModuleType}{$ModuleTypeHex}{BuildWeek} = $DATABYTE ;
+                     } elsif ( $file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text} =~ /don’t care/i ) {
+                     } else {
+                        #print "Warning: DATABYTE=$DATABYTE = \"$file{PerFile}{$file}{Messages}{$counter}{byte}{$DATABYTE}{text}\" in $file\n" ;
                      }
                   }
                }
+            }
 
-               # Step 2: copy the found data to similar modules & print the output
-               # VMBGP1 = 1E: from pdf file
-               # VMBGP2 = 1F: ??
-               # VMBGP4 = 20: from my bus
-               if ( $ModuleTypeHex eq "1E" ) {
-                  %{$file{ModuleType}{'1F'}} = %{$file{ModuleType}{'1E'}} ;
-                  %{$file{ModuleType}{'20'}} = %{$file{ModuleType}{'1E'}} ;
+            # Step 2: copy the found data to similar modules & print the output
+            # VMBGP1 = 1E: from pdf file
+            # VMBGP2 = 1F: ??
+            # VMBGP4 = 20: from my bus
+            if ( $ModuleTypeHex eq "1E" ) {
+               %{$file{ModuleType}{'1F'}} = %{$file{ModuleType}{'1E'}} ;
+               %{$file{ModuleType}{'20'}} = %{$file{ModuleType}{'1E'}} ;
 
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{File} = \"$file\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Type} = \"VMBGP1\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{File} = \"$file\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Type} = \"VMBGP2\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{File} = \"$file\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Type} = \"VMBGP4\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{File} = \"$file\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Type} = \"VMBGP1\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'1E'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{File} = \"$file\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Type} = \"VMBGP2\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'1F'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{File} = \"$file\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Type} = \"VMBGP4\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'20'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
 
-               # VMBEL1 = 34
-               # VMBEL2 = 35
-               # VMBEL4 = 36
-               } elsif ( $ModuleTypeHex eq "34" ) {
-                  %{$file{ModuleType}{'35'}} = %{$file{ModuleType}{'34'}} ;
-                  %{$file{ModuleType}{'36'}} = %{$file{ModuleType}{'34'}} ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{File} = \"$file\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{Type} = \"VMBEL1\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{File} = \"$file\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Type} = \"VMBEL2\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{File} = \"$file\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Type} = \"VMBEL4\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+            # VMBEL1 = 34
+            # VMBEL2 = 35
+            # VMBEL4 = 36
+            } elsif ( $ModuleTypeHex eq "34" ) {
+               %{$file{ModuleType}{'35'}} = %{$file{ModuleType}{'34'}} ;
+               %{$file{ModuleType}{'36'}} = %{$file{ModuleType}{'34'}} ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{File} = \"$file\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{Type} = \"VMBEL1\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'34'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{File} = \"$file\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Type} = \"VMBEL2\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'35'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{File} = \"$file\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Type} = \"VMBEL4\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'36'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
 
-               # VMBGP1-2 = 3A
-               # VMBGP2-2 = 3B
-               # VMBGP4-2 = 3C
-               } elsif ( $ModuleTypeHex eq "3C" ) {
-                  %{$file{ModuleType}{'3A'}} = %{$file{ModuleType}{'3C'}} ;
-                  %{$file{ModuleType}{'3B'}} = %{$file{ModuleType}{'3C'}} ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{File} = \"$file\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Type} = \"VMBGP1-2\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{File} = \"$file\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Type} = \"VMBGP2-2\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{File} = \"$file\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Type} = \"VMBGP4-2\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
-
-               } else {
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{File} = \"$file\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Type} = \"$ModuleType\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
-                  print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
-               }
+            # VMBGP1-2 = 3A
+            # VMBGP2-2 = 3B
+            # VMBGP4-2 = 3C
+            } elsif ( $ModuleTypeHex eq "3C" ) {
+               %{$file{ModuleType}{'3A'}} = %{$file{ModuleType}{'3C'}} ;
+               %{$file{ModuleType}{'3B'}} = %{$file{ModuleType}{'3C'}} ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{File} = \"$file\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Type} = \"VMBGP1-2\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3A'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{File} = \"$file\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Type} = \"VMBGP2-2\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3B'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{File} = \"$file\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Type} = \"VMBGP4-2\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'3C'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
 
             } else {
-               print "Error $ModuleType: no matching FF command: $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text}\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{File} = \"$file\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Type} = \"$ModuleType\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Info} = \"$file{PerFile}{$file}{Info}{ModuleText}\" ;\n" ;
+               print OUTPUT "\$global{Cons}{ModuleTypes}{'$ModuleTypeHex'}{Version} = \"$file{PerFile}{$file}{Info}{Edition}\" ;\n" ;
             }
+
          } else {
-            print "Error no DATABYTE2 found in $file for message counter $counter\n" ;
+            print "Error $ModuleType: no matching FF command: $file{PerFile}{$file}{Messages}{$counter}{byte}{'2'}{text}\n" ;
          }
+      } else {
+         print "Error no DATABYTE2 found in $file for message counter $counter\n" ;
       }
    } else {
       print "Error: no message FF in $file found!\n" ;
