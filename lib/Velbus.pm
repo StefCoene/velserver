@@ -59,7 +59,7 @@ sub read_all_configs {
    $global{Config}{velbus}{PORT} = "3788"         if ! defined $global{Config}{velbus}{PORT} ;
 
    $global{Config}{openHAB}{REST_URL}  = "http://localhost:8080/rest/items"      if ! defined $global{Config}{openHAB}{REST_URL} ;
-   # 60000 milliseconds = 10 minutes
+   # 60000 milliseconds = 1 minute
    $global{Config}{openHAB}{POLLING}   = 60000                                   if ! defined $global{Config}{openHAB}{POLLING} ;
    $global{Config}{openHAB}{BASE_URL}  = "http://localhost/velserver/service.pl" if ! defined $global{Config}{openHAB}{BASE_URL} ;
    $global{Config}{openHAB}{ITEM_FILE} = "/etc/openhab2/items/velbus.items"      if ! defined $global{Config}{openHAB}{ITEM_FILE} ;
