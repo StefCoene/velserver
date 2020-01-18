@@ -459,16 +459,21 @@ sub process_message {
                                     # The place in the byte determines the channel and 0=released, 1=pressed
                                     #    00100000 -> CH6 pressed, the rest is released
                                     if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} =~ /ChannelBitStatus:(\d)/ ) {
-                                       my $Max = $1 ; # The number of bits=channels
+                                       my $MaxChannel = $1 ; # The number of bits=channels
                                        my @bin = split //, $bin ;
-                                       foreach my $bit (1..$Max) {
+
+                                       foreach my $bit (0..7) { # Loop the 8 bits from left to right
+                                          my $status = $bin[$bit] ; # Status of the bit
+
+                                          # Calculate the channel
                                           my @Channel = (0,0,0,0,0,0,0,0) ;
-                                          $Channel[-$bit] = 1 ; # Flip the correct bit, start counting from the right
+                                          $Channel[$bit] = 1 ; # Flip the correct bit, start counting from the right
                                           $Channel = join "", @Channel ;
 
                                           my $address ;
                                           ($address,$Channel) = &channel_convert($message{address},$Channel,"ChannelBitStatus") ; # Convert it to a number, no &bin_to_hex needed
-                                          if ( $bin[$bit] eq "1" ) {
+                                          next if $Channel > $MaxChannel ; # Skip the bits with no valida data
+                                          if ( $status eq "1" ) {
                                              $Value = "ON" ;
                                           } else {
                                              $Value = "OFF" ;
