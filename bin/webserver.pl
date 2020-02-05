@@ -37,7 +37,6 @@ if ( $d ) {
    while (my $c = $d->accept) {
       #&process($c) ;
       threads->create(\&process, $c)->detach ;
-       $c->close ;  # close client socket in server
    }
 } else {
    &log("webserver","Web server not started on port $global{Config}{velserver}{WEBSERVERPORT}: $@") ;
@@ -46,7 +45,6 @@ if ( $d ) {
 
 sub process {
    my $c = shift ;
-   $c->daemon->close ; # close server socket in client
    while (my $r = $c->get_request) {
       &init ;
       &log("webserver",sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
@@ -117,5 +115,6 @@ sub process {
       $c->send_response($response) ;
       $c->send_crlf ;
    }
+   $c->daemon->close ; # close server socket in client
    $c->close ;
 }
