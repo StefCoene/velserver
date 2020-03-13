@@ -228,7 +228,7 @@ sub openHAB_loop_item () {
                $Name .= " (" . $item . ")" ;
             }
 
-            # Four Counter, add format if possible.
+            # For Counter, add format if possible.
             if ( $ChannelType eq "CounterCurrent" ) {
                if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} ) {
                   if ( $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} eq "kWh" ) {
@@ -249,6 +249,8 @@ sub openHAB_loop_item () {
                if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} ) {
                   $Name .= " [%.0f " . $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} . "]" ;
                }
+            } elsif ( $ChannelType eq "Temperature" ) {
+               $Name .= " [%.1f °C]" ;
             }
 
             if ( defined $global{Cons}{ChannelTypes}{$ChannelType}{openHAB}{ItemType} ) {
