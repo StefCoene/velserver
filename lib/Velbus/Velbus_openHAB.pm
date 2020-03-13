@@ -249,7 +249,8 @@ sub openHAB_loop_item () {
                if ( defined $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} ) {
                   $Name .= " [%.0f " . $global{Vars}{Modules}{Address}{$Address}{ChannelInfo}{$Channel}{Unit}{value} . "]" ;
                }
-            } elsif ( $ChannelType eq "Temperature" ) {
+            } elsif ( $ChannelType eq "Temperature" or
+                      $ChannelType eq "ThermostatTarget" ) {
                $Name .= " [%.1f °C]" ;
             }
 
