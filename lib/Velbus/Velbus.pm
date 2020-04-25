@@ -32,6 +32,8 @@ sub process_message {
          $message{prio} = "HI ";
       } elsif ( $message{prio} eq "FB" ) {
          $message{prio} = "lo " ;
+      } elsif ( $message{prio} eq "F9" ) { # Firmware update
+         $message{prio} = "lo " ;
       } else {
          push @{$message{text}}, "Not a valid prio: $message{prio}" ;
       }
@@ -318,6 +320,13 @@ sub process_message {
                   $memoryDec ++ ;
                }
 
+            } elsif ( $message{MessageType} eq '66' ) { # During firmware download
+               $message{MessageName} = "FirmwareDownload" ;
+            } elsif ( $message{MessageType} eq '67' ) { # During firmware download
+               $message{MessageName} = "FirmwareDownload" ;
+            } elsif ( $message{MessageType} eq '68' ) { # During firmware download
+               $message{MessageName} = "FirmwareDownload" ;
+
             } else {
                # If we have process information for this module type and message, process the message.
                if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}} and
@@ -442,9 +451,9 @@ sub process_message {
                                        $Channel = $hex[$byte] ;
                                        next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
                                        ($message{address},$Channel) = &channel_convert($message{address},$Channel,"ConvertChannel") ; # Convert it to a number
-                                       if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ) {
-                                          $Channel += $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ;
-                                       }
+                                       #if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ) {
+                                       #   $Channel += $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ;
+                                       #}
                                        $Channel = "0" . $Channel if $Channel < 10 and $Channel !~ /^0/ ;
                                        push @{$ChannelInfo{$message{address}}{$Channel}{$Name}{ValueList}}, $Value if defined $Value ;
                                        &log("logger_match","address=$message{address}: byte=$byte, key=$key, Channel=$Channel, Name=$Name, Value=$Value Convert eq Channel") ;
@@ -469,7 +478,7 @@ sub process_message {
 
                                           my $address ;
                                           ($address,$Channel) = &channel_convert($message{address},$Channel,"ChannelBitStatus") ; # Convert it to a number, no &bin_to_hex needed
-                                          next if $Channel > $MaxChannel ; # Skip the bits with no valida data
+                                          next if $Channel > $MaxChannel ; # Skip the bits with no valide data
                                           if ( $status eq "1" ) {
                                              $Value = "ON" ;
                                           } else {
@@ -1087,6 +1096,7 @@ sub channel_convert () {
          $channel = &hex_to_dec ($channel) ;
 
       # Channel is already in bit!
+      # ChannelBit is not used anymore?
       } elsif ( $type eq "ChannelBit" or $type eq "ChannelBitStatus" ) {
          $channel =~ /(0*)$/ ; # Filter out last 0's
          $channel = ($1 =~ tr/0//); # Count last 0's
@@ -1214,7 +1224,6 @@ sub button_long_pressed {
    usleep (20000) ;
    &send_message ($sock, $address, "00", "", "00", $channel, "00" ) ; # Channel just released
 }
-
 
 # Set the value of a dimmer. value should be between 0 and 100.
 # 1: socket
