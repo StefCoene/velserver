@@ -451,9 +451,10 @@ sub process_message {
                                     }
 
                                     # This is used to convert the status of Channels from a byte format to a status per Channel
-                                    # Used in processing ED message of Touch en PIR sensors
+                                    # Used in processing EA and ED message from Touch en PIR sensors
                                     # The place in the byte determines the channel and 0=released, 1=pressed
-                                    #    00100000 -> CH6 pressed, the rest is released
+                                    #    00100100 -> CH6 and CH3 pressed, the rest is released
+                                    # The number after the : determines the maximum channel.
                                     if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} =~ /ChannelBitStatus:(\d)/ ) {
                                        my $MaxChannel = $1 ; # The number of bits=channels
                                        my @bin = split //, $bin ;
@@ -482,23 +483,24 @@ sub process_message {
                                     # This is a special case were we have multiple channels in 1 byte.
                                     # When a bit is 1, the location determines the channel. so 00001001 -> channel 4 and 1
                                     # This is used for Type=ThermostatChannel
-                                    if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "ChannelBit" ) {
-                                       my @bin = split //, $bin ;
-                                       foreach my $bit (0..7) {
-                                          if ( $bin[$bit] eq "1" ) {
-                                             my @Channel = (0,0,0,0,0,0,0,0) ;
-                                             $Channel[$bit] = 1 ; # Flip the correct bit
-                                             $Channel = join "", @Channel ;
+                                    # 2020-04-25: not used anymore
+                                    #if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "ChannelBit" ) {
+                                    #   my @bin = split //, $bin ;
+                                    #   foreach my $bit (0..7) {
+                                    #      if ( $bin[$bit] eq "1" ) {
+                                    #         my @Channel = (0,0,0,0,0,0,0,0) ;
+                                    #         $Channel[$bit] = 1 ; # Flip the correct bit
+                                    #         $Channel = join "", @Channel ;
 
-                                             my $address ;
-                                             ($address,$Channel) = &channel_convert($message{address},$Channel,"ChannelBit") ; # Convert it to a number, no &bin_to_hex needed
-                                             $Channel += $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ; # Take into count the offset
-                                             $Channel = "0" . $Channel if $Channel < 10 and $Channel !~ /^0/ ;
-                                             &log("logger_match","address=$message{address}: byte=$byte, key=$key, Channel=$Channel, Name=$Name, Value=$Value Convert eq ChannelBit") ;
-                                             push @{$ChannelInfo{$address}{$Channel}{$Name}{ValueList}}, $Value ;
-                                          }
-                                       }
-                                    }
+                                    #         my $address ;
+                                    #         ($address,$Channel) = &channel_convert($message{address},$Channel,"ChannelBit") ; # Convert it to a number, no &bin_to_hex needed
+                                    #         $Channel += $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ; # Take into count the offset
+                                    #         $Channel = "0" . $Channel if $Channel < 10 and $Channel !~ /^0/ ;
+                                    #         &log("logger_match","address=$message{address}: byte=$byte, key=$key, Channel=$Channel, Name=$Name, Value=$Value Convert eq ChannelBit") ;
+                                    #         push @{$ChannelInfo{$address}{$Channel}{$Name}{ValueList}}, $Value ;
+                                    #      }
+                                    #   }
+                                    #}
 
                                  # Do we have a channel?
                                  # TODO: is there a message that we don't have a Channel??
