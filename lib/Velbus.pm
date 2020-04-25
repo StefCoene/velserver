@@ -21,13 +21,13 @@ use database ;
 # Our own functions:
 use Velbus::Velbus ;
 use Velbus::Velbus_database ;
+use Velbus::Velbus_helper ;
 use Velbus::Velbus_data_protocol_auto ;
 use Velbus::Velbus_data_protocol_memory ;
 use Velbus::Velbus_data_protocol_messages ;
 use Velbus::Velbus_data_protocol_channels ;
 use Velbus::Velbus_data_channels ;
 use Velbus::Velbus_data ;
-use Velbus::Velbus_helper ;
 use Velbus::Velbus_openHAB ;
 use Velbus::Velbus_log ;
 
