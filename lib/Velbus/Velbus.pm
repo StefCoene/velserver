@@ -39,7 +39,6 @@ sub process_message {
       # RTR_size = 40 > Scan message
       if ( $message{RTR_size} eq "40" ) {
          push @{$message{text}}, "Scan" ;
-         #my $sql = "insert into `modules` (`address`, `status`, `date`) VALUES (?, ?, NOW() ) ON DUPLICATE KEY UPDATE `status`=values(status), `date`=values(date)" ;
          my $sql = "replace into `modules` (`address`, `type`, `status`, `date`) VALUES (?, '', ?, CURRENT_TIMESTAMP )" ;
          &do_query ($global{dbh},$sql, $message{address}, "Start scan") ;
 
@@ -56,7 +55,7 @@ sub process_message {
             }
 
             &do_query ($global{dbh},"replace into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", $message{address}, $message{ModuleType}, "Found") ;
-            $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $message{ModuleType} ;
+            $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $message{ModuleType} ; # Remember ModuleType per address
 
             # The numbers in $file{Cons}{ModuleType}{$message{ModuleType}}{SerialLow} are in DATABYTE numbers, so we have to unshift hex untill they match
             unshift @hex ,"" ; unshift @hex ,"" ; unshift @hex ,"" ;
@@ -88,20 +87,17 @@ sub process_message {
                # TODO: when an unknown module is found: trigger a scan
                if ( defined $global{Vars}{Modules}{Address}{$message{address}} and
                             $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ne '' ) {
-                  $message{ModuleType}    = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ;
+                  $message{ModuleType} = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ;
                } else {
                   push @{$message{text}}, "No module type found for this address" ;
                }
             }
 
             # 2/2: Search the name of the message.
-            # This depends if it's a broadcast message or not.
-            # It also depends on the type of module.
+            # This can be a Broadcast message or a message connected to a ModuleType
             $message{MessageName} .= "Unknown :: " ;
-            #if ( $message{address} eq "00" ) { # 00 -> broadcast message, name is independent of the type
-               if ( defined $global{Cons}{MessagesBroadCast}{$message{MessageType}}{Name} ) {
-                  $message{MessageName} = $global{Cons}{MessagesBroadCast}{$message{MessageType}}{Name} ;
-                  #}
+            if ( defined $global{Cons}{MessagesBroadCast}{$message{MessageType}}{Name} ) {
+               $message{MessageName} = $global{Cons}{MessagesBroadCast}{$message{MessageType}}{Name} ;
             } else {
                if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}} and
                     defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}} and
