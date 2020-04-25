@@ -3,17 +3,21 @@ All the information is stored in %global.
 
 - $global{Cons} contains all the fixed data
   - this is defined in the Velbus_data_*.pm files and will never change
-- $global{Vars} contains all variabele data
+- $global{Vars} contains all variable data
   - this is all the information extracted from the messages
 
 # Parsing messages
-We store information about the current message in %message.
+When a message is parsed, the data about the that message is stored in %message:
 
 - $message{address}: the address of this message.
 - $message{MessageType}: the hex code of the message
 
+We also check for correct STX, ETX, Prio and checksum.
+
+Messages are parsed with subfunction process_message in file lib/Velbus.pm.
+
 ## Scan message
-A Scan message has RTR of 40.
+A Scan message has a RTR of 40.
 
 This is saved in the database.
 
@@ -25,57 +29,70 @@ What info do we extract from the message:
    - found in message, but location depends on ModuleType
 
 What information do we need:
-- location of SerialLow, SerialHigh, MemoryMap, Buildyear and BuildWeek per ModuleType
-  - $global{Cons}{ModuleType}{$message{ModuleType}}{SerialLow}
+- location of SerialLow, SerialHigh, MemoryMap, Buildyear and BuildWeek per ModuleType:
+  - $global{Cons}{ModuleTypes}{$message{ModuleType}}{SerialLow}
+  - $global{Cons}{ModuleTypes}{$message{ModuleType}}{SerialHigh}
+  - $global{Cons}{ModuleTypes}{$message{ModuleType}}{MemoryMap}
+  - $global{Cons}{ModuleTypes}{$message{ModuleType}}{Buildyear}
+  - $global{Cons}{ModuleTypes}{$message{ModuleType}}{BuildWeek}
 
 What do we remember:
 - mapping bewtween address and ModuleType: address -> ModuleType
   - $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $message{ModuleType}
 
+## All other message
+For all messages, the message hex code is stored in $message{MessageType}.
+
+Most of the messages will give some information about channels. This information will be stored in %ChannelInfo.
+When the message is parsed, the data in %ChannelInfo will be processed.
+
 ## Simple messages
 ### This is done for all messages:
 What info do we extract from the message:
-- extract the address from the message
-  - if the address is 00, this is a broadcast message and we don't need a ModuleType
+- Check the address from the message:
+  - if the address is 00, this is a broadcast message and we don't have a ModuleType
   - if the address is not 00, we know the ModuleType (see FF message: answer to a scan)
     - ModuleType can be found in $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type}
-- extract the message hex code and search the name of the message
+- Check for a name for the message based on $message{MessageType}:
   - search in the list of broadcast messages for a match
-  - or search in the list of messages per module type for a match
+  - or search in the list of messages per ModuleType for a match
 
 What information do we need:
-- list of broadcast messages with key = message hex code
+- list of broadcast messages with key = MessageType
   - $global{Cons}{MessagesBroadCast}{$message{MessageType}}{Name}
-- list of messages per module type with key = message hex code
+- list of messages per ModuleType with key = MessageType
   - $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{Name}
 
-### B0: Module sub type
+### B0: answer to a scan, contains module sub type
 What info do we extract from the message:
-- list of sub addresses
-- Thermostat address
+- list of SubAddresses if defined
+  - this is for touch panels, each page has it's own SubAddress
+- Thermostat address if defined
+  - this is for touch panels, it's the address used for the Thermostat and it's the last SubAddress for the touch panel
 
 What information do we need:
-- What sub address is the address for the thermostat:
+- What SubAddress is the address for the thermostat:
   - $global{Cons}{ModuleTypes}{$ModuleType}{ThermostatAddr}
-  - this is 0 or 3 depending on the type of touch
+  - this is 0 or 3 depending on the type of touch panel
 
 What do we remember
 - $global{Vars}{Modules}{SubAddress}{$SubAddr}{MasterAddress} = $message{address}
-  - We need the MasterAddress for a SubAddress
+  - This allows us to find the MasterAddress for a SubAddress
 - $global{Vars}{Modules}{SubAddress}{$SubAddr}{ChannelOffset}= $counter * 8
-  - We need the ChannelOffset for a SubAddress
+  - This is the channel offset for a SubAddress
+  - Channel 1 on the first SubAddress is channel 9 on the MasterAddress
 - $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{"SubAddr$counter"} = $SubAddr
   - We need a list of SubAddresses for each MasterAddress
 
 ### D8 and B7: Realtime clock update
-We just extract the date and time from the message and print it.
+We extract the date and time from the message and print it.
 
 ### E6: temperature
 What info do we extract from the message:
-- temperature
+- Reported temperature
 
 What information do we need:
-- What channel is the temperature chanel?
+- What channel is the temperature chanel for the ModuleType?
   - $global{Cons}{ModuleTypes}{$ModuleType}{TemperatureChannel}
 
 ### F0, F1, F2: channel name
@@ -85,7 +102,7 @@ What info do we extract from the message:
 
 What information do we need:
 - We need to extract the channel number from the message. There al multiple options:
-  - For some messages we simply use a mapping:
+  - For some channels we use a fixed mapping:
     - $global{Cons}{ModuleTypes}{'03'}{ChannelNumbers}{Name}{Map}{'03'}
     - $global{Cons}{ModuleTypes}{'09'}{ChannelNumbers}{Name}{Map}{'03'}
     - $global{Cons}{ModuleTypes}{'09'}{ChannelNumbers}{Name}{Map}{'0C'}
@@ -119,44 +136,74 @@ What information do we need
     - $global{Cons}{ModuleTypes}{'22'}{Memory}{'1'}{Address}{'03FE'}{Match}{'1'}{'%......[01][01]'}{Channel} = "01" ;
     - $global{Cons}{ModuleTypes}{'22'}{Memory}{'1'}{Address}{'03FE'}{Match}{'1'}{'%......[01][01]'}{SubName} = "Unit" ;
 
-## Complex messages
-The other messages are more complex to parse. How we have to parse them is defined in Velbus_data_protocol_messages.pm.
+## Other messages
+To parse the other messages, the content of the message is defined per MessageType and per ModuleType.
+This is defined Velbus_data_protocol_messages.pm.
 
 We either parse the message byte per byte or we parse the message in total:
 - $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}{Data}{PerByte}
 - $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}{Data}{PerMessage}
 
+For PerByte it's also possible to have different defintions based on the number of bytes in the message. This is done like this:
+- $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}{Data}{PerByte:<number of bytes>}
+
 ### PerByte
 We loop the 8 possible bytes in the message. Only do something if there is something defined for the byte (obviously).
 
 Per byte we can have multiple matches. This can be in binary format or in hex format. This can also be a regex and this is matched to the binary format.
-Example:
+Example for ModuleTypes=07, MessageType=07 and byte 1:
 - $global{Cons}{ModuleTypes}{'07'}{Messages}{'0F'}{Data}{PerByte}{'1'}{Match}
 
-Per match we can have this information if the byte matches:
-- Convert: convert the byte to something usefull
+Per match we can have this information:
+- Value: this can be informational text or the state of the channel (like ON, OFF, ...)
+- Channel: the channel number
+- Name
+- Convert: convert the byte to something else
   - Channel: calculate channel by counting the 0's after the 1
     - We also take in account the ChannelOffset (this is for touch panels with multiple addresses)
       - $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset}
     - We also change the address to the MasterAddress
       - $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress}
-  - ChannelBitStatus:7 and ChannelBitStatus:8: count 0's after the 1 for the channel number
-  - Counter: the byte in hex is the Value, there can multiple bytes so we have to append it to Value
+  - ChannelBitStatus:7 and ChannelBitStatus:8: the locations of the 1's in the byte in bit determines the channels that are on
+  - Counter: the byte in hex is the Value, there can multiple bytes so we have to append them together
   - Decimal: get the Value by converting the byte to decimal
-  - Divider: extract channel and Value from the byte
+  - Divider: extract Value (first 5 bits) and channel (last 3 bits) from the byte
   - Temperature: calculate temperature from the byte and store as Value
-- Value: this can be informational text or the state of the channel (like ON, OFF, ...)
-- Channel: the channel number
-- Name
-- openHAB: do we have to update openHAB
+  - openHAB: do we have to update openHAB
 
-Once all the bytes are processed, we can save the result. We need at least Channel and Value to do somehting usefull with the data.
+Once all the bytes are processed, we can save the result. We need at least Channel and Value to do somehting useful with the data.
 
-if openHAB is found, push the stat to openHAB.
+If openHAB info is found, push the status to openHAB.
 
 ### PerMessage
-There are only 2 options how to convert the message:
+There are 2 options how to convert the message:
 - SensorNumber & MemoText
   - parse all bytes and extract the text
 - LightSensor
   - take 2 bytes from the message and convert them to decimal
+
+## Processing %ChannelInfo
+This contains all information extracter from the message.
+The primary key is the address and the secondary key is the channel:
+- $ChannelInfo{$address}{$Channel}
+
+Some additional processing is needed for all information found in $ChannelInfo{$address}{$Channel}.
+We loop the keys in $ChannelInfo{$address}{$Channel} as $Name:
+- $Name=ThermostatChannel: calculate the correct channel by using $global{Cons}{ModuleTypes}{$message{ModuleType}}{TemperatureChannel}
+- $Name=CounterHex: we have a counter and this means we have to update and calculate some extra information:
+  - CounterRaw
+  - Counter: $CounterRaw / $ChannelInfo{$address}{$ChannelLoop}{Divider}{Value}
+  - CounterCurrent: calculate difference with previous Counter. This also uses the $global{Vars}{Modules}{Address}{$message{address}}{ChannelInfo}{$Channel}{Unit}{value}
+  - CounterRaw, Counter and CounterCurrent is pushed to openHAB
+- $Name=SensorType: this contains the sensortype
+- $Name=Divider,Temperature,ThermostatTarget
+  - Value is pushed to openHAB
+- $ChannelType=ButtonCounter: do nothing, data is already processed
+- $ChannelType=Dimmer,Blind,SensorNumber,LightSensor,Relay
+  - Value is pushed to openHAB
+- $ChannelType=Button
+  - if $value=released: set ON + OFF to openHAB for Button + OFF for ButtonLong
+  - if $value=longpressed: set ON + OFF to openHAB for ButtonLong
+- $ChannelType=Sensor,ThermostatChannel
+  - Value is pushed to openHAB
+
