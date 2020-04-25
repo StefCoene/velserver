@@ -79,9 +79,6 @@ sub init {
 
    # Get all modules from the database
    &get_all_modules_from_database ;
- 
-   # Find memory addresses for module name
-   &find_memory_addresses ;
 }
 
 return 1
