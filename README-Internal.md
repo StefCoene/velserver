@@ -2,7 +2,7 @@
 All the information is stored in `%global`.
 
 - `$global{Cons}` contains all the fixed data
-  - this is defined in the Velbus_data_*.pm files and will never change
+  - this is defined in the `Velbus_data_*.pm` files and will never change
 - `$global{Vars}` contains all variable data
   - this is all the information extracted from the messages
 
@@ -14,7 +14,7 @@ When a message is parsed, the data about the that message is stored in %message:
 
 We also check for correct STX, ETX, Prio and checksum.
 
-Messages are parsed with subfunction process_message in file lib/Velbus.pm.
+Messages are parsed with subfunction process_message in file `lib/Velbus.pm`.
 
 ## Scan message
 A Scan message has a RTR of 40.
@@ -41,7 +41,7 @@ What do we remember:
   - `$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type}` = `$message{ModuleType}`
 
 ## All other message
-For all messages, the message hex code is stored in $message{MessageType}.
+For all messages, the message hex code is stored in `$message{MessageType}`.
 
 Most of the messages will give some information about channels. This information will be stored in `%ChannelInfo`.
 When the message is parsed, the data in `%ChannelInfo` will be processed.
