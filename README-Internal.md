@@ -126,7 +126,7 @@ What information do we need
 - we have these type of memory addesses:
   - ModuleName: `$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{ModuleName}`
   - SensorName: `$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{SensorName}`
-  - Unit: $global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Unit}
+  - Unit: `$global{Cons}{ModuleTypes}{$message{ModuleType}}{Memory}{$MemoryKey}{Address}{$memory}{Unit}`
 - if the address is not 1 of the above types, we may have a memory that we need to match with a regex.
   - Example to match the unit of the counter on channel 01 of a VMB7IN
     - `$global{Cons}{ModuleTypes}{'22'}{Memory}{'1'}{Address}{'03FE'}{Match}{'1'}{'%......00'}{Value} = "reserved"`
