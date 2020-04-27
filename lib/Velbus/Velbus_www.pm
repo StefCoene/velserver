@@ -232,7 +232,7 @@ sub www_service () {
             $json{Error} = "ACTION_NOT_SUPPORTED_FOR_CHANNELTYPE_AND_MODULETYPE" ;
    
          # 8: If action = Set we need a value
-         } elsif ( $json{ReqAction} eq "Set" and ! defined $json{ReqValue} ) {
+         } elsif ( $json{ReqAction} eq "Set" and ! defined $json{ReqValue} and $json{ReqChannelType} ne "Memo" ) {
             $json{Error} = "NO_VALUE_FOR_SET" ;
    
          } else {
@@ -257,12 +257,23 @@ sub www_service () {
             } else { # $json{ReqAction} eq "Set"
                # 1: Check the Value with Action=Set to make sure it's valid
                foreach my $Match (sort keys %{$global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}} ) {
-                  if ( $json{ReqValue} =~ /^$Match$/ ) {
+                  if ( $Match eq "" and $json{ReqValue} eq "" ) {
                      $json{ReqMatch} = $json{ReqValue} ;
                      if ( defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ) {
                         $json{Action} = $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ;
                      } else {
                         $json{Action} = $Match ;
+                     }
+                     last ;
+                  } else {
+                     if ( $json{ReqValue} =~ /^$Match$/ ) {
+                        $json{ReqMatch} = $json{ReqValue} ;
+                        if ( defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ) {
+                           $json{Action} = $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ;
+                        } else {
+                           $json{Action} = $Match ;
+                        }
+                        last ;
                      }
                   }
                }
@@ -852,6 +863,7 @@ sub www_print_channel_tags () {
                $html .= "    <td>$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{value}<br />$global{Vars}{Modules}{Address}{$address}{ChannelInfo}{$Channel}{Name}{date}</td>\n" ;
 
                $html .= "    <td>" ;
+
                if ( $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} eq "Relay" or
                     $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} eq "Button" or
                     $global{Cons}{ModuleTypes}{$ModuleType}{Channels}{$Channel}{Type} eq "Dimmer" ) {
