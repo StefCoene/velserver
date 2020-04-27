@@ -88,7 +88,7 @@ sub process_message {
                # Searching module type. This will only work when the modules responded to a scan.
                # TODO: when an unknown module is found: trigger a scan
                if ( defined $global{Vars}{Modules}{Address}{$message{address}} and
-                            $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ne '' ) {
+                            $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ne "" ) {
                   $message{ModuleType} = $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} ;
                } else {
                   push @{$message{text}}, "No module type found for this address" ;
@@ -190,8 +190,8 @@ sub process_message {
                   }
                }
 
-            } elsif ( $message{MessageType} eq 'CC' or # COMMAND_MEMORY_DATA
-                      $message{MessageType} eq 'FE' ) { # COMMAND_MEMORY_DATA
+            } elsif ( $message{MessageType} eq "CC" or # COMMAND_MEMORY_DATA
+                      $message{MessageType} eq "FE" ) { # COMMAND_MEMORY_DATA
                my $memory = shift @hex ; $memory .=  shift @hex ;
 
 
@@ -224,7 +224,7 @@ sub process_message {
                         ${$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleNameAddress}}[$number] = $char if $hex ne "FF" ;
 
                         if ( $command eq "Save" ) {
-                           my $ModuleName = join '', @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleNameAddress}} ;
+                           my $ModuleName = join "", @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleNameAddress}} ;
                            &update_modules_info ($message{address}, "ModuleName", $ModuleName) ;
                            push @{$message{text}}, "ModuleName=$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{ModuleName}" ;
                         }
@@ -239,7 +239,7 @@ sub process_message {
                         ${$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}{$Channel}}[$number] = $char if $hex ne "FF" ;
 
                         if ( $command eq "Save" ) {
-                           my $SensorName = join '', @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}{$Channel}} ;
+                           my $SensorName = join "", @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{SensorNameAddress}{$Channel}} ;
                            &update_modules_channel_info ($message{address}, $Channel, "Name", $SensorName) ;
                            push @{$message{text}}, "SensorName=$SensorName" ;
                         }
@@ -254,7 +254,7 @@ sub process_message {
                         ${$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{UnitAddress}{$Channel}}[$number] = $char if $hex ne "00" and $hex ne "FF" ;
 
                         if ( $command eq "Save" ) {
-                           my $Unit = join '', @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{UnitAddress}{$Channel}} ;
+                           my $Unit = join "", @{$global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{UnitAddress}{$Channel}} ;
                            &update_modules_channel_info ($message{address}, $Channel, "Unit", $Unit) ;
                            push @{$message{text}}, "Unit=$Unit" ;
                         }
@@ -320,11 +320,11 @@ sub process_message {
                   $memoryDec ++ ;
                }
 
-            } elsif ( $message{MessageType} eq '66' ) { # During firmware download
+            } elsif ( $message{MessageType} eq "66" ) { # During firmware download
                $message{MessageName} = "FirmwareDownload" ;
-            } elsif ( $message{MessageType} eq '67' ) { # During firmware download
+            } elsif ( $message{MessageType} eq "67" ) { # During firmware download
                $message{MessageName} = "FirmwareDownload" ;
-            } elsif ( $message{MessageType} eq '68' ) { # During firmware download
+            } elsif ( $message{MessageType} eq "68" ) { # During firmware download
                $message{MessageName} = "FirmwareDownload" ;
 
             } else {
@@ -607,7 +607,7 @@ sub process_message {
                         my $low  = shift @hex ;
                         my $LightSensor = &hex_to_dec ($high . $low) ;
 
-                        $ChannelInfo{$message{address}}{'99'}{LightSensor}{Value} = $LightSensor ;
+                        $ChannelInfo{$message{address}}{"99"}{LightSensor}{Value} = $LightSensor ;
                      }
                   }
 
@@ -933,7 +933,7 @@ sub get_status () {
             $memory =~ /(..)(..)/ ;
             my $hex1 = $1 ;
             my $hex2 = $2 ;
-            &send_message ($sock, $address, 'FD', undef, $hex1 ,$hex2) ;
+            &send_message ($sock, $address, "FD", undef, $hex1, $hex2) ;
          }
       }
    }
@@ -950,17 +950,17 @@ sub get_status () {
       }
    }
 
-   if ( $type eq '22' ) { # VMB7IN
+   if ( $type eq "22" ) { # VMB7IN
       &get_status_VMB7IN ($sock, $address) ;
    }
 
    # Loop the channels and get names, status, ...
    foreach my $channel (@channels) {
-      if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'EF'} ) { # EF = COMMAND_CHANNEL_NAME_REQUEST
-         &send_message ($sock, $address, 'EF', $channel) ;
+      if ( $global{Cons}{ModuleTypes}{$type}{Messages}{"EF"} ) { # EF = COMMAND_CHANNEL_NAME_REQUEST
+         &send_message ($sock, $address, "EF", $channel) ;
       }
-      if ( $global{Cons}{ModuleTypes}{$type}{Messages}{'FA'} ) { # FA = COMMAND_RELAY_STATUS_REQUEST | COMMAND_MODULE_STATUS_REQUEST
-         &send_message ($sock, $address, 'FA', $channel) ;
+      if ( $global{Cons}{ModuleTypes}{$type}{Messages}{"FA"} ) { # FA = COMMAND_RELAY_STATUS_REQUEST | COMMAND_MODULE_STATUS_REQUEST
+         &send_message ($sock, $address, "FA", $channel) ;
       }
    }
 
@@ -982,7 +982,7 @@ sub get_status_VMB7IN () {
    }
 
    # Request counter type: kWh, m3, liter:
-   &send_message ($sock, $address, 'FD', undef, '03' ,'FE') ;
+   &send_message ($sock, $address, "FD", undef, "03" ,"FE") ;
 }
 
 # Used by logger.pl for converting the channel hex value to the correct channel id
@@ -990,11 +990,17 @@ sub get_status_VMB7IN () {
 # 2: channel
 # 3: type:
 #     - Name: message that contains the name of a channel
+#        - Channel input is in hex
 #     - SensorNumber: message AC = transmitting sensor as text
+#        - Channel input is in hex
 #     - ChannelBit/ChannelBitStatus: channel is in bit!
+#        - Channel input is in bit
 #     - ConvertChannel: when parsing a message, we have to decode the channel
-#     - MakeMessage
+#        - Channel input is in hex
 #     - SimulateButtonPressed
+#        - Channel input is in decimal
+#     - MakeMessage
+#        - Channel input is in decimal
 sub channel_convert () {
    my $address = $_[0] ; # Optional
    my $channel = $_[1] ;
@@ -1104,7 +1110,7 @@ sub update_module_status () {
       my $address = $global{cgi}{params}{address} ;
 
       # Only proceed if we have a module type for that address
-      if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} and $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ne '' ) {
+      if ( defined $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} and $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ne "" ) {
          my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
 
          # If we have a channel, query only that channel of the module
@@ -1124,7 +1130,7 @@ sub update_module_status () {
       # Loop all addresses if no address is specified
       foreach my $address (sort keys (%{$global{Vars}{Modules}{Address}})) {
          my $type = $global{Vars}{Modules}{Address}{$address}{ModuleInfo}{type} ;
-         next if $type eq '' ; # Skip when we have no type
+         next if $type eq "" ; # Skip when we have no type
          $output .= "<p>Query status of module found on address $address, type $type</p>\n" ;
          $output .= &get_status ($sock,"$address","$type") ;
       }
@@ -1146,9 +1152,9 @@ sub button_pressed {
    # DATABYTE2 = Channel just pressed
    # DATABYTE3 = Channel just released
    # DATABYTE4 = Channel long pressed
-   &send_message ($sock, $address, "00", "", $channel, "00", "00" ) ; # Channel just pressed
+   &send_message ($sock, $address, "00", undef, $channel, "00", "00" ) ; # Channel just pressed
    usleep (20000) ;
-   &send_message ($sock, $address, "00", "", "00", $channel, "00" ) ; # Channel just released
+   &send_message ($sock, $address, "00", undef, "00", $channel, "00" ) ; # Channel just released
 }
 
 # Simulate a long button press by sending 'Channel just pressed', sleep 20 ms, send 'Channel long pressed', sleep 20 ms, send 'Channel just release'
@@ -1164,11 +1170,11 @@ sub button_long_pressed {
    # DATABYTE2 = Channel just pressed
    # DATABYTE3 = Channel just released
    # DATABYTE4 = Channel long pressed
-   &send_message ($sock, $address, "00", "", $channel, "00", "00" ) ; # Channel just pressed
+   &send_message ($sock, $address, "00", undef, $channel, "00", "00" ) ; # Channel just pressed
    usleep (20000) ;
-   &send_message ($sock, $address, "00", "", "00", "00", $channel ) ; # Channel long pressed
+   &send_message ($sock, $address, "00", undef, "00", "00", $channel ) ; # Channel long pressed
    usleep (20000) ;
-   &send_message ($sock, $address, "00", "", "00", $channel, "00" ) ; # Channel just released
+   &send_message ($sock, $address, "00", undef, "00", $channel, "00" ) ; # Channel just released
 }
 
 # Set the value of a dimmer. value should be between 0 and 100.
@@ -1363,9 +1369,9 @@ sub set_temperature_cohe_mode {
    my $address     = $_[1] ;
    my $temperature = $_[2] ;
    if ( $temperature eq 1 ) {
-      &send_message ($sock, $address, "DF","00") ; # COMMAND_SET_COOLING_MODE
+      &send_message ($sock, $address, "DF", "00") ; # COMMAND_SET_COOLING_MODE, "DATABYTE2 = don't care" so we set it to 00
    } else {
-      &send_message ($sock, $address, "E0","00") ; # COMMAND_SET_HEATING_MODE
+      &send_message ($sock, $address, "E0", "00") ; # COMMAND_SET_HEATING_MODE, "DATABYTE2 = don't care" so we set it to 00
    }
 }
 
@@ -1448,7 +1454,7 @@ sub send_memo () {
 
    # We can send 64 characters and it's 5 characters / message. So we need 13 messages.
    foreach my $i (0..12) {
-      my @message = ('00', '00', '00', '00', '00', '00') ; # Pre-fill the message with 00
+      my @message = ("00", "00", "00", "00", "00", "00") ; # Pre-fill the message with 00
       foreach my $j (1..5) { # Start from 1 because 0 is for the offset
          my $place = $i * 5 + $j ;
          next if $place > 64 ;
@@ -1456,7 +1462,7 @@ sub send_memo () {
          $message[$j] = $char ;
       }
       $message[0] = &dec_to_hex($i * 5) ; # First element is the offset of the character
-      &send_message ($sock, $address, 'AC', 'FF', @message) ;
+      &send_message ($sock, $address, "AC", "00", @message) ; # COMMAND_TEXT, "DATABYTE2 = don't care" so we set it to 00
    }
 }
 
