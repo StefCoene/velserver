@@ -174,6 +174,8 @@ sub www_service () {
       if ( defined $json{ReqAction} and $json{ReqAction} eq "TimeSync" ) {
          &broadcast_datetime($sock) ;
    
+      # 2020-04-27: Action = Memo -> not used anymore
+      #    replaced by Action=Set + POST with memo text
       # Set memo text: only for VMBGPOD
       } elsif ( defined $json{ReqAction} and $json{ReqAction} eq "Memo" ) {
          #my $test = Dumper \%{$global{Cons}{ChannelTypes}{Memo}} ;
