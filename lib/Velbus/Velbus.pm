@@ -71,8 +71,8 @@ sub process_message {
             if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{MemoryMap} ) {
                &update_modules_info ($message{address}, "MemoryMap", $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{MemoryMap}]) ;
             }
-            if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{Buildyear} ) {
-               &update_modules_info ($message{address}, "BuildYear", $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{Buildyear}]) ;
+            if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{BuildYear} ) {
+               &update_modules_info ($message{address}, "BuildYear", $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{BuildYear}]) ;
             }
             if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{BuildWeek} ) {
                &update_modules_info ($message{address}, "BuildWeek", $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{BuildWeek}]) ;
