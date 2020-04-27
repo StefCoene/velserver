@@ -41,7 +41,7 @@ while (1) {
          print "No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}\n" ;
          &log("logger",&timestamp . " No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
       } else {
-         print "Conected to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}\n" ;
+         print "Connected to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}\n" ;
          &log("logger",&timestamp . " Connected to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
       }
    }
