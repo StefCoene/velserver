@@ -53,15 +53,15 @@ sub process {
       $response->protocol("HTTP/1.0") ;
       $response->request($r) ;
 
+      # For Memo, we do a POST and so we get the Value in the content of the request.
+      if ( defined $r->{_content} ) { # and $r->{_content} ne "" ) {
+         $global{cgi}{params}{Value} = $r->{_content} ;
+      }
+
       # Get the CGI parameters
       my $u = URI->new($r->uri->as_string) ;
       foreach ($u->query_param) {
          $global{cgi}{params}{$_} = $u->query_param($_) ;
-      }
-
-      # For Memo, we do a POST and so we get the Value in the content of the request.
-      if ( defined $r->{_content} and  $r->{_content} ne "" ) {
-         $global{cgi}{params}{Value} = $r->{_content} ;
       }
 
       # Depending on the path, we have a webservice call or we need to serve a web page
