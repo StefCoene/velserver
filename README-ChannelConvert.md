@@ -13,7 +13,35 @@ The function returns the channel but also the address we need to use.
 This is needed for touch panels with multiple addresses where the address that needs to be used can change if the input address and channel is that of one of the sub addresses.
 
 # json syntax
-Some module types have a ChannelNumbers configuration:
+Some messages have a Convert option in the PerMessage Data section and some messages have a Convert option in the PerByte Data section:
+```
+{
+    "ModuleTypes": {
+        "<ModuleType>": {
+            "Messages": {
+                "<MessageType>": {
+                    "Data>": {
+                        "PerMessage": {
+                            "Convert": "SensorNumber or MemoText",
+                        }
+                        "PerByte": {
+                            "<byte>: {
+                                "Match" : {
+                                    <regexp>"" : {
+                                       "Convert" : "Channel or Channel:<number>"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+Some module types have a ChannelNumbers configuration. This defines how we have to convert the channel numbers:
 ```
 {
     "ModuleTypes": {
@@ -31,41 +59,25 @@ Some module types have a ChannelNumbers configuration:
 }
 ```
 
-Some messages have a Convert option:
-```
-{
-    "ModuleTypes": {
-        "<ModuleType>": {
-            "Messages": {
-                "<MessageType>": {
-                    "Data>": {
-                        "PerMessage": {
-                            "Convert": "MemoText",
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
 With possible values for <Case>:
-* Name
-  * used when message F0/F1/F2 is received
-  * these messages contains the channel name
-* SensorNumber
-  * used when PerMessage :: Convert = SensorNumber or MemoText
-* ConvertChannel
+  * Name
+    * used when message F0/F1/F2 is received
+    * these messages contains the channel name
+    * function channel_convert executed with case=Name
+  * SensorNumber
+    * used when PerMessage :: Convert = SensorNumber or MemoText
+    * function channel_convert executed with case=SensorNumber
+
+* function channel_convert executed with case=Channel
   * used when PerByte :: Convert = Channel
-* ChannelBitStatus
+* function channel_convert executed with case=ChannelBitStatus
   * used when PerByte :: Convert = ChannelBitStatus:
-* MakeMessage
+* function channel_convert executed with case=MakeMessage
   * used when we place a message on the bus
-* SimulateButtonPressed
+* function channel_convert executed with case=SimulateButtonPressed
   * used when we create a message that simulates a buutton press
 
-# Logic:
+# Logic
 * if there is a "Map" for "<Case>" and "<ChannelFrom>" for the module type
   * return "<ChannelTo>"
 * if there is a "Convert": "hex" for the module type
@@ -76,7 +88,7 @@ With possible values for <Case>:
   * convert input channel from hex to decimal and return the value
 * if <Case> = ChannelBitStatus
   * input channel is already in binary so count the 0's after the 1 and return the value
-* if <Case> = ConvertChannel
+* if <Case> = Channel
   * convert input channel from hex to decimal
   * if the address is a sub address, return the master address and add the required offset to the channel
 * if <Case> = MakeMessage or SimulateButtonPressed
