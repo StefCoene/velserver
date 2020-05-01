@@ -450,7 +450,7 @@ sub process_message {
                                     if ( $Process{Data}{$PerByte}{$byte}{Match}{$key}{Convert} eq "Channel" ) {
                                        $Channel = $hex[$byte] ;
                                        next if $Channel eq "00" ; # If Channel is 00, that means the byte is useless
-                                       ($message{address},$Channel) = &channel_convert($message{address},$Channel,"ConvertChannel") ; # Convert it to a number
+                                       ($message{address},$Channel) = &channel_convert($message{address},$Channel,"Channel") ; # Convert it to a number
                                        #if ( $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ) {
                                        #   $Channel += $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{$message{MessageType}}{ChannelOffset} ;
                                        #}
@@ -478,7 +478,7 @@ sub process_message {
 
                                           my $address ;
                                           ($address,$Channel) = &channel_convert($message{address},$Channel,"ChannelBitStatus") ; # Convert it to a number, no &bin_to_hex needed
-                                          next if $Channel > $MaxChannel ; # Skip the bits with no valide data
+                                          next if $Channel > $MaxChannel ; # Skip the bits with no valid data
                                           if ( $status eq "1" ) {
                                              $Value = "ON" ;
                                           } else {
@@ -995,7 +995,7 @@ sub get_status_VMB7IN () {
 #        - Channel input is in hex
 #     - ChannelBit/ChannelBitStatus: channel is in bit!
 #        - Channel input is in bit
-#     - ConvertChannel: when parsing a message, we have to decode the channel
+#     - Channel: when parsing a message, we have to decode the channel
 #        - Channel input is in hex
 #     - SimulateButtonPressed
 #        - Channel input is in decimal
@@ -1055,7 +1055,7 @@ sub channel_convert () {
          $channel ++ ;
 
       # Button pressed or Sensor triggered
-      } elsif ( $type eq "ConvertChannel" ) {
+      } elsif ( $type eq "Channel" ) {
          $channel = &hex_to_bin ($channel) ;
          $channel =~ /(0*)$/ ; # Filter out last 0's
          $channel = ($1 =~ tr/0//); # Count last 0's
