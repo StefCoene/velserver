@@ -13,6 +13,8 @@ The function returns the channel but also the address we need to use.
 This is needed for touch panels with multiple addresses where the address that needs to be used can change if the input address and channel is that of one of the sub addresses.
 
 # json syntax
+See also https://www.docum.org/velserver/?action=ChannelNumbers
+
 Some messages have a Convert option in the PerMessage Data section and some messages have a Convert option in the PerByte Data section:
 ```
 {
