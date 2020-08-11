@@ -59,23 +59,23 @@ sub process_message {
             &do_query ($global{dbh},"replace into `modules` (`address`, `type`, `status`, `date`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", $message{address}, $message{ModuleType}, "Found") ;
             $global{Vars}{Modules}{Address}{$message{address}}{ModuleInfo}{type} = $message{ModuleType} ; # Remember ModuleType per address
 
-            # The numbers in $file{Cons}{ModuleType}{$message{ModuleType}}{SerialLow} are in DATABYTE numbers, so we have to unshift hex untill they match
+            # The numbers in $global{Cons}{ModuleTypes}{$message{ModuleType}}{SerialLow} are in DATABYTE numbers, so we have to unshift hex untill they match
             unshift @hex ,"" ; unshift @hex ,"" ; unshift @hex ,"" ;
 
-            if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{SerialLow} ) {
-               &update_modules_info ($message{address}, "Serial1",   $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{SerialLow}]) ;
+            if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{FF}{Data}{SerialLow} ) {
+               &update_modules_info ($message{address}, "Serial1",   $hex[$global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{FF}{Data}{SerialLow}]) ;
             }
-            if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{SerialHigh} ) {
-               &update_modules_info ($message{address}, "Serial2",   $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{SerialHigh}]) ;
+            if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{FF}{Data}{SerialHigh} ) {
+               &update_modules_info ($message{address}, "Serial2",   $hex[$global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{FF}{Data}{SerialHigh}]) ;
             }
-            if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{MemoryMap} ) {
-               &update_modules_info ($message{address}, "MemoryMap", $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{MemoryMap}]) ;
+            if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{FF}{Data}{MemoryMap} ) {
+               &update_modules_info ($message{address}, "MemoryMap", $hex[$global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{FF}{Data}{MemoryMap}]) ;
             }
-            if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{BuildYear} ) {
-               &update_modules_info ($message{address}, "BuildYear", $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{BuildYear}]) ;
+            if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{FF}{Data}{BuildYear} ) {
+               &update_modules_info ($message{address}, "BuildYear", $hex[$global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{FF}{Data}{BuildYear}]) ;
             }
-            if ( defined $file{Cons}{ModuleType}{$message{ModuleType}}{BuildWeek} ) {
-               &update_modules_info ($message{address}, "BuildWeek", $hex[$file{Cons}{ModuleType}{$message{ModuleType}}{BuildWeek}]) ;
+            if ( defined $global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{FF}{Data}{BuildWeek} ) {
+               &update_modules_info ($message{address}, "BuildWeek", $hex[$global{Cons}{ModuleTypes}{$message{ModuleType}}{Messages}{FF}{Data}{BuildWeek}]) ;
             }
 
          } else {
