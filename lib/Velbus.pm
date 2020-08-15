@@ -90,12 +90,12 @@ sub init {
 # Download the protocol file if it's not found
 sub download_protocol_file {
    if ( -f $global{Config}{velserver}{PROTOCOLFILE} ) {
-      print "Protocol file found: $global{Config}{velserver}{PROTOCOLFILE}\n" ;
+      #print "Protocol file found: $global{Config}{velserver}{PROTOCOLFILE}\n" ;
    } else {
       my $output = `wget https://raw.githubusercontent.com/StefCoene/moduleprotocol/master/out/protocol.json -O $global{Config}{velserver}{PROTOCOLFILE} 2>&1` ;
       my $return = $? ;
       if ( $return eq "0" ) {
-         print "Protocol file download: $global{Config}{velserver}{PROTOCOLFILE}\n" ;
+         #print "Protocol file download: $global{Config}{velserver}{PROTOCOLFILE}\n" ;
       } else {
          print "ABORT: Protocol file NOT downloaded:\n" ;
          print "command: wget https://raw.githubusercontent.com/StefCoene/moduleprotocol/master/out/protocol.json -O $global{Config}{velserver}{PROTOCOLFILE}\n" ;
@@ -118,7 +118,7 @@ sub read_protocol_file {
          $global{Cons} = decode_json($json) ; # Knalt er nogal hard uit als er iets is met de json string
       } ;
       if ( defined $global{Cons} ) {
-         print "Protocol file parsed successful\n" ;
+         #print "Protocol file parsed successful\n" ;
       } else {
          print "ABORT: json syntax error in Protocol file $global{Config}{velserver}{PROTOCOLFILE}\n" ;
       }
