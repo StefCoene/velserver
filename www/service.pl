@@ -41,7 +41,8 @@ foreach my $param ($global{cgi}{CGI}->url_param()) {
    $global{cgi}{params}{$param} = $global{cgi}{CGI}->url_param($param) ;
 }
 
-my %json = &www_service ;
+my $sock = &open_socket ;
+my %json = &www_service ($sock) ;
 
 if ( exists $global{cgi}{params}{html} ) {
    print $session->header() ;

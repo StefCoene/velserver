@@ -31,7 +31,7 @@ my $d = HTTP::Daemon->new(
    ) ;
 
 if ( $d ) {
-   &log("webserver","Web Server started, server address: ", $d->sockhost(), ", server port: ", $d->sockport()) ;
+   &log("webserver",&timestamp . " Web Server started, server address: " . $d->sockhost(). ", server port: " . $d->sockport()) ;
    print "Web Server started, server address: ", $d->sockhost(), ", server port: ", $d->sockport(),"\n" ;
 
    while (my $c = $d->accept) {
@@ -39,7 +39,7 @@ if ( $d ) {
       threads->create(\&process, $c)->detach ;
    }
 } else {
-   &log("webserver","Web server not started on port $global{Config}{velserver}{WEBSERVERPORT}: $@") ;
+   &log("webserver",&timestamp . " Web server not started on port $global{Config}{velserver}{WEBSERVERPORT}: $@") ;
    print "Web server not started on port $global{Config}{velserver}{WEBSERVERPORT}: $@\n" ;
 }
 
@@ -47,7 +47,7 @@ sub process {
    my $c = shift ;
    while (my $r = $c->get_request) {
       &init ;
-      &log("webserver",sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
+      &log("webserver",&timestamp . sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
 
       my $response = new HTTP::Response("200") ;
       $response->protocol("HTTP/1.0") ;
@@ -67,7 +67,26 @@ sub process {
       # Depending on the path, we have a webservice call or we need to serve a web page
       my $path = $r->url->path ;
       if ( $path eq "/service" ) {
-         my %json = &www_service ;
+         my $sock ;
+
+         my %json ;
+         # Connected socket? Good!
+         if (defined $sock and $sock->connected) {
+
+         # No socket or socket exist but it's not connected? Open a new one.
+         } else {
+            $sock = &open_socket ;
+            if ( defined $sock ) {
+               &log("webserver",&timestamp . " OK: Connection opened to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
+            } else {
+               $json{Error} = "ERROR: No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}" ;
+               &log("webserver",&timestamp . " ERROR: No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
+            }
+         }
+
+         if ( $sock ) {
+            %json = &www_service ($sock) ;
+         }
          if ( defined $global{cgi}{params}{html} ) {
             $response->header(-type=>'text/html') ;
             my $html ;
@@ -83,14 +102,14 @@ sub process {
             $response->content($json) ;
             if ( defined $json{Status} ) {
                if ( $json{Status} eq "" ) {
-                  &log("webserver",sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
-                  &log("webserver","   $global{cgi}{params}{Item}: No Status") ;
+                  &log("webserver",&timestamp . sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
+                  &log("webserver",&timestamp . " $global{cgi}{params}{Item}: No Status") ;
                } else {
-                  &log("webserver","   $global{cgi}{params}{Item}: Status = $json{Status}") ;
+                  &log("webserver",&timestamp . " $global{cgi}{params}{Item}: Status = $json{Status}") ;
                }
             } else {
-               &log("webserver",sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
-               &log("webserver","    ERROR: $json") ;
+               &log("webserver",&timestamp . sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
+               &log("webserver",&timestamp . " ERROR: $json") ;
             }
          }
 
@@ -118,3 +137,4 @@ sub process {
    $c->daemon->close ; # close server socket in client
    $c->close ;
 }
+

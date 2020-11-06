@@ -66,7 +66,9 @@ sub openHAB_status () {
 # Push the status of 1 item to openHAB
 sub openHAB_status_push {
    my $item = $_[0] ;
-   my %return = &www_service ;
+
+   my $sock = &open_socket ;
+   my %return = &www_service ($sock) ;
 
    if ( defined $return{Status} ) {
       # If we have no info, do nothing

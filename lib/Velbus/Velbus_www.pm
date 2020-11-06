@@ -111,14 +111,13 @@ sub www_index () {
 
 # Webservice for remote access
 sub www_service () {
+   my $sock = $_[0] ;
    my %json ;
 
    # Save the original request parameters for debug purposes
    foreach (keys %{$global{cgi}{params}}) {
       $json{"Raw_$_"} = $global{cgi}{params}{$_} ;
    }
-
-   my $sock = &open_socket ;
 
    if ( ! defined $sock ) {
       $json{Error} = "No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}" ;
