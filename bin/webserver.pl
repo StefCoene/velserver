@@ -34,9 +34,23 @@ if ( $d ) {
    &log("webserver",&timestamp . " Web Server started, server address: " . $d->sockhost(). ", server port: " . $d->sockport()) ;
    print "Web Server started, server address: ", $d->sockhost(), ", server port: ", $d->sockport(),"\n" ;
 
+   my $sock = &open_socket ;
+
    while (my $c = $d->accept) {
+      # Connected socket? Good!
+      if ( defined $sock and $sock->connected ) {
+
+      # No socket or socket exist but it's not connected? Open a new one.
+      } else {
+         $sock = &open_socket ;
+         if ( defined $sock and $sock->connected ) {
+            &log("webserver",&timestamp . " OK: Connection opened to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
+         } else {
+            &log("webserver",&timestamp . " ERROR: No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
+         }
+      }
+      threads->create(\&process, $c, $sock)->detach ;
       #&process($c) ;
-      threads->create(\&process, $c)->detach ;
    }
 } else {
    &log("webserver",&timestamp . " Web server not started on port $global{Config}{velserver}{WEBSERVERPORT}: $@") ;
@@ -45,6 +59,8 @@ if ( $d ) {
 
 sub process {
    my $c = shift ;
+   my $sock = shift ;
+
    while (my $r = $c->get_request) {
       &init ;
       &log("webserver",&timestamp . sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
@@ -67,26 +83,15 @@ sub process {
       # Depending on the path, we have a webservice call or we need to serve a web page
       my $path = $r->url->path ;
       if ( $path eq "/service" ) {
-         my $sock ;
 
          my %json ;
-         # Connected socket? Good!
-         if (defined $sock and $sock->connected) {
 
-         # No socket or socket exist but it's not connected? Open a new one.
-         } else {
-            $sock = &open_socket ;
-            if ( defined $sock ) {
-               &log("webserver",&timestamp . " OK: Connection opened to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
-            } else {
-               $json{Error} = "ERROR: No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}" ;
-               &log("webserver",&timestamp . " ERROR: No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
-            }
-         }
-
-         if ( $sock ) {
+         if ( defined $sock and $sock->connected ) {
             %json = &www_service ($sock) ;
+         } else {
+            $json{Error} = "ERROR: No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}" ;
          }
+
          if ( defined $global{cgi}{params}{html} ) {
             $response->header(-type=>'text/html') ;
             my $html ;
@@ -102,7 +107,6 @@ sub process {
             $response->content($json) ;
             if ( defined $json{Status} ) {
                if ( $json{Status} eq "" ) {
-                  &log("webserver",&timestamp . sprintf("[%s] %s %s", $c->peerhost, $r->method, $r->uri->as_string)) ;
                   &log("webserver",&timestamp . " $global{cgi}{params}{Item}: No Status") ;
                } else {
                   &log("webserver",&timestamp . " $global{cgi}{params}{Item}: Status = $json{Status}") ;
@@ -125,6 +129,7 @@ sub process {
             close FILE ;
             $response->content($content)  ;
          }
+
       } else {
          &read_all_configs ; # Re-read the config files to pick up possible changes
          my $content = &www_index ;
