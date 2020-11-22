@@ -37,20 +37,24 @@ if ( $d ) {
    my $sock = &open_socket ;
 
    while (my $c = $d->accept) {
-      # Connected socket? Good!
-      if ( defined $sock and $sock->connected ) {
+
+      # The only way to make sure a socket is connected is to print something to it
+      if ( defined $sock ) {
+         print $sock "\n" or undef $sock 
+      }
+
+      if ( defined $sock ) {
 
       # No socket or socket exist but it's not connected? Open a new one.
       } else {
          $sock = &open_socket ;
-         if ( defined $sock and $sock->connected ) {
+         if ( defined $sock ) {
             &log("webserver",&timestamp . " OK: Connection opened to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
          } else {
             &log("webserver",&timestamp . " ERROR: No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}") ;
          }
       }
       threads->create(\&process, $c, $sock)->detach ;
-      #&process($c) ;
    }
 } else {
    &log("webserver",&timestamp . " Web server not started on port $global{Config}{velserver}{WEBSERVERPORT}: $@") ;
