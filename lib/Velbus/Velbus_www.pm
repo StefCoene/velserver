@@ -114,151 +114,222 @@ sub www_service () {
    my $sock = $_[0] ;
    my %json ;
 
-   # Save the original request parameters for debug purposes
-   foreach (keys %{$global{cgi}{params}}) {
-      $json{"Raw_$_"} = $global{cgi}{params}{$_} ;
-   }
-
    if ( ! defined $sock ) {
       $json{Error} = "No connection to $global{Config}{velbus}{HOST} port $global{Config}{velbus}{PORT}" ;
 
    } else {
-      # 1/2: Parse Item and search ChannelType, address and Channel
-      if ( defined $global{cgi}{params}{Item} ) {
-         $json{ReqItem} = $global{cgi}{params}{Item} ;
 
-         if ( $json{ReqItem} =~ /(.+)_(..)_(..)$/ ) {
-            $json{ReqChannelType} = $1 ;
-            $json{ReqAddress}     = $2 ;
-            $json{ReqChannel}     = $3 ;
-         } else {
-            $json{Error} = "Item param not correct" ;
-         }
-      }
-   
-      # 2/2: Set address if supplied as param
-      if ( ! defined $json{ReqAddress} and defined $global{cgi}{params}{Address} ) {
-         if ( $global{cgi}{params}{Address} =~ /^..$/ ) {
-            $json{ReqAddress} = $global{cgi}{params}{Address} ;
-         } else {
-            $json{Error} = "Address param not correct" ;
-         }
-      }
-   
-      # 2/2: Set channel if supplied as param
-      if ( ! defined $json{ReqChannel} and defined $global{cgi}{params}{Channel} ) {
-         if ( $global{cgi}{params}{Channel} =~ /^..$/ ) {
-            $json{ReqChannel} = $global{cgi}{params}{Channel} ;
-         } else {
-            $json{Error} = "Channel param not correct" ;
-         }
-      }
-   
-      # Parse options: find the moduletype based on the supplied address
-      if ( defined $json{ReqAddress} ) {
-         if ( defined $global{Vars}{Modules}{Address}{$json{ReqAddress}}{ModuleInfo}{type} and $global{Vars}{Modules}{Address}{$json{ReqAddress}}{ModuleInfo}{type} ne '' ) {
-            $json{ModuleType} = $global{Vars}{Modules}{Address}{$json{ReqAddress}}{ModuleInfo}{type} ;
-         }
-      }
-   
-      # Get Action and Value if supplied
-      $json{ReqAction} = $global{cgi}{params}{Action} if defined $global{cgi}{params}{Action} ;
-      $json{ReqValue}  = $global{cgi}{params}{Value}  if defined $global{cgi}{params}{Value} ;
-   
-      ###############
-      #my $test = Dumper \%{$global{Cons}{ChannelTypes}{$json{ReqChannelType}}} ;
-      #$json{Debug_ChannelType} = "<pre>" . $test . "</pre>" ;
-   
-      # Put the time on the bus
-      if ( defined $json{ReqAction} and $json{ReqAction} eq "TimeSync" ) {
-         &broadcast_datetime($sock) ;
-   
-      # 2020-04-27: Action = Memo -> not used anymore
-      #    replaced by Action=Set + POST with memo text
-      # Set memo text: only for VMBGPOD
-      } elsif ( defined $json{ReqAction} and $json{ReqAction} eq "Memo" ) {
-         #my $test = Dumper \%{$global{Cons}{ChannelTypes}{Memo}} ;
-         #$json{Debug_memo} = "<pre>" . $test . "</pre>" ;
-         #
-         # We need an address
-         if ( ! defined $json{ReqAddress} ) {
-            $json{Error} = "NO_ADDRESS" ;
-   
-         # Only ModuleType = 28 can receive Memo text
-         } elsif ( defined $json{ModuleType} and $json{ModuleType} eq "28" ) {
-            if ( defined $json{ReqValue} ) {
-               &send_memo ($sock, $json{ReqAddress}, $json{ReqValue}) ;
-               $json{Text} = $json{ReqValue} ;
-            } else {
-               &send_memo ($sock, $json{ReqAddress}) ; # Send nothing to clear the message
-            }
-   
-         } elsif ( defined $json{ModuleType} ) {
-            $json{Error} = "WRONG_MODULETYPE" ;
-   
-         } else {
-            $json{Error} = "NO_MODULETYPE" ;
-         }
-   
-      # The rest is for getting and setting an item
-      } elsif ( defined $json{ReqChannelType} ) {
+      # If CGI parameter action = Bulk, parse the body as json. The json is an array of requests.
+      if ( defined $global{cgi}{params}{Action} and $global{cgi}{params}{Action} eq "Bulk" ) {
 
-         # 1: if we have a ChannelType, it should be defined in $global{Cons}{ChannelTypes}
-         if ( ! defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}} ) {
-            $json{Error} = "UNSUPPORTED_CHANNELTYPE" ;
-   
-         # 2: we need an address
-         } elsif ( ! defined $json{ReqAddress} ) {
-            $json{Error} = "NO_ADDRESS" ;
-   
-         # 3: We need a Channel
-         } elsif ( ! defined $json{ReqChannel} ) {
-            $json{Error} = "NO_CHANNEL" ;
-   
-         # 4: we need a module type (based on parameter address)
-         } elsif ( ! defined $json{ModuleType} ) {
-            $json{Error} = "NO_MODULETYPE" ;
-   
-         # 5: there should be at least a Get for the ChannelTpe and ModuleType
-         } elsif ( ! defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Module}{$json{ModuleType}}{Action}{Get} ) {
-            $json{Error} = "CHANNELTYPE_NOT_SUPPORTED_FOR_MODULETYPE" ;
-   
-         # 6: we also need an action
-         } elsif ( ! defined $json{ReqAction} ) {
-            $json{Error} = "NO_ACTION" ;
-   
-         # 7: the action should be supported for the ChannelType and ModuleType
-         # This checks also that Action should be Get or Set
-         } elsif ( ! defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Module}{$json{ModuleType}}{Action}{$json{ReqAction}} ) {
-            $json{Error} = "ACTION_NOT_SUPPORTED_FOR_CHANNELTYPE_AND_MODULETYPE" ;
-   
-         # 8: If action = Set we need a value
-         } elsif ( $json{ReqAction} eq "Set" and ! defined $json{ReqValue} and $json{ReqChannelType} ne "Memo" ) {
-            $json{Error} = "NO_VALUE_FOR_SET" ;
-   
-         } else {
-            # Get the relevant data
-            my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`=? and `channel`=?","data",$json{ReqAddress},$json{ReqChannel}) ;
-            #my $data = Dumper \%data ;
-            #$json{Debug_data} = "<pre>" . $data . "</pre>" ;
+         # Parse the body as json
+         my $json = JSON->new->allow_nonref;
+         my $jsonbod ;
+         eval { $jsonbody = $json->decode($global{cgi}{params}{Value}) } ;
 
-            # Get Name if we have one
-            if ( $data{Name} ) {
-               $json{Name} = $data{Name}{value} ;
-            }
-   
-            # Get the data and add it to the json
-            if ( $json{ReqAction} eq "Get" ) {
-               if ( defined $data{$json{ReqChannelType}} ) {
-                  $json{Status} = $data{$json{ReqChannelType}}{value} ;
-               } else {
-                  $json{Error} = "NO_VALUE_FOR_GET:$json{ReqChannelType}" ;
+         if ( $jsonbody ) {
+
+            # The json should be an array
+            if ( ref $jsonbody eq "ARRAY" ) {
+
+               # Each element of the array is a request
+               foreach my $request (@{$jsonbody}) {
+                  my %request ;
+                     $request{Action}  = $request->{Action}  if defined $request->{Action} ;
+                     $request{Item}    = $request->{Item}    if defined $request->{Item} ;
+                     $request{Address} = $request->{Address} if defined $request->{Address} ;
+                     $request{Channel} = $request->{Channel} if defined $request->{Channel} ;
+                     $request{Value}   = $request->{Value}   if defined $request->{Value} ;
+
+                  my %jsonsub = &www_service_request($sock, \%request) ;
+
+                  # Save the original request parameters for debug purposes
+                  foreach (keys %request) {
+                     $jsonsub{"Raw_$_"} = $request{$_} ;
+                  }
+                  push @{$json{Bulk}}, \%jsonsub ;
                }
+            } else {
+               $json{Error} = "Action = Bulk and json data found in body but is not an array" ;
+            }
+         } else {
+            $json{Error} = "Action = Bulk and data found in body but invalid json" ;
+         }
 
-            } else { # $json{ReqAction} eq "Set"
-               # 1: Check the Value with Action=Set to make sure it's valid
-               foreach my $Match (sort keys %{$global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}} ) {
-                  if ( $Match eq "" and $json{ReqValue} eq "" ) {
+      # Use the CGI parameters as request
+      } else {
+         my %request ;
+            $request{Action}  = $global{cgi}{params}{Action}  if defined $global{cgi}{params}{Action} ;
+            $request{Item}    = $global{cgi}{params}{Item}    if defined $global{cgi}{params}{Item} ;
+            $request{Address} = $global{cgi}{params}{Address} if defined $global{cgi}{params}{Address} ;
+            $request{Channel} = $global{cgi}{params}{Channel} if defined $global{cgi}{params}{Channel} ;
+            $request{Value}   = $global{cgi}{params}{Value}   if defined $global{cgi}{params}{Value} ;
+
+         %json = &www_service_request($sock, \%request) ;
+
+         # Save the original request parameters for debug purposes
+         foreach (keys %request) {
+            $json{"Raw_$_"} = $request{$_} ;
+         }
+      }
+   }
+
+   return %json ;
+}
+
+# Take care of 1 API request
+sub www_service_request () {
+   my $sock = $_[0] ;
+   my %request = %{$_[1]} ;
+
+   my %json ;
+
+   # 1/2: Parse Item and search ChannelType, address and Channel
+   if ( defined $request{Item} ) {
+      $json{ReqItem} = $request{Item} ;
+
+      if ( $json{ReqItem} =~ /(.+)_(..)_(..)$/ ) {
+         $json{ReqChannelType} = $1 ;
+         $json{ReqAddress}     = $2 ;
+         $json{ReqChannel}     = $3 ;
+      } else {
+         $json{Error} = "Item param not correct" ;
+      }
+   }
+
+   # 2/2: Set address if supplied as param
+   if ( ! defined $json{ReqAddress} and defined $request{Address} ) {
+      if ( $request{Address} =~ /^..$/ ) {
+         $json{ReqAddress} = $request{Address} ;
+      } else {
+         $json{Error} = "Address param not correct" ;
+      }
+   }
+
+   # 2/2: Set channel if supplied as param
+   if ( ! defined $json{ReqChannel} and defined $request{Channel} ) {
+      if ( $request{Channel} =~ /^..$/ ) {
+         $json{ReqChannel} = $request{Channel} ;
+      } else {
+         $json{Error} = "Channel param not correct" ;
+      }
+   }
+
+   # Parse options: find the moduletype based on the supplied address
+   if ( defined $json{ReqAddress} ) {
+      if ( defined $global{Vars}{Modules}{Address}{$json{ReqAddress}}{ModuleInfo}{type} and $global{Vars}{Modules}{Address}{$json{ReqAddress}}{ModuleInfo}{type} ne '' ) {
+         $json{ModuleType} = $global{Vars}{Modules}{Address}{$json{ReqAddress}}{ModuleInfo}{type} ;
+      }
+   }
+   
+   # Get Action and Value if supplied
+   $json{ReqAction} = $request{Action} if defined $request{Action} ;
+   $json{ReqValue}  = $request{Value}  if defined $request{Value} ;
+
+   ###############
+   #my $test = Dumper \%{$global{Cons}{ChannelTypes}{$json{ReqChannelType}}} ;
+   #$json{Debug_ChannelType} = "<pre>" . $test . "</pre>" ;
+
+   # Put the time on the bus
+   if ( defined $json{ReqAction} and $json{ReqAction} eq "TimeSync" ) {
+      &broadcast_datetime($sock) ;
+
+   # 2020-04-27: Action = Memo -> not used anymore
+   #    replaced by Action=Set + POST with memo text
+   # Set memo text: only for VMBGPOD
+   } elsif ( defined $json{ReqAction} and $json{ReqAction} eq "Memo" ) {
+      #my $test = Dumper \%{$global{Cons}{ChannelTypes}{Memo}} ;
+      #$json{Debug_memo} = "<pre>" . $test . "</pre>" ;
+      #
+      # We need an address
+      if ( ! defined $json{ReqAddress} ) {
+         $json{Error} = "NO_ADDRESS" ;
+
+      # Only ModuleType = 28 can receive Memo text
+      } elsif ( defined $json{ModuleType} and $json{ModuleType} eq "28" ) {
+         if ( defined $json{ReqValue} ) {
+            &send_memo ($sock, $json{ReqAddress}, $json{ReqValue}) ;
+            $json{Text} = $json{ReqValue} ;
+         } else {
+            &send_memo ($sock, $json{ReqAddress}) ; # Send nothing to clear the message
+         }
+
+      } elsif ( defined $json{ModuleType} ) {
+         $json{Error} = "WRONG_MODULETYPE" ;
+
+      } else {
+         $json{Error} = "NO_MODULETYPE" ;
+      }
+
+   # The rest is for getting and setting an item
+   } elsif ( defined $json{ReqChannelType} ) {
+
+      # 1: if we have a ChannelType, it should be defined in $global{Cons}{ChannelTypes}
+      if ( ! defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}} ) {
+         $json{Error} = "UNSUPPORTED_CHANNELTYPE" ;
+
+      # 2: we need an address
+      } elsif ( ! defined $json{ReqAddress} ) {
+         $json{Error} = "NO_ADDRESS" ;
+
+      # 3: We need a Channel
+      } elsif ( ! defined $json{ReqChannel} ) {
+         $json{Error} = "NO_CHANNEL" ;
+
+      # 4: we need a module type (based on parameter address)
+      } elsif ( ! defined $json{ModuleType} ) {
+      $json{Error} = "NO_MODULETYPE" ;
+
+      # 5: there should be at least a Get for the ChannelTpe and ModuleType
+      } elsif ( ! defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Module}{$json{ModuleType}}{Action}{Get} ) {
+         $json{Error} = "CHANNELTYPE_NOT_SUPPORTED_FOR_MODULETYPE" ;
+
+      # 6: we also need an action
+      } elsif ( ! defined $json{ReqAction} ) {
+         $json{Error} = "NO_ACTION" ;
+
+      # 7: the action should be supported for the ChannelType and ModuleType
+      # This checks also that Action should be Get or Set
+      } elsif ( ! defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Module}{$json{ModuleType}}{Action}{$json{ReqAction}} ) {
+         $json{Error} = "ACTION_NOT_SUPPORTED_FOR_CHANNELTYPE_AND_MODULETYPE" ;
+
+      # 8: If action = Set we need a value
+      } elsif ( $json{ReqAction} eq "Set" and ! defined $json{ReqValue} and $json{ReqChannelType} ne "Memo" ) {
+         $json{Error} = "NO_VALUE_FOR_SET" ;
+
+      } else {
+         # Get the relevant data
+         my %data = &fetch_data ($global{dbh},"select * from modules_channel_info where `address`=? and `channel`=?","data",$json{ReqAddress},$json{ReqChannel}) ;
+         #my $data = Dumper \%data ;
+
+         #$json{Debug_data} = "<pre>" . $data . "</pre>" ;
+
+         # Get Name if we have one
+         if ( $data{Name} ) {
+            $json{Name} = $data{Name}{value} ;
+         }
+
+         # Get the data and add it to the json
+         if ( $json{ReqAction} eq "Get" ) {
+            if ( defined $data{$json{ReqChannelType}} ) {
+               $json{Status} = $data{$json{ReqChannelType}}{value} ;
+            } else {
+               $json{Error} = "NO_VALUE_FOR_GET:$json{ReqChannelType}" ;
+            }
+
+         } else { # $json{ReqAction} eq "Set"
+            # 1: Check the Value with Action=Set to make sure it's valid
+            foreach my $Match (sort keys %{$global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}} ) {
+               if ( $Match eq "" and $json{ReqValue} eq "" ) {
+                  $json{ReqMatch} = $json{ReqValue} ;
+                  if ( defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ) {
+                     $json{Action} = $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ;
+                  } else {
+                     $json{Action} = $Match ;
+                  }
+                  last ;
+               } else {
+                  if ( $json{ReqValue} =~ /^$Match$/ ) {
                      $json{ReqMatch} = $json{ReqValue} ;
                      if ( defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ) {
                         $json{Action} = $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ;
@@ -266,311 +337,301 @@ sub www_service () {
                         $json{Action} = $Match ;
                      }
                      last ;
+                  }
+               }
+            }
+
+            # 2: Some extra custom checks
+            if ( defined $json{ReqMatch} ) {
+               if ( $json{ReqChannelType} eq "Blind" and $json{Action} eq "POSITION" ) {
+                  if ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) {
+                     $json{Action} = "POSITION" ;
+                  } elsif ( $json{ReqValue} eq "0" ) {
+                     $json{ReqValue} = "UP" ;
+                  } elsif ( $json{ReqValue} eq "100" ) {
+                     $json{ReqValue} = "DOWN" ;
                   } else {
-                     if ( $json{ReqValue} =~ /^$Match$/ ) {
-                        $json{ReqMatch} = $json{ReqValue} ;
-                        if ( defined $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ) {
-                           $json{Action} = $global{Cons}{ChannelTypes}{$json{ReqChannelType}}{Set}{Match}{$Match}{Action} ;
-                        } else {
-                           $json{Action} = $Match ;
-                        }
-                        last ;
-                     }
+                     undef $json{Action} ;
+                     $json{Error} = "VALUE_NOT_IN_RANGE_1" ;
+                  }
+               } elsif ( $json{ReqChannelType} eq "Dimmer" and $json{Action} eq "LEVEL" ) {
+                  if ( $json{ReqValue} eq "ON" ) {
+                     $json{ReqValue} = "100" ;
+                  } elsif ( $json{ReqValue} eq "OFF" ) {
+                     $json{ReqValue} = "0" ;
+                  } elsif ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) { # ! After ON and OFF check
+                     $json{Action} = "LEVEL" ;
+                  } else {
+                     undef $json{Action} ;
+                     $json{Error} = "VALUE_NOT_IN_RANGE_2" ;
+                  }
+               } elsif ( $json{ReqChannelType} eq "ELBrightness" ) {
+                  if ( $json{ReqValue} eq "ON" ) {
+                     $json{ReqValue} = "127" ;
+                  } elsif ( $json{ReqValue} eq "OFF" ) {
+                     $json{ReqValue} = "0" ;
+                  } elsif ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) { # ! After ON and OFF check
+                     $json{ReqValue} = int ($json{ReqValue} * 1.27 )
+                  } else {
+                     undef $json{Action} ;
+                     $json{Error} = "VALUE_NOT_IN_RANGE_2" ;
                   }
                }
+            } else {
+               $json{Error} = "VALUE_NOT_IN_RANGE_3" ;
+            }
 
-               # 2: Some extra custom checks
-               if ( defined $json{ReqMatch} ) {
-                  if ( $json{ReqChannelType} eq "Blind" and $json{Action} eq "POSITION" ) {
-                     if ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) {
-                        $json{Action} = "POSITION" ;
-                     } elsif ( $json{ReqValue} eq "0" ) {
-                        $json{ReqValue} = "UP" ;
-                     } elsif ( $json{ReqValue} eq "100" ) {
-                        $json{ReqValue} = "DOWN" ;
-                     } else {
-                        undef $json{Action} ;
-                        $json{Error} = "VALUE_NOT_IN_RANGE_1" ;
-                     }
-                  } elsif ( $json{ReqChannelType} eq "Dimmer" and $json{Action} eq "LEVEL" ) {
-                     if ( $json{ReqValue} eq "ON" ) {
-                        $json{ReqValue} = "100" ;
-                     } elsif ( $json{ReqValue} eq "OFF" ) {
-                        $json{ReqValue} = "0" ;
-                     } elsif ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) { # ! After ON and OFF check
-                        $json{Action} = "LEVEL" ;
-                     } else {
-                        undef $json{Action} ;
-                        $json{Error} = "VALUE_NOT_IN_RANGE_2" ;
-                     }
-                  } elsif ( $json{ReqChannelType} eq "ELBrightness" ) {
-                     if ( $json{ReqValue} eq "ON" ) {
-                        $json{ReqValue} = "127" ;
-                     } elsif ( $json{ReqValue} eq "OFF" ) {
-                        $json{ReqValue} = "0" ;
-                     } elsif ( $json{ReqValue} >= 0 and $json{ReqValue} <= 100 ) { # ! After ON and OFF check
-                        $json{ReqValue} = int ($json{ReqValue} * 1.27 )
-                     } else {
-                        undef $json{Action} ;
-                        $json{Error} = "VALUE_NOT_IN_RANGE_2" ;
-                     }
+            #     $SetAction -> $json{Action}
+            #
+            # 3: Only continue if we had no error
+            if ( ! defined $json{Error} ) {
+               # Get/Set Blind positoin
+               if ( $json{ReqChannelType} eq "Blind" ) {
+                  if (      $json{Action} eq "UP" ) {
+                     &blind_up   ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = $json{Action} ;
+                  } elsif ( $json{Action} eq "DOWN" ) {
+                     &blind_down ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = $json{Action} ;
+                  } elsif ( $json{Action} eq "STOP" ) {
+                     &blind_stop ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = $json{Action} ;
+                  } elsif ( $json{Action} eq "POSITION" ) {
+                     &blind_pos  ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
+                     $json{Status} = $json{ReqValue} ;
+                  } else {
+                     $json{Error} = "INCORRECT_ACTION" ;
                   }
-               } else {
-                  $json{Error} = "VALUE_NOT_IN_RANGE_3" ;
-               }
 
-               #     $SetAction -> $json{Action}
-               #
-               # 3: Only continue if we had no error
-               if ( ! defined $json{Error} ) {
-                  # Get/Set Blind positoin
-                  if ( $json{ReqChannelType} eq "Blind" ) {
-                     if (      $json{Action} eq "UP" ) {
-                        &blind_up   ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
-                        $json{Status} = $json{Action} ;
-                     } elsif ( $json{Action} eq "DOWN" ) {
-                        &blind_down ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
-                        $json{Status} = $json{Action} ;
-                     } elsif ( $json{Action} eq "STOP" ) {
-                        &blind_stop ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
-                        $json{Status} = $json{Action} ;
-                     } elsif ( $json{Action} eq "POSITION" ) {
-                        &blind_pos  ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
-                        $json{Status} = $json{ReqValue} ;
-                     } else {
-                        $json{Error} = "INCORRECT_ACTION" ;
-                     }
-   
-                  } elsif ( $json{ReqChannelType} eq "Button" ) {
-                     if ( $json{Action} eq "ON" ) {
+               } elsif ( $json{ReqChannelType} eq "Button" ) {
+                  if ( $json{Action} eq "ON" ) {
                         &button_pressed ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
-                        $json{Status} = $json{ReqValue} ;
-                     } elsif ( $json{Action} eq "OFF" ) {
-                        # TODO
-                     }
-   
-                  } elsif ( $json{ReqChannelType} eq "ButtonLong" ) {
-                     if ( $json{Action} eq "ON" ) {
-                        &button_long_pressed ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
-                        $json{Status} = $json{ReqValue} ;
-                     } elsif ( $json{Action} eq "OFF" ) {
-                        # TODO
-                     }
-   
-                  } elsif ( $json{ReqChannelType} eq "Dimmer" ) {
-                     &dim_value ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
                      $json{Status} = $json{ReqValue} ;
-   
-                  } elsif ( $json{ReqChannelType} eq "Memo" ) {
-                     &send_memo ($sock, $json{ReqAddress}, $json{ReqValue}) ;
-                     $json{Text} = $json{ReqValue} ;
-   
-                  } elsif ( $json{ReqChannelType} eq "Relay" ) {
-                     if ( $json{ReqValue} eq "ON" ) {
-                        &relay_on ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
-                        $json{Status} = "ON" ;
-                     } elsif ( $json{ReqValue} eq "OFF" ) {
-                        &relay_off ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
-                        $json{Status} = "OFF" ;
-                     }
-   
-                  # Set heating or cooling: touch panels
-                  } elsif ( $json{ReqChannelType} eq "ThermostatCoHeMode" ) {
-                     &set_temperature_cohe_mode ($sock, $json{ReqAddress}, $json{ReqValue}) ;
-                     $json{Status} = $json{ReqValue} ;
-   
-                  # Set the Heater mode: touch panels
-                  } elsif ( $json{ReqChannelType} eq "ThermostatMode" ) {
-                     &set_temperature_mode ($sock, $json{ReqAddress}, $json{ReqValue}) ;
-                     $json{Status} = $json{ReqValue} ;
-   
-                  # Set the Cooler/Heater target temperature: touch panels
-                  } elsif ( $json{ReqChannelType} eq "ThermostatTarget" ) {
-                     &set_temperature ($sock, $json{ReqAddress}, $json{ReqValue}) ;
-                     $json{Status} = $json{ReqValue} ;
-   
-                  # Edge-lit actions
-                  } elsif ( $json{ReqChannelType} =~ /^EL/ ) {
-                     my %Edge ; # To store the Edge data
+                  } elsif ( $json{Action} eq "OFF" ) {
+                     # TODO
+                  }
 
-                     if ( $json{ReqChannelType} eq "ELEdge" ) {
-                        if ( $json{ReqValue} =~ /(.+)_(.+)_(.+)/ ) {
-                           $Edge{Edge}    = $1 ;
-                           $Edge{Palette} = $2 ;
-                           $Edge{Action}  = $3 ;
-                           if ( $Edge{Edge} =~ /T/ ) {
-                              $Edge{Top} = "1" ;
-                           } else {
-                              $Edge{Top} = "0" ;
-                           }
-                           if ( $Edge{Edge} =~ /R/ ) {
-                              $Edge{Right} = "1" ;
-                           } else {
-                              $Edge{Right} = "0" ;
-                           }
-                           if ( $Edge{Edge} =~ /B/ ) {
-                              $Edge{Bottom} = "1" ;
-                           } else {
-                              $Edge{Bottom} = "0" ;
-                           }
-                           if ( $Edge{Edge} =~ /L/ ) {
-                              $Edge{Left} = "1" ;
-                           } else {
-                              $Edge{Left} = "0" ;
-                           }
-                           if ( $Edge{Palette} >= 0 and $Edge{Palette} <= 32 ) {
-                           } else {
-                              undef $Edge{Palette} ;
-                           }
-                           if ( $Edge{Action} eq "0" or $Edge{Action} eq "1" or $Edge{Action} eq "2" ) {
-                           } else {
-                              undef $Edge{Action} ;
-                           }
-                        }
-                     }
-                     if ( $json{ReqChannelType} eq "ELEdgeTop" ) {
-                        if ( $json{ReqValue} =~ /ON/ ) {
+               } elsif ( $json{ReqChannelType} eq "ButtonLong" ) {
+                  if ( $json{Action} eq "ON" ) {
+                        &button_long_pressed ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = $json{ReqValue} ;
+                  } elsif ( $json{Action} eq "OFF" ) {
+                     # TODO
+                  }
+
+               } elsif ( $json{ReqChannelType} eq "Dimmer" ) {
+                  &dim_value ($sock, $json{ReqAddress}, $json{ReqChannel}, $json{ReqValue}) ;
+                  $json{Status} = $json{ReqValue} ;
+
+               } elsif ( $json{ReqChannelType} eq "Memo" ) {
+                  &send_memo ($sock, $json{ReqAddress}, $json{ReqValue}) ;
+                  $json{Text} = $json{ReqValue} ;
+
+               } elsif ( $json{ReqChannelType} eq "Relay" ) {
+                  if ( $json{ReqValue} eq "ON" ) {
+                     &relay_on ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = "ON" ;
+                  } elsif ( $json{ReqValue} eq "OFF" ) {
+                     &relay_off ($sock, $json{ReqAddress}, $json{ReqChannel}) ;
+                     $json{Status} = "OFF" ;
+                  }
+
+               # Set heating or cooling: touch panels
+               } elsif ( $json{ReqChannelType} eq "ThermostatCoHeMode" ) {
+                  &set_temperature_cohe_mode ($sock, $json{ReqAddress}, $json{ReqValue}) ;
+                  $json{Status} = $json{ReqValue} ;
+
+               # Set the Heater mode: touch panels
+               } elsif ( $json{ReqChannelType} eq "ThermostatMode" ) {
+                  &set_temperature_mode ($sock, $json{ReqAddress}, $json{ReqValue}) ;
+                  $json{Status} = $json{ReqValue} ;
+
+               # Set the Cooler/Heater target temperature: touch panels
+               } elsif ( $json{ReqChannelType} eq "ThermostatTarget" ) {
+                  &set_temperature ($sock, $json{ReqAddress}, $json{ReqValue}) ;
+                  $json{Status} = $json{ReqValue} ;
+
+               # Edge-lit actions
+               } elsif ( $json{ReqChannelType} =~ /^EL/ ) {
+                  my %Edge ; # To store the Edge data
+
+                  if ( $json{ReqChannelType} eq "ELEdge" ) {
+                     if ( $json{ReqValue} =~ /(.+)_(.+)_(.+)/ ) {
+                        $Edge{Edge}    = $1 ;
+                        $Edge{Palette} = $2 ;
+                        $Edge{Action}  = $3 ;
+                        if ( $Edge{Edge} =~ /T/ ) {
                            $Edge{Top} = "1" ;
                         } else {
                            $Edge{Top} = "0" ;
                         }
-                     } 
-                     if ( $json{ReqChannelType} eq "ELEdgeRight" ) {
-                        if ( $json{ReqValue} =~ /ON/ ) {
+                        if ( $Edge{Edge} =~ /R/ ) {
                            $Edge{Right} = "1" ;
                         } else {
                            $Edge{Right} = "0" ;
                         }
-                     } 
-                     if ( $json{ReqChannelType} eq "ELEdgeBottom" ) {
-                        if ( $json{ReqValue} =~ /ON/ ) {
+                        if ( $Edge{Edge} =~ /B/ ) {
                            $Edge{Bottom} = "1" ;
                         } else {
                            $Edge{Bottom} = "0" ;
                         }
-                     } 
-                     if ( $json{ReqChannelType} eq "ELEdgeLeft" ) {
-                        if ( $json{ReqValue} =~ /ON/ ) {
+                        if ( $Edge{Edge} =~ /L/ ) {
                            $Edge{Left} = "1" ;
                         } else {
                            $Edge{Left} = "0" ;
                         }
-                     } 
-                     if ( $json{ReqChannelType} eq "ELPalette" ) {
-                        if ( $json{ReqValue} >= 0 and $json{ReqValue} <= 32 ) {
-                           $Edge{Palette} = $json{ReqValue} ;
+                        if ( $Edge{Palette} >= 0 and $Edge{Palette} <= 32 ) {
                         } else {
+                           undef $Edge{Palette} ;
                         }
-                     } 
-                     if ( $json{ReqChannelType} eq "ELAction" ) {
-                        $Edge{Action} = "ELAction" ;
-                     }
-                     if ( $json{ReqChannelType} eq "ELColor" ) {
-                        if ( $json{ReqValue} =~ /(\d+),(\d+),(\d+)/ ) {
-                           ($Edge{Red}, $Edge{Green}, $Edge{Blue}) = &hsv2rgb ($1,$2,$3) ;
-                           $json{Color} = $Edge{Red} . $Edge{Green} . $Edge{Blue} ;
-                           $Edge{Action} = "ELColor" ;
-                           &update_modules_info ($json{ReqAddress}, "ELRed", $Edge{Red}) ;
-                           &update_modules_info ($json{ReqAddress}, "ELGreen", $Edge{Green}) ;
-                           &update_modules_info ($json{ReqAddress}, "ELBlue", $Edge{Blue}) ;
-                        }
-                     }
-                     if ( $json{ReqChannelType} eq "ELBrightness" ) {
-                        $Edge{Brightness} = $json{ReqValue} ;
-                     }
-
-                     my $data = Dumper \%Edge ;
-                     $json{Debug_Edge} = "<pre>" . $data . "</pre>" ;
-
-                     if ( defined $Edge{Top} ) {
-                        &update_modules_info ($json{ReqAddress}, "ELEdgeTop", $Edge{Top}) ;
-                        $json{Status} = $Edge{Top} ;
-                     }
-                     if ( defined $Edge{Right} ) {
-                        &update_modules_info ($json{ReqAddress}, "ELEdgeRight", $Edge{Right}) ;
-                        $json{Status} = $Edge{Right} ;
-                     }
-                     if ( defined $Edge{Bottom} ) {
-                        &update_modules_info ($json{ReqAddress}, "ELEdgeBottom", $Edge{Bottom}) ;
-                        $json{Status} = $Edge{Bottom} ;
-                     }
-                     if ( defined $Edge{Left} ) {
-                        &update_modules_info ($json{ReqAddress}, "ELEdgeLeft", $Edge{Left}) ;
-                        $json{Status} = $Edge{Left} ;
-                     }
-                     if ( defined $Edge{Palette} ) {
-                        &update_modules_info ($json{ReqAddress}, "ELPalette", $Edge{Palette}) ;
-                        $json{Status} = $Edge{Palette} ;
-                     }
-                     if ( defined $Edge{Brightness} ) {
-                        &update_modules_info ($json{ReqAddress}, "ELBrightness", $Edge{Brightness}) ;
-                        $json{Status} = $Edge{Brightness} ;
-                     }
-
-                     if ( defined $Edge{Action} ) {
-                        my %ELEdge = &fetch_data ($global{dbh},"select `data`,`value` from modules_info where `address`=? and `data` LIKE 'EL%'","data",$json{ReqAddress}) ;
-
-                        if ( defined $ELEdge{ELPalette} ) {
-                           $json{EdgePalette} = $ELEdge{ELPalette}{value} ;
+                        if ( $Edge{Action} eq "0" or $Edge{Action} eq "1" or $Edge{Action} eq "2" ) {
                         } else {
-                           $json{EdgePalette} = 0 ;
+                           undef $Edge{Action} ;
                         }
-
-                        if ( defined $ELEdge{ELBrightness} ) {
-                           $json{EdgeBrightness} = $ELEdge{ELBrightness}{value} ;
-                        } else {
-                           $json{EdgeBrightness} = "127" ;
-                        }
-
-                        if ( $Edge{Action} eq "ELAction" ) {
-                           if ( $json{ReqValue} eq "1" ) {
-                              $json{ELState} = 1 ; # Blink
-                           } elsif ( $json{ReqValue} eq "2" ) {
-                              $json{ELState} = 2 ; # ON
-                           } else {
-                              $json{ELState} = 0 ; # OFF
-                           }
-                        } elsif ( defined $ELEdge{ELState} ) {
-                           $json{ELState} = $ELEdge{ELState} ;
-                        } else {
-                           $json{ELState} = 2 ; # ON
-                        }
-
-                        if ( defined $ELEdge{ELEdgeTop} and $ELEdge{ELEdgeTop}{value} eq "1" ) {
-                           $json{ELEdge} .= "T" ;
-                        }
-                        if ( defined $ELEdge{ELEdgeRight} and $ELEdge{ELEdgeRight}{value} eq "1" ) {
-                           $json{ELEdge} .= "R" ;
-                        }
-                        if ( defined $ELEdge{ELEdgeBottom} and $ELEdge{ELEdgeBottom}{value} eq "1" ) {
-                           $json{ELEdge} .= "B" ;
-                        }
-                        if ( defined $ELEdge{ELEdgeLeft} and $ELEdge{ELEdgeLeft}{value} eq "1" ) {
-                           $json{ELEdge} .= "L" ;
-                        }
-
-                        my $data = Dumper \%ELEdge ;
-                        $json{Debug_mysql} = "<pre>" . $data . "</pre>" ;
-                        $json{Debug_edge} = $json{EdgePalette} . " :: " . $json{ELState} . " :: " . $json{ELEdge} ;
-                        if ( $Edge{Action} eq "ELColor" ) {
-                           $json{StatusColor} = &edge_color($sock, $json{ReqAddress}, $json{EdgePalette}, $json{EdgeBrightness}, $Edge{Red}, $Edge{Green}, $Edge{Blue});
-                        }
-                        $json{Status} = &edge_lit($sock, $json{ReqAddress}, $json{EdgePalette}, $json{ELState}, $json{ELEdge}) ;
                      }
-   
-                  } else {
-                     $json{TODO} = "ChannelType=$json{ReqChannelType}" ;
                   }
+                  if ( $json{ReqChannelType} eq "ELEdgeTop" ) {
+                     if ( $json{ReqValue} =~ /ON/ ) {
+                        $Edge{Top} = "1" ;
+                     } else {
+                        $Edge{Top} = "0" ;
+                     }
+                  } 
+                  if ( $json{ReqChannelType} eq "ELEdgeRight" ) {
+                     if ( $json{ReqValue} =~ /ON/ ) {
+                        $Edge{Right} = "1" ;
+                     } else {
+                        $Edge{Right} = "0" ;
+                     }
+                  } 
+                  if ( $json{ReqChannelType} eq "ELEdgeBottom" ) {
+                     if ( $json{ReqValue} =~ /ON/ ) {
+                        $Edge{Bottom} = "1" ;
+                     } else {
+                        $Edge{Bottom} = "0" ;
+                     }
+                  } 
+                  if ( $json{ReqChannelType} eq "ELEdgeLeft" ) {
+                     if ( $json{ReqValue} =~ /ON/ ) {
+                           $Edge{Left} = "1" ;
+                     } else {
+                        $Edge{Left} = "0" ;
+                     }
+                  } 
+                  if ( $json{ReqChannelType} eq "ELPalette" ) {
+                     if ( $json{ReqValue} >= 0 and $json{ReqValue} <= 32 ) {
+                           $Edge{Palette} = $json{ReqValue} ;
+                     } else {
+                     }
+                  } 
+                  if ( $json{ReqChannelType} eq "ELAction" ) {
+                     $Edge{Action} = "ELAction" ;
+                  }
+                  if ( $json{ReqChannelType} eq "ELColor" ) {
+                     if ( $json{ReqValue} =~ /(\d+),(\d+),(\d+)/ ) {
+                           ($Edge{Red}, $Edge{Green}, $Edge{Blue}) = &hsv2rgb ($1,$2,$3) ;
+                        $json{Color} = $Edge{Red} . $Edge{Green} . $Edge{Blue} ;
+                        $Edge{Action} = "ELColor" ;
+                        &update_modules_info ($json{ReqAddress}, "ELRed", $Edge{Red}) ;
+                        &update_modules_info ($json{ReqAddress}, "ELGreen", $Edge{Green}) ;
+                        &update_modules_info ($json{ReqAddress}, "ELBlue", $Edge{Blue}) ;
+                     }
+                  }
+                  if ( $json{ReqChannelType} eq "ELBrightness" ) {
+                     $Edge{Brightness} = $json{ReqValue} ;
+                  }
+
+                  my $data = Dumper \%Edge ;
+                  $json{Debug_Edge} = "<pre>" . $data . "</pre>" ;
+
+                  if ( defined $Edge{Top} ) {
+                     &update_modules_info ($json{ReqAddress}, "ELEdgeTop", $Edge{Top}) ;
+                     $json{Status} = $Edge{Top} ;
+                  }
+                  if ( defined $Edge{Right} ) {
+                     &update_modules_info ($json{ReqAddress}, "ELEdgeRight", $Edge{Right}) ;
+                     $json{Status} = $Edge{Right} ;
+                  }
+                  if ( defined $Edge{Bottom} ) {
+                     &update_modules_info ($json{ReqAddress}, "ELEdgeBottom", $Edge{Bottom}) ;
+                     $json{Status} = $Edge{Bottom} ;
+                  }
+                  if ( defined $Edge{Left} ) {
+                     &update_modules_info ($json{ReqAddress}, "ELEdgeLeft", $Edge{Left}) ;
+                     $json{Status} = $Edge{Left} ;
+                  }
+                  if ( defined $Edge{Palette} ) {
+                     &update_modules_info ($json{ReqAddress}, "ELPalette", $Edge{Palette}) ;
+                     $json{Status} = $Edge{Palette} ;
+                  }
+                  if ( defined $Edge{Brightness} ) {
+                     &update_modules_info ($json{ReqAddress}, "ELBrightness", $Edge{Brightness}) ;
+                     $json{Status} = $Edge{Brightness} ;
+                  }
+
+                  if ( defined $Edge{Action} ) {
+                     my %ELEdge = &fetch_data ($global{dbh},"select `data`,`value` from modules_info where `address`=? and `data` LIKE 'EL%'","data",$json{ReqAddress}) ;
+
+                     if ( defined $ELEdge{ELPalette} ) {
+                        $json{EdgePalette} = $ELEdge{ELPalette}{value} ;
+                     } else {
+                        $json{EdgePalette} = 0 ;
+                     }
+
+                     if ( defined $ELEdge{ELBrightness} ) {
+                        $json{EdgeBrightness} = $ELEdge{ELBrightness}{value} ;
+                     } else {
+                        $json{EdgeBrightness} = "127" ;
+                     }
+
+                     if ( $Edge{Action} eq "ELAction" ) {
+                        if ( $json{ReqValue} eq "1" ) {
+                           $json{ELState} = 1 ; # Blink
+                        } elsif ( $json{ReqValue} eq "2" ) {
+                           $json{ELState} = 2 ; # ON
+                        } else {
+                           $json{ELState} = 0 ; # OFF
+                        }
+                     } elsif ( defined $ELEdge{ELState} ) {
+                        $json{ELState} = $ELEdge{ELState} ;
+                     } else {
+                        $json{ELState} = 2 ; # ON
+                     }
+
+                     if ( defined $ELEdge{ELEdgeTop} and $ELEdge{ELEdgeTop}{value} eq "1" ) {
+                        $json{ELEdge} .= "T" ;
+                     }
+                     if ( defined $ELEdge{ELEdgeRight} and $ELEdge{ELEdgeRight}{value} eq "1" ) {
+                        $json{ELEdge} .= "R" ;
+                     }
+                     if ( defined $ELEdge{ELEdgeBottom} and $ELEdge{ELEdgeBottom}{value} eq "1" ) {
+                        $json{ELEdge} .= "B" ;
+                     }
+                     if ( defined $ELEdge{ELEdgeLeft} and $ELEdge{ELEdgeLeft}{value} eq "1" ) {
+                        $json{ELEdge} .= "L" ;
+                     }
+
+                     my $data = Dumper \%ELEdge ;
+                     $json{Debug_mysql} = "<pre>" . $data . "</pre>" ;
+                     $json{Debug_edge} = $json{EdgePalette} . " :: " . $json{ELState} . " :: " . $json{ELEdge} ;
+                     if ( $Edge{Action} eq "ELColor" ) {
+                        $json{StatusColor} = &edge_color($sock, $json{ReqAddress}, $json{EdgePalette}, $json{EdgeBrightness}, $Edge{Red}, $Edge{Green}, $Edge{Blue});
+                     }
+                     $json{Status} = &edge_lit($sock, $json{ReqAddress}, $json{EdgePalette}, $json{ELState}, $json{ELEdge}) ;
+                  }
+
+               } else {
+                  $json{TODO} = "ChannelType=$json{ReqChannelType}" ;
                }
             }
-            $json{Status} = "" if ! defined $json{Status} ;
          }
-      } else {
-         $json{Error} = "Nothing to do?" ;
+         $json{Status} = "" if ! defined $json{Status} ;
       }
+   } else {
+      $json{Error} = "Nothing to do?" ;
    }
 
-   return %json ;
+   return %json
 }
 
 sub process_modules () {
