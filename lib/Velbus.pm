@@ -55,7 +55,7 @@ sub read_all_configs {
       mkdir ("$global{Config}{SQLite}{dbdir}") if ! -d $global{Config}{SQLite}{dbdir} ;
    }
 
-   $global{Config}{velserver}{PROTOCOLFILE} = "$global{BaseDir}/lib/Velbus/protocol.json" if ! defined $global{Config}{velserver}{PROTOCOLFILE} ;
+   $global{Config}{velserver}{PROTOCOLFILE} = "$global{BaseDir}/moduleprotocol/protocol.json" if ! defined $global{Config}{velserver}{PROTOCOLFILE} ;
    $global{Config}{velserver}{WEBSERVERPORT} = "80" if ! defined $global{Config}{velserver}{WEBSERVERPORT} ;
 
    $global{Config}{velbus}{HOST} = "localhost"    if ! defined $global{Config}{velbus}{HOST} ;
@@ -77,7 +77,6 @@ sub init {
    my $option = shift ;
    &read_all_configs ;
 
-   &download_protocol_file ;
    &read_protocol_file ;
 
    # open a connection to the database
@@ -85,25 +84,6 @@ sub init {
 
    # Get all modules from the database
    &get_all_modules_from_database ;
-}
-
-# Download the protocol file if it's not found
-sub download_protocol_file {
-   if ( -f $global{Config}{velserver}{PROTOCOLFILE} ) {
-      #print "Protocol file found: $global{Config}{velserver}{PROTOCOLFILE}\n" ;
-   } else {
-      my $output = `wget https://raw.githubusercontent.com/StefCoene/moduleprotocol/master/out/protocol.json -O $global{Config}{velserver}{PROTOCOLFILE} 2>&1` ;
-      my $return = $? ;
-      if ( $return eq "0" ) {
-         #print "Protocol file download: $global{Config}{velserver}{PROTOCOLFILE}\n" ;
-      } else {
-         print "ABORT: Protocol file NOT downloaded:\n" ;
-         print "command: wget https://raw.githubusercontent.com/StefCoene/moduleprotocol/master/out/protocol.json -O $global{Config}{velserver}{PROTOCOLFILE}\n" ;
-         print "return code: $return\n" ;
-         print "output:\n$output\n" ;
-         exit ;
-      }
-   }
 }
 
 # Read the protocol file
