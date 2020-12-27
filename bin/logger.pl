@@ -20,7 +20,8 @@ while (1) {
    if (defined $sock and $sock->connected) {
       my $recv_data;
 
-      $sock->recv($recv_data,10240) ;
+      # recv does not work on SSL sockets so use sysread
+      sysread ($sock, $recv_data, 10240) ;
 
       if ( $recv_data and $recv_data ne "" ) {
          chomp($recv_data) ;

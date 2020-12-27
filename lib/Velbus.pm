@@ -9,6 +9,9 @@ use Hash::Merge qw( merge );
 # To be able to open a socket to the Velbus server
 use IO::Socket ;
 
+# SSL is needed to connect to a SIGNUM module
+use IO::Socket::SSL ;
+
 use Convert::Color ;
 
 # high resolution timer

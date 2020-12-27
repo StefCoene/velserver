@@ -212,11 +212,22 @@ sub check_valid {
 # Param 2: port (default = 3788)
 # Return: socket
 sub open_socket () {
-   my $sock = new IO::Socket::INET(
-         PeerAddr => $global{Config}{velbus}{HOST},
-         PeerPort => $global{Config}{velbus}{PORT},
-         Proto    => 'tcp'
-      );
+   my $sock ;
+   # When connecting to port 27015 we assume that we are connecting to a SIGNUM so we have to enable SSL
+   if (  $global{Config}{velbus}{PORT} eq "27015" ) {
+      $sock = new IO::Socket::SSL(
+            PeerAddr        => $global{Config}{velbus}{HOST},
+            PeerPort        => $global{Config}{velbus}{PORT},
+            Proto           => 'tcp',
+            SSL_verify_mode => SSL_VERIFY_NONE
+         );
+   } else {
+      $sock = new IO::Socket::INET(
+            PeerAddr => $global{Config}{velbus}{HOST},
+            PeerPort => $global{Config}{velbus}{PORT},
+            Proto    => 'tcp'
+         );
+   }
 
    if ( $sock ) {
       $sock->autoflush(1);
