@@ -28,3 +28,5 @@ RUN cpanm LWP::UserAgent
 FROM step8 as step9
 RUN cpanm JSON::XS JSON
 
+FROM step9 as step10
+RUN cpanm IO::Socket::SSL
