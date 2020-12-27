@@ -1054,6 +1054,13 @@ sub channel_convert () {
          $channel = ($1 =~ tr/0//); # Count last 0's
          $channel ++ ;
 
+         # If this is a SubAddress, replace the address with the master address and calculate the correct channel.
+         if ( defined $global{Vars}{Modules}{SubAddress}{$address} and defined $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ) {
+            &log("channel_convert",&timestamp . "    type=$type: address = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress}, channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset}") ;
+            $channel += $global{Vars}{Modules}{SubAddress}{$address}{ChannelOffset} ; # Before changing the $address!!!!
+            $address  = $global{Vars}{Modules}{SubAddress}{$address}{MasterAddress} ;
+         }
+      
       # Button pressed or Sensor triggered
       } elsif ( $type eq "Channel" ) {
          $channel = &hex_to_bin ($channel) ;
