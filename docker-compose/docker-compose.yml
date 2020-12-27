@@ -1,0 +1,21 @@
+version: "3.0"
+services:
+  logger:
+    build: velserver-perl
+    command: perl /home/velbus/velserver/bin/logger.pl
+    volumes:
+    - ../:/home/velbus/velserver
+    extra_hosts:
+      velbus: 192.168.0.3
+      openhab: 192.168.0.5
+
+  webserver:
+    build: velserver-perl
+    command: perl /home/velbus/velserver/bin/webserver.pl
+    volumes:
+      - ../:/home/velbus/velserver
+    ports:
+      - "82:80"
+    extra_hosts:
+      velbus: 192.168.0.3
+      openhab: 192.168.0.5
